@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -49,11 +50,12 @@ public class PuppetSoldierCreationAbility extends Ability {
             BeyonderNPCEntity puppetSoldier = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "knight", "red_priest", 4, false, false);
             puppetSoldier.setPos(spawnPos);
             puppetSoldier.setPuppetWarrior(true);
-            serverLevel.addFreshEntity(puppetSoldier);
 
             SubordinateUtils.turnEntityIntoSubordinate(puppetSoldier, entity);
 
-            BeyonderData.addModifier(puppetSoldier, "puppet_soldier", 1.8f);
+            BeyonderData.addModifier(puppetSoldier, "puppet_soldier", 1.25f);
+
+            serverLevel.addFreshEntity(puppetSoldier);
         }
     }
 }

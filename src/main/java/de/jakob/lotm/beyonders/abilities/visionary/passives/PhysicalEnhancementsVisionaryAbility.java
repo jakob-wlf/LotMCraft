@@ -41,7 +41,6 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 2),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
@@ -50,7 +49,6 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 4),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
@@ -59,7 +57,6 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
@@ -68,7 +65,7 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 5),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 12),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
 
@@ -77,7 +74,7 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 6),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 15),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
                     new PhysicalEnhancement(EnhancementType.CONCEALMENT, 0)
             );
@@ -87,7 +84,7 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 23),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
                     new PhysicalEnhancement(EnhancementType.CONCEALMENT, 0)
             );
@@ -95,9 +92,9 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
             case 1 -> List.of(
                   //  new PhysicalEnhancement(EnhancementType.STRENGTH, 4),
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 5),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 30),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 4),
                     new PhysicalEnhancement(EnhancementType.CONCEALMENT, 0),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
@@ -105,9 +102,9 @@ public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAb
             case 0 -> List.of(
                   //  new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 6),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 7),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 40),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
                     new PhysicalEnhancement(EnhancementType.CONCEALMENT, 0)
             );

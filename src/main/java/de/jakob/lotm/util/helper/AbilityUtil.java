@@ -33,7 +33,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.LingeringPotionItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -1263,7 +1262,13 @@ public class AbilityUtil {
         player.connection.send(packet);
     }
 
-    public static boolean isUndead(LivingEntity entity) {
+    public static boolean isUndead(LivingEntity entity){
+        if(BeyonderData.getPathway(entity).equals("death")) return true;
+
+        return entity.getType().is(EntityTypeTags.UNDEAD);
+    }
+
+    public static boolean isUndeadOrEvil(LivingEntity entity) {
         if(BeyonderData.isEvilPathway(entity))
             return true;
 

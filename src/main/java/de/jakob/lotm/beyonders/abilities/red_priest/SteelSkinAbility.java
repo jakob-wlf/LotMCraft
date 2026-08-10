@@ -78,8 +78,7 @@ public class SteelSkinAbility extends ToggleAbility {
     }
 
     public static boolean canBlock(DamageSource source){
-        return !source.is(DamageTypeTags.BYPASSES_ARMOR)
-                || !source.is(ModDamageTypes.MIND)
+        return   !source.is(ModDamageTypes.MIND)
                 || !source.is(ModDamageTypes.SOUL);
     }
 

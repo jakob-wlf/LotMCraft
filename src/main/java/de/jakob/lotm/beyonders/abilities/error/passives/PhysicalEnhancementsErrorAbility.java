@@ -45,7 +45,6 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 3),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 2)
             );
 
@@ -54,7 +53,6 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 4),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 2)
             );
 
@@ -63,7 +61,6 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 2)
             );
 
@@ -72,7 +69,7 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 12),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 4)
             );
 
@@ -81,7 +78,7 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 5),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 13),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 4)
             );
 
@@ -90,7 +87,7 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 21),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 5)
             );
 
@@ -99,7 +96,7 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 26),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 5)
             );
 
@@ -108,7 +105,7 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 10),
                     new PhysicalEnhancement(EnhancementType.SPEED, 7),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 36),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
                     new PhysicalEnhancement(EnhancementType.MINING_EFFICIENCY, 6)
             );
 

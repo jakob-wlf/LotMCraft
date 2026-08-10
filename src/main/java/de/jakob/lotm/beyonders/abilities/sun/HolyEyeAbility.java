@@ -4,9 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -57,7 +55,7 @@ public class HolyEyeAbility extends ToggleAbility {
 
         EffectManager.playEffect(EffectManager.Effect.HOLY_IMPACT, targetPos.x, targetPos.y, targetPos.z, (ServerLevel) level, entity);
 
-        if(target != null && AbilityUtil.isUndead(target)) {
+        if(target != null && AbilityUtil.isUndeadOrEvil(target)) {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity),  baseDamage);
         }
 

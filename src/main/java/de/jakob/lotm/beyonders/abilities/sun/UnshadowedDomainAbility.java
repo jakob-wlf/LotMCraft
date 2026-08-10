@@ -3,7 +3,6 @@ package de.jakob.lotm.beyonders.abilities.sun;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -13,8 +12,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -85,7 +82,7 @@ public class UnshadowedDomainAbility extends Ability {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 40* multiplier(entity), startPos, new MobEffectInstance(MobEffects.GLOWING, 20 * 2, 1, false, false, false));
             AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40* multiplier(entity))
                     .stream()
-                    .filter(e -> (AbilityUtil.isUndead(e)) && (e != null))
+                    .filter(e -> (AbilityUtil.isUndeadOrEvil(e)) && (e != null))
                     .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity),  baseDamage));
         }, () -> blocks.forEach(b -> {
             BlockState state = level.getBlockState(b);

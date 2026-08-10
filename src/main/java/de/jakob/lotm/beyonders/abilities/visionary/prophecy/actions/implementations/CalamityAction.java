@@ -75,7 +75,7 @@ public class CalamityAction extends ActionBase {
             case "meteor", "meteors" -> ability.spawnMeteorShower(serverLevel,center, ability.baseDamage * mult, griefing, null);
             case "tornado" -> createTornados(serverLevel, entity, (ability.baseDamage * mult)/10, center);
             case "earthquake" -> ability.spawnEarthquake(serverLevel, center, mult, ability.baseDamage * mult, griefing, null);
-            case "plague" -> createPlague(serverLevel, entity, mult, (ability.baseDamage * mult)/2);
+            case "plague" -> createPlague(serverLevel, entity, mult, (ability.baseDamage * mult));
         }
 
     }
@@ -119,7 +119,7 @@ public class CalamityAction extends ActionBase {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
 
-            float damage = baseDamage/6;
+            float damage = baseDamage/13;
 
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, damage/2, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, entity));
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, damage/2 * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));

@@ -233,7 +233,6 @@ public class FireRavenEntity extends Animal {
                         if(sourceEntity != null)
                             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetEntity.position(), sourceEntity, null, new String[]{"burning"}, 2, 10));
                     } else {
-                        level.explode(null, target.x, target.y, target.z, 2.2f, griefing, griefing ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
                         if(sourceEntity != null)
                             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, new Vec3(target.x, target.y, target.z), sourceEntity, null, new String[]{"burning", "explosion"}, 2.2, 10));
                     }

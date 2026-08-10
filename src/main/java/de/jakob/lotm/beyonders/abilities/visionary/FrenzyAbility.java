@@ -92,5 +92,7 @@ public class FrenzyAbility extends Ability {
 
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), baseDamage);
 
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.05f), target, entitySeq, BeyonderData.getSequence(target));
+
     }
 }

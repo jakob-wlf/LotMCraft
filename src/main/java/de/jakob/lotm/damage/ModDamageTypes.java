@@ -37,12 +37,17 @@ public class ModDamageTypes {
             Registries.DAMAGE_TYPE,
             ResourceLocation.fromNamespaceAndPath("lotmcraft", "evil")
     );
+    public static final TagKey<DamageType> NATURE = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            ResourceLocation.fromNamespaceAndPath("lotmcraft", "nature")
+    );
 
     public static final ResourceKey<DamageType> MIND_BASED = key("mind_based");
     public static final ResourceKey<DamageType> PHYSICAL_BASED = key("physical_based");
     public static final ResourceKey<DamageType> SOUL_BASED = key("soul_based");
     public static final ResourceKey<DamageType> HOLY_BASED = key("holy_based");
     public static final ResourceKey<DamageType> EVIL_BASED = key("evil_based");
+    public static final ResourceKey<DamageType> NATURE_BASED = key("nature_based");
 
     public static final ResourceKey<DamageType> LOOSING_CONTROL = key("loosing_control");
     ////fallback (remove when rework is finished or just ignore it)
@@ -71,6 +76,15 @@ public class ModDamageTypes {
 
     public static final ResourceKey<DamageType> PROVOCATION = key("provocation");
     public static final ResourceKey<DamageType> SOUL_FIRE = key("soul_fire");
+
+    public static final ResourceKey<DamageType> NATURE_WRATH = key("nature_wrath");
+    public static final ResourceKey<DamageType> MUTATION = key("mutation");
+    public static final ResourceKey<DamageType> TRIAL_OF_DEATH = key("trial_of_death");
+    public static final ResourceKey<DamageType> TRIAL_OF_MADNESS = key("trial_of_madness");
+    public static final ResourceKey<DamageType> LIFE_DEPRIVATION = key("life_deprivation");
+    public static final ResourceKey<DamageType> RETURN_TO_EARTH = key("return_to_earth");
+
+
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");

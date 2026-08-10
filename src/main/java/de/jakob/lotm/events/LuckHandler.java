@@ -83,7 +83,7 @@ public class LuckHandler {
             new Vector3f(161 / 255f, 114 / 255f, 58 / 255f), 1.5f
     );
 
-    private static int luckNormalizer = 50;
+    private static int luckNormalizer = 25;
 
     private static final ItemDrop[] POSSIBLE_LUCK_DROPS = {
             //new ItemDrop(Items.GOLDEN_CARROT,  32, 0.30),

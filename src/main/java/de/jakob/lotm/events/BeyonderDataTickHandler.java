@@ -26,6 +26,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -224,9 +225,11 @@ public class BeyonderDataTickHandler {
     }
 
     @SubscribeEvent
-    public static void disableRegen(LivingIncomingDamageEvent event) {
+    public static void disableRegen(LivingDamageEvent.Pre event) {
         var entity = event.getEntity();
         if(!BeyonderData.isBeyonder(entity)) return;
+
+        if(BeyonderData.getPathway(entity).equals("mother")) return;
 
         entity.getData(ModAttachments.REGEN_DISABLER.get()).disableFor(10);
 

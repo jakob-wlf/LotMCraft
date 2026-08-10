@@ -22,15 +22,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PoisonCreationAbility extends SelectableAbility {
     public PoisonCreationAbility(String id) {
         super(id, 3, "poison");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f, 240f));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -75,12 +80,12 @@ public class PoisonCreationAbility extends SelectableAbility {
             animateParticleLine(new Location(startPos, serverLevel), targetLoc, 2, 0, duration);
         }
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity == null)
             return;
 
-        targetEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 5, 8));
-        targetEntity.hurt(serverLevel.damageSources().generic(), (float) (DamageLookup.lookupDamage(6, .8) * multiplier(entity)));
+        targetEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 3, 8));
+        targetEntity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.PLAGUE, entity), baseDamage);
     }
 
     private void animateParticleLine(Location startLoc, Vec3 end, int step, int interval, int duration) {
@@ -114,20 +119,20 @@ public class PoisonCreationAbility extends SelectableAbility {
         int seq = AbilityUtil.getSeqWithArt(entity, this);
 
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 20 * 5*(int) Math.max(multiplier(entity)/2,1), () -> {
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 10, 20 * 5, () -> {
             Location poisonLoc = new Location(startPos, serverLevel);
 
             if(InteractionHandler.isInteractionPossible(poisonLoc, "burning", seq)) {
                 AbilityUtil.damageNearbyEntities(serverLevel,
-                        null,
+                        entity,
                         radius.get() + 2,
-                        DamageLookup.lookupDamage(6, 1.1) * (float) multiplier,
+                        ModDamageTypes.FIRE,
+                        baseDamage,
                         startPos,
                         true,
                         false,
                         true,
-                        0,
-                        ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity)
+                        0
                 );
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.EXPLOSION_EMITTER, startPos, 30, radius.get(), .02);
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.LARGE_SMOKE, startPos, 100, radius.get(), .02);
@@ -144,8 +149,19 @@ public class PoisonCreationAbility extends SelectableAbility {
 
             radius.addAndGet(0.5);
             ParticleUtil.spawnParticles(serverLevel, dustBig, startPos, (int) (radius.get() * 12), radius.get(), 0.1, radius.get(), 0);
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDps(6, .95, 2, 20) * multiplier, startPos, true, false);
-            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, radius.get(), startPos, new MobEffectInstance(MobEffects.POISON, 20 * 5, 8));
-        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, serverLevel)));
+            AbilityUtil.damageNearbyEntities(
+                    serverLevel,
+                    entity,
+                    radius.get(),
+                     ModDamageTypes.PLAGUE,
+                     baseDamage/2,
+                    startPos,
+                    true,
+                    false
+            );
+
+            AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, radius.get(), startPos, new MobEffectInstance(MobEffects.POISON, 20 * 3, 8));
+
+            }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, serverLevel)));
     }
 }

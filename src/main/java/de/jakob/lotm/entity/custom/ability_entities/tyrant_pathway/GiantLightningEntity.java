@@ -311,7 +311,6 @@ public class GiantLightningEntity extends Entity {
             entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source), (float) damage * waterMultiplier / 2);
             entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.INFORMATION_DESTRUCTION, source), (float) damage / 2);
 
-
             // Damage nearby entities as well
             List<Entity> nearbyEntities = level().getEntities(this,
                     new AABB(pos.add(-5, -5, -5), pos.add(5, 5, 5)));

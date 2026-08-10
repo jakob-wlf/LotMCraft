@@ -28,7 +28,7 @@ public class HeavenlyPunishmentAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(10000f, 4500f));
 
-        baseDamage = 50f;
+        baseDamage = 52f;
     }
 
     @Override

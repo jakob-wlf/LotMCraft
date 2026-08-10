@@ -41,8 +41,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
             case 7 -> List.of(
                    // new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
-                    new PhysicalEnhancement(EnhancementType.HEALTH, 6),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 6)
             );
 
             case 6 -> List.of(
@@ -50,7 +49,6 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1)
             );
 
@@ -59,7 +57,6 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                     //new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 2)
             );
 
@@ -68,7 +65,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 7),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 16),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 2)
             );
 
@@ -77,7 +74,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 17),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 3)
             );
 
@@ -86,7 +83,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 11),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 25),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 3)
             );
 
@@ -95,7 +92,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 30),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 4)
             );
 
@@ -104,7 +101,7 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 15),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 45),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 6),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 6)
             );
 

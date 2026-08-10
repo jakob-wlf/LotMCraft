@@ -83,9 +83,8 @@ public class LightOfHolinessAbility extends Ability {
             }
 
             if(entitySeq <= 4){
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.PURIFICATION, baseDamage * 0.34, pos, true, false, false, 5);
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.FAITH, baseDamage * 0.33, pos, true, false, false, 5);
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.LIGHT, baseDamage * 0.33, pos, true, false, false, 5);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.FAITH, baseDamage/2, pos, true, false, false, 5);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.LIGHT, baseDamage/2, pos, true, false, false, 5);
             }
             else{
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.LIGHT, baseDamage, pos, true, false, false, 5);

@@ -39,7 +39,7 @@ public class FlameMasteryAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(3200f, 1300f, 800f, 600f, 550f));
 
-        baseDamage = 24f;
+        baseDamage = 20f;
     }
 
     @Override
@@ -78,19 +78,16 @@ public class FlameMasteryAbility extends SelectableAbility {
 
 
     private void eruption(ServerLevel level, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (20* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        level.explode(entity, targetPos.x, targetPos.y, targetPos.z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        level.explode(entity, targetPos.x, targetPos.y + 1, targetPos.z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        level.explode(entity, targetPos.x, targetPos.y + 2, targetPos.z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
         ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, targetPos, 1500, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, ParticleTypes.SMOKE, targetPos, 300, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, targetPos, 90, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, dust, targetPos, 400, 2, 6, 2, 0);
 
         float damage = baseDamage;
-        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.SOUL_FIRE,damage/2, targetPos, true, false);
-        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.FIRE,damage/2, targetPos, true, false);
+        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.SOUL_FIRE,damage/2, targetPos, true, false, true, 0);
+        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.FIRE,damage/2, targetPos, true, false, true, 0);
 
         for(int i = 0; i < 25; i++) {
             FallingBlockEntity falling = FallingBlockEntity.fall(
@@ -115,7 +112,7 @@ public class FlameMasteryAbility extends SelectableAbility {
 
     private void fireballBarrage(ServerLevel level, LivingEntity entity) {
         double shots = 15;
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         Vec3 pos = entity.getEyePosition();
         Vec3 dir = entity.getLookAngle();
         for (int i = 0; i < shots; i++) {
@@ -129,7 +126,7 @@ public class FlameMasteryAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        float damage = baseDamage/2;
+        float damage = baseDamage/3;
         FireballEntity fireball = new FireballEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity), 1.75f);
 
         fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position,

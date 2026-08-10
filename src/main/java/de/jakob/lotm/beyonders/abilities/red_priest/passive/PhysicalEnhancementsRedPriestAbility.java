@@ -31,22 +31,19 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
         return switch (sequenceLevel) {
             case 9 -> List.of(
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 2),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
+                    new PhysicalEnhancement(EnhancementType.SPEED, 2)
             );
 
             case 8 -> List.of(
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
-                    new PhysicalEnhancement(EnhancementType.HEALTH, 5),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 5)
             );
 
             case 7 -> List.of(
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1)
             );
 
@@ -55,7 +52,6 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 8),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1)
             );
 
@@ -64,7 +60,6 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 10),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 2)
             );
 
@@ -73,7 +68,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 7),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 2)
             );
 
@@ -82,7 +77,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 3)
             );
 
@@ -91,7 +86,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 11),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 26),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 3)
             );
 
@@ -100,7 +95,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 31),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 4)
             );
 
@@ -109,7 +104,7 @@ public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAb
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 15),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 46),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 6),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 6)
             );
 

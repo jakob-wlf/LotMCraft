@@ -40,7 +40,6 @@ public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbili
             );
             case 7 -> List.of(
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 1),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 8),
                     new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
@@ -48,9 +47,8 @@ public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbili
             case 6 -> List.of(
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 1),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 10),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
             );
 
             case 5 -> List.of(
@@ -74,7 +72,7 @@ public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbili
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 28),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5)
             );
 
             case 2 -> List.of(
@@ -82,7 +80,7 @@ public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbili
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 11),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 36),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 5)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 6)
             );
 
             case 1 -> List.of(
@@ -90,15 +88,15 @@ public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbili
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 42),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 6)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 7)
             );
 
             case 0 -> List.of(
 //                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6),
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 15),
-                    new PhysicalEnhancement(EnhancementType.SPEED, 6),
+                    new PhysicalEnhancement(EnhancementType.SPEED, 3),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 64),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 7)
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 9)
             );
 
             default -> List.of();

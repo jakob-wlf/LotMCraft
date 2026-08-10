@@ -226,7 +226,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (event.getSource().getEntity() instanceof LivingEntity player) {
             var source = event.getSource();
 
-            if (!(source.is(ModDamageTypes.LOOSING_CONTROL))) {
+            if (!(source.is(ModDamageTypes.MIND))) {
                 if (invisiblePlayers.containsKey(player.getUUID())) {
                     remove(player);
                 }

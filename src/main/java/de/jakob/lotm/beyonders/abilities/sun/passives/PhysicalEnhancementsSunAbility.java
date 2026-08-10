@@ -44,8 +44,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                     // new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1),
-                    new PhysicalEnhancement(EnhancementType.HEALTH, 6),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1)
+                    new PhysicalEnhancement(EnhancementType.HEALTH, 6)
             );
 
             case 6 -> List.of(
@@ -53,7 +52,6 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                     //new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1)
             );
 
@@ -62,7 +60,6 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 3),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
@@ -72,7 +69,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                     //new PhysicalEnhancement(EnhancementType.RESISTANCE, 8),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
@@ -82,7 +79,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 1),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
@@ -92,7 +89,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                     //new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 27),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
@@ -102,7 +99,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                     //new PhysicalEnhancement(EnhancementType.RESISTANCE, 13),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 32),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 4),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 2),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );
@@ -112,7 +109,7 @@ public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility 
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 16),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 47),
-                    new PhysicalEnhancement(EnhancementType.REGENERATION, 6),
+                    new PhysicalEnhancement(EnhancementType.REGENERATION, 3),
                     new PhysicalEnhancement(EnhancementType.FIRE_RESISTANCE, 1),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1)
             );

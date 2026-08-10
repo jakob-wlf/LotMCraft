@@ -1,7 +1,9 @@
 package de.jakob.lotm.entity.custom.ability_entities.mother_pathway;
 
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -14,6 +16,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
@@ -27,6 +30,7 @@ import java.util.*;
 public class BloomingAreaEntity extends Entity {
     private static final int RADIUS = 200;
     private static final int CHUNKS_PER_TICK = 2; // Process 2 chunks per tick
+    private static final int MAX_LIFESPAN = 20 * 60 * 5;
 
     // Map to store all crop positions in the area
     private final Map<BlockPos, BlockState> cropMap = new HashMap<>();
@@ -47,6 +51,9 @@ public class BloomingAreaEntity extends Entity {
     private int lastBonemealApplication = 0;
     private static final int BONEMEAL_INTERVAL = 20; // Apply bonemeal every second
 
+    private LivingEntity owner = null;
+    private UUID ownerUUID = null;
+
     public BloomingAreaEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
         this.noPhysics = true;
@@ -57,13 +64,17 @@ public class BloomingAreaEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
-    public BloomingAreaEntity(Level level, Vec3 pos) {
+    public BloomingAreaEntity(Level level, Vec3 pos, LivingEntity owner) {
         this(ModEntities.BLOOMING_AREA.get(), level);
         this.setPos(pos);
         this.setXRot(90);
         this.setYRot(0);
+        this.owner = owner;
+        this.ownerUUID = owner.getUUID();
+
         scheduleInitialScan();
         designateGrowthAreas(); // Set up patches immediately!
+
     }
 
     private void scheduleInitialScan() {
@@ -98,13 +109,18 @@ public class BloomingAreaEntity extends Entity {
             // Apply effects
             applyEffects(serverLevel);
 
-            // Always spawn plants and apply bonemeal - don't wait for scan
-            spawnPlants(serverLevel);
-            applyRandomBonemeal(serverLevel);
+            if(owner != null && BeyonderData.isGriefingEnabled(owner)) {
+                spawnPlants(serverLevel);
+                applyRandomBonemeal(serverLevel);
 
-            // Grow crops from the map
-            if(tickCount % 20 == 0) {
-                instantGrowAllCrops(serverLevel);
+                // Grow crops from the map
+                if (tickCount % 20 == 0) {
+                    instantGrowAllCrops(serverLevel);
+                }
+            }
+
+            if(tickCount >= MAX_LIFESPAN){
+                this.discard();
             }
         }
     }
@@ -361,10 +377,17 @@ public class BloomingAreaEntity extends Entity {
     }
 
     private void applyEffects(ServerLevel serverLevel) {
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, null, RADIUS, this.position(),
-                new MobEffectInstance(MobEffects.SATURATION, 200, 20, false, false, false),
-                new MobEffectInstance(MobEffects.REGENERATION, 200, 20, false, false, false),
-                new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 200, 5, false, false, false));
+
+        var nearby = AbilityUtil.getNearbyEntities(null, serverLevel, this.position(),RADIUS);
+        for(var obj : nearby){
+            if(ownerUUID != null && !AllyUtil.isAlly(obj, ownerUUID))
+                continue;
+
+            obj.addEffect(new MobEffectInstance(MobEffects.SATURATION, 20 * 4, 20, false, false, false));
+            obj.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 4, 4, false, false, false));
+            obj.addEffect(new MobEffectInstance(MobEffects.HERO_OF_THE_VILLAGE, 20 * 4, 5, false, false, false));
+        }
+
     }
 
     // Public method to access the crop map

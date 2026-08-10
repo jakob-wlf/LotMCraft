@@ -47,12 +47,19 @@ public class DamageResistanceHandler {
 
                 int entitySeq = BeyonderData.getSequence(entity);
 
-                float baseStep = 0.3f;
+                float baseStep;
 
                 if (entitySeq >= 5 && sourceSeq >= 5)
                     baseStep = 0.1f;
+                else if (entitySeq >= 3 && sourceSeq >= 3)
+                    baseStep = 0.6f;
+                else if(entitySeq >= 1 && sourceSeq >= 1)
+                    baseStep = 0.7f;
+                else
+                    baseStep = 0.9f;
 
-                if(CullAbility.active.contains(livingSource.getUUID())){
+
+                if(CullAbility.active.contains(livingSource.getUUID()) && sourceSeq > entitySeq){
                     baseStep /= 2;
                 }
 
@@ -114,6 +121,10 @@ public class DamageResistanceHandler {
 
         damageMap.put(entity.getUUID(), source.typeHolder());
 
+        if(sourceEntity != null && sourceEntity instanceof LivingEntity livingSource){
+            livingSource.setLastHurtMob(entity);
+        }
+
         if (damage <= 0f) {
             event.setCanceled(true);
         }
@@ -129,6 +140,7 @@ public class DamageResistanceHandler {
         List<Float> wof = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
         List<Float> sun = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.5f, 0.25f));
         List<Float> hunter = new LinkedList<>(List.of(5f, 4f, 4f, 3.5f, 3f, 2.5f, 2.25f, 1.75f, 1f, 0.75f));
+        List<Float> mother = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.5f));
 
 
         physicalDamage.put("tyrant", tyrant);
@@ -136,6 +148,7 @@ public class DamageResistanceHandler {
         physicalDamage.put("wheel_of_fortune", wof);
         physicalDamage.put("sun", sun);
         physicalDamage.put("red_priest", hunter);
+        physicalDamage.put("mother", mother);
     }
 
     @SubscribeEvent

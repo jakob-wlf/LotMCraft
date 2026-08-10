@@ -6,7 +6,6 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -128,7 +127,7 @@ public class SunSpellsAbility extends SelectableAbility {
             ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, 1.4f, 50);
 
             AbilityUtil.getNearbyEntities(null, (ServerLevel) level, targetLoc, 10).forEach(e -> {
-                if(!AbilityUtil.isUndead(e)) return;
+                if(!AbilityUtil.isUndeadOrEvil(e)) return;
 
                 e.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity),  baseDamage);
             });
@@ -180,12 +179,12 @@ public class SunSpellsAbility extends SelectableAbility {
 
         if(!(source instanceof LivingEntity)) return;
 
-        if(source.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndead(entity)) {
+        if(source.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndeadOrEvil(entity)) {
             event.setAmount(event.getAmount() * 1.1f);
             ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, entity.getEyePosition(), 10, .3, .3, .3, .075);
         }
 
-        if(entity.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndead((LivingEntity) source)) {
+        if(entity.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndeadOrEvil((LivingEntity) source)) {
             event.setAmount(event.getAmount() * 0.9f);
             ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, entity.getEyePosition(), 10, .3, .3, .3, .075);
         }

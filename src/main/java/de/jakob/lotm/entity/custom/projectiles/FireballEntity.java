@@ -115,7 +115,6 @@ public class FireballEntity extends AbstractArrow {
         if(!(result.getEntity() instanceof LivingEntity target) || result.getEntity() == owner)
             return;
 
-        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, griefing, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
         if(owner != null){
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, owner), (float) damage/2);
@@ -124,7 +123,7 @@ public class FireballEntity extends AbstractArrow {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE), (float) damage/2);
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE), (float) damage/2);
         }
-        target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
+        target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 3);
         if(!level.isClientSide)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, position(), owner, null, new String[]{"explosion", "burning"}, 3, 10));
     }

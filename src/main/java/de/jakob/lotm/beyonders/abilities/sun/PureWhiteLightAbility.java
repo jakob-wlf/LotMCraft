@@ -40,7 +40,7 @@ public class PureWhiteLightAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(6000f, 3000f));
 
-        baseDamage = 10f;
+        baseDamage = 22f;
     }
 
     @Override
@@ -85,9 +85,9 @@ public class PureWhiteLightAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.PURIFICATION, baseDamage * 0.34, finalTargetLoc, true, false, false, 15);
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.LIGHT, baseDamage * 0.33, finalTargetLoc, true, false, false, 15);
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.FAITH, baseDamage * 0.33, finalTargetLoc, true, false, false, 15);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.PURIFICATION, baseDamage * 0.34, finalTargetLoc, true, false, false, 10);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.LIGHT, baseDamage * 0.33, finalTargetLoc, true, false, false, 10);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.FAITH, baseDamage * 0.33, finalTargetLoc, true, false, false, 10);
 
             radius.addAndGet(0.8);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

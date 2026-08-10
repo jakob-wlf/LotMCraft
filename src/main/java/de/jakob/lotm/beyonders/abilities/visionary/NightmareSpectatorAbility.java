@@ -94,5 +94,7 @@ public class NightmareSpectatorAbility extends Ability {
         VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, entity), baseDamage);
+
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.085f), target, entitySeq, BeyonderData.getSequence(target));
     }
 }

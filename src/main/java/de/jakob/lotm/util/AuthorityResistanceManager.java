@@ -43,6 +43,7 @@ public class AuthorityResistanceManager {
         wof.put(ModDamageTypes.WATER, List.of(1.2f, 1.2f, 1.2f, 1.2f, 1.2f));
         wof.put(ModDamageTypes.LIGHTNING, List.of(1.2f, 1.2f, 1.2f, 1.2f, 1.2f));
         wof.put(ModDamageTypes.WIND, List.of(1.2f, 1.2f, 1.2f, 1.2f, 1.2f));
+        wof.put(ModDamageTypes.FIRE, List.of(1.2f, 1.2f, 1.2f, 1.2f, 1.2f));
         wof.put(ModDamageTypes.IMPACT, List.of(1.0f, 1.1f, 1.1f, 1.2f, 1.2f));
         wof.put(ModDamageTypes.UNLUCK, List.of(0f, 0.3f, 0.5f, 0.7f, 0.8f));
         wof.put(ModDamageTypes.SPIRITUAL, List.of(0.2f, 0.4f, 0.55f, 0.7f, 0.8f));
@@ -69,6 +70,33 @@ public class AuthorityResistanceManager {
         hunter.put(ModDamageTypes.WIND, List.of(0.6f, 0.7f, 0.8f));
         hunter.put(ModDamageTypes.SPIRITUAL, List.of(1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f));
         resistances.put("red_priest", hunter);
+
+        Map<ResourceKey<DamageType>, List<Float>> mother = new HashMap<>();
+        mother.put(ModDamageTypes.NATURE_BASED, List.of(0.0f, 0.5f));
+        mother.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f));
+        mother.put(ModDamageTypes.SOUL_BASED, List.of(0.3f, 0.5f));
+        mother.put(ModDamageTypes.NATURE_WRATH, List.of(0.0f, 0.5f, 0.6f, 0.7f, 0.9f));
+        mother.put(ModDamageTypes.TRIAL_OF_DEATH, List.of(0.0f, 0.6f, 0.7f, 0.9f));
+        mother.put(ModDamageTypes.TRIAL_OF_MADNESS, List.of(0.0f, 0.6f, 0.7f));
+        mother.put(ModDamageTypes.RETURN_TO_EARTH, List.of(0.0f, 0.6f, 0.7f, 0.9f));
+        mother.put(ModDamageTypes.LOOSING_CONTROL, List.of(0.5f, 0.7f, 0.9f));
+        mother.put(ModDamageTypes.LIFE_DEPRIVATION, List.of(0.0f, 0.5f, 0.7f, 0.9f));
+        mother.put(ModDamageTypes.MIND_BASED, List.of(1.75f, 1.5f, 1.25f));
+        resistances.put("mother", mother);
+
+
+
+
+        Map<ResourceKey<DamageType>, List<Float>> death = new HashMap<>();
+        death.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f, 0.7f, 0.9f));
+        death.put(ModDamageTypes.MIND_BASED, List.of(1.75f, 1.5f, 1.25f, 1.1f));
+        death.put(ModDamageTypes.MUTATION, List.of(1f, 1f, 1f, 1f));
+        death.put(ModDamageTypes.TRIAL_OF_DEATH, List.of(2.0f, 1.75f, 1.6f, 1.5f, 1.25f));
+        death.put(ModDamageTypes.TRIAL_OF_MADNESS, List.of(2.0f, 1.75f, 1.6f, 1.5f, 1.25f));
+        death.put(ModDamageTypes.RETURN_TO_EARTH, List.of(4.0f, 3.25f, 3.0f, 2.5f, 2.0f, 2.0f));
+        death.put(ModDamageTypes.LIFE_DEPRIVATION, List.of(2.0f, 1.75f, 1.6f, 1.5f, 1.25f));
+        death.put(ModDamageTypes.HOLY_BASED, List.of(2.5f, 2.25f, 2.25f, 2f, 2.0f, 2.0f, 1.5f, 1.25f, 1.1f));
+        resistances.put("death", death);
     }
 
     public static float getResistance(DamageSource source, String path, int seq){
@@ -94,6 +122,8 @@ public class AuthorityResistanceManager {
                buff = pathRes.get(ModDamageTypes.HOLY_BASED);
             } else if (source.is(ModDamageTypes.EVIL)) {
                 buff = pathRes.get(ModDamageTypes.EVIL_BASED);
+            }else if(source.is(ModDamageTypes.NATURE)){
+                buff = pathRes.get(ModDamageTypes.NATURE_BASED);
             }
 
             if(listRes == null)

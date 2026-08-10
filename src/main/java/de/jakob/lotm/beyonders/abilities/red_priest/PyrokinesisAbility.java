@@ -46,7 +46,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2400f, 1000f, 800f, 450f, 390f, 250f, 225f, 208f));
 
-        baseDamage = 13f;
+        baseDamage = 10f;
     }
 
     @Override
@@ -168,14 +168,14 @@ public class PyrokinesisAbility extends SelectableAbility {
             return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        float damage = baseDamage/2;
 
-        for(int i = 0; i < 9 - entitySeq; i++) {
+        for(int i = 0; i < 7 - entitySeq; i++) {
             Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), random.nextDouble(.5, 11f), random.nextDouble(-10.5, 10.5), random.nextDouble(.1, 9));
 
             LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.4f);
             FireRavenEntity fireRaven;
 
-            float damage = baseDamage;
             if(target == null) {
                 Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
                 fireRaven = new FireRavenEntity(level, targetPos, entity, damage, BeyonderData.isGriefingEnabled(entity));
