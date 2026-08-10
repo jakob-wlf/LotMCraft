@@ -137,8 +137,8 @@ public class JusticeSwordEntity extends Entity {
             playHitAnimation();
 
             if(!level().isClientSide()) {
-                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.ORDER, getDamage()/2, position(), true, false);
-                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.LIGHT, getDamage()/2, position(), true, false);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.ORDER, getDamage()/2, position(), true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.LIGHT, getDamage()/2, position(), true, false, true, 0);
 
                 postAbilityUsedEvent(position());
             }

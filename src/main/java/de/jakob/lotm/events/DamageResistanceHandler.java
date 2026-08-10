@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.AuthorityResistanceManager;
@@ -15,6 +16,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 
@@ -178,4 +180,15 @@ public class DamageResistanceHandler {
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, entity), damage);
     }
 
+    @SubscribeEvent
+    public static void onPlayerHeal(LivingHealEvent event) {
+        LivingEntity entity = event.getEntity();
+        if(!BeyonderData.isBeyonder(entity)) return;
+
+        var component = entity.getData(ModAttachments.REGEN_DISABLER.get());
+        if(component.isDisabled()){
+            event.setAmount(0);
+            event.setCanceled(true);
+        }
+    }
 }
