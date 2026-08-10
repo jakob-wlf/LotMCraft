@@ -141,7 +141,9 @@ public class DamageResistanceHandler {
         List<Float> sun = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.5f, 0.25f));
         List<Float> hunter = new LinkedList<>(List.of(5f, 4f, 4f, 3.5f, 3f, 2.5f, 2.25f, 1.75f, 1f, 0.75f));
         List<Float> mother = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.5f));
-
+        List<Float> fool = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
+        List<Float> error = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
+        List<Float> door = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
 
         physicalDamage.put("tyrant", tyrant);
         physicalDamage.put("visionary", visionary);
@@ -149,6 +151,9 @@ public class DamageResistanceHandler {
         physicalDamage.put("sun", sun);
         physicalDamage.put("red_priest", hunter);
         physicalDamage.put("mother", mother);
+        physicalDamage.put("fool", fool);
+        physicalDamage.put("error", error);
+        physicalDamage.put("door", door);
     }
 
     @SubscribeEvent

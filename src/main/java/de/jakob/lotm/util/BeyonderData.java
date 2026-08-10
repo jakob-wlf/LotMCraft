@@ -108,7 +108,19 @@ public class BeyonderData {
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar" -> 1;
+            case "mother",
+                 "darkness",
+                 "fool",
+                 "wheel_of_fortune",
+                 "error",
+                 "visionary",
+                 "demoness",
+                 "red_priest",
+                 "sun",
+                 "tyrant",
+                 "door",
+                 "abyss",
+                 "death" -> 1;
            // case "black_emperor" -> 7;
             default -> 9;
         };
@@ -507,10 +519,10 @@ public class BeyonderData {
             return 0f;
 
         return switch (path){
-            case "darkness", "fool", "wheel_of_fortune" -> getMaxSpirituality(seq, 3.5f);
-            case "door", "death" -> getMaxSpirituality(seq, 3);
+            case "fool", "wheel_of_fortune", "moon" -> getMaxSpirituality(seq, 3.5f);
+            case "door", "death", "darkness" -> getMaxSpirituality(seq, 3);
             case "twilight_giant", "hermit", "error" -> getMaxSpirituality(seq, 2);
-            case "demoness", "white_tower", "visionary", "sun", "tyrant", "hanged_man", "moon",
+            case "demoness", "white_tower", "visionary", "sun", "tyrant", "hanged_man",
                  "mother", "abyss", "black_emperor", "justiciar", "chained"
                     -> getMaxSpirituality(seq, 1);
             case "red_priest" -> getMaxSpirituality(seq, 0.8f);

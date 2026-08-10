@@ -444,6 +444,7 @@
   "lotmcraft.air_bullet_ability.description": "Produce air projectile with power and speed comparable to bullets from revolver",
   "lotmcraft.paper_figurine_substitute_ability": "Paper Figurine Substitute",
   "lotmcraft.paper_figurine_substitute_ability.description": "Create Substitutes out of paper to take your place when damaged",
+  "ability.lotmcraft.paper_figurine_substitute_ability.out_of_slots": "You can`t create any more figures",
   "lotmcraft.flaming_jump_ability": "Flaming Jump",
   "lotmcraft.flaming_jump_ability.description": "Teleport into any fire, gaining fire resistance after doing so",
   "lotmcraft.flaming_jump_ability.no_fire_found": "No fire found",

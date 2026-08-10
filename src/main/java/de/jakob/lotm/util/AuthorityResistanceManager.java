@@ -84,6 +84,29 @@ public class AuthorityResistanceManager {
         mother.put(ModDamageTypes.MIND_BASED, List.of(1.75f, 1.5f, 1.25f));
         resistances.put("mother", mother);
 
+        Map<ResourceKey<DamageType>, List<Float>> fool = new HashMap<>();
+        fool.put(ModDamageTypes.SPIRITUAL, List.of(0.2f, 0.4f, 0.55f, 0.7f, 0.8f));
+        fool.put(ModDamageTypes.PHYSICAL_BASED, List.of(1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f));
+        fool.put(ModDamageTypes.MIND_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f));
+        fool.put(ModDamageTypes.SOUL_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f));
+        resistances.put("fool", fool);
+
+        Map<ResourceKey<DamageType>, List<Float>> error = new HashMap<>();
+        error.put(ModDamageTypes.SPIRITUAL, List.of(0.5f, 0.6f, 0.7f, 0.8f, 0.9f));
+        error.put(ModDamageTypes.PHYSICAL_BASED, List.of(1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f));
+        error.put(ModDamageTypes.MIND_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f));
+        error.put(ModDamageTypes.SOUL_BASED, List.of(0.9f, 0.9f, 0.9f, 0.95f, 0.95f));
+        resistances.put("error", error);
+
+        Map<ResourceKey<DamageType>, List<Float>> door = new HashMap<>();
+        error.put(ModDamageTypes.SPIRITUAL, List.of(0.5f, 0.6f, 0.7f, 0.8f, 0.9f));
+        error.put(ModDamageTypes.PHYSICAL_BASED, List.of(1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f, 1.25f));
+        error.put(ModDamageTypes.MIND_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f));
+        error.put(ModDamageTypes.SOUL_BASED, List.of(0.85f, 0.88f, 0.9f, 0.95f, 0.95f));
+        resistances.put("door", door);
+
+
+
         Map<ResourceKey<DamageType>, List<Float>> justiciar = new HashMap<>();
         justiciar.put(ModDamageTypes.MIND_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f, 0.95f));
         resistances.put("justiciar", justiciar);

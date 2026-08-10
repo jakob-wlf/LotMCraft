@@ -77,7 +77,7 @@ public abstract class Ability {
     public float baseDamage = 0f;
 
     protected boolean hasManualDistance = false;
-    protected int baseDistance = 0;
+    public int baseDistance = 0;
 
     public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
