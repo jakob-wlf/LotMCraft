@@ -101,8 +101,8 @@ public class BeyonderData {
             "abyss",
             "visionary",
             "wheel_of_fortune",
-            "death",
-            "justiciar"
+            "death"
+            //"justiciar"
             //"black_emperor"
     );
 

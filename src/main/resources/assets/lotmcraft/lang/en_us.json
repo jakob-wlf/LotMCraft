@@ -1072,7 +1072,7 @@
 
 
   "lotmcraft.authority_ability": "Authority",
-  "lotmcraft.authority_ability.description": "Exert the authority of an Arbiter. Strip nearby entities of their buffs, slow them, or strip them of their armor.",
+  "lotmcraft.authority_ability.description": "Exert the authority of an Arbiter pathway.",
   "ability.lotmcraft.authority.strip_defense": "Strip Defense",
   "ability.lotmcraft.authority.slow": "Slow",
   "ability.lotmcraft.authority.armor_remove": "Armor Remove",

@@ -84,8 +84,9 @@ public class AuthorityResistanceManager {
         mother.put(ModDamageTypes.MIND_BASED, List.of(1.75f, 1.5f, 1.25f));
         resistances.put("mother", mother);
 
-
-
+        Map<ResourceKey<DamageType>, List<Float>> justiciar = new HashMap<>();
+        justiciar.put(ModDamageTypes.MIND_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f, 0.95f));
+        resistances.put("justiciar", justiciar);
 
         Map<ResourceKey<DamageType>, List<Float>> death = new HashMap<>();
         death.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f, 0.7f, 0.9f));

@@ -84,6 +84,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> LIFE_DEPRIVATION = key("life_deprivation");
     public static final ResourceKey<DamageType> RETURN_TO_EARTH = key("return_to_earth");
 
+    public static final ResourceKey<DamageType> TORTURE = key("torture");
 
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
