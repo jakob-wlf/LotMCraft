@@ -43,6 +43,13 @@ public class FlamingJumpAbility extends SelectableAbility {
 
         canBeUsedByNPC = false;
         this.doesNotIncreaseDigestion = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1800f, 1300f, 775f, 700f, 375f, 320f, 290f));
+
     }
 
     @Override

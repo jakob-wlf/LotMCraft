@@ -53,6 +53,9 @@ public class GraftingAbility extends SelectableAbility {
 
         canBeUsedByNPC = false;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(35000f, 15000f));
     }
 
     @Override
@@ -67,7 +70,12 @@ public class GraftingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.grafting.locations", "ability.lotmcraft.grafting.damage", "ability.lotmcraft.grafting.abilities", "ability.lotmcraft.grafting.change_target"};
+        return new String[]{
+                "ability.lotmcraft.grafting.locations",
+                "ability.lotmcraft.grafting.damage",
+                "ability.lotmcraft.grafting.abilities",
+                "ability.lotmcraft.grafting.change_target"
+        };
     }
 
     @Override
@@ -130,7 +138,7 @@ public class GraftingAbility extends SelectableAbility {
         graftingTargetsPairs.add(new Pair<>(graftingStartEntity.getUUID(), targetLocation));
         graftingTargetsEntities.remove(entity.getUUID());
 
-        ServerScheduler.scheduleDelayed(20 * 30, () -> graftingTargetsPairs.removeIf(pair -> pair.getA() == graftingStartEntity.getUUID() || pair.getB() == targetLocation));
+        ServerScheduler.scheduleDelayed(20 * 10, () -> graftingTargetsPairs.removeIf(pair -> pair.getA() == graftingStartEntity.getUUID() || pair.getB() == targetLocation));
     }
 
     private void graftAbilities(Level level, LivingEntity entity) {
@@ -183,7 +191,7 @@ public class GraftingAbility extends SelectableAbility {
 
         graftingAbilitiesEntities.remove(entity.getUUID());
 
-        ServerScheduler.scheduleDelayed(20 * 30, () -> {
+        ServerScheduler.scheduleDelayed(20 * 10, () -> {
             graftingAbilitiesPairs.removeIf(pair -> startUUID.equals(pair.getA()) && targetUUID.equals(pair.getB()));
             graftingAbilitiesCasters.remove(startUUID);
         });
@@ -239,7 +247,7 @@ public class GraftingAbility extends SelectableAbility {
 
         graftingDamageEntities.remove(entity.getUUID());
 
-        ServerScheduler.scheduleDelayed(20 * 30, () -> {
+        ServerScheduler.scheduleDelayed(20 * 10, () -> {
             graftingDamagePairs.removeIf(pair -> startUUID.equals(pair.getA()) && targetUUID.equals(pair.getB()));
             graftingDamageCasters.remove(startUUID);
         });
@@ -314,6 +322,7 @@ public class GraftingAbility extends SelectableAbility {
     public static void onLivingDamage(LivingIncomingDamageEvent event) {
         LivingEntity hurt = event.getEntity();
         if(!(hurt.level() instanceof ServerLevel serverLevel)) return;
+
         if(graftingDamagePairs.stream().anyMatch(pair -> pair.getA() == hurt.getUUID())) {
             UUID otherEntityUUID = graftingDamagePairs.stream().filter(pair -> pair.getA() == hurt.getUUID()).findFirst().map(Pair::getB).orElse(null);
             if(otherEntityUUID == null) return;
@@ -330,7 +339,7 @@ public class GraftingAbility extends SelectableAbility {
 
             event.setCanceled(true);
             if (redirected > 0) {
-                otherEntity.hurt(serverLevel.damageSources().generic(), redirected);
+                otherEntity.hurt(event.getSource(), redirected);
             }
         }
     }
