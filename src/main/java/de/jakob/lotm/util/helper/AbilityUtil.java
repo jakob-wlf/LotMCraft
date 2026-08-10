@@ -35,7 +35,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.LingeringPotionItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -1322,6 +1321,12 @@ public class AbilityUtil {
             case "death", "abyss", "chained", "hanged_man" -> true;
             default -> entity.getType().is(EntityTypeTags.UNDEAD);
         };
+    }
+
+    public static boolean isUndeadOrEvil(LivingEntity entity) {
+        if(BeyonderData.isEvilPathway(entity))
+            return true;
+        return isUndead(entity);
     }
 
     public static void setArtifactScaling(LivingEntity entity, String path, int seq){

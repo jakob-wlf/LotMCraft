@@ -155,26 +155,6 @@ public class BeyonderEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onLivingDamageLiving(LivingIncomingDamageEvent event) {
-        if (!(event.getSource().getEntity() instanceof LivingEntity source)) return;
-        LivingEntity target = event.getEntity();
-
-        if (!BeyonderData.isBeyonder(target)) return;
-
-        int targetSeq = BeyonderData.getSequence(target);
-        int sourceSeq = BeyonderData.getSequence(source);
-
-        if (targetSeq >= sourceSeq) return;
-
-        float baseMultiplier = 1f / (1f + (sourceSeq - targetSeq) * 0.175f);
-        if (AbilityUtil.isTargetSignificantlyStronger(sourceSeq, targetSeq)) {
-            baseMultiplier *= 0.35f;
-        }
-
-        event.setAmount(event.getAmount() * baseMultiplier);
-    }
-
     // Disable Flight while in combat
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {
@@ -243,6 +223,7 @@ public class BeyonderEventHandler {
     @SubscribeEvent
     public static void onPlayerDrops(LivingDropsEvent event) {
         // sorry nihil i have to mess with your method :)
+        // ok ;-;
         // cancel the drop of items completely for summoned entities
         if (event.getEntity().getPersistentData().contains("VoidSummoned")) {
             event.setCanceled(true);

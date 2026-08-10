@@ -80,10 +80,12 @@ public class SleepInducementAbility extends SelectableAbility {
             return;
         }
 
+        int duration = 4;
+
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 50).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
-               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
+               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * duration, 1, false, false, false));
             }
         });
     }
@@ -109,12 +111,13 @@ public class SleepInducementAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 
-        target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 12, 1, false, false, false));
+        int duration = 6;
+
+        target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * duration, 1, false, false, false));
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(

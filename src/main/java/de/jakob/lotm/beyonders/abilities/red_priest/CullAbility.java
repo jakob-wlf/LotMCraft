@@ -44,7 +44,7 @@ public class CullAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-        BeyonderData.addModifier(entity, "cull", 1.35);
+        BeyonderData.addModifier(entity, "cull", 1.1);
         if(entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(true));
 

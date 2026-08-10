@@ -1,0 +1,18 @@
+{
+  "replace": false,
+  "values": [
+    "lotmcraft:light",
+    "lotmcraft:fire",
+    "lotmcraft:lightning",
+    "lotmcraft:purification",
+    "lotmcraft:wind",
+    "lotmcraft:water",
+    "lotmcraft:nature_based",
+    "lotmcraft:nature_wrath",
+    "lotmcraft:trial_of_death",
+    "lotmcraft:trial_of_madness",
+    "lotmcraft:return_to_earth",
+    "lotmcraft:life_deprivation",
+    "lotmcraft:plague"
+  ]
+}

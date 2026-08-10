@@ -10,7 +10,6 @@ import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
 import de.jakob.lotm.beyonders.abilities.death.passives.PhysicalEnhancementsDeathAbility;
 import de.jakob.lotm.beyonders.abilities.death.passives.ReincarnationAbility;
-import de.jakob.lotm.beyonders.abilities.death.passives.SolarSensitivityAbility;
 import de.jakob.lotm.beyonders.abilities.death.passives.UndeadIgnoranceAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.passives.BloodLossAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.passives.FeatherFallAbility;

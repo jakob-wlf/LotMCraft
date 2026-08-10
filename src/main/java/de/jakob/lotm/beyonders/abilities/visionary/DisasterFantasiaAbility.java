@@ -96,7 +96,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
 
     public void spawnEarthquake(ServerLevel level, Vec3 center, float multiplier,
                                 float damage, boolean griefing, @Nullable LivingEntity entity){
-        EARTHQUAKE.spawnCalamity(level, center, griefing, (int) (65* multiplier), damage/ 6, entity, false, true);
+        EARTHQUAKE.spawnCalamity(level, center, griefing, (int) (65* multiplier), damage/ 10, entity, false, true);
     }
 
     public void spawnMeteorShower(ServerLevel level, Vec3 center,
@@ -110,7 +110,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
                 double offsetZ = Math.sin(angle) * distance;
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
 
-                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  damage/3, 3, entity, griefing, 13, 12);
+                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  damage, 3, entity, griefing, 13, 12);
                 meteor.setEnvisioned(true);
                 meteor.setPosition(meteorPos);
                 level.addFreshEntity(meteor);
@@ -119,9 +119,9 @@ public class DisasterFantasiaAbility extends SelectableAbility {
     }
 
     public void createTornados(ServerLevel serverLevel, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (12* multiplier(entity)), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
         TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage/10, entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, baseDamage/10, entity, target, 3);
         tornado.setPos(pos);
@@ -163,7 +163,7 @@ public class DisasterFantasiaAbility extends SelectableAbility {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
 
-            float damage = baseDamage/6;
+            float damage = baseDamage/13;
 
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), damage/2, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, entity));
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), damage/2 * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));

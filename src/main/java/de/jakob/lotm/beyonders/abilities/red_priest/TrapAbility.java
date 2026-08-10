@@ -63,8 +63,6 @@ public class TrapAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         final int duration = 20 * 40;
         Vec3 pos = entity.position();
-        String trapKey = entity.getUUID() + "_" + pos.x + "_" + pos.y + "_" + pos.z;
-        UUID trapId = UUID.nameUUIDFromBytes(trapKey.getBytes());
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         if(amount.containsKey(entity.getUUID()) && amount.get(entity.getUUID()) >= getMaxAmount(entitySeq)){
@@ -79,6 +77,9 @@ public class TrapAbility extends Ability {
             current = amount.get(entity.getUUID());
 
         amount.put(entity.getUUID(), current + 1);
+
+        String trapKey = entity.getUUID() + "_" + pos.x + "_" + pos.y + "_" + pos.z + "_" + amount.get(entity.getUUID());
+        UUID trapId = UUID.nameUUIDFromBytes(trapKey.getBytes());
 
         AtomicBoolean hasExploded = new AtomicBoolean(false);
 

@@ -26,7 +26,7 @@ public class StrongLightningAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 1000f, 800f));
 
-        baseDamage = 23f;
+        baseDamage = 26f;
     }
 
     @Override
