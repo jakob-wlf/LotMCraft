@@ -243,7 +243,7 @@ public class WeatherManipulationAbility extends SelectableAbility {
     private void createTornados(ServerLevel serverLevel, LivingEntity entity) {
         LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
 
-        Vec3 pos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 2);
+        Vec3 pos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
         float damage = baseDamage/5;
         TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, damage , entity) : new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, damage, entity, target, 3);

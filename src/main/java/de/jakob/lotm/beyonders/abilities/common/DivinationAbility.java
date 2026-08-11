@@ -27,11 +27,12 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
-    public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -59,6 +60,7 @@ public class DivinationAbility extends SelectableAbility {
             if (!reqs.containsKey(pathway) && !pathway.equalsIgnoreCase("death"))
                 reqs.put(pathway, 4);
         }
+
         return reqs;
     }
 

@@ -10,6 +10,7 @@ import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncDangerArrowsOverlayPacket;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DivinationUtil;
@@ -114,6 +115,8 @@ public class DangerPremonitionAbility extends PassiveAbility {
                         BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) < -2
                 ))
             return;
+
+        if(!event.getSource().is(ModDamageTypes.PHYSICAL)) return;
 
         int sequence = BeyonderData.getSequence(entity);
         if(sequence < 0 || sequence > 9) return;

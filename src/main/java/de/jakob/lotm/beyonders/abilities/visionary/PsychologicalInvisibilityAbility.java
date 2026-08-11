@@ -28,6 +28,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
+import net.neoforged.neoforge.event.entity.living.EffectParticleModificationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -166,6 +167,15 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
             case 0 -> 80;
             default -> 1;
         };
+    }
+
+    @SubscribeEvent
+    public static void onEffectParticleModification(EffectParticleModificationEvent event) {
+        LivingEntity entity = event.getEntity();
+
+        if (VisionaryHandler.isInvisible(entity)) {
+            event.setVisible(false);
+        }
     }
 
     @SubscribeEvent

@@ -120,8 +120,8 @@ public class BeyonderData {
                  "tyrant",
                  "door",
                  "abyss",
-                 "death" -> 1;
-           // case "black_emperor" -> 7;
+                 "death"
+                    -> 1;
             default -> 9;
         };
     }

@@ -63,13 +63,13 @@ public class MentalDisruptionAbility extends Ability {
         }
 
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.AWE, entity), baseDamage);
-        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 4, 8, false, false, false));
-        target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 4, 8, false, false, false));
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 2, 8, false, false, false));
+        target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 2, 8, false, false, false));
 
         ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, target.getEyePosition(), 60, .5, .025);
         ParticleUtil.spawnParticles(serverLevel, dust, target.getEyePosition(), 120, .5, .025);
 
-        ServerScheduler.scheduleForDuration(0, 2, (20 * 4), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, (20 * 2), () -> {
             target.setDeltaMovement(new Vec3(0, 0, 0));
             target.hurtMarked = true;
         });
