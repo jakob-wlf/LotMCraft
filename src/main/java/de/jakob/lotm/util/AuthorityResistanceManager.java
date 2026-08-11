@@ -64,11 +64,13 @@ public class AuthorityResistanceManager {
         hunter.put(ModDamageTypes.IMAGINATION, List.of(1f, 1f, 1f, 1f, 1f));
         hunter.put(ModDamageTypes.FIRE, List.of(0f, 0.3f, 0.4f, 0.6f, 0.7f, 0.85f, 0.9f, 0.95f));
         hunter.put(ModDamageTypes.SOUL_FIRE, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
+        hunter.put(ModDamageTypes.BLACK_FLAME, List.of(0.f, 0.4f, 0.5f, 0.7f, 0.9f));
         hunter.put(ModDamageTypes.PROVOCATION, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
         hunter.put(ModDamageTypes.WATER, List.of(0.6f, 0.7f, 0.8f));
         hunter.put(ModDamageTypes.LIGHTNING, List.of(0.6f, 0.7f, 0.8f));
         hunter.put(ModDamageTypes.WIND, List.of(0.6f, 0.7f, 0.8f));
         hunter.put(ModDamageTypes.SPIRITUAL, List.of(1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f, 1.3f));
+        hunter.put(ModDamageTypes.CHAOS, List.of(0.5f, 0.7f));
         resistances.put("red_priest", hunter);
 
         Map<ResourceKey<DamageType>, List<Float>> mother = new HashMap<>();
@@ -104,6 +106,16 @@ public class AuthorityResistanceManager {
         error.put(ModDamageTypes.MIND_BASED, List.of(0.8f, 0.85f, 0.85f, 0.9f, 0.9f));
         error.put(ModDamageTypes.SOUL_BASED, List.of(0.85f, 0.88f, 0.9f, 0.95f, 0.95f));
         resistances.put("door", door);
+
+        Map<ResourceKey<DamageType>, List<Float>> demoness = new HashMap<>();
+        demoness.put(ModDamageTypes.SOUL_FIRE, List.of(0.2f, 0.4f, 0.5f, 0.7f, 0.9f));
+        demoness.put(ModDamageTypes.CHAOS, List.of(0.5f, 0.7f));
+        demoness.put(ModDamageTypes.FIRE, List.of(0.3f, 0.5f, 0.6f, 0.8f, 0.9f));
+        demoness.put(ModDamageTypes.PROVOCATION, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
+        demoness.put(ModDamageTypes.HOLY_BASED, List.of(2.0f, 1.9f, 1.8f, 1.7f, 1.6f, 1.5f, 1.25f, 1.1f));
+        demoness.put(ModDamageTypes.BLACK_FLAME, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
+        demoness.put(ModDamageTypes.CURSE, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
+        resistances.put("demoness", demoness);
 
 
 

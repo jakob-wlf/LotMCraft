@@ -86,6 +86,10 @@ public class ModDamageTypes {
 
     public static final ResourceKey<DamageType> TORTURE = key("torture");
 
+    public static final ResourceKey<DamageType> CHAOS = key("chaos");
+    public static final ResourceKey<DamageType> BLACK_FLAME = key("black_flame");
+    public static final ResourceKey<DamageType> CURSE = key("curse");
+    public static final ResourceKey<DamageType> THREAD = key("thread");
 
     /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
     public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");

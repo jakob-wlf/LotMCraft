@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
@@ -49,6 +50,8 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
                         BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) < -2
                 ))
             return;
+
+        if(!event.getSource().is(ModDamageTypes.PHYSICAL)) return;
 
         int sequence = BeyonderData.getSequence(entity);
         if(sequence < 0 || sequence > 9) return;

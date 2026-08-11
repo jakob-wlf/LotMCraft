@@ -35,6 +35,12 @@ public class PlayerTeleportationAbility extends SelectableAbility {
         canBeCopied = false;
         canBeReplicated = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(36000f, 20000f));
     }
 
     @Override

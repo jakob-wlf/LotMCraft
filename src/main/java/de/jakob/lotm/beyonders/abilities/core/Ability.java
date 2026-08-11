@@ -378,7 +378,7 @@ public abstract class Ability {
     }
 
     public float spiritualityCost(int seq) {
-        if(seq + 1 > dynamicSpirituality.size()) return cooldown;
+        if(seq + 1 > dynamicSpirituality.size()) return getSpiritualityCost();
 
         return hasDynamicSpirituality ? dynamicSpirituality.get(seq) : getSpiritualityCost();
     }

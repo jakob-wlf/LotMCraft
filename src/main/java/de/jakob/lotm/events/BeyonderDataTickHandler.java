@@ -235,9 +235,11 @@ public class BeyonderDataTickHandler {
         var entity = event.getEntity();
         if(!BeyonderData.isBeyonder(entity)) return;
 
-        if(BeyonderData.getPathway(entity).equals("mother")) return;
+        int duration = 10;
 
-        entity.getData(ModAttachments.REGEN_DISABLER.get()).disableFor(10);
+        if(BeyonderData.getPathway(entity).equals("mother")) duration = 2;
+
+        entity.getData(ModAttachments.REGEN_DISABLER.get()).disableFor(duration);
 
         if (entity.hasEffect(MobEffects.REGENERATION)){
             entity.removeEffect(MobEffects.REGENERATION);

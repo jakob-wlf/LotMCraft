@@ -121,13 +121,11 @@ public class ExileDoorsEntity extends Entity {
                 if (sequenceDiff <= -2) continue;
 
                 if (sequenceDiff == -1) exileTicks = 20;
-                else if (sequenceDiff == 0) exileTicks = 120;
+                else if (sequenceDiff == 0) exileTicks = 20 * 4;
                 else exileTicks = 200 + (sequenceDiff * 60);
             } else {
                 exileTicks = 10 * 20;
             }
-
-            exileTicks = (int) Math.round(exileTicks * ownerMultiplier);
 
             ServerLevel origLevel = (ServerLevel) entity.level();
             double origX = entity.getX();

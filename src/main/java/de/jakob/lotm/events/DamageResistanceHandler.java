@@ -146,6 +146,8 @@ public class DamageResistanceHandler {
         List<Float> fool = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
         List<Float> error = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
         List<Float> door = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
+        List<Float> demoness = new LinkedList<>(List.of(3.5f, 2.5f, 2.5f,  2f, 1.5f, 1f, 0.9f, 0.8f, 0.75f, 0.25f));
+
 
         physicalDamage.put("tyrant", tyrant);
         physicalDamage.put("visionary", visionary);
@@ -156,6 +158,7 @@ public class DamageResistanceHandler {
         physicalDamage.put("fool", fool);
         physicalDamage.put("error", error);
         physicalDamage.put("door", door);
+        physicalDamage.put("demoness", demoness);
     }
 
     @SubscribeEvent

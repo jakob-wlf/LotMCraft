@@ -81,7 +81,7 @@ public class WrathOfNatureAbility extends SelectableAbility {
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, targetPos, entity, this, new String[]{"explosion"}, 25, 20 * 30));
 
-        float damage = baseDamage * 2;
+        float damage = baseDamage * 3;
 
         BigMoonEntity moonEntity = new BigMoonEntity(serverLevel, damage, BeyonderData.isGriefingEnabled(entity), entity.getUUID(), 20 * 20);
         moonEntity.setPos(targetPos.x, targetPos.y + 25, targetPos.z);
@@ -95,7 +95,7 @@ public class WrathOfNatureAbility extends SelectableAbility {
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, center, entity, this, new String[]{"burning"}, 55, 20 * 15));
 
             double multiplier = multiplier(entity);
-            float damage = baseDamage * 3;
+            float damage = baseDamage * 4;
             // Affect entities
             ServerScheduler.scheduleForDuration(0, 4, 20 * 5, () -> {
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 55, ModDamageTypes.FIRE, damage, center, true, false, 20 * 8);

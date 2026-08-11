@@ -54,12 +54,12 @@ public class BeyonderData {
         implementedRecipes.put("red_priest", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("visionary", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("mother", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        //implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         //implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        //implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        //implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
 
     }
 
@@ -98,10 +98,10 @@ public class BeyonderData {
             "demoness",
             "red_priest",
             "mother",
-            "abyss",
+            //"abyss",
             "visionary",
-            "wheel_of_fortune",
-            "death"
+            "wheel_of_fortune"
+            //"death"
             //"justiciar"
             //"black_emperor"
     );
@@ -118,10 +118,11 @@ public class BeyonderData {
                  "red_priest",
                  "sun",
                  "tyrant",
-                 "door",
-                 "abyss",
-                 "death" -> 1;
-           // case "black_emperor" -> 7;
+                 "door"
+                 //"abyss",
+                 //"justiciar"
+                 //"death"
+                    -> 1;
             default -> 9;
         };
     }

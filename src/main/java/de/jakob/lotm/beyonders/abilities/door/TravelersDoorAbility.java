@@ -23,9 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TravelersDoorAbility extends SelectableAbility {
@@ -37,6 +35,9 @@ public class TravelersDoorAbility extends SelectableAbility {
 
         canBeUsedByNPC = false;
         canBeCopied = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8000f, 4500f, 3000f, 1750f, 1680f, 1140f));
     }
     @Override
     public Map<String, Integer> getRequirements() {

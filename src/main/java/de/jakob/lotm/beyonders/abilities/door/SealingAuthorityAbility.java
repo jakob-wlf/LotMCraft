@@ -67,7 +67,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private static final HashSet<TrappedEntity> trappedEntities = new HashSet<>();
 
     public SealingAuthorityAbility(String id) {
-        super(id, 45);
+        super(id, 10);
         canBeUsedByNPC = false;
     }
 
@@ -78,12 +78,17 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 50000;
+        return 60000;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.sealing_authority.seal_target", "ability.lotmcraft.sealing_authority.make_trap", "ability.lotmcraft.sealing_authority.lock_dimension", "ability.lotmcraft.sealing_authority.seal_area"};
+        return new String[]{
+                "ability.lotmcraft.sealing_authority.seal_target",
+                "ability.lotmcraft.sealing_authority.make_trap",
+                "ability.lotmcraft.sealing_authority.lock_dimension",
+                "ability.lotmcraft.sealing_authority.seal_area"
+        };
     }
 
     @Override
@@ -114,14 +119,15 @@ public class SealingAuthorityAbility extends SelectableAbility {
             currentlySealedLocation = null;
         }
 
-        List<BlockPos> barrierBlocks = AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 60*multiplier(entity), 13*multiplier(entity), false, false, false);
+        int duration = 20 * 10;
 
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel, 20 * 60* (int)multiplier(entity), entity.getUUID(), 60*(int)multiplier(entity), 0.00001f);
+        List<BlockPos> barrierBlocks = AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), duration, 15, false, false, false);
+
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel, duration, entity.getUUID(), 60, 0.00001f);
         serverLevel.addFreshEntity(timeChangeEntity);
         timeChangeEntity.setPos(entity.position().add(0, 0, 0));
 
         currentlySealedLocation = new SealedLocation(entity.getUUID(), new Location(entity.position(), serverLevel), 60*(int)multiplier(entity), 20 * 60 * (int)multiplier(entity), barrierBlocks, timeChangeEntity);
-
 
         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.5f, 0.6f);
         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BELL_RESONATE, entity.getSoundSource(), 1.5f, 0.6f);
@@ -172,7 +178,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
             return;
         }
 
-        data.activate(20 * 60 * 8+ (int)multiplier(entity), level.dimension().location().toString());
+        data.activate(20 * 60 * 5, level.dimension().location().toString());
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.sealing_authority.dimension_sealed").withColor(BeyonderData.pathwayInfos.get("door").color()));
     }
 
@@ -198,12 +204,13 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private void sealTarget(ServerLevel level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int)multiplier(entity), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(target == null || sealedEntities.contains(target.getUUID())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;
         }
         int radius = Math.max(3, (int) target.getEyeHeight());
+        int duration = 20 * 10;
 
         Vec3 targetLoc = target.position();
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1f, 1f);
@@ -213,8 +220,6 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         sealedEntities.add(target.getUUID());
 
-        int duration = getSealingDuration(entity, target);
-
         DisabledAbilitiesComponent comp = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         comp.disableAbilityUsageForTime("sealed_sealing_authority", duration, target);
 
@@ -223,7 +228,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         sealBlocksToRemove.addAll(sphereBlocks);
 
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, 20 * 14, () -> {
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, duration, () -> {
             Location sealLoc = new Location(targetLoc, level);
 
             if(InteractionHandler.isInteractionPossible(sealLoc, "explosion", entitySeq) || InteractionHandler.isInteractionPossible(sealLoc, "sealing_malfunction", entitySeq)) {

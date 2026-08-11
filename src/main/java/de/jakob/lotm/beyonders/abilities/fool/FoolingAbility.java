@@ -45,7 +45,7 @@ public class FoolingAbility extends Ability {
 
         ServerLevel serverLevel = (ServerLevel) level;
         double radius = 50;
-        int duration = 20 * 10;
+        int duration = 20 * 5;
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         serverLevel.playSound(null,

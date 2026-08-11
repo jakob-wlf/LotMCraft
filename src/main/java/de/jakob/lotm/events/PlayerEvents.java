@@ -9,6 +9,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
@@ -155,10 +156,14 @@ public class PlayerEvents {
 
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
             Entity damager = event.getSource().getEntity();
+
             if(damager != null &&
                     (!(damager instanceof LivingEntity damagerLiving) ||
                             BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) >= -2
             )) {
+
+                if(!event.getSource().is(ModDamageTypes.PHYSICAL))
+                    return;
 
                 event.setCanceled(true);
                 if (event.getEntity() instanceof ServerPlayer player) {

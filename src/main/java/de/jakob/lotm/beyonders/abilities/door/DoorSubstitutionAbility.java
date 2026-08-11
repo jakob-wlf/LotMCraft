@@ -5,9 +5,11 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -22,10 +24,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DoorSubstitutionAbility extends Ability {
@@ -38,6 +37,13 @@ public class DoorSubstitutionAbility extends Ability {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 7, 7, 8, 8));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(17500f, 7000f, 3800f, 2500f, 2275f));
+
     }
 
     @Override
@@ -61,10 +67,22 @@ public class DoorSubstitutionAbility extends Ability {
         if(figurineNumbers.containsKey(entity.getUUID()) && figurineNumbers.get(entity.getUUID()) >= 5)
             return;
 
-        if(!figurineNumbers.containsKey(entity.getUUID()))
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(!figurineNumbers.containsKey(entity.getUUID())) {
             figurineNumbers.put(entity.getUUID(), 1);
-        else
+        }
+        else {
+            if(figurineNumbers.get(entity.getUUID()) >= getMax(entitySeq)){
+                AbilityUtil.sendActionBar(entity, Component.
+                        translatable("ability.lotmcraft.paper_figure_substitute_ability.out_of_slots")
+                        .withColor(getColorForPathway("fool")));
+                return;
+            }
+
             figurineNumbers.replace(entity.getUUID(), figurineNumbers.get(entity.getUUID()) + 1);
+        }
+
         if(entity instanceof Player player) {
             player.addItem(new ItemStack(Items.OAK_DOOR));
         }
@@ -74,6 +92,20 @@ public class DoorSubstitutionAbility extends Ability {
             new Vector3f(163 / 255f, 108 / 255f, 51 / 255f),
             2f
     );
+
+    private static int getMax(int seq){
+        return switch (seq){
+            case 7 -> 5;
+            case 6 -> 6;
+            case 5 -> 7;
+            case 4 -> 10;
+            case 3 -> 12;
+            case 2 -> 15;
+            case 1 -> 17;
+            case 0 -> 20;
+            default -> 0;
+        };
+    }
 
     @SubscribeEvent
     public static void takeDamage(LivingDamageEvent.Pre event) {

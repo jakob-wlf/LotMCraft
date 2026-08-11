@@ -25,6 +25,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -35,6 +37,14 @@ public class BlackFlameAbility extends SelectableAbility {
     public BlackFlameAbility(String id) {
         super(id, 1f, "soul_burn", "burning");
         postsUsedAbilityEventManually = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
+        baseDamage = 7f;
     }
 
     @Override
@@ -73,13 +83,13 @@ public class BlackFlameAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 2.0f, .5f);
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), targetPos.subtract(0, .75, 0), 700, .3, 1.3, .3, .01);
         ParticleUtil.spawnParticles((ServerLevel) level, dust, targetPos.subtract(0, .75, 0), 190, .3, 1.3, .3, .02);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) *multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, ModDamageTypes.BLACK_FLAME, baseDamage, targetPos, true, false);
 
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {
@@ -104,8 +114,11 @@ public class BlackFlameAbility extends SelectableAbility {
             double ySubtraction = i.get() <= 1.5 ? 2 * ((1/((10 * i.get()) - 9)) - 1) : -2;
             Vec3 currentPos = startPos.add(0, ySubtraction, 0);
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
+
             ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) *multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, baseDamage, startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.BLACK_FLAME, entity));
+
             i.set(i.get() + .1);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
@@ -117,7 +130,7 @@ public class BlackFlameAbility extends SelectableAbility {
             return;
 
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 
@@ -135,14 +148,14 @@ public class BlackFlameAbility extends SelectableAbility {
                     (ServerLevel) level,
                     entity,
                     2.5f,
-                    DamageLookup.lookupDamage(7, 1.1)*multiplier(entity),
+                    baseDamage,
                     pos,
                     true,
                     false,
                     true,
                     0,
                     20 * 5,
-                    ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity)
+                    ModDamageTypes.source(level, ModDamageTypes.BLACK_FLAME, entity)
             )) {
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, pos, entity, this, interactionFlags, 2.5, 10));
                 hasHit.set(true);

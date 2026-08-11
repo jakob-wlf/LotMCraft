@@ -33,7 +33,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(3, 5));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(6800f, 40000f));
+        dynamicSpirituality = new LinkedList<>(List.of(6800f, 4000f));
 
         baseDamage = 40;
     }
@@ -76,7 +76,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
         float damage = baseDamage/4;
 
         ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 6),
-                () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 15, ModDamageTypes.SOUL_FIRE,damage, startPos, true, false, 20 * 40),
+                () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 15, ModDamageTypes.CHAOS, damage, startPos, true, false, 20 * 40),
                 null,
                 serverLevel,
                 () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, serverLevel)));
@@ -99,7 +99,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
 
         ServerScheduler.scheduleForDuration(
                 0, 5, (int) (20 * 4),
-                () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, ModDamageTypes.SOUL_FIRE,damage, pos, true, false, 20 * 40),
+                () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, ModDamageTypes.CHAOS, damage, pos, true, false, 20 * 40),
                 null,
                 serverLevel,
                 () -> AbilityUtil.getTimeInArea(entity, new Location(pos, serverLevel)));
