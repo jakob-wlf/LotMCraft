@@ -9,6 +9,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
@@ -132,7 +133,7 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
+           InternalUnderworldAbility.despawnSoulsOnDeath(player);
         }
         if(!(event.getEntity().level() instanceof ServerLevel level)) {
             return;

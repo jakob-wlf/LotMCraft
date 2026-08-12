@@ -1,6 +1,7 @@
 package de.jakob.lotm.addons.factions;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.command.FactionAdminCommand;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -38,7 +39,7 @@ public class FactionEvents {
 
         if (factions.isEmpty()) return false;
 
-        if (player.isCreative()) return false;
+        if (FactionAdminCommand.opState.contains(player.getUUID())) return false;
 
         var name = player.getName().getString();
 

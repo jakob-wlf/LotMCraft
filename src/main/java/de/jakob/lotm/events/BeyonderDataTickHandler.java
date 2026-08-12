@@ -41,7 +41,6 @@ public class BeyonderDataTickHandler {
 
     private static final Set<PassiveAbilityItem> passiveAbilities = ConcurrentHashMap.newKeySet();
 
-
     private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {

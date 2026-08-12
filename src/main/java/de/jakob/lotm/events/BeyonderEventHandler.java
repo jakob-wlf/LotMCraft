@@ -45,13 +45,14 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
+
+    private static Map<UUID, Long> regressInvul = new HashMap<>();
 
     @SubscribeEvent
     public static void onPlayerJoinWorld(PlayerEvent.PlayerLoggedInEvent event) {
@@ -243,10 +244,14 @@ public class BeyonderEventHandler {
 
         var data = playerMap.get(player).get();
 
-        BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
-                .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+        BeyonderCharacteristicItem charItem = null;
 
-        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+        if(!regressInvul.containsKey(player.getUUID())) {
+            charItem = BeyonderCharacteristicItemHandler
+                    .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+
+            BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+        }
 
         if (charItem == null) return;
 
@@ -267,6 +272,8 @@ public class BeyonderEventHandler {
             );
 
             event.getDrops().add(itemEntity);
+
+            regressInvul.put(player.getUUID(), System.currentTimeMillis());
         }
     }
 
@@ -286,10 +293,24 @@ public class BeyonderEventHandler {
 
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
+
             if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
             && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
+            }
+
+            if(regressInvul.containsKey(player.getUUID())){
+                long expirationTime = regressInvul.get(player.getUUID())
+                        + player.level().getGameRules().getInt(ModGameRules
+                        .AFTER_DEATH_REGRESSION_INVULNERABILITY) * 1000L;
+
+                if (System.currentTimeMillis() >= expirationTime) {
+                    regressInvul.remove(player.getUUID());
+                }
+                else{
+                    return;
+                }
             }
 
             StoredData data = playerMap.get(player).get();

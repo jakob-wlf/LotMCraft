@@ -33,6 +33,8 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> SEQ_7_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_8_AMOUNT;
 
+    public static GameRules.Key<GameRules.IntegerValue> AFTER_DEATH_REGRESSION_INVULNERABILITY;
+
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
             "allowAbilityGriefing",
@@ -267,6 +269,16 @@ public class ModGameRules {
                         })
         );
 
+        AFTER_DEATH_REGRESSION_INVULNERABILITY = GameRules.register(
+                "afterDeathRegressionInvulnerability",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(60,
+                        (server, value) -> {
+                            if (value.get() < 0) {
+                                value.set(0, server);
+                            }
+                        })
+        );
     }
 
 }

@@ -255,6 +255,7 @@ public class ModEvents {
         ResetCapCommand.register(event.getDispatcher());
         FactionCommand.register(event.getDispatcher());
         FactionAdminCommand.register(event.getDispatcher());
+        AnchoringCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

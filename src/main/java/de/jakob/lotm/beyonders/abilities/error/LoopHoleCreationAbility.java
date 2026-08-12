@@ -14,6 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -76,11 +77,11 @@ public class LoopHoleCreationAbility extends Ability {
                 targetLoc,
                 3.0*multiplier(entity), // radius
                 serverLevel,
-                System.currentTimeMillis() + (20 * 14 * 50) // 14 seconds in milliseconds
+                System.currentTimeMillis() + (20 * 7 * 50) // 7 seconds in milliseconds
         );
         activeLoopholes.put(loopholeId, loopholeData);
 
-        ServerScheduler.scheduleForDuration(0, 2,(20 * 7), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, (20 * 7), () -> {
             // Update entities in loophole
             updateEntitiesInLoophole(loopholeData);
 
