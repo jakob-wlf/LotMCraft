@@ -31,6 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,11 +39,22 @@ import java.util.Set;
 public class TeleportationAuthorityAbility extends SelectableAbility {
     public TeleportationAuthorityAbility(String id) {
         super(id, 8);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 15000f, 10000f));
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.teleportation_authority.self", "ability.lotmcraft.teleportation_authority.self_and_nearby", "ability.lotmcraft.teleportation_authority.targets", "ability.lotmcraft.teleportation_authority.banish"};
+        return new String[]{
+                "ability.lotmcraft.teleportation_authority.self",
+                "ability.lotmcraft.teleportation_authority.self_and_nearby",
+                "ability.lotmcraft.teleportation_authority.targets",
+                "ability.lotmcraft.teleportation_authority.banish"
+        };
     }
 
     @Override
@@ -62,7 +74,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
     }
 
     private void banishTargets(ServerLevel level, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 30, 2, true, true);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true, true);
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, level, targetLoc, 14);
 
         ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), targetLoc, 900, 8, .2, 8, .075);

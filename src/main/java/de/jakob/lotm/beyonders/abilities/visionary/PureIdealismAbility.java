@@ -87,7 +87,7 @@ public class PureIdealismAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        var target = AbilityUtil.getTargetEntity(player, 100, 1f);
+        var target = AbilityUtil.getTargetEntity(player, baseDistance, 1f);
         if (target == null) return;
 
         if (!BeyonderData.isBeyonder(target)) return;

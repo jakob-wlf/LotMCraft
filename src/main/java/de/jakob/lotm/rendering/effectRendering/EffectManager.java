@@ -110,7 +110,8 @@ public class EffectManager {
         HOLY_IMPACT(39),
         UNIQUENESS_SPAWN(40),
         TELEPORTATION(41),
-        BANISHMENT(42);
+        BANISHMENT(42),
+        BLOOD_SURGE(43);
 
         private final int index;
 

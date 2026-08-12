@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
@@ -11,6 +10,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
+import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -26,12 +26,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
-import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Ability {
 
@@ -70,6 +66,19 @@ public abstract class Ability {
     public HashMap<UUID, Integer> artifactScalingMap;
     protected boolean autoClear = true;
 
+    //dynamic spirituality
+    protected boolean hasDynamicSpirituality = false;
+    protected List<Float> dynamicSpirituality = new LinkedList<>(); // must be for every seq, if enabled
+
+    //dynamic cooldown
+    protected boolean hasDynamicCooldown = false;
+    protected List<Integer> dynamicCooldown = new LinkedList<>(); // must be for every seq, if enabled
+
+    public float baseDamage = 0f;
+
+    protected boolean hasManualDistance = false;
+    public int baseDistance = 0;
+
     public Ability(String id, float cooldown, String... interactionFlags) {
         this.id = id;
         this.cooldown = Math.round(cooldown * 20);
@@ -81,12 +90,12 @@ public abstract class Ability {
         return BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
     }
 
-    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements) {
+    public void useAbility(ServerLevel serverLevel, LivingEntity entity, boolean consumeSpirituality, boolean hasToHaveAbility, boolean hasToMeetRequirements, boolean isCopied) {
         if(LOTMCraft.abilityHandler.isDisabled(this)) {
             return;
         }
 
-        if(!canUse(entity, hasToHaveAbility, consumeSpirituality) && hasToMeetRequirements) {
+        if(!canUse(entity, hasToHaveAbility, consumeSpirituality, isCopied) && hasToMeetRequirements) {
             return;
         }
 
@@ -99,13 +108,21 @@ public abstract class Ability {
         }
 
         LivingEntity newUser = event.getEntity();
-        if(!canUse(newUser, false, consumeSpirituality)) {
+        if(!canUse(newUser, false, consumeSpirituality, isCopied)) {
             return;
         }
 
+        if(AbilityUtil.hasArtifactScaling(entity)){
+            artifactScalingMap.put(entity.getUUID(), AbilityUtil.getArtifactScalingSeq(entity));
+            AbilityUtil.removeArtifactScaling(entity);
+        }
+
+        //Sequence for dynamic cooldown and spirituality
+        int seq = AbilityUtil.getSeqWithArt(newUser, this);
+
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            float cost = getInflatedSpiritualityCost(newUser, serverLevel);
+            float cost = getInflatedSpiritualityCost(newUser, serverLevel, seq);
             float current = BeyonderData.getSpirituality(newUser);
 
             // A spirituality shortfall (up to 30%) is paid in sanity: deeper deficits and pricier abilities cost more,
@@ -128,32 +145,29 @@ public abstract class Ability {
         }
 
         // Decrement ability if it was copied
-        if(!hasAbility(entity) && hasToHaveAbility) {
+        if(isCopied) {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 
-
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
-        int inflatedCooldown = cooldown;
-        var pdata = newUser.getPersistentData();
-        if (pdata.contains(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY)) {
-            if (pdata.getLong(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY) > serverLevel.getGameTime()) {
-                inflatedCooldown = (int)(cooldown * pdata.getFloat(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY));
-            } else {
-                pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_MULT_KEY);
-                pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY);
-            }
-        }
+        int trueCooldown = getCooldown(seq);
+
+        int inflatedCooldown = trueCooldown;
         component.setCooldown(id, inflatedCooldown);
 
-        if(AbilityUtil.hasArtifactScaling(entity)){
-            artifactScalingMap.put(entity.getUUID(), AbilityUtil.getArtifactScalingSeq(entity));
-            AbilityUtil.removeArtifactScaling(entity);
-        }
-
         // Use ability client and server sided
+        final float damageBackup = baseDamage;
+        baseDamage *= multiplier(newUser);
+
+        if(!hasManualDistance)
+            baseDistance = (int) (Math.max(Math.max((1 << (9 - seq)), 15), 125) * multiplier(newUser));
+        AuthorityResistanceManager.addToBuffer(entity, seq);
+
         onAbilityUse(serverLevel, newUser);
+
+        baseDamage = damageBackup;
+
         if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityPacket(getId(), newUser.getId()));
 
         if(this.autoClear){
@@ -173,7 +187,7 @@ public abstract class Ability {
     }
 
     public void useAbility(ServerLevel serverLevel, LivingEntity entity) {
-        useAbility(serverLevel, entity, true, true, true);
+        useAbility(serverLevel, entity, true, true, true, false);
     }
 
     public void clearArtifactScaling(LivingEntity entity){
@@ -186,22 +200,13 @@ public abstract class Ability {
 
     protected abstract float getSpiritualityCost();
 
-    public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level) {
-        float base = getSpiritualityCost();
-        var pdata = entity.getPersistentData();
-        if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
-            if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
-                return base * pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
-            } else {
-                pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
-                pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
-            }
-        }
+    public float getInflatedSpiritualityCost(LivingEntity entity, ServerLevel level, int seq) {
+        float base = spiritualityCost(seq);
         return base;
     }
 
     public float multiplier(LivingEntity entity) {
-        return (float) AbilityUtil.getMultiplierWithArt(entity, this);
+        return entity != null ? (float) AbilityUtil.getMultiplierWithArt(entity, this) : 1f;
     }
 
     public void onHold(Level level, LivingEntity entity) {
@@ -250,21 +255,11 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity) {
-        return canUse(entity, true, true);
+        return canUse(entity, true, true, false);
     }
 
-    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality) {
-        boolean isClientSide = entity.level().isClientSide;
-        boolean hasAbilityCopied = isClientSide ? ClientData.getCopiedAbilityIds().contains(getId()) : entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT).getAbilityIds().contains(getId());
-        if(!hasAbility(entity) && hasToHaveAbility && !hasAbilityCopied) return false;
-
-        if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
-            if (entity instanceof ServerPlayer player) {
-                AbilityUtil.sendActionBar(player,
-                        Component.literal("Your abilities are sealed.").withColor(0xFF5555));
-            }
-            return false;
-        }
+    public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
+        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) return false;
 
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
@@ -376,11 +371,15 @@ public abstract class Ability {
         return shouldBeHidden;
     }
 
-    public int getCooldown() {
-        return cooldown;
+    public int getCooldown(int seq) {
+        if(seq + 1 > dynamicCooldown.size()) return cooldown;
+
+        return hasDynamicCooldown ? 20 * dynamicCooldown.get(seq) : cooldown;
     }
 
-    public float spiritualityCost() {
-        return getSpiritualityCost();
+    public float spiritualityCost(int seq) {
+        if(seq + 1 > dynamicSpirituality.size()) return getSpiritualityCost();
+
+        return hasDynamicSpirituality ? dynamicSpirituality.get(seq) : getSpiritualityCost();
     }
 }

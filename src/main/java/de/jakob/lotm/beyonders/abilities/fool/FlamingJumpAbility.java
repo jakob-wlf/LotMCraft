@@ -20,9 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class FlamingJumpAbility extends Ability {
     public FlamingJumpAbility(String id) {
@@ -30,6 +28,13 @@ public class FlamingJumpAbility extends Ability {
 
         canBeUsedByNPC = false;
         this.doesNotIncreaseDigestion = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1800f, 1300f, 775f, 700f, 375f, 320f, 290f));
+
     }
 
     @Override

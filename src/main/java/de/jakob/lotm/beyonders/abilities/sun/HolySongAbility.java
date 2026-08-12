@@ -21,11 +21,20 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class HolySongAbility extends SelectableAbility {
     public HolySongAbility(String id) {
         super(id, 20, "purification", "light_weak", "morale_boost");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 7, 10, 13, 15, 16, 17, 18, 19, 20));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f, 100f, 80f));
+
     }
 
     @Override
@@ -108,7 +117,6 @@ public class HolySongAbility extends SelectableAbility {
             int duration = 20 * 20;
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, duration, 0, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, 1, false, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 0, false, false, false));
 
             ServerScheduler.scheduleForDuration(0, 5, duration, () -> {
                 if(entity.level().isClientSide)

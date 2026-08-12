@@ -86,6 +86,7 @@ public class EffectFactory {
             case 40 -> new UniquenessSpawnEffect(x, y, z);
             case 41 -> new TeleportationEffect(x, y, z);
             case 42 -> new BanishEffect(x, y, z);
+            case 43 -> new BloodSurgeEffect(x, y, z);
             default -> throw new IllegalArgumentException("Unknown effect index: " + effectIndex);
         };
 

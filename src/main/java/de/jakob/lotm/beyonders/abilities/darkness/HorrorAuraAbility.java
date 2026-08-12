@@ -23,9 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class HorrorAuraAbility extends Ability {
@@ -36,6 +34,14 @@ public class HorrorAuraAbility extends Ability {
         interactionRadius = 20;
         interactionCacheTicks = 5;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 13, 15, 20));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+
+        baseDamage = 1;
     }
 
     @Override
@@ -50,15 +56,15 @@ public class HorrorAuraAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) {
+        if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
         float multiplier = multiplier(entity);
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25 *(int) Math.max(multiplier/2,1), false, serverLevel, entity);
+        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25 * (int) Math.max(multiplier / 2, 1), false, serverLevel, entity);
 
         AtomicInteger ticks = new AtomicInteger(0);
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 15*(int) Math.max(multiplier(entity)/3, 1), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
             loc.setPosition(entity.position());
             loc.setLevel(serverLevel);
             MovableEffectManager.updateEffectPosition(effectID, loc, serverLevel);
@@ -67,37 +73,37 @@ public class HorrorAuraAbility extends Ability {
 
             // Horror Aura is suppressed by purification
             int seq = AbilityUtil.getSeqWithArt(entity, this);
-            if(InteractionHandler.isInteractionPossible(loc, "purification", seq)) {
+            if (InteractionHandler.isInteractionPossible(loc, "purification", seq)) {
                 ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.END_ROD, entity.getEyePosition().subtract(0, .5, 0), 1, 30);
                 return;
             }
 
-
-            AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20*Math.max(multiplier/2, 1)).forEach(e -> {
+            AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20).forEach(e -> {
                 // Entity is freed from Horror Aura by morale-boosting abilities
                 Location eLoc = new Location(e.position(), serverLevel);
                 int eSeq = BeyonderData.getSequence(e);
                 boolean hasMorale = InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", seq, e);
+
                 // Also check if the entity has an active HolyOath (ToggleAbility)
-                if(!hasMorale) {
+                if (!hasMorale) {
                     hasMorale = ToggleAbility.getActiveAbilitiesForEntity(e).stream()
                             .anyMatch(a -> a instanceof HolyOathAbility) && eSeq <= seq;
                 }
-                if(hasMorale)
+                if (hasMorale)
                     return;
 
-                e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 5, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 4, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 4, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20, 3, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20, 3, false, false, false));
+                e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
 
-                BeyonderData.addModifier(e, "horror_aura", .4);
-                if(AbilityUtil.isTargetSignificantlyWeaker(seq, BeyonderData.getSequence(e)) && ticks.get() % 10 == 0) {
-                    e.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), (float) (DamageLookup.lookupDps(3, .95, 10, 20) *
-                            multiplier(entity)));
+                BeyonderData.addModifier(e, "horror_aura", .6);
+
+                e.hurt(ModDamageTypes.source(level, ModDamageTypes.HORROR, entity), baseDamage);
+
+                if (AbilityUtil.isTargetSignificantlyWeaker(seq, BeyonderData.getSequence(e)) && ticks.get() % 10 == 0) {
+                    SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
+                    sanityComponent.decreaseSanityWithSequenceDifference(0.02168f * multiplier(entity), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e));
                 }
-
-                SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
-                sanityComponent.decreaseSanityWithSequenceDifference(0.02168f*multiplier(entity), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e));
             });
             ticks.getAndIncrement();
         }, () -> this.clearArtifactScaling(entity), serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));

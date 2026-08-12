@@ -469,60 +469,60 @@ public class PotionRecipes {
 
 
 
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.ARBITER.get(),
-                new ItemStack(Items.SPYGLASS, 1),
-                new ItemStack(Items.SPIDER_EYE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 9)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.SHERIFF.get(),
-                new ItemStack(Items.COMPASS, 1),
-                new ItemStack(Items.TORCH, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 8)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.INTERROGATOR.get(),
-                new ItemStack(Items.CHAIN, 1),
-                new ItemStack(Items.LAVA_BUCKET, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 7)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.JUDGE.get(),
-                new ItemStack(Items.BELL, 1),
-                new ItemStack(Items.LANTERN, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 6)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.DISCIPLINARY_PALADIN.get(),
-                new ItemStack(Items.CAMPFIRE, 1),
-                new ItemStack(Items.LEVER, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 5)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.IMPERATIVE_MAGE.get(),
-                new ItemStack(Items.REDSTONE_BLOCK, 1),
-                new ItemStack(Items.FIRE_CHARGE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 4)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.CHAOS_HUNTER.get(),
-                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
-                new ItemStack(Items.WITHER_ROSE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 3)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.BALANCER.get(),
-                new ItemStack(Items.GOLD_BLOCK, 1),
-                new ItemStack(Items.CRYING_OBSIDIAN, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 2)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.HAND_OF_ORDER.get(),
-                new ItemStack(Items.DIAMOND_BLOCK, 1),
-                new ItemStack(Items.COARSE_DIRT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 1)))
-        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.ARBITER.get(),
+//                new ItemStack(Items.SPYGLASS, 1),
+//                new ItemStack(Items.SPIDER_EYE, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 9)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.SHERIFF.get(),
+//                new ItemStack(Items.COMPASS, 1),
+//                new ItemStack(Items.TORCH, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 8)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.INTERROGATOR.get(),
+//                new ItemStack(Items.CHAIN, 1),
+//                new ItemStack(Items.LAVA_BUCKET, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 7)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.JUDGE.get(),
+//                new ItemStack(Items.BELL, 1),
+//                new ItemStack(Items.LANTERN, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 6)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.DISCIPLINARY_PALADIN.get(),
+//                new ItemStack(Items.CAMPFIRE, 1),
+//                new ItemStack(Items.LEVER, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 5)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.IMPERATIVE_MAGE.get(),
+//                new ItemStack(Items.REDSTONE_BLOCK, 1),
+//                new ItemStack(Items.FIRE_CHARGE, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 4)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.CHAOS_HUNTER.get(),
+//                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+//                new ItemStack(Items.WITHER_ROSE, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 3)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.BALANCER.get(),
+//                new ItemStack(Items.GOLD_BLOCK, 1),
+//                new ItemStack(Items.CRYING_OBSIDIAN, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 2)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.HAND_OF_ORDER.get(),
+//                new ItemStack(Items.DIAMOND_BLOCK, 1),
+//                new ItemStack(Items.COARSE_DIRT, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("justiciar", 1)))
+//        ));
 
 
 
@@ -696,60 +696,60 @@ public class PotionRecipes {
         ));
 
 
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.CRIMINAL_POTION.get(),
-                new ItemStack(Items.IRON_BARS, 1),
-                new ItemStack(Items.IRON_BLOCK, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 9)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.UNWINGED_ANGEL_POTION.get(),
-                new ItemStack(Items.INK_SAC, 1),
-                new ItemStack(Items.FEATHER, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 8)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.SERIAL_KILLER_POTION.get(),
-                new ItemStack(Items.IRON_SWORD, 1),
-                new ItemStack(Items.ROTTEN_FLESH, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 7)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.DEVIL_POTION.get(),
-                new ItemStack(Items.LAVA_BUCKET, 1),
-                new ItemStack(Items.NETHERRACK, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 6)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.DESIRE_APOSTLE_POTION.get(),
-                new ItemStack(Items.WITHER_ROSE, 1),
-                new ItemStack(Items.RED_MUSHROOM, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 5)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.DEMON_POTION.get(),
-                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
-                new ItemStack(Items.MAGMA_BLOCK, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 4)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.BLATHERER_POTION.get(),
-                new ItemStack(Items.SOUL_LANTERN, 1),
-                new ItemStack(Items.ENDER_EYE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 3)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.BLOODY_ARCHDUKE_POTION.get(),
-                new ItemStack(ModItems.BLOOD.get(), 1),
-                new ItemStack(Items.NETHER_STAR, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 2)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.FILTHY_MONARCH_POTION.get(),
-                new ItemStack(ModItems.BLOOD.get(), 1),
-                new ItemStack(Items.WITHER_ROSE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
-        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.CRIMINAL_POTION.get(),
+//                new ItemStack(Items.IRON_BARS, 1),
+//                new ItemStack(Items.IRON_BLOCK, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 9)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.UNWINGED_ANGEL_POTION.get(),
+//                new ItemStack(Items.INK_SAC, 1),
+//                new ItemStack(Items.FEATHER, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 8)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.SERIAL_KILLER_POTION.get(),
+//                new ItemStack(Items.IRON_SWORD, 1),
+//                new ItemStack(Items.ROTTEN_FLESH, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 7)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.DEVIL_POTION.get(),
+//                new ItemStack(Items.LAVA_BUCKET, 1),
+//                new ItemStack(Items.NETHERRACK, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 6)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.DESIRE_APOSTLE_POTION.get(),
+//                new ItemStack(Items.WITHER_ROSE, 1),
+//                new ItemStack(Items.RED_MUSHROOM, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 5)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.DEMON_POTION.get(),
+//                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+//                new ItemStack(Items.MAGMA_BLOCK, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 4)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.BLATHERER_POTION.get(),
+//                new ItemStack(Items.SOUL_LANTERN, 1),
+//                new ItemStack(Items.ENDER_EYE, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 3)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.BLOODY_ARCHDUKE_POTION.get(),
+//                new ItemStack(ModItems.BLOOD.get(), 1),
+//                new ItemStack(Items.NETHER_STAR, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 2)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.FILTHY_MONARCH_POTION.get(),
+//                new ItemStack(ModItems.BLOOD.get(), 1),
+//                new ItemStack(Items.WITHER_ROSE, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
+//        ));
 
         /*RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.LAWYER_POTION.get(),
@@ -814,60 +814,60 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("black_emperor", 1)))
         ));*/
 
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),
-                new ItemStack(Items.ROTTEN_FLESH, 1),
-                new ItemStack(Items.BONE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 9)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.GRAVEDIGGER_POTION.get(),
-                new ItemStack(Items.BONE_MEAL, 1),
-                new ItemStack(Items.DIRT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 8)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.SPIRIT_MEDIUM_POTION.get(),
-                new ItemStack(Items.COAL, 1),
-                new ItemStack(Items.AMETHYST_SHARD, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 7)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.SPIRIT_GUIDE_POTION.get(),
-                new ItemStack(Items.CRYING_OBSIDIAN, 1),
-                new ItemStack(Items.IRON_INGOT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 6)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.GATEKEEPER_POTION.get(),
-                new ItemStack(Items.OBSIDIAN, 1),
-                new ItemStack(Items.FLINT_AND_STEEL, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 5)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.UNDYING_POTION.get(),
-                new ItemStack(Items.GOLDEN_APPLE, 1),
-                new ItemStack(Items.LAVA_BUCKET, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 4)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.FERRYMAN_POTION.get(),
-                new ItemStack(Items.OAK_BOAT, 1),
-                new ItemStack(Items.SOUL_SOIL, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 3)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.DEATH_CONSUL_POTION.get(),
-                new ItemStack(Items.MAGMA_BLOCK, 1),
-                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 2)))
-        ));
-        RECIPES.add(new PotionRecipe(
-                (BeyonderPotion) PotionItemHandler.PALE_EMPEROR_POTION.get(),
-                new ItemStack(Items.WITHER_ROSE, 1),
-                new ItemStack(Items.NETHER_STAR, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
-        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),
+//                new ItemStack(Items.ROTTEN_FLESH, 1),
+//                new ItemStack(Items.BONE, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 9)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.GRAVEDIGGER_POTION.get(),
+//                new ItemStack(Items.BONE_MEAL, 1),
+//                new ItemStack(Items.DIRT, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 8)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.SPIRIT_MEDIUM_POTION.get(),
+//                new ItemStack(Items.COAL, 1),
+//                new ItemStack(Items.AMETHYST_SHARD, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 7)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.SPIRIT_GUIDE_POTION.get(),
+//                new ItemStack(Items.CRYING_OBSIDIAN, 1),
+//                new ItemStack(Items.IRON_INGOT, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 6)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.GATEKEEPER_POTION.get(),
+//                new ItemStack(Items.OBSIDIAN, 1),
+//                new ItemStack(Items.FLINT_AND_STEEL, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 5)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.UNDYING_POTION.get(),
+//                new ItemStack(Items.GOLDEN_APPLE, 1),
+//                new ItemStack(Items.LAVA_BUCKET, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 4)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.FERRYMAN_POTION.get(),
+//                new ItemStack(Items.OAK_BOAT, 1),
+//                new ItemStack(Items.SOUL_SOIL, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 3)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.DEATH_CONSUL_POTION.get(),
+//                new ItemStack(Items.MAGMA_BLOCK, 1),
+//                new ItemStack(Items.WITHER_SKELETON_SKULL, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 2)))
+//        ));
+//        RECIPES.add(new PotionRecipe(
+//                (BeyonderPotion) PotionItemHandler.PALE_EMPEROR_POTION.get(),
+//                new ItemStack(Items.WITHER_ROSE, 1),
+//                new ItemStack(Items.NETHER_STAR, 1),
+//                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
+//        ));
     }
 
     @Nullable

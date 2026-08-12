@@ -33,10 +33,7 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
 
@@ -49,6 +46,12 @@ public class DreamTraversalAbility extends SelectableAbility {
         super(id, 1f);
         this.autoClear = false;
         canBeUsedInArtifact = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1300f, 1000f, 625f, 550f, 380f));
     }
 
     @Override
@@ -120,7 +123,7 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     private void jump(Level level, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
@@ -172,7 +175,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (40 * multiplier(entity)), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));

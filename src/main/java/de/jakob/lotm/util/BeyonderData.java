@@ -36,8 +36,9 @@ import java.util.*;
 
 public class BeyonderData {
     private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
-    private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+    //private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
+    private static final double[] multiplier = {1, 1, 1, 1, 1, 1, 1, 1, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .2, .3, .4, 1.0, 1.0};
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -53,12 +54,12 @@ public class BeyonderData {
         implementedRecipes.put("red_priest", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("visionary", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("mother", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        //implementedRecipes.put("abyss", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("wheel_of_fortune", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("error", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         //implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        //implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
+        //implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
 
     }
 
@@ -97,18 +98,31 @@ public class BeyonderData {
             "demoness",
             "red_priest",
             "mother",
-            "abyss",
+            //"abyss",
             "visionary",
-            "wheel_of_fortune",
-            "death",
-            "justiciar"
+            "wheel_of_fortune"
+            //"death"
+            //"justiciar"
             //"black_emperor"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar" -> 1;
-           // case "black_emperor" -> 7;
+            case "mother",
+                 "darkness",
+                 "fool",
+                 "wheel_of_fortune",
+                 "error",
+                 "visionary",
+                 "demoness",
+                 "red_priest",
+                 "sun",
+                 "tyrant",
+                 "door"
+                 //"abyss",
+                 //"justiciar"
+                 //"death"
+                    -> 1;
             default -> 9;
         };
     }
@@ -155,6 +169,15 @@ public class BeyonderData {
         pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF3D2A9C, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "earl_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
         pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}, new String[]{"black_emperor"}));
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
+    }
+
+    public static boolean isEvilPathway(LivingEntity entity){
+        return isEvilPathway(BeyonderData.getPathway(entity));
+    }
+
+    public static boolean isEvilPathway(String path){
+        return path.equals("abyss") || path.equals("hanged_man") || path.equals("darkness")
+                || path.equals("death") || path.equals("demoness") || path.equals("chained");
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
@@ -497,10 +520,10 @@ public class BeyonderData {
             return 0f;
 
         return switch (path){
-            case "darkness", "fool", "wheel_of_fortune" -> getMaxSpirituality(seq, 3.5f);
-            case "door", "death" -> getMaxSpirituality(seq, 3);
+            case "fool", "wheel_of_fortune", "moon" -> getMaxSpirituality(seq, 3.5f);
+            case "door", "death", "darkness" -> getMaxSpirituality(seq, 3);
             case "twilight_giant", "hermit", "error" -> getMaxSpirituality(seq, 2);
-            case "demoness", "white_tower", "visionary", "sun", "tyrant", "hanged_man", "moon",
+            case "demoness", "white_tower", "visionary", "sun", "tyrant", "hanged_man",
                  "mother", "abyss", "black_emperor", "justiciar", "chained"
                     -> getMaxSpirituality(seq, 1);
             case "red_priest" -> getMaxSpirituality(seq, 0.8f);

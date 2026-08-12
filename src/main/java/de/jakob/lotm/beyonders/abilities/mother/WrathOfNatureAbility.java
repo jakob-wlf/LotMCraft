@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.BigMoonEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -27,6 +28,14 @@ public class WrathOfNatureAbility extends SelectableAbility {
         super(id, 3);
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4500f));
+
+        baseDamage = 1; //needed to hook into multiplier only
     }
 
     @Override
@@ -41,7 +50,11 @@ public class WrathOfNatureAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.wrath_of_nature.lightning", "ability.lotmcraft.wrath_of_nature.fire", "ability.lotmcraft.wrath_of_nature.moon"};
+        return new String[]{
+                "ability.lotmcraft.wrath_of_nature.lightning",
+                "ability.lotmcraft.wrath_of_nature.fire",
+                "ability.lotmcraft.wrath_of_nature.moon"
+        };
     }
 
     @Override
@@ -57,17 +70,20 @@ public class WrathOfNatureAbility extends SelectableAbility {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        double multiplier = (int) Math.max(multiplier(entity)/2,1);
+
+
         if(!serverLevel.getEntitiesOfClass(BigMoonEntity.class, entity.getBoundingBox().inflate(100)).isEmpty()) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.wrath_of_nature.moon_on_cooldown").withColor(0xF44336));
             return;
         }
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 30, 1.5f, true);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.5f, true);
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, targetPos, entity, this, new String[]{"explosion"}, 25, 20 * 30));
 
-        BigMoonEntity moonEntity = new BigMoonEntity(serverLevel, (float) DamageLookup.lookupDps(2, .7f, 2, 20) * (float) multiplier, BeyonderData.isGriefingEnabled(entity), entity.getUUID(), 20 * 30);
+        float damage = baseDamage * 3;
+
+        BigMoonEntity moonEntity = new BigMoonEntity(serverLevel, damage, BeyonderData.isGriefingEnabled(entity), entity.getUUID(), 20 * 20);
         moonEntity.setPos(targetPos.x, targetPos.y + 25, targetPos.z);
         serverLevel.addFreshEntity(moonEntity);
     }
@@ -78,10 +94,11 @@ public class WrathOfNatureAbility extends SelectableAbility {
 
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, center, entity, this, new String[]{"burning"}, 55, 20 * 15));
 
-            double multiplier = (int) Math.max(multiplier(entity)/3,1);
+            double multiplier = multiplier(entity);
+            float damage = baseDamage * 4;
             // Affect entities
-            ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 55, DamageLookup.lookupDps(1, .5, 4, 20) * multiplier, center, true, false, 20 * 8);
+            ServerScheduler.scheduleForDuration(0, 4, 20 * 5, () -> {
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 55, ModDamageTypes.FIRE, damage, center, true, false, 20 * 8);
             });
 
             List<BlockPos> affectedBlocks = AbilityUtil.getBlocksInEllipsoid((ServerLevel) level, center, 45, 18, true, false, true)
@@ -142,6 +159,8 @@ public class WrathOfNatureAbility extends SelectableAbility {
         if(!level.isClientSide)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetLocFinak, entity, this, new String[]{"explosion"}, 50, 20 * 4));
 
+        float damage = baseDamage * 10;
+
         ServerScheduler.scheduleForDuration(0, 20, 20 * 4, () -> {
             Vec3 targetLoc = new Vec3(targetLocFinak.x, targetLocFinak.y, targetLocFinak.z);
             for(int i = 0; i < 35; i++) {
@@ -150,7 +169,7 @@ public class WrathOfNatureAbility extends SelectableAbility {
                     targetLoc = targetLoc.subtract(0, 1, 0);
             }
 
-            GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, DamageLookup.lookupDamage(1, .4) * multiplier, BeyonderData.isGriefingEnabled(entity), 13, 200, 0x6522a8);
+            GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 0, 200, 0x6522a8);
             level.addFreshEntity(lightning);
         });
     }

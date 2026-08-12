@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -39,6 +40,8 @@ public class TornadoEntity extends Entity {
     private Vec3 randomDirection = Vec3.ZERO;
     private int directionChangeCooldown = 0;
 
+    protected boolean isEnvisioned = false;
+
     private static final float TARGET_HEIGHT_ABOVE_GROUND = 0.5f;
     public TornadoEntity(EntityType<?> entityType, Level level) {
         this(entityType, level, 1.0f, 4.0f, null, null, 1);
@@ -75,7 +78,9 @@ public class TornadoEntity extends Entity {
         builder.define(CASTER_UUID, Optional.empty());
         builder.define(TARGET_UUID, Optional.empty());
     }
-    
+
+    public void setEnvisioned(boolean value){isEnvisioned = value;}
+
     public float getSpeed() {
         return this.entityData.get(SPEED);
     }
@@ -207,13 +212,13 @@ public class TornadoEntity extends Entity {
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.hurtMarked = true;
 
-        damageNearbyEntities();
-
         spawnParticles();
 
         if (this.tickCount % 20 == 0) {
             this.level().playSound(null, this.blockPosition(), SoundEvents.ELYTRA_FLYING,
                     SoundSource.HOSTILE, 1.0f, 0.5f + this.random.nextFloat() * 0.3f);
+
+            damageNearbyEntities();
         }
     }
     
@@ -224,6 +229,10 @@ public class TornadoEntity extends Entity {
 
         UUID casterUUID = getCasterUUID();
 
+        var imagination = ModDamageTypes.source(this.level(), ModDamageTypes.IMAGINATION, caster);
+        var impact = ModDamageTypes.source(this.level(), ModDamageTypes.IMPACT, caster);
+        var wind = ModDamageTypes.source(this.level(), ModDamageTypes.WIND, caster);
+
         for (Entity entity : entities) {
             if (entity instanceof LivingEntity && entity != caster) {
                 if (casterUUID != null && entity.getUUID().equals(casterUUID)) {
@@ -231,8 +240,17 @@ public class TornadoEntity extends Entity {
                 }
                 float distance = this.distanceTo(entity);
                 if (distance < 6.0f) {
-                    entity.hurt(this.damageSources().magic(), getDamage());
-                    
+                    if(isEnvisioned) {
+                        entity.hurt(imagination, getDamage() / 2);
+
+                        entity.hurt(impact, getDamage() / 4);
+                        entity.hurt(wind, getDamage() / 4);
+                    }
+                    else{
+                        entity.hurt(impact, getDamage() / 2);
+                        entity.hurt(wind, getDamage() / 2);
+                    }
+
                     Vec3 direction = this.position().subtract(entity.position()).normalize();
                     entity.push(direction.x * 0.3, 0.3, direction.z * 0.3);
                 }

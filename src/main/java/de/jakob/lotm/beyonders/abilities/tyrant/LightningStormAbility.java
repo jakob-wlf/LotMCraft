@@ -14,6 +14,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class LightningStormAbility extends Ability {
@@ -22,6 +24,14 @@ public class LightningStormAbility extends Ability {
         interactionRadius = 35;
         interactionCacheTicks = 20 * 17;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(15, 17, 19, 20));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(15000f, 7000f, 4000f, 3000f));
+
+        baseDamage = 30f;
     }
 
     @Override
@@ -47,6 +57,9 @@ public class LightningStormAbility extends Ability {
                 true        // thundering
         );
 
+        double multiplier = multiplier(entity);
+        double damage = baseDamage;
+
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (25* multiplier(entity)), 2, true);
         for(int i = 0; i < 35; i++) {
             BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
@@ -54,9 +67,8 @@ public class LightningStormAbility extends Ability {
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        double multiplier = multiplier(entity)*2;
         Vec3 finalTargetLoc = targetLoc;
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 5* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 5* multiplier), () -> {
             for(int j = 0; j < random.nextInt(5, 19); j++) {
                 Vec3 loc = finalTargetLoc.add(random.nextDouble(-35, 35), 6, random.nextDouble(-35, 35));
                 for(int i = 0; i < 35; i++) {
@@ -64,7 +76,7 @@ public class LightningStormAbility extends Ability {
                     if(state.getCollisionShape(level, BlockPos.containing(loc)).isEmpty())
                         loc = loc.subtract(0, 1, 0);
                 }
-                StrongLightningEntity lightning = new StrongLightningEntity(level, entity, loc, 65, 10, DamageLookup.lookupDamage(3, .2) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 8, 200, 0x4a23e8);
+                StrongLightningEntity lightning = new StrongLightningEntity(level, entity, loc, 65, 10, damage, BeyonderData.isGriefingEnabled(entity), 3, 200, 0x4a23e8);
                 level.addFreshEntity(lightning);
             }
         });

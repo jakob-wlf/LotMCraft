@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class WordOfSpiritAbility extends Ability {
 
-    private static final int DURATION_TICKS = 20 * 10; // 10 seconds
+    private static final int DURATION_TICKS = 20 * 3; // 10 seconds
 
     public WordOfSpiritAbility(String id) {
         super(id, 45f);

@@ -6,6 +6,7 @@ import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,9 +20,7 @@ import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.CocoaBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class LifeAuraAbility extends ToggleAbility {
 
@@ -31,6 +30,10 @@ public class LifeAuraAbility extends ToggleAbility {
         super(id, "blooming");
 
         canBeUsedByNPC = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(80f, 55f, 35f, 20f, 15f));
+
     }
 
     @Override
@@ -72,17 +75,27 @@ public class LifeAuraAbility extends ToggleAbility {
             return;
         }
 
-        AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 30*multiplier(entity), 7*multiplier(entity), true, false, false).forEach(blockPos -> {
-            BlockState blockState = level.getBlockState(blockPos);
-            applyBonemeal(serverLevel, blockPos, blockState, BeyonderData.isGriefingEnabled(entity));
-        });
+        if(BeyonderData.isGriefingEnabled(entity)) {
+            AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 30 * multiplier(entity), 7 * multiplier(entity), true, false, false).forEach(blockPos -> {
+                BlockState blockState = level.getBlockState(blockPos);
+                applyBonemeal(serverLevel, blockPos, blockState, BeyonderData.isGriefingEnabled(entity));
+            });
+        }
 
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35*(int)multiplier(entity)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35).forEach(e -> {
             if(e instanceof Animal animal && animal.canFallInLove()) {
                 animal.setInLove(entity instanceof Player ? (Player) entity : null);
             }
         });
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, null, 35*(int)multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.REGENERATION, 40, 3, false, false, false));
+
+        var nearby = AbilityUtil.getNearbyEntities(null, serverLevel, entity.position(), 35);
+
+        for(var obj : nearby){
+            if(!AllyUtil.isAlly(obj, entity.getUUID())) continue;
+
+            obj.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 40, 1, false, false, false));
+        }
+
     }
 
     private void applyBonemeal(ServerLevel serverLevel, BlockPos blockPos, BlockState blockState, boolean shouldBonemealGrass) {

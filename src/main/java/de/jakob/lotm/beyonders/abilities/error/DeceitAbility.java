@@ -20,10 +20,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DeceitAbility extends SelectableAbility {
@@ -37,6 +34,12 @@ public class DeceitAbility extends SelectableAbility {
         autoClear = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 7, 9, 13));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(15000f, 5700f, 3400f, 3400f));
     }
 
     @Override
@@ -51,7 +54,10 @@ public class DeceitAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.deceit.entities", "ability.lotmcraft.deceit.world"};
+        return new String[]{
+                "ability.lotmcraft.deceit.entities",
+                "ability.lotmcraft.deceit.world"
+        };
     }
 
     @Override
@@ -73,7 +79,8 @@ public class DeceitAbility extends SelectableAbility {
 
     private void deceiveWorld(ServerLevel serverLevel, LivingEntity entity) {
         cannotBeHarmed.add(entity.getUUID());
-        ServerScheduler.scheduleDelayed((int) (20 * 7*multiplier(entity)), () -> {
+
+        ServerScheduler.scheduleDelayed((int) (20 * 5), () -> {
             cannotBeHarmed.remove(entity.getUUID());
             clearArtifactScaling(entity);
             seqMap.remove(entity.getUUID());
@@ -83,12 +90,12 @@ public class DeceitAbility extends SelectableAbility {
     private void deceiveOthers(ServerLevel serverLevel, LivingEntity entity) {
         cannotBeTargeted.add(entity.getUUID());
 
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20*(int) Math.max(multiplier(entity)/2,1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20).forEach(e -> {
             if(BeyonderData.isBeyonder(e) && BeyonderData.getSequence(e) < AbilityUtil.getSeqWithArt(entity, this)) {
                 return;
             }
 
-            BeyonderData.addModifierWithTimeLimit(e, "deceit", .65, 1000 * 20);
+            BeyonderData.addModifierWithTimeLimit(e, "deceit", .8, 1000 * 10);
             RingEffectManager.createRingForAll(e.position().add(0, e.getEyeHeight() / 2, 0), 1.8f, 120, 156 / 255f, 72 / 155f, 219 / 255f, .7f, .75f, 1, serverLevel);
             RingEffectManager.createRingForAll(e.position().add(0, e.getEyeHeight() / 2, 0), 1f, 120, 106 / 255f, 237 / 255f,102 / 255f, .9f, .75f, 1, serverLevel);
 
@@ -100,7 +107,7 @@ public class DeceitAbility extends SelectableAbility {
             }
         });
 
-        ServerScheduler.scheduleDelayed((int) (20 * 12*multiplier(entity)), () -> {
+        ServerScheduler.scheduleDelayed((int) (20 * 5), () -> {
             cannotBeTargeted.remove(entity.getUUID());
             clearArtifactScaling(entity);
             seqMap.remove(entity.getUUID());

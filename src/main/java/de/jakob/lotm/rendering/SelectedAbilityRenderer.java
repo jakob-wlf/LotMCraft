@@ -51,8 +51,11 @@ public class SelectedAbilityRenderer {
         var abilities = ClientData.getAbilityWheelAbilities();
         if (selectedIndex < 0 || selectedIndex >= abilities.size()) return;
 
-        Ability selectedAbility = LOTMCraft.abilityHandler.getById(abilities.get(selectedIndex));
-        if (!(selectedAbility instanceof SelectableAbility ability)) return;
+        String abilityId = abilities.get(selectedIndex);
+        String baseId = abilityId.split(":")[0];
+        int subIndex = getIndex(abilityId);
+        Ability selectedAbility = LOTMCraft.abilityHandler.getById(baseId);
+        if (!(selectedAbility instanceof SelectableAbility ability) || subIndex >= 0) return;
 
         Component labelText   = Component.translatable("lotm.selected").append(":").withColor(COLOR_LABEL);
         Component abilityText = Component.translatable(ability.getSelectedAbility(mc.player)).withColor(pathwayColor);
@@ -85,6 +88,16 @@ public class SelectedAbilityRenderer {
 
         guiGraphics.drawString(mc.font, labelText,   textX, labelY,   COLOR_LABEL,   false);
         guiGraphics.drawString(mc.font, abilityText, textX, abilityY, pathwayColor,  false);
+    }
+
+    private static int getIndex(String s) {
+        String[] parts = s.split(":");
+        if (parts.length < 2) return -1;
+        try {
+            return Integer.parseInt(parts[1]);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
 

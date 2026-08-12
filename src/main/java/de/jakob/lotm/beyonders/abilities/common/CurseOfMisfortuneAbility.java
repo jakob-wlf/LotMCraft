@@ -19,6 +19,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -27,6 +29,12 @@ public class CurseOfMisfortuneAbility extends Ability {
         super(id, 12, "unluck");
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(9000f, 3800f, 2400f, 1900f, 1650f, 1200f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 6, 7, 9, 10));
     }
 
     @Override
@@ -75,9 +83,7 @@ public class CurseOfMisfortuneAbility extends Ability {
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        double resistance = AbilityUtil.getSequenceResistanceFactor(entitySeq, targetSeq);
-        float multiplier = multiplier(entity);
-        int amplifier = (int) Math.min(Math.round(multiplier * 6.25f * (1.0 - resistance)) * 120, 6500);
+        int amplifier = getLuck(entitySeq);
 
         if (amplifier <= 0) {
             return; // Full resistance – curse has no meaningful effect
@@ -86,5 +92,16 @@ public class CurseOfMisfortuneAbility extends Ability {
         LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
         luckComponent.addLuckWithMin(-amplifier, -3000);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
+    }
+
+    private static int getLuck(int seq){
+        return switch (seq){
+            case 4 -> 400;
+            case 3 -> 600;
+            case 2 -> 800;
+            case 1 -> 1200;
+            case 0 -> 1700;
+            default -> 0;
+        };
     }
 }

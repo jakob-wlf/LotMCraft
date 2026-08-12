@@ -16,6 +16,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class WarSongAbility extends Ability {
@@ -24,6 +26,12 @@ public class WarSongAbility extends Ability {
         interactionRadius = 20;
         interactionCacheTicks = 20 * 30;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(30, 40, 45, 60));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1100f, 800f, 570f));
     }
 
     @Override
@@ -46,15 +54,12 @@ public class WarSongAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.SONG_OF_COURAGE.get(), SoundSource.BLOCKS, 1, 1);
 
-        MobEffectInstance strength = entity.getEffect(MobEffects.DAMAGE_BOOST);
         MobEffectInstance speed = entity.getEffect(MobEffects.MOVEMENT_SPEED);
 
-        int strengthLevel = strength == null ? 1 : strength.getAmplifier() + 2;
         int speedLevel = speed == null ? 1 : speed.getAmplifier() + 2;
-        BeyonderData.addModifierWithTimeLimit(entity, "war_song", 1.05, (long) (20L *30*multiplier(entity)));
+        BeyonderData.addModifierWithTimeLimit(entity, "war_song", 1.1, 20 * 30);
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 30*multiplier(entity)), strengthLevel, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 30*multiplier(entity)), speedLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 30), speedLevel, false, false, false));
 
         ServerScheduler.scheduleForDuration(0,  2, 20 * 30, () -> {
             if(entity.level().isClientSide)

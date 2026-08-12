@@ -7,9 +7,11 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -22,10 +24,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MirrorSubstituteAbility extends Ability {
@@ -39,6 +38,12 @@ public class MirrorSubstituteAbility extends Ability {
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 7, 7, 8, 8, 10, 11, 12));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6000f, 2500f, 1500f, 800f, 780f, 500f, 400f, 390f));
     }
 
     @Override
@@ -62,13 +67,39 @@ public class MirrorSubstituteAbility extends Ability {
         if(figurineNumbers.containsKey(entity.getUUID()) && figurineNumbers.get(entity.getUUID()) >= 5)
             return;
 
-        if(!figurineNumbers.containsKey(entity.getUUID()))
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(!figurineNumbers.containsKey(entity.getUUID())) {
             figurineNumbers.put(entity.getUUID(), 1);
-        else
+        }
+        else {
+            if(figurineNumbers.get(entity.getUUID()) >= getMax(entitySeq)){
+                AbilityUtil.sendActionBar(entity, Component.
+                        translatable("ability.lotmcraft.paper_figure_substitute_ability.out_of_slots")
+                        .withColor(getColorForPathway("demoness")));
+                return;
+            }
+
             figurineNumbers.replace(entity.getUUID(), figurineNumbers.get(entity.getUUID()) + 1);
+        }
+
         if(entity instanceof Player player) {
             player.addItem(new ItemStack(ModItems.MIRROR.get()));
         }
+    }
+
+    private static int getMax(int seq){
+        return switch (seq){
+            case 7 -> 5;
+            case 6 -> 6;
+            case 5 -> 7;
+            case 4 -> 10;
+            case 3 -> 12;
+            case 2 -> 15;
+            case 1 -> 17;
+            case 0 -> 20;
+            default -> 0;
+        };
     }
 
     @SubscribeEvent

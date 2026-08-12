@@ -63,6 +63,7 @@ public class AvatarEntity extends PathfinderMob {
         }
     }
 
+    // ========================= Entity Data Initialization =========================
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
@@ -142,6 +143,11 @@ public class AvatarEntity extends PathfinderMob {
                         }
                 )
         );
+    }
+
+    @Override
+    public boolean canRide(Entity vehicle) {
+        return false;
     }
 
     @Override

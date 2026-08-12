@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -131,9 +132,9 @@ public class BigMoonEntity extends Entity {
 
         ParticleUtil.spawnSphereParticles(serverLevel, dustParticleOptions, position(), 12.1f, 250);
 
-        AbilityUtil.damageNearbyEntities(serverLevel, getOwnerEntity(), 120, getDamage(), position(), true, false);
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, getOwnerEntity(), 120, position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 3, false, false, false));
-        AbilityUtil.getNearbyEntities(getOwnerEntity(), serverLevel, position(), 120).forEach(e ->  BeyonderData.reduceSpirituality(e, 5));
+        AbilityUtil.damageNearbyEntities(serverLevel, getOwnerEntity(), 60, ModDamageTypes.SPIRITUAL, getDamage(), position(), true, false);
+        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, getOwnerEntity(), 60, position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 3, false, false, false));
+        AbilityUtil.getNearbyEntities(getOwnerEntity(), serverLevel, position(), 60).forEach(e ->  BeyonderData.reduceSpirituality(e, 3));
 
         if(tickCount >= 20 * 30) {
             this.remove(RemovalReason.DISCARDED);

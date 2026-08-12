@@ -69,9 +69,11 @@ public class AbilityHandler {
         abilities.add(new TrapAbility("trap_ability"));
         abilities.add(new ProvokingAbility("provoking_ability"));
         abilities.add(new PyrokinesisAbility("pyrokinesis_ability"));
+        abilities.add(new PyrokinesisFlightAbility("pyrokinesis_flight"));
         abilities.add(new CullAbility("cull_ability"));
         abilities.add(new FlameMasteryAbility("flame_mastery_ability"));
         abilities.add(new SteelMasteryAbility("steel_mastery_ability"));
+        abilities.add(new SteelSkinAbility("steel_skin"));
         abilities.add(new ChainOfCommandAbility("chain_of_command_ability"));
         abilities.add(new WarCryAbility("war_cry_ability"));
         abilities.add(new WarSongAbility("war_song_ability"));
@@ -90,6 +92,7 @@ public class AbilityHandler {
         abilities.add(new RagingBlowsAbility("raging_blows_ability"));
         abilities.add(new WaterManipulationAbility("water_manipulation_ability"));
         abilities.add(new WindManipulationAbility("wind_manipulation_ability"));
+        abilities.add(new WindManipulationFlightAbility("wind_manipulation_flight"));
         abilities.add(new BlessingsOfWIndAbility("blessings_of_wind_ability"));
         abilities.add(new LightningAbility("lightning_ability"));
         abilities.add(new SirenSongAbility("siren_song_ability"));
@@ -111,20 +114,25 @@ public class AbilityHandler {
         abilities.add(new RoarOfTheThunderGodAbility("roar_of_the_thunder_god_ability"));
 
         // ABYSS PATHWAY
-        abilities.add(new ToxicSmokeAbility("toxic_smoke_ability"));
-        abilities.add(new PoisonousFlameAbility("poisonous_flame_ability"));
-        abilities.add(new FlameSpellsAbility("flame_spells_ability"));
-        abilities.add(new LanguageOfFoulnessAbility("language_of_foulness_ability"));
-        abilities.add(new DevilTransformationAbility("devil_transformation_ability"));
-        abilities.add(new AvatarOfDesireAbility("avatar_of_desire_ability"));
-        abilities.add(new DefilingSeedAbility("defiling_seed_ability"));
-        abilities.add(new DemonicSpellsAbility("demonic_spells_ability"));
-        abilities.add(new MindFogAbility("mind_fog_ability"));
-        abilities.add(new DesireControlAbility("desire_control_ability"));
-        abilities.add(new CorruptingVoiceAbility("corrupting_voice_ability"));
-        abilities.add(new MaliceSeedAbility("malice_seed_ability"));
-        abilities.add(new FearAuraAbility("fear_aura_ability"));
-        abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
+//        abilities.add(new ToxicSmokeAbility("toxic_smoke_ability"));
+//        abilities.add(new PoisonousFlameAbility("poisonous_flame_ability"));
+//        abilities.add(new FlameSpellsAbility("flame_spells_ability"));
+//        abilities.add(new LanguageOfFoulnessAbility("language_of_foulness_ability"));
+//        abilities.add(new DevilTransformationAbility("devil_transformation_ability"));
+//        abilities.add(new DangerPremonitionAbility("danger_premonition_ability"));
+//        abilities.add(new FlameCageAbility("flame_cage_ability"));
+//        abilities.add(new ShadowShiftAbility("shadow_shift_ability"));
+//        abilities.add(new SwordOfLavaAbility("sword_of_lava_ability"));
+//        abilities.add(new AvatarOfDesireAbility("avatar_of_desire_ability"));
+//        abilities.add(new DefilingSeedAbility("defiling_seed_ability"));
+//        abilities.add(new DemonicSpellsAbility("demonic_spells_ability"));
+//        abilities.add(new MindFogAbility("mind_fog_ability"));
+//        abilities.add(new DesireControlAbility("desire_control_ability"));
+//        abilities.add(new CorruptingVoiceAbility("corrupting_voice_ability"));
+//        abilities.add(new MaliceSeedAbility("malice_seed_ability"));
+//        abilities.add(new BloodSovereignAbility("blood_sovereign_ability"));
+//        abilities.add(new FearAuraAbility("fear_aura_ability"));
+//        abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
 
 
         // FOOL PATHWAY
@@ -148,7 +156,7 @@ public class AbilityHandler {
         abilities.add(new MidnightPoemAbility("midnight_poem_ability"));
         abilities.add(new NightmareAbility("nightmare_ability"));
         abilities.add(new RequiemAbility("requiem_ability"));
-        abilities.add(new SpiritCommandingAbility("spirit_commanding_ability"));
+        //abilities.add(new SpiritCommandingAbility("spirit_commanding_ability"));
         abilities.add(new NightDomainAbility("night_domain_ability"));
         abilities.add(new HairEntanglementAbility("hair_entanglement_ability"));
         abilities.add(new LesserConcealmentAbility("lesser_concealment_ability"));
@@ -171,7 +179,7 @@ public class AbilityHandler {
         abilities.add(new CharmAbility("charm_ability"));
         abilities.add(new DiseaseAbility("disease_ability"));
         abilities.add(new PlagueAbility("plague_ability"));
-        abilities.add(new MirrorWorldTraversalAbility("mirror_world_traversal_ability"));
+        //abilities.add(new MirrorWorldTraversalAbility("mirror_world_traversal_ability"));
         abilities.add(new CurseAbility("curse_ability"));
         abilities.add(new PetrificationAbility("petrification_ability"));
         abilities.add(new DisasterManifestationAbility("disaster_manifestation_ability"));
@@ -186,11 +194,13 @@ public class AbilityHandler {
         abilities.add(new PoisonCreationAbility("poison_creation_ability"));
         abilities.add(new CrossbreedingAbility("crossbreeding_ability"));
         abilities.add(new NatureSpellsAbility("nature_spells_ability"));
+        abilities.add(new UndergroundTravelAbility("underground_travel_ability"));
         abilities.add(new LifeAuraAbility("life_aura_ability"));
         abilities.add(new MutationCreationAbility("mutation_creation_ability"));
         abilities.add(new GolemCreationAbility("golem_creation_ability"));
         abilities.add(new LifeDeprivationAbility("life_deprivation_ability"));
         abilities.add(new MaternalEmbraceAbility("maternal_embrace_ability"));
+        abilities.add(new ReturnToEarthAbility("return_to_earth_ability"));
         abilities.add(new AreaDesolationAbility("area_desolation_ability"));
         abilities.add(new BloomingAreaAbility("blooming_area_ability"));
         abilities.add(new WorldCreationAbility("world_creation_ability"));
@@ -199,7 +209,7 @@ public class AbilityHandler {
         // DOOR PATHWAY
         abilities.add(new DoorOpeningAbility("door_opening_ability"));
         abilities.add(new SpellsAbility("spells_ability"));
-        abilities.add(new RecordingAbility("recording_ability"));
+        //abilities.add(new RecordingAbility("recording_ability"));
         abilities.add(new BlinkAbility("blink_ability"));
         abilities.add(new TravelersDoorAbility("travelers_door_ability"));
         abilities.add(new InvisibleHandAbility("invisible_hand_ability"));
@@ -271,27 +281,27 @@ public class AbilityHandler {
         abilities.add(new CycleOfFateAbility("cycle_of_fate_ability"));
 
         // JUSTICIAR PATHWAY
-        abilities.add(new AuthorityAbility("authority_ability"));
-        abilities.add(new RecognitionAbility("recognition_ability"));
-        abilities.add(new JurisdictionAbility("jurisdiction_ability"));
-        abilities.add(new EyeOfOrderAbility("eye_of_order_ability"));
-        abilities.add(new IllusionaryTortureDevicesAbility("illusionary_torture_devices_ability"));
-        abilities.add(new VerdictExileAbility("verdict_exile_ability"));
-        abilities.add(new ProhibitionAbility("prohibition_ability"));
-        abilities.add(new ImprisonAbility("imprison_ability"));
-        abilities.add(new JusticeLanguageAbility("justice_language_ability"));
-        abilities.add(new ConfinementAbility("confinement_ability"));
-        abilities.add(new PunishmentAbility("punishment_ability"));
-        abilities.add(new LawAbility("law_ability"));
-        abilities.add(new ExecutionAbility("execution_ability"));
-        abilities.add(new BalancingAbility("balancing_ability"));
-        abilities.add(new SwordOfJudgmentAbility("sword_of_judgment_ability"));
-        abilities.add(new DeliveringJudgmentAbility("delivering_judgment_ability"));
-        abilities.add(new ExileOfBalanceAbility("exile_of_balance_ability"));
-        abilities.add(new IndividualBalanceAbility("individual_balance_ability"));
-        abilities.add(new OrderProxyAbility("order_proxy_ability"));
-        abilities.add(new AncientCourtOfJudgmentAbility("ancient_court_of_judgment_ability"));
-        abilities.add(new WorldJudgmentAbility("world_judgment_ability"));
+//        abilities.add(new AuthorityAbility("authority_ability"));
+//        abilities.add(new RecognitionAbility("recognition_ability"));
+//        abilities.add(new JurisdictionAbility("jurisdiction_ability"));
+//        abilities.add(new EyeOfOrderAbility("eye_of_order_ability"));
+//        abilities.add(new IllusionaryTortureDevicesAbility("illusionary_torture_devices_ability"));
+//        abilities.add(new VerdictExileAbility("verdict_exile_ability"));
+//        abilities.add(new ProhibitionAbility("prohibition_ability"));
+//        abilities.add(new ImprisonAbility("imprison_ability"));
+//        abilities.add(new JusticeLanguageAbility("justice_language_ability"));
+//        abilities.add(new ConfinementAbility("confinement_ability"));
+//        abilities.add(new PunishmentAbility("punishment_ability"));
+//        abilities.add(new LawAbility("law_ability"));
+//        abilities.add(new ExecutionAbility("execution_ability"));
+//        abilities.add(new BalancingAbility("balancing_ability"));
+//        abilities.add(new SwordOfJudgmentAbility("sword_of_judgment_ability"));
+//        abilities.add(new DeliveringJudgmentAbility("delivering_judgment_ability"));
+//        abilities.add(new ExileOfBalanceAbility("exile_of_balance_ability"));
+//        abilities.add(new IndividualBalanceAbility("individual_balance_ability"));
+//        abilities.add(new OrderProxyAbility("order_proxy_ability"));
+//        abilities.add(new AncientCourtOfJudgmentAbility("ancient_court_of_judgment_ability"));
+//        abilities.add(new WorldJudgmentAbility("world_judgment_ability"));
 
 
         // ERROR PATHWAY
@@ -299,7 +309,7 @@ public class AbilityHandler {
         abilities.add(new MentalDisruptionAbility("mental_disruption_ability"));
         abilities.add(new DecryptionAbility("decryption_ability"));
         abilities.add(new GiftAbility("gift_ability"));
-        abilities.add(new AbilityTheftAbility("ability_theft_ability"));
+        //abilities.add(new AbilityTheftAbility("ability_theft_ability"));
         abilities.add(new MundaneConceptualTheft("mundane_conceptual_theft_ability"));
         abilities.add(new ParasitationAbility("parasitation_ability"));
         abilities.add(new HostControllingAbility("host_controlling_ability"));
@@ -325,24 +335,24 @@ public class AbilityHandler {
 //        abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
 
         // DEATH PATHWAY
-        abilities.add(new EyeOfDeathAbility("eye_of_death_ability"));
-        abilities.add(new SpiritCommunicationAbility("spirit_communication_ability"));
-        abilities.add(new ZombieDisguiseAbility("zombie_disguise_ability"));
-        abilities.add(new SpiritChannelingAbility("spirit_channeling_ability"));
-        abilities.add(new RestructionAbility("restruction_ability"));
-        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
-        abilities.add(new DoorToTheUnderworldAbility("door_to_the_underworld_ability"));
-        abilities.add(new InternalUnderworldAbility("internal_underworld_ability"));
-        abilities.add(new DeathEnvoyAbility("death_envoy_ability"));
-        abilities.add(new UndyingSealAbility("undying_seal_ability"));
-        abilities.add(new SpiritWorldTraversalAbility("spirit_world_traversal_ability"));
-        abilities.add(new DeathSpellsAbility("death_spells_ability"));
-        abilities.add(new PaleEyeAbility("pale_eye_ability"));
-        abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
-        abilities.add(new DeathFlameAbility("death_flame_ability"));
-        abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+//        abilities.add(new EyeOfDeathAbility("eye_of_death_ability"));
+//        abilities.add(new SpiritCommunicationAbility("spirit_communication_ability"));
+//        abilities.add(new ZombieDisguiseAbility("zombie_disguise_ability"));
+//        abilities.add(new SpiritChannelingAbility("spirit_channeling_ability"));
+//        abilities.add(new RestructionAbility("restruction_ability"));
+//        abilities.add(new WordOfSpiritAbility("word_of_spirit_ability"));
+//        abilities.add(new DoorToTheUnderworldAbility("door_to_the_underworld_ability"));
+//        abilities.add(new InternalUnderworldAbility("internal_underworld_ability"));
+//        abilities.add(new DeathEnvoyAbility("death_envoy_ability"));
+//        abilities.add(new UndyingSealAbility("undying_seal_ability"));
+//        abilities.add(new SpiritWorldTraversalAbility("spirit_world_traversal_ability"));
+//        abilities.add(new DeathSpellsAbility("death_spells_ability"));
+//        abilities.add(new PaleEyeAbility("pale_eye_ability"));
+//        abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
+//        abilities.add(new DeathFlameAbility("death_flame_ability"));
+//        abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
 
-        //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
+//        abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }
 
     public HashSet<Ability> getAbilities() {

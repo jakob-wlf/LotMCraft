@@ -20,12 +20,14 @@ import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -813,6 +815,34 @@ public class AbilityUtil {
                 : ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC);
     }
 
+    private static DamageSource createDamageSource(Level level, LivingEntity source, ResourceKey<DamageType> type){
+        return source != null
+                ? ModDamageTypes.source(level, type, source)
+                : ModDamageTypes.source(level, type);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius, ResourceKey<DamageType> type,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, 0, createDamageSource(level, source, type));
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius, ResourceKey<DamageType> type,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, int fireTicks) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, fireTicks, createDamageSource(level, source, type));
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source,double radius, ResourceKey<DamageType> type,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, boolean ignoreCooldown,
+                                               int cooldownTicks) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, createDamageSource(level, source, type));
+    }
+
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
                                                double damage, Vec3 center, boolean ignoreSource,
                                                boolean distanceFalloff) {
@@ -1232,11 +1262,17 @@ public class AbilityUtil {
         player.connection.send(packet);
     }
 
-    public static boolean isUndead(LivingEntity entity) {
-        return switch (BeyonderData.getPathway(entity)) {
-            case "death", "abyss", "chained", "hanged_man" -> true;
-            default -> entity.getType().is(EntityTypeTags.UNDEAD);
-        };
+    public static boolean isUndead(LivingEntity entity){
+        if(BeyonderData.getPathway(entity).equals("death")) return true;
+
+        return entity.getType().is(EntityTypeTags.UNDEAD);
+    }
+
+    public static boolean isUndeadOrEvil(LivingEntity entity) {
+        if(BeyonderData.isEvilPathway(entity))
+            return true;
+
+        return entity.getType().is(EntityTypeTags.UNDEAD);
     }
 
     public static void setArtifactScaling(LivingEntity entity, String path, int seq){

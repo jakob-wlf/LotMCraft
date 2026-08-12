@@ -12,11 +12,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class TsunamiAbility extends Ability {
     public TsunamiAbility(String id) {
         super(id, 12, "water", "water_strong");
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8500f, 3400f, 2000f, 1300f, 1000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(8, 10, 12, 14, 16));
+
+        baseDamage = 15f;
     }
 
     @Override
@@ -39,7 +49,8 @@ public class TsunamiAbility extends Ability {
 
         level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 5, 1.0f);
 
-        TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, (float) (DamageLookup.lookupDamage(4, .6)* multiplier(entity)), BeyonderData.isGriefingEnabled(entity), entity);
+        float damage = baseDamage;
+        TsunamiEntity tsunami = new TsunamiEntity(level, position, direction, damage, BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(tsunami);
     }
 }

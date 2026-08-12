@@ -15,11 +15,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Earthquake extends Calamity{
+public class Earthquake extends Calamity {
     @Override
     public Component getName() {
         return Component.translatable("lotm.calamity.earthquake");
@@ -28,13 +29,19 @@ public class Earthquake extends Calamity{
     private final Random random = new Random();
 
     @Override
-    public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier, boolean griefing) {
-        spawnCalamity(level, startPos, multiplier, griefing, 28, 9.5f, null, false);
+    public void spawnCalamity(ServerLevel level, Vec3 startPos, float damage, boolean griefing, @Nullable LivingEntity caster) {
+        spawnCalamity(level, startPos, griefing, 28, damage, caster, false);
     }
 
-    public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier, boolean griefing, int radius, float rawDamage, LivingEntity caster, boolean damageCaster) {
+    public void spawnCalamity(ServerLevel level, Vec3 startPos, boolean griefing, int radius, float rawDamage, @Nullable LivingEntity caster, boolean damageCaster, boolean isEnvisioned) {
+        this.isEnvisioned = isEnvisioned;
+        spawnCalamity(level, startPos, griefing, radius, rawDamage, caster, damageCaster);
+    }
+
+
+    public void spawnCalamity(ServerLevel level, Vec3 startPos, boolean griefing, int radius, float rawDamage, @Nullable LivingEntity caster, boolean damageCaster) {
         List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle(level, startPos.add(0, -2, 0), 30));
-        for(int i = -12; i < 13; i++) {
+        for (int i = -12; i < 13; i++) {
             blocks.addAll(AbilityUtil.getBlocksInCircle(level, startPos.add(0, i, 0), radius));
         }
 
@@ -42,28 +49,43 @@ public class Earthquake extends Calamity{
 
         ServerScheduler.scheduleForDuration(0, 8, 20 * 15, () -> {
             AbilityUtil.getNearbyEntities(caster, level, startPos, radius + 6).forEach(e -> {
-                if(AbilityUtil.distanceToGround(level, e) < 1.5) {
-                    if(random.nextBoolean())
-                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), rawDamage * multiplier);
-                    if(random.nextInt(12) == 0)
+                if (AbilityUtil.distanceToGround(level, e) < 1.5) {
+                    if (random.nextBoolean())
+
+                        if (!this.isEnvisioned)
+                            e.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, caster), rawDamage);
+                        else {
+                            e.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, caster), rawDamage / 2);
+                            e.hurt(ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, caster), rawDamage / 2);
+                        }
+
+                    if (random.nextInt(12) == 0)
                         e.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }
             });
 
-            if(damageCaster){
-                if(AbilityUtil.distanceToGround(level, caster) < 1.5) {
-                    if(random.nextBoolean())
-                        caster.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), rawDamage * multiplier);
-                    if(random.nextInt(12) == 0)
+            if (damageCaster && caster != null) {
+                if (AbilityUtil.distanceToGround(level, caster) < 1.5) {
+                    if (random.nextBoolean()) {
+
+                        if (!this.isEnvisioned)
+                            caster.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT), rawDamage);
+                        else {
+                            caster.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT), rawDamage / 2);
+                            caster.hurt(ModDamageTypes.source(level, ModDamageTypes.IMAGINATION), rawDamage / 2);
+                        }
+
+                    }
+                    if (random.nextInt(12) == 0)
                         caster.setDeltaMovement(new Vec3((0.5 - random.nextDouble()) * 0.5, 0.25 + random.nextDouble() * .75, (0.5 - random.nextDouble()) * 0.25));
                 }
             }
 
-            for(BlockPos b : validBlocks) {
-                if(random.nextInt(35) == 0)
+            for (BlockPos b : validBlocks) {
+                if (random.nextInt(35) == 0)
                     ParticleUtil.spawnParticles(level, ModParticles.EARTHQUAKE.get(), new Vec3(b.getCenter().x, b.getCenter().y + .85, b.getCenter().z), 1, .2, 0);
 
-                if(random.nextInt(200) == 0)
+                if (random.nextInt(200) == 0)
                     ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, new Vec3(b.getCenter().x, b.getCenter().y + .85, b.getCenter().z), 1, .2, 0);
             }
 
@@ -73,36 +95,38 @@ public class Earthquake extends Calamity{
 
                 if (!state.isAir()) {
                     double y = pos.getY() + 1;
-                    for(int j = 0; j < 10; j++) {
-                        if(!level.getBlockState(BlockPos.containing(pos.getX(), y, pos.getZ())).isAir())
+                    for (int j = 0; j < 10; j++) {
+                        if (!level.getBlockState(BlockPos.containing(pos.getX(), y, pos.getZ())).isAir())
                             y++;
                         else {
                             break;
                         }
                     }
 
-                    FallingBlockEntity falling = FallingBlockEntity.fall(
-                            level,
-                            BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
-                            state
-                    );
+                    if(i % 10 == 0) {
+                        FallingBlockEntity falling = FallingBlockEntity.fall(
+                                level,
+                                BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
+                                state
+                        );
 
-                    double xVel = (random.nextDouble() - 0.5) * 0.15;
-                    double yVel = 0.5 + random.nextDouble() * .6;
-                    double zVel = (random.nextDouble() - 0.5) * 0.15;
-                    falling.setDeltaMovement(xVel, yVel, zVel);
+                        double xVel = (random.nextDouble() - 0.5) * 0.15;
+                        double yVel = 0.5 + random.nextDouble() * .6;
+                        double zVel = (random.nextDouble() - 0.5) * 0.15;
+                        falling.setDeltaMovement(xVel, yVel, zVel);
 
-                    ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                        falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                        falling.hurtMarked = true;
-                    });
+                        ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
+                            falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
+                            falling.hurtMarked = true;
+                        });
 
-                    falling.dropItem = false;
-                    if(!griefing)
-                        falling.disableDrop();
+                        falling.dropItem = false;
+                        if (!griefing)
+                            falling.disableDrop();
 
 
-                    level.addFreshEntity(falling);
+                        level.addFreshEntity(falling);
+                    }
                 }
             }
         }, level);
