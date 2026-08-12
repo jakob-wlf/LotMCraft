@@ -6,6 +6,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -57,6 +58,12 @@ public class AvatarCreationAbility extends Ability {
         int sequence = LOTMCraft.NON_BEYONDER_SEQ;
         int entitySeq = BeyonderData.getSequence(entity);
 
+        if(entity instanceof ServerPlayer player) {
+            if (BeyonderData.anchoringStorage.getAnchoring(player.getName().getString())
+                    .getAvatarAmount() + 1 >= getMax(entitySeq) )
+                return;
+        }
+
         for (int i = 1; i < LOTMCraft.NON_BEYONDER_SEQ; i++){
             if(entitySeq >= i) continue;
 
@@ -69,8 +76,24 @@ public class AvatarCreationAbility extends Ability {
         AvatarEntity avatar = new AvatarEntity(ModEntities.AVATAR.get(), level, entity.getUUID(), "error", sequence);
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(avatar);
+        avatar.setPersistenceRequired();
+
+        if(entity instanceof ServerPlayer player) {
+            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(), avatar.getUUID());
+        }
 
         if(sequence != LOTMCraft.NON_BEYONDER_SEQ)
             BeyonderData.setCharStack(entity, sequence, stacks[sequence] - 1, true);
+    }
+
+    private static int getMax(int seq){
+        return switch (seq){
+            case 4 -> 5;
+            case 3 -> 15;
+            case 2 -> 40;
+            case 1 -> 80;
+            case 0 -> 120;
+            default -> 0;
+        };
     }
 }

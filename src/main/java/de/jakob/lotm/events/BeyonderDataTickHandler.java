@@ -115,10 +115,11 @@ public class BeyonderDataTickHandler {
             }
         }
 
+        if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
+            entity.kill();
+        }
+
         if(BeyonderData.isBeyonder(livingEntity)) {
-            if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
-                entity.kill();
-            }
 
             if(entity.tickCount % 20 == 0){
                 entity.getData(ModAttachments.REGEN_DISABLER.get()).incrementCount();

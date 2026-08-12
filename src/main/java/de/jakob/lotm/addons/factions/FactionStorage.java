@@ -319,6 +319,7 @@ public class FactionStorage extends SavedData {
     }
 
     public static FactionStorage load(CompoundTag tag, HolderLookup.Provider provider) {
+
         FactionStorage storage = new FactionStorage();
 
         if (!tag.contains("factions", Tag.TAG_LIST))

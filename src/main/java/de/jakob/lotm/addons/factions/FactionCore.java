@@ -1,5 +1,6 @@
 package de.jakob.lotm.addons.factions;
 
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -64,8 +65,8 @@ public class FactionCore {
         return switch (level){
             case 0 -> 2;
             case 1 -> 5;
-            case 2 -> 9;
-            case 3 -> 13;
+            case 2 -> 8;
+            case 3 -> 10;
             default -> 0;
         };
     }
@@ -85,7 +86,7 @@ public class FactionCore {
             case 0 -> 1;
             case 1 -> 20;
             case 2 -> 60;
-            case 3 -> 110;
+            case 3 -> 100;
             default -> 0;
         };
     }

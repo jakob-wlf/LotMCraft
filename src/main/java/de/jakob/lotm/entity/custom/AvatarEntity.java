@@ -146,6 +146,11 @@ public class AvatarEntity extends PathfinderMob {
     }
 
     @Override
+    public boolean requiresCustomPersistence() {
+        return true;
+    }
+
+    @Override
     public boolean canRide(Entity vehicle) {
         return false;
     }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.anchoring.AnchoringStorage;
 import de.jakob.lotm.addons.factions.FactionStorage;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
@@ -45,6 +46,7 @@ public class BeyonderData {
 
     public static PlayerMap playerMap;
     public static FactionStorage factionStorage;
+    public static AnchoringStorage anchoringStorage;
 
     static {
         implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
@@ -147,6 +149,7 @@ public class BeyonderData {
         playerMap.setLevel(level);
 
         factionStorage = FactionStorage.get(level);
+        anchoringStorage = AnchoringStorage.get(level);
     }
 
     public static void initPathwayInfos() {

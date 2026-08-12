@@ -17,8 +17,6 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -26,7 +24,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
@@ -162,7 +159,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
             String avatarsResult = "";
             if(BeyonderData.getSequence(entity) <= 3) {
-                StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
+                StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSize() + "\nAvatars:");
                 for (var obj : avatars) {
                     AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
 
@@ -208,7 +205,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
         String avatarsResult = "";
         if(BeyonderData.getSequence(entity) <= 3) {
-            StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
+            StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSize() + "\nAvatars:");
             for (var obj : avatars) {
                 AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
 
@@ -359,6 +356,11 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         component.createAvatar(avatar.getUUID());
+
+        if(entity instanceof ServerPlayer player) {
+            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(),
+                    avatar.getUUID());
+        }
 
         AbilityUtil.sendActionBar(entity,
                 Component.translatable("ability.lotmcraft.virtual_persona.avatar_spawned").withColor(0xFFe3ffff));

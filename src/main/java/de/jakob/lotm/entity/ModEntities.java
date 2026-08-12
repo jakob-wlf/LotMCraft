@@ -391,7 +391,6 @@ public class ModEntities {
                     .clientTrackingRange(32)
                     .updateInterval(2)
                     .noSummon()
-                    .noSave()
                     .build("avatar"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BlinkAfterimageEntity>> BLINK_AFTERIMAGE =

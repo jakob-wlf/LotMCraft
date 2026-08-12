@@ -36,19 +36,6 @@ public class SanityEventHandler {
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
 
         boolean isBeyonder = BeyonderData.isBeyonder(entity);
-        boolean isHighSequence = isBeyonder && BeyonderData.getSequence(entity) <= 2;
-        boolean hasSwitched = BeyonderData.hasSwitchedPathway(entity);
-        boolean hasUndigestedStack = isBeyonder
-                && entity instanceof Player digestionPlayer
-                && BeyonderData.getCurrentCharStack(entity) > 0
-                && BeyonderData.getDigestionProgress(digestionPlayer) < 1.0f;
-
-        boolean shouldDrain = isHighSequence || sanityComp.getSanity() < .2f || hasUndigestedStack || hasSwitched;
-        float sanityIncrease = shouldDrain ? 0 : 0.0025f;
-        if (isHighSequence || sanityComp.getSanity() < .2f) sanityIncrease -= 0.00025f;
-        if (hasUndigestedStack) sanityIncrease -= 0.00025f;
-        if (hasSwitched) sanityIncrease -= 0.00025f;
-        sanityComp.increaseSanityAndSync(sanityIncrease, entity);
 
         applySpiritualityExhaustionDrain(entity, sanityComp);
         applyInjuryDrain(entity, sanityComp);
@@ -60,7 +47,7 @@ public class SanityEventHandler {
             return;
         }
 
-        if (BeyonderData.isBeyonder(entity)) {
+        if (isBeyonder) {
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);
 
             BeyonderData.addModifier(entity, "sanity_loss", sanityMultiplier);
