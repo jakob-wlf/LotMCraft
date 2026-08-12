@@ -26,15 +26,16 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MentalPlagueAbility extends SelectableAbility {
     public MentalPlagueAbility(String id) {
         super(id, 10, "plague");
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 10, 10, 10, 10, 10, 10));
     }
 
     @Override
@@ -84,7 +85,7 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void place(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30* multiplier(entity)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;
@@ -113,7 +114,7 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void activateSight(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30* (int) Math.max(multiplier(entity)/4,1), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;
@@ -182,7 +183,7 @@ public class MentalPlagueAbility extends SelectableAbility {
         int finalStage = stage;
 
         ServerScheduler.scheduleForDuration(0, 20, 20 * 5 * stage, () -> {
-            if(!component.hasMentalPlague()){
+            if(!component.hasMentalPlague() || !component.shouldBeActivated() || !entity.isAlive()){
                 component.reset();
                 return;
             }

@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -43,6 +44,14 @@ public class ThreadManipulationAbility extends SelectableAbility {
     public ThreadManipulationAbility(String id) {
         super(id, 1.5f);
         autoClear = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f));
+
+        baseDamage = 7f;
     }
 
     @Override
@@ -57,7 +66,11 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.threads.binding", "ability.lotmcraft.threads.cocoon", "ability.lotmcraft.threads.shoot"};
+        return new String[]{
+                "ability.lotmcraft.threads.binding",
+                "ability.lotmcraft.threads.cocoon",
+                "ability.lotmcraft.threads.shoot"
+        };
     }
 
     @Override
@@ -84,7 +97,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
         List<AtomicBoolean> stopConditions = ParticleUtil.createParticleCocoons(dustVeryBig, loc, .25, 1.45, entity.getEyeHeight() + 1.4, .4, 5, 20 * 20, 22, 5);
 
         AtomicReference<UUID> taskIdRef = new AtomicReference<>();
-        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 20*multiplier(entity)), () -> {
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (20 * 5), () -> {
             if(InteractionHandler.isInteractionPossible(loc, "burning")) {
                 inCocoon.remove(entity.getUUID());
                 ServerScheduler.cancel(taskIdRef.get());
@@ -107,7 +120,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 10, false, false, false));
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 2, false, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 6, 2, false, false, false));
+            entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20 * 2, 2, false, false, false));
             entity.setDeltaMovement(new Vec3(0, 0, 0));
             entity.hurtMarked = true;
 
@@ -120,7 +133,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
     private void shoot(ServerLevel level, LivingEntity entity) {
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 
@@ -134,7 +147,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities(level, entity, 2.5f, DamageLookup.lookupDamage(6, .5) *multiplier(entity), pos, true, false, true,0)) {
+            if(AbilityUtil.damageNearbyEntities(level, entity, 2.5f, ModDamageTypes.THREAD, baseDamage, pos, true, false, true,0)) {
                 hasHit.set(true);
                 AbilityUtil.addPotionEffectToNearbyEntities(level, entity, 2.5, pos, new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 8, 4, false, false, false));
                 return;
@@ -168,7 +181,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
         }
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.SNOWBALL_THROW, SoundSource.BLOCKS, 1, 1);
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20, 2);
         if(targetEntity == null)
             return;
 
@@ -182,16 +195,16 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
         boundEntities.add(targetEntity.getUUID());
         float multiplier_target = multiplier(targetEntity);
-        int duration = (int) (20 * 15*multiplier(entity)/  (int) multiplier_target);
+        int duration = 20 * 5;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);
 
         if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, targetEntitySeq)) {
-            duration = (int) (35*multiplier(entity));
+            duration = 20;
         }
         if(AbilityUtil.isTargetSignificantlyWeaker(entitySeq, targetEntitySeq)) {
-            duration = (int) (20 * 65*multiplier(entity)/ (int) Math.max(multiplier_target,1));
+            duration = 20 * 15;
         }
 
         if(!BeyonderData.isBeyonder(targetEntity) || BeyonderData.getSequence(targetEntity) - 1 > AbilityUtil.getSeqWithArt(entity, this)) {

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.artifacts;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.DoorAuthorityData;
 import de.jakob.lotm.data.ModDataComponents;
@@ -71,7 +72,7 @@ public class SealedArtifactItem extends Item {
         AbilityUtil.setArtifactScaling(player, data.pathway(), data.sequence());
 
         // Use the ability
-        ability.useAbility((ServerLevel) level, player, true, false, true);
+        ability.useAbility((ServerLevel) level, player, true, false, true, false);
 
         // Apply Use-Only Negative Effects
         for (NegativeEffect effect : data.negativeEffect()) {

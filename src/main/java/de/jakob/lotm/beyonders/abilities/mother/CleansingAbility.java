@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import net.minecraft.server.level.ServerLevel;
@@ -13,12 +14,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 //TODO: Rework effects using geckolib
 public class CleansingAbility extends SelectableAbility {
     public CleansingAbility(String id) {
         super(id, 14, "cleansing");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 4, 5, 7, 8, 9, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1200f, 800f, 470f, 280f, 260f, 160f, 134f, 100f, 66f));
     }
 
     @Override
@@ -33,7 +42,8 @@ public class CleansingAbility extends SelectableAbility {
 
     @Override
     public String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.cleansing.self", "ability.lotmcraft.cleansing.others"};
+        return new String[]{"ability.lotmcraft.cleansing.self",
+                "ability.lotmcraft.cleansing.others"};
     }
 
     @Override
@@ -55,18 +65,7 @@ public class CleansingAbility extends SelectableAbility {
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
-            e.setRemainingFireTicks(0);
-
-            e.getActiveEffects()
-                    .stream()
-                    .map(MobEffectInstance::getEffect)
-                    .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                    .forEach(e::removeEffect);
-
-            if(e instanceof Player player) {
-                player.getFoodData().setSaturation(20);
-                player.getFoodData().setFoodLevel(20);
-            }
+            cleanEntity(e);
         }
     }
 
@@ -80,16 +79,21 @@ public class CleansingAbility extends SelectableAbility {
         
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
-        entity.setRemainingFireTicks(0);
+        cleanEntity(entity);
+    }
 
-        entity.getActiveEffects().stream()
+    private void cleanEntity(LivingEntity e){
+        e.setRemainingFireTicks(0);
+
+        e.getActiveEffects()
+                .stream()
                 .map(MobEffectInstance::getEffect)
-                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                .toList()
-                .forEach(entity::removeEffect);
+                .filter(effect ->
+                        effect.value().getCategory() == MobEffectCategory.HARMFUL
+                        && !effect.equals(ModEffects.LOOSING_CONTROL))
+                .forEach(e::removeEffect);
 
-
-        if(entity instanceof Player player) {
+        if(e instanceof Player player) {
             player.getFoodData().setSaturation(20);
             player.getFoodData().setFoodLevel(20);
         }

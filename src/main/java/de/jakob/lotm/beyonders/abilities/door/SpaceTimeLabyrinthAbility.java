@@ -27,13 +27,19 @@ import java.util.*;
 public class SpaceTimeLabyrinthAbility extends Ability {
     public SpaceTimeLabyrinthAbility(String id) {
         super(id,20);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(40000f, 20000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 20));
     }
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(getColorForPathway("door")));
             return;

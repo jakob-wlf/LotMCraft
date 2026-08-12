@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.PlanetEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -14,22 +15,29 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.fml.common.Mod;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SpaceFragmentationAbility extends Ability {
     public SpaceFragmentationAbility(String id) {
         super(id, 20);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(22500f, 12000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 15));
+
+        baseDamage = 6f;
     }
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        Vec3 targetLoc =  AbilityUtil.getTargetLocation(entity, (int) (35*multiplier(entity)), 2);
+        Vec3 targetLoc =  AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
         EffectManager.playEffect(EffectManager.Effect.SPACE_TEARING, targetLoc.x(), targetLoc.y(), targetLoc.z(), (ServerLevel) level, entity);
 
@@ -55,7 +63,9 @@ public class SpaceFragmentationAbility extends Ability {
         AtomicInteger tick = new AtomicInteger(0);
         ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
             if(tick.get() % 20 == 0) {
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 40, DamageLookup.lookupDamage(1, .75f) *(int) Math.max(multiplier(entity)/6,1), targetLoc, true, true);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 40,
+                        ModDamageTypes.SPACE_DESTRUCTION, baseDamage,
+                        targetLoc, true, true);
             }
             if (BeyonderData.isGriefingEnabled(entity))
             {

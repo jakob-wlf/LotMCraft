@@ -93,7 +93,7 @@ config="mixins.lotmcraft.json"
 config="mixins.lotmcraft.shape_shifting.json"
 
 [[mixins]]
-config="mixins.lotmcraft.envisioning.json"
+config="mixins.lotmcraft.visionary.json"
 
 [[mixins]]
 config="mixins.lotmcraft.factions.json"

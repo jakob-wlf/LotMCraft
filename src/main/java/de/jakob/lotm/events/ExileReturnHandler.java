@@ -37,7 +37,7 @@ public class ExileReturnHandler {
             return;
 
         ServerLevel endLevel = server.getLevel(ResourceKey.create(Registries.DIMENSION,
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile")));
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space")));
         if(endLevel == null)
             return;
 

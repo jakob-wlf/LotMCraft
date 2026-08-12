@@ -18,7 +18,7 @@ public class ChaosHuntingAbility extends PassiveAbilityItem {
 
     private static final Map<UUID, Set<Entity>> TRACKED = new ConcurrentHashMap<>();
 
-    private static final double SCAN_RADIUS = 60.0;
+    private static final int SCAN_RADIUS = 50;
 
     public ChaosHuntingAbility(Item.Properties properties) {
         super(properties);
@@ -37,15 +37,23 @@ public class ChaosHuntingAbility extends PassiveAbilityItem {
         int casterSeq = BeyonderData.getSequence(entity);
         ServerLevel serverLevel = (ServerLevel) level;
 
-        List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), (int) SCAN_RADIUS*BeyonderData.getMultiplier(entity));
+        List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(
+                entity,
+                serverLevel,
+                entity.position(),
+                SCAN_RADIUS
+        );
 
         Set<Entity> newTargets = new HashSet<>();
         for (LivingEntity candidate : nearby) {
             if (!BeyonderData.isBeyonder(candidate)) continue;
+
             int candidateSeq = BeyonderData.getSequence(candidate);
             String pathway = BeyonderData.getPathway(candidate);
+
             boolean higherRank = candidateSeq < casterSeq;
-            boolean disasterPathway = "demoness".equals(pathway);
+            boolean disasterPathway = BeyonderData.isEvilPathway(pathway);
+
             if (higherRank || disasterPathway) {
                 newTargets.add(candidate);
                 CullAbility.setGlowingForPlayer(candidate, player, true);

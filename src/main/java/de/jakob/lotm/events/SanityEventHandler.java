@@ -60,39 +60,10 @@ public class SanityEventHandler {
             return;
         }
 
-
         if (BeyonderData.isBeyonder(entity)) {
-            Random random = new Random();
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);
 
             BeyonderData.addModifier(entity, "sanity_loss", sanityMultiplier);
-
-            if (!entity.level().isClientSide) {
-
-                int disableChance;
-                int disableDuration = 20;
-
-                if (sanityValue >= 64) {
-                    disableChance = -1;
-                } else if (sanityValue >= 50) {
-                    disableChance = 120;
-                    disableDuration = 1500;
-                } else if (sanityValue >= 35) {
-                    disableChance = 80;
-                    disableDuration = 2500;
-                } else if (sanityValue >= 20) {
-                    disableChance = 40;
-                    disableDuration = 3500;
-                } else {
-                    disableChance = 15;
-                    disableDuration = 5000;
-                }
-
-                if (disableChance > 0 && random.nextInt(disableChance) == 0) {
-                    DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("sanity_instability", disableDuration, entity);
-                }
-            }
         }
 
 
@@ -152,13 +123,11 @@ public class SanityEventHandler {
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 2, false, true));
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false));
 
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 2, 0, false, true));
-
             if(random.nextInt(10) == 0) {
                 entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 3.0f);
             }
 
-            if(random.nextInt(40) == 0 && entity instanceof Player player) {
+            if(random.nextInt(40) == 0 && entity instanceof Player) {
                 entity.level().playSound(null, entity.blockPosition(),
                         SoundEvents.ZOMBIE_AMBIENT, SoundSource.HOSTILE, 1.0f, 1.0f);
             }
@@ -276,7 +245,6 @@ public class SanityEventHandler {
 
     private static double getSanityMultiplier(LivingEntity entity, float sanity, int sanityValue) {
         float sanityLoss = 1.0f - sanity;
-        UUID uuid = entity.getUUID();
 
         // ----- MULTIPLIER SCALING -----
         double sanityMultiplier;

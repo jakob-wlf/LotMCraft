@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.common;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
@@ -97,9 +98,7 @@ public class SpiritVisionAbility extends ToggleAbility {
 
         if (lookedAt != null) {
             if (shouldLooseControl(entity, lookedAt)) {
-                if (!entity.hasEffect(ModEffects.LOOSING_CONTROL))
-                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
-
+                VisionaryLoosingControlHandler.applyEffect(lookedAt, entity, this);
                 return;
             }
         }

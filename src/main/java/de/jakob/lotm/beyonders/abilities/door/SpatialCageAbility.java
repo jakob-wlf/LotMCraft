@@ -33,6 +33,12 @@ public class SpatialCageAbility extends SelectableAbility {
 
     public SpatialCageAbility(String id) {
         super(id, 35);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 25, 30));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f, 5000f));
     }
 
     @Override
@@ -47,14 +53,17 @@ public class SpatialCageAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.spatial_cage.surround", "ability.lotmcraft.spatial_cage.open_front"};
+        return new String[]{
+                "ability.lotmcraft.spatial_cage.surround",
+                "ability.lotmcraft.spatial_cage.open_front"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         if(level.isClientSide) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 35, 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
         Direction frontDirection = entity.getDirection().getOpposite();
         createSpatialCage(entity, level, targetLoc, selectedAbility != 0, frontDirection);
     }
@@ -64,7 +73,7 @@ public class SpatialCageAbility extends SelectableAbility {
         cage.createCage();
         activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>()).add(cage);
 
-        ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 60 * 2, () -> {
+        ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 10, () -> {
             cage.updateCage();
             cage.addParticles();
             cage.addSlownessToEntities();

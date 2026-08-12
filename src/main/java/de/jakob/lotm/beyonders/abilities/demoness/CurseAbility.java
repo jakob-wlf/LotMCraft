@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.effect.ModEffects;
@@ -24,9 +25,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class CurseAbility extends Ability {
@@ -35,11 +34,19 @@ public class CurseAbility extends Ability {
 
         canBeUsedByNPC = false;
         autoClear = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4, 5, 7, 10, 15, 20));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 2300f, 1400f, 800f, 780f, 475f, 400f, 390f));
+
+        baseDamage = 6f;
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("demoness", 4));
+        return new HashMap<>(Map.of("demoness", 7));
     }
 
     @Override
@@ -85,15 +92,14 @@ public class CurseAbility extends Ability {
         int livingTargetSeq = BeyonderData.getSequence(livingTarget);
 
         if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, livingTargetSeq)) {
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
-            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.DEMONESS_GENERIC), 10);
+            VisionaryLoosingControlHandler.applyEffect(livingTarget, entity, this);
             return;
         }
 
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.cursed_target").withColor(0x6d32a8));
         offHandItem.consume(1, player);
 
-        int curseDuration = 20 * 10* (int) Math.max(multiplier(entity),2) ;
+        int curseDuration = 20 * 5;
 
         AtomicReference<UUID> taskIdRef = new AtomicReference<>(null);
         UUID taskId = ServerScheduler.scheduleForDuration(0, 8, curseDuration, () -> {
@@ -110,7 +116,12 @@ public class CurseAbility extends Ability {
 
             switch(random.nextInt(3)) {
                 case 0 -> {
-                    livingTarget.hurt(ModDamageTypes.source(livingTarget.level(), ModDamageTypes.DEMONESS_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .6) *(int) Math.max(multiplier(entity)/5,1)));
+                    livingTarget.hurt(ModDamageTypes
+                            .source(livingTarget.level(),
+                                    ModDamageTypes.CURSE,
+                                    entity),
+                            baseDamage);
+
                     ParticleUtil.spawnParticles(serverLevel, ModParticles.BLACK_FLAME.get(), livingTarget.position().add(0, livingTarget.getEyeHeight() / 2, 0), 200, .4, livingTarget.getEyeHeight() / 2, .4, 0.01);
                 }
                 case 1 -> {

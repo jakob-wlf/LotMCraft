@@ -36,7 +36,7 @@ public class DreamMazeAbility extends SelectableAbility {
     private static final int FLOOR_Y_OFFSET = 0;
     private static final int CEILING_Y_OFFSET = MAZE_HEIGHT + 1;
     private static final int DOOR_COUNT = 15;
-    private static final int SURROUNDING_RADIUS = 25;
+    private static final int SURROUNDING_RADIUS = 50;
 
     private static final Map<UUID, List<BlockPos>> DOOR_POSITIONS = new HashMap<>();
     private boolean[][] removedHorizWalls;
@@ -50,6 +50,12 @@ public class DreamMazeAbility extends SelectableAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 2500f));
     }
 
     @Override

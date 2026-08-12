@@ -10,11 +10,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class AvatarCreationAbility extends Ability {
     public AvatarCreationAbility(String id) {
-        super(id, 5);
+        super(id, 1);
 
         canBeUsedByNPC = false;
         canBeCopied = false;
@@ -22,6 +24,9 @@ public class AvatarCreationAbility extends Ability {
         canBeShared = false;
         cannotBeStolen = true;
         canBeReplicated = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6700f, 3000f, 2000f, 1700f, 1600f));
     }
 
     @Override

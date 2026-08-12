@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -65,6 +66,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                             e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
                                     getAmount(entitySeq), e,
                                     BeyonderData.getSequence(e), entitySeq);
+                            VisionaryLoosingControlHandler.applyEffect(entity, e, this);
                         }
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
@@ -157,7 +159,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         switch (pathway){
             case "tyrant":
                 if(random.nextInt(6) == 0) {
-                    LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * multiplier(entity), false, 4, 200, 0x11A8DD);
+                    LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, 13, false, 0, 200, 0x11A8DD);
                     level.addFreshEntity(lightning);
                 }
                 break;

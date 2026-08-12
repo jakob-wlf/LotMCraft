@@ -16,11 +16,16 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class MisfortuneGiftingAbility extends Ability {
     public MisfortuneGiftingAbility(String id) {
         super(id, 5);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8400f, 3500f, 2200f, 1750f, 1500f, 1000f));
     }
 
     @Override
@@ -41,7 +46,7 @@ public class MisfortuneGiftingAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
@@ -52,13 +57,26 @@ public class MisfortuneGiftingAbility extends Ability {
 
             return;
         }
+
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
-        double resistance = AbilityUtil.getSequenceResistanceFactor(entitySeq, targetSeq);
-        int amplifier =(int) Math.min(Math.round(multiplier(entity) * 3.125f * (1.0 - resistance)) * 120, 6500);;
+
+        int amplifier = getLuck(entitySeq);
+
         LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        luckComponent.addLuckWithMax(amplifier, -amplifier);
+        luckComponent.addLuckWithMin(-amplifier, -amplifier * 3);
+    }
+
+    private static int getLuck(int seq){
+        return switch (seq){
+            case 5 -> 100;
+            case 4 -> 350;
+            case 3 -> 500;
+            case 2 -> 750;
+            case 1 -> 1000;
+            case 0 -> 1500;
+            default -> 0;
+        };
     }
 }

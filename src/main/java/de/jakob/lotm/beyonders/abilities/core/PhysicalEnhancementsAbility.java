@@ -45,13 +45,13 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     private static final Map<UUID, Map<String, EnhancementBoost>> enhancementBoosts = new ConcurrentHashMap<>();
     public static final Map<UUID, Long> reducedRegen = new ConcurrentHashMap<>();
 
-    public static void suppressRegen(LivingEntity entity, long durationMs) {
-        long expiry = System.currentTimeMillis() + durationMs;
-        if (!reducedRegen.containsKey(entity.getUUID()) || reducedRegen.get(entity.getUUID()) < expiry) {
-            reducedRegen.put(entity.getUUID(), expiry);
-        }
-        entity.removeEffect(MobEffects.REGENERATION);
-    }
+//    public static void suppressRegen(LivingEntity entity, long durationMs) {
+//        long expiry = System.currentTimeMillis() + durationMs;
+//        if (!reducedRegen.containsKey(entity.getUUID()) || reducedRegen.get(entity.getUUID()) < expiry) {
+//            reducedRegen.put(entity.getUUID(), expiry);
+//        }
+//        entity.removeEffect(MobEffects.REGENERATION);
+//    }
 
     private static final Map<UUID, Integer> lastKnownSequence = new ConcurrentHashMap<>();
 
@@ -388,16 +388,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
         if(entity.getData(ModAttachments.REGEN_DISABLER.get()).isDisabled()) return;
 
-        if (reducedRegen.containsKey(entity.getUUID())) {
-            long expiryTime = reducedRegen.get(entity.getUUID());
-            if (System.currentTimeMillis() >= expiryTime) {
-                reducedRegen.remove(entity.getUUID());
-            } else {
-                regenLevel = regenLevel - 5;
-                if (regenLevel <= 0) return;
-            }
-        }
-
         entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 300, regenLevel - 1, false, false, false));
     }
 
@@ -433,7 +423,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        System.out.println("removeAllEnhancements called for " + entity.getUUID());
         entityEnhancements.remove(entity.getUUID());
         temporaryEnhancements.remove(entity.getUUID());
         enhancementBoosts.remove(entity.getUUID());
@@ -642,17 +631,17 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        @SubscribeEvent
-        public static void onLivingHeal(LivingHealEvent event) {
-            UUID uuid = event.getEntity().getUUID();
-            Long expiry = reducedRegen.get(uuid);
-            if (expiry == null) return;
-            if (System.currentTimeMillis() >= expiry) {
-                reducedRegen.remove(uuid);
-                return;
-            }
-            event.setCanceled(true);
-        }
+//        @SubscribeEvent
+//        public static void onLivingHeal(LivingHealEvent event) {
+//            UUID uuid = event.getEntity().getUUID();
+//            Long expiry = reducedRegen.get(uuid);
+//            if (expiry == null) return;
+//            if (System.currentTimeMillis() >= expiry) {
+//                reducedRegen.remove(uuid);
+//                return;
+//            }
+//            event.setCanceled(true);
+//        }
 
         @SubscribeEvent
         public static void onLivingDamagePost(LivingDamageEvent.Post event) {
@@ -663,10 +652,10 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             LivingEntity target = event.getEntity();
             if (!BeyonderData.isBeyonder(target) || !BeyonderData.isBeyonder(source)) return;
 
-            if (!reducedRegen.containsKey(target.getUUID()) ||
-                    (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
-                target.removeEffect(MobEffects.REGENERATION);
-            }
+//            if (!reducedRegen.containsKey(target.getUUID()) ||
+//                    (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
+//                target.removeEffect(MobEffects.REGENERATION);
+//            }
 
             reducedRegen.put(target.getUUID(), System.currentTimeMillis() + 10000);
         }

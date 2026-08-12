@@ -12,12 +12,19 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SecretKeepingAbility extends Ability {
     public SecretKeepingAbility(String id) {
         super(id, 20);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 7, 8, 10, 13));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 6700f, 3750f, 2500f, 2340f));
     }
 
     @Override

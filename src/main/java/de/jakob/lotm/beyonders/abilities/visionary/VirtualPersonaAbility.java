@@ -24,11 +24,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -42,6 +45,9 @@ public class VirtualPersonaAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3));
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -95,6 +101,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
+            return;
         }
 
         if(!(level instanceof ServerLevel serverLevel)) return;
@@ -119,7 +126,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int seq = BeyonderData.getSequence(entity);
-        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f, true);
+        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f, true);
 
         if(target == null){
             var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -235,7 +242,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             return;
         }
 
-        var target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.2f);
+        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f);
         if(target == null){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed")
                     .withColor(0xFFff124d));
@@ -266,6 +273,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
             ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
+            return;
         }
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -277,13 +285,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
             return;
         }
 
-        level.playSound(null,
-                entity.position().x, entity.position().y, entity.position().z,
-                SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
         component.create(seq);
-
-
     }
 
     @Override
@@ -364,21 +366,18 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
 
     @SubscribeEvent
-    public static void onDamage(LivingIncomingDamageEvent event) {
+    public static void onDamage(LivingDamageEvent.Pre  event) {
         var entity = event.getEntity();
 
         if(!(entity instanceof ServerPlayer player)) return;
 
-        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)){
+        if(event.getSource().is(ModDamageTypes.MIND_BASED)){
             var component = player.getData(ModAttachments.VIRTUAL_PERSONAS.get());
 
-            float amount = event.getAmount();
+            float amount = event.getOriginalDamage();
 
             amount = component.block(amount);
-            event.setAmount(amount);
-
-            if(amount <= 0)
-                event.setCanceled(true);
+            event.setNewDamage(amount);
         }
     }
 

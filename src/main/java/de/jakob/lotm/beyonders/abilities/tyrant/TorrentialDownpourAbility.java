@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -31,6 +32,14 @@ public class TorrentialDownpourAbility extends Ability {
         interactionRadius = 25;
         interactionCacheTicks = 20 * 30;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(15, 18, 20, 25));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12500f, 6500f, 3500f, 2500f));
+
+        baseDamage = 1f;
     }
 
     @Override
@@ -92,7 +101,7 @@ public class TorrentialDownpourAbility extends Ability {
         activeDownpours.add(data);
 
         // Scheduler for Animations
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 15* multiplier(entity)), () -> {
             boolean isFrozen = isFrozen(downpourId);
 
             level.playSound(null, rainPos.x, rainPos.y, rainPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
@@ -122,8 +131,10 @@ public class TorrentialDownpourAbility extends Ability {
 
         // Scheduler for Damage
         double multiplier = multiplier(entity);
-        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 30* multiplier(entity)), () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, DamageLookup.lookupDps(3, .75, 5, 20) * multiplier(entity), startPos, true, false, true, 0);
+        float damage = baseDamage;
+
+        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 15* multiplier(entity)), () -> {
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, ModDamageTypes.WATER, damage, startPos, true, false, true, 0);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
     }
 

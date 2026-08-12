@@ -25,6 +25,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,6 +35,14 @@ public class FlaringSunAbility extends Ability {
         super(id, 12, "purification", "purification_holy", "burning", "light_source", "light_strong", "light_weak");
         postsUsedAbilityEventManually = true;
         interactionRadius = 20;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(4, 5, 7, 10, 12));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 800f, 780f));
+
+        baseDamage = 2f;
     }
 
     @Override
@@ -50,7 +60,7 @@ public class FlaringSunAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 25, 2);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
         Vec3 startPos = targetPos.add(0, 5, 0);
 
         BlockPos blockPos = BlockPos.containing(startPos);
@@ -80,7 +90,7 @@ public class FlaringSunAbility extends Ability {
         AtomicBoolean wasDarkened = new AtomicBoolean(false);
         double multiplier = multiplier(entity);
 
-        ServerScheduler.scheduleForDuration(0, 4, 20 * 19, () -> {
+        ServerScheduler.scheduleForDuration(0, 5, 20 * 15, () -> {
             if(!wasDarkened.get()) {
                 if(InteractionHandler.isInteractionPossible(new Location(targetPos, level), "darkness", BeyonderData.getSequence(entity))) {
                     wasDarkened.set(true);
@@ -90,7 +100,8 @@ public class FlaringSunAbility extends Ability {
                 ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.FLAME, startPos, 5.65f, 200);
                 ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 5.65f, 180);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 24* multiplier(entity), DamageLookup.lookupDps(4, .85, 4, 20) * multiplier(entity), targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 24* multiplier(entity), baseDamage/2, targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 24* multiplier(entity), baseDamage/2, targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.FAITH, entity));
             }
             else {
                 ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.SMOKE, startPos, 5.65f, 300);

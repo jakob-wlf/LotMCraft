@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
@@ -51,12 +52,15 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
+    public static Boolean isSpectating = false;
+
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
@@ -101,9 +105,11 @@ public class ClientHandler {
             Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
             LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
             SpectatingOverlayRenderer.entitiesLookedAtByPlayerWithActiveSpectating.put(player.getUUID(), living);
+            isSpectating = true;
         }
         else {
             SpectatingOverlayRenderer.entitiesLookedAtByPlayerWithActiveSpectating.remove(player.getUUID());
+            isSpectating = false;
         }
     }
 
@@ -648,13 +654,13 @@ public class ClientHandler {
         }
     }
 
-    public static void handleActingCapPacket(de.jakob.lotm.network.packets.toClient.SyncActingCapPacket packet) {
+    public static void handleActingCapPacket(SyncActingCapPacket packet) {
         net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) return;
         player.getPersistentData().putFloat(
-                de.jakob.lotm.beyonders.acting.ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
+                ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
         player.getPersistentData().put(
-                de.jakob.lotm.beyonders.acting.ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
+                ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
     }
 
     public static void handleApotheosisPacket(SyncApotheosisPacket packet) {

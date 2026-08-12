@@ -5,13 +5,14 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class HolyEyeAbility extends ToggleAbility {
@@ -19,6 +20,11 @@ public class HolyEyeAbility extends ToggleAbility {
         super(id, "light_source", "light_strong", "light_weak", "purification");
         postsUsedAbilityEventManually = true;
         tickRate = 1;
+
+        baseDamage = 1f;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(100f, 75f, 50f, 35f, 30f));
     }
 
     @Override
@@ -49,8 +55,8 @@ public class HolyEyeAbility extends ToggleAbility {
 
         EffectManager.playEffect(EffectManager.Effect.HOLY_IMPACT, targetPos.x, targetPos.y, targetPos.z, (ServerLevel) level, entity);
 
-        if(target != null) {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity),  (float) DamageLookup.lookupDps(4, 1, 7, 20) * multiplier(entity));
+        if(target != null && AbilityUtil.isUndeadOrEvil(target)) {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity),  baseDamage);
         }
 
     }

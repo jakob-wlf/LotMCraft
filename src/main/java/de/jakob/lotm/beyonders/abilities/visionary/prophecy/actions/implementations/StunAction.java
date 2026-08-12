@@ -32,7 +32,7 @@ public class StunAction extends ActionBase {
     public void action(Level level, LivingEntity entity, UUID casterId) {
         if (level.isClientSide) return;
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 7, () -> {
             var pos = entity.position();
             entity.teleportTo(pos.x, pos.y, pos.z);
             entity.setDeltaMovement(new Vec3(0, 0, 0));

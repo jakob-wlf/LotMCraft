@@ -38,6 +38,12 @@ public class LoopHoleCreationAbility extends Ability {
         super(id, 16f);
         autoClear = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(7, 13, 16));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 10000f, 6700f));
     }
 
     @Override
@@ -56,7 +62,7 @@ public class LoopHoleCreationAbility extends Ability {
             return;
         }
         if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 40, 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
         UUID loopholeId = UUID.randomUUID();
 
         if(entity instanceof ServerPlayer serverPlayer) {
@@ -74,7 +80,7 @@ public class LoopHoleCreationAbility extends Ability {
         );
         activeLoopholes.put(loopholeId, loopholeData);
 
-        ServerScheduler.scheduleForDuration(0, 2, (int) (20 * 7*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 2,(20 * 7), () -> {
             // Update entities in loophole
             updateEntitiesInLoophole(loopholeData);
 
@@ -87,7 +93,7 @@ public class LoopHoleCreationAbility extends Ability {
             });
         });
 
-        ServerScheduler.scheduleForDuration(0, 45, (int) (20 * 7*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 45, (20 * 7), () -> {
             AbilityUtil.getNearbyEntities(entity, serverLevel, targetLoc, 3).forEach(e -> {
                     if(BeyonderData.isBeyonder(e))
                         TheftHandler.performAbilityTheft(serverLevel, entity, e, random, true, this);
@@ -196,7 +202,7 @@ public class LoopHoleCreationAbility extends Ability {
             // Use the creator as the caster but potentially keep original targeting
             isRedirecting.set(true);
             try {
-                ability.useAbility(serverLevel, creator, false, false, true);
+                ability.useAbility(serverLevel, creator, false, false, true, false);
             } finally {
                 isRedirecting.set(false); // Always clean up, even on exception
             }

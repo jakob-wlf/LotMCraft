@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -33,7 +34,7 @@ public class BlackHoleEntity extends Entity {
     private LivingEntity cachedOwner;
     
     private static final double PULL_STRENGTH = 0.5;
-    private static final int duration = 20 * 60;
+    private static final int duration = 20 * 15;
     private int age = 0;
     private int petrifiedTicks = 0;
 
@@ -179,7 +180,10 @@ public class BlackHoleEntity extends Entity {
         float damage = getDamage();
         float damageRadius = radius * 0.3F; // Damage only in inner radius
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner(), damageRadius, damage, this.position(), true, false);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner(),
+                damageRadius, ModDamageTypes.SPACE_DESTRUCTION, damage,
+                this.position(), true, false,
+                false, 10);
     }
     
     private void suckUpBlocks() {

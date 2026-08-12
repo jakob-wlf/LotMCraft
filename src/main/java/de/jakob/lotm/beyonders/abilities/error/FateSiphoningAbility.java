@@ -22,9 +22,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -35,6 +33,12 @@ public class FateSiphoningAbility extends Ability {
     public FateSiphoningAbility(String id) {
         super(id, 20);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 20));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 10000f, 6700f));
     }
 
     @Override
@@ -53,7 +57,9 @@ public class FateSiphoningAbility extends Ability {
             return;
         }
         if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 2);
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.no_target").withColor(0x6d32a8));
             return;
@@ -86,7 +92,7 @@ public class FateSiphoningAbility extends Ability {
                 entity);
 
         linkedEntities.put(entity.getUUID(), target.getUUID());
-        ServerScheduler.scheduleDelayed((int) (20 * 7*multiplier(entity)), () -> linkedEntities.remove(entity.getUUID()));
+        ServerScheduler.scheduleDelayed((int) (20 * 10), () -> linkedEntities.remove(entity.getUUID()));
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
+import com.jcraft.jorbis.Block;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -11,6 +12,8 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -22,6 +25,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -30,15 +37,21 @@ import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MindWorldAuthorityAbility extends SelectableAbility {
     private MindWorldAuthorityEnvisioningAbility envisioningToggle;
 
+    private static HashSet<UUID> envisioning = new HashSet<>();
+    private static HashMap<UUID, BlockPos> posBuffer = new HashMap<>();
+    private static HashMap<UUID, StructureTemplate> structures = new HashMap<>();
+
     public MindWorldAuthorityAbility(String id) {
-        super(id, 5f);
+        super(id, 2f);
 
         canBeCopied = false;
         canBeReplicated = false;
@@ -62,6 +75,9 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
                 "ability.lotmcraft.mind_world_authority_ability.envisioning",
                 "ability.lotmcraft.mind_world_authority_ability.seal_mind_world",
                 "ability.lotmcraft.mind_world_authority_ability.split_characteristics"
+//                "ability.lotmcraft.mind_world_authority_ability.copy",
+//                "ability.lotmcraft.mind_world_authority_ability.paste",
+//                "ability.lotmcraft.mind_world_authority_ability.clear"
         };
     }
 
@@ -71,6 +87,9 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
             case 0 -> envisioning(level, entity);
             case 1 -> sealMindWorld(level, entity);
             case 2 -> split(level, entity);
+//            case 3 -> copy(level, entity);
+//            case 4 -> paste(level, entity);
+//            case 5 -> clear(level, entity);
         }
     }
 
@@ -83,6 +102,105 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
     protected float getSpiritualityCost() {
         return 1000;
     }
+
+    private void paste(Level level, LivingEntity entity){
+        if(level.isClientSide){
+            return;
+        }
+
+        if(!structures.containsKey(entity.getUUID())){
+            entity.sendSystemMessage(Component.literal("You don't have any saved structure!").withColor(0xf5c56c));
+            return;
+        }
+
+        if(!envisioning.contains(entity.getUUID())){
+            entity.sendSystemMessage(Component.literal("You must be in state of envisioning!").withColor(0xf5c56c));
+            return;
+        }
+
+        var loc = AbilityUtil.getTargetBlock(entity, baseDistance);
+        var structure = structures.get(entity.getUUID());
+
+        StructurePlaceSettings settings = new StructurePlaceSettings();
+
+        structure.placeInWorld(
+                (ServerLevel) level,
+                loc,
+                loc,
+                settings,
+                level.getRandom(),
+                3
+        );
+    }
+
+    private void clear(Level level, LivingEntity entity){
+        if(level.isClientSide){
+            return;
+        }
+
+        posBuffer.remove(entity.getUUID());
+        structures.remove(entity.getUUID());
+
+        entity.sendSystemMessage(Component.literal("Cleaned structures and locations").withColor(0xf5c56c));
+    }
+
+    private void copy(Level level, LivingEntity entity){
+        if(level.isClientSide){
+            return;
+        }
+
+        var loc = AbilityUtil.getTargetBlock(entity, baseDistance);
+
+        if(posBuffer.containsKey(entity.getUUID())){
+            var loc1 = posBuffer.get(entity.getUUID());
+
+            if(loc1.equals(loc)){
+                posBuffer.remove(entity.getUUID());
+
+                entity.sendSystemMessage(Component.literal("Cleaned saved location").withColor(0xf5c56c));
+
+                return;
+            }
+
+            BlockPos min = new BlockPos(
+                    Math.min(loc1.getX(), loc.getX()),
+                    Math.min(loc1.getY(), loc.getY()),
+                    Math.min(loc1.getZ(), loc.getZ())
+            );
+
+            BlockPos max = new BlockPos(
+                    Math.max(loc1.getX(), loc.getX()),
+                    Math.max(loc1.getY(), loc.getY()),
+                    Math.max(loc1.getZ(), loc.getZ())
+            );
+
+            Vec3i size = new Vec3i(
+                    max.getX() - min.getX() + 1,
+                    max.getY() - min.getY() + 1,
+                    max.getZ() - min.getZ() + 1
+            );
+
+            StructureTemplate template = new StructureTemplate();
+            template.fillFromWorld(
+                    level,
+                    min,
+                    size,
+                    false,
+                    Blocks.AIR
+            );
+
+            structures.put(entity.getUUID(), template);
+
+            entity.sendSystemMessage(Component.literal("Saved structure").withColor(0xf5c56c));
+
+            return;
+        }
+
+        posBuffer.put(entity.getUUID(), loc);
+        entity.sendSystemMessage(Component.literal("Saved block pos: x = " + loc.getX()
+         + ", y = " + loc.getY() + ", z = " + loc.getZ() + "\n").withColor(0xf5c56c));
+    }
+
 
     private void split(Level level, LivingEntity entity){
         if(!(level instanceof ServerLevel serverLevel)) return;
@@ -124,6 +242,11 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
             envisioningToggle = (MindWorldAuthorityEnvisioningAbility) LOTMCraft.abilityHandler.getById("mind_world_authority_envisioning_ability");
 
         if(envisioningToggle == null) return;
+
+        if(!envisioning.contains(player.getUUID()))
+            envisioning.add(player.getUUID());
+        else
+            envisioning.remove(player.getUUID());
 
         envisioningToggle.useAbility((ServerLevel) level, player);
     }
@@ -324,6 +447,40 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
 
             player.setHealth(player.getMaxHealth());
             event.setCanceled(true);
+        }
+    }
+
+
+    private class Selection {
+        private BlockPos pos1;
+        private BlockPos pos2;
+
+        public void setPos1(BlockPos pos) {
+            this.pos1 = pos;
+        }
+
+        public void setPos2(BlockPos pos) {
+            this.pos2 = pos;
+        }
+
+        public boolean isComplete() {
+            return pos1 != null && pos2 != null;
+        }
+
+        public BlockPos getMin() {
+            return new BlockPos(
+                    Math.min(pos1.getX(), pos2.getX()),
+                    Math.min(pos1.getY(), pos2.getY()),
+                    Math.min(pos1.getZ(), pos2.getZ())
+            );
+        }
+
+        public BlockPos getMax() {
+            return new BlockPos(
+                    Math.max(pos1.getX(), pos2.getX()),
+                    Math.max(pos1.getY(), pos2.getY()),
+                    Math.max(pos1.getZ(), pos2.getZ())
+            );
         }
     }
 }

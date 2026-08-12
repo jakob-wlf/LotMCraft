@@ -11,11 +11,19 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class TheftAbility extends Ability {
     public TheftAbility(String id) {
         super(id, 1.75f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1400f, 1000f, 580f, 550f, 422f, 300f, 220f, 130f));
 
         canBeUsedByNPC = false;
     }
@@ -36,7 +44,9 @@ public class TheftAbility extends Ability {
             return;
         }
         if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 8 * (int) (multiplier(entity) * multiplier(entity)), 1.5f);
+
+        LivingEntity target = AbilityUtil.getTargetEntity(player, baseDistance, 1.5f);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));
             return;
