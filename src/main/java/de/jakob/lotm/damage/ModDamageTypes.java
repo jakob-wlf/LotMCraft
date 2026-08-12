@@ -91,15 +91,8 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> CURSE = key("curse");
     public static final ResourceKey<DamageType> THREAD = key("thread");
 
-    /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
-    public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
-    public static final ResourceKey<DamageType> HUNTER_FIRE = key("hunter_fire");
-    public static final ResourceKey<DamageType> SAILOR_LIGHTNING = key("sailor_lightning");
-
-    public static final ResourceKey<DamageType> MOTHER_GENERIC = key("mother_generic");
-    public static final ResourceKey<DamageType> DOOR_SPACE = key("door_space");
-    public static final ResourceKey<DamageType> DARKNESS_GENERIC = key("darkness_generic");
-    public static final ResourceKey<DamageType> DEMONESS_GENERIC = key("demoness_generic");
+    public static final ResourceKey<DamageType> HORROR = key("horror");
+    public static final ResourceKey<DamageType> DARKNESS = key("darkness");
 
     public static final ResourceKey<DamageType> SPIRIT_CALLED = key("spirit_called");
 

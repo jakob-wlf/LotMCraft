@@ -13,10 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IdentityConcealmentAbility extends SelectableAbility {
 
@@ -28,6 +25,12 @@ public class IdentityConcealmentAbility extends SelectableAbility {
         autoClear = false;
         cannotBeStolen = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 4, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f));
     }
 
     @Override
@@ -67,7 +70,7 @@ public class IdentityConcealmentAbility extends SelectableAbility {
                 10.0f,
                 1.0f);
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         ServerPlayer targetPlayer = (targetEntity instanceof ServerPlayer sp) ? sp : caster;
 

@@ -204,6 +204,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int rows = (int) Math.ceil((double) ids.size() / iconsPerRow);
         int visibleRows = (COPIED_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
+
         maxCopiedScroll = Math.max(0, rows - visibleRows);
         copiedScrollOffset = Math.min(copiedScrollOffset, maxCopiedScroll);
     }
@@ -212,6 +213,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int questsCount = ClientQuestData.getCompletedQuests().size();
         int lineHeight = this.font.lineHeight + 2;
         int visibleLines = (COMPLETED_QUESTS_HEIGHT - 20) / lineHeight;
+
         maxCompletedQuestsScroll = Math.max(0, questsCount - visibleLines);
     }
 
@@ -219,9 +221,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityWheelSlots.clear();
         this.abilityWheelSubIndexes.clear();
         this.abilityWheelIsCopied.clear();
+
         for (String id : abilityIds) {
             AbilityId parsed = AbilityId.parse(id);
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
+
             if (ability != null) {
                 this.abilityWheelSlots.add(ability);
                 this.abilityWheelSubIndexes.add(parsed.subIndex());

@@ -14,12 +14,20 @@ import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class LesserConcealmentAbility extends SelectableAbility {
     public LesserConcealmentAbility(String id) {
         super(id, 4f);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4, 6, 7));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 3000f, 1875f, 1680f));
     }
 
     @Override
@@ -37,7 +45,6 @@ public class LesserConcealmentAbility extends SelectableAbility {
         return new String[] {
                 "ability.lotmcraft.minor_concealment.conceal_self",
                 "ability.lotmcraft.minor_concealment.conceal_target"
-
         };
     }
 
@@ -55,13 +62,18 @@ public class LesserConcealmentAbility extends SelectableAbility {
         if(level.isClientSide) return;
 
         if(!(entity instanceof ServerPlayer player)) return;
-        int durationTicks =300*20*(10-BeyonderData.getSequence(entity));
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int durationTicks =20*getDuration(entitySeq);
         int totalPower= 10-BeyonderData.getSequence(entity);
+
         if (entity.hasEffect(ModEffects.CONCEALMENT)) {
             entity.removeEffect(ModEffects.CONCEALMENT);
-        }else{
+        }
+        else{
             entity.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, durationTicks, totalPower, false, false));
-        };
+        }
+
         level.playSound(null,
                 player.blockPosition(),
                 SoundEvents.AMETHYST_BLOCK_CHIME,
@@ -81,17 +93,32 @@ public class LesserConcealmentAbility extends SelectableAbility {
                 SoundSource.BLOCKS,
                 10.0f,
                 1.0f);
-            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+
+            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
             if(targetEntity == null){
                 return;
             }
-            int durationTicks =300*20*(10-BeyonderData.getSequence(entity));
+
+            int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+            int durationTicks =20*getDuration(entitySeq);
             int totalPower= 10-BeyonderData.getSequence(entity);
+
             if (targetEntity.hasEffect(ModEffects.CONCEALMENT)) {
                 targetEntity.removeEffect(ModEffects.CONCEALMENT);
             }else{
                 targetEntity.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, durationTicks, totalPower, false, false));
-            };
+            }
+        }
+
+        private int getDuration(int seq){
+        return switch (seq){
+          case 4 -> 20;
+          case 3 -> 30;
+          case 2 -> 50;
+          case 1 -> 60;
+          case 0 -> 80;
+            default -> 0;
         };
-};
+        }
+}
 
