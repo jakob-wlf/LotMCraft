@@ -36,6 +36,12 @@ public class HairEntanglementAbility extends Ability {
 
     public HairEntanglementAbility(String id) {
         super(id, 3);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4, 5, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(25000f, 10000f, 6000f, 3750f, 3900f));
     }
 
     @Override
@@ -64,7 +70,7 @@ public class HairEntanglementAbility extends Ability {
             animateParticleLine(new Location(startPos, level), targetLoc, 2, 1, duration);
         }
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity == null)
             return;
 
@@ -81,15 +87,17 @@ public class HairEntanglementAbility extends Ability {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(targetEntity);
         Location eLoc = new Location(targetEntity.position(), (ServerLevel) level);
+
         if(entitySeq < targetSeq) {
-            duration = 20 * 60*(int) multiplier;
+            duration = 20 * 20;
         }else if (entitySeq > targetSeq){
             if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = 35*(int) multiplier;
-            };
+                duration = 20;
+            }
         }else{
-            duration = 20 * 30*(int) multiplier/  (int) multiplier(targetEntity);
-        };
+            duration = 20 * 2;
+        }
+
         if(targetSeq > entitySeq-1 ) {
             if(targetEntity instanceof Mob) {
                 ((Mob) targetEntity).setNoAi(true);
@@ -97,9 +105,9 @@ public class HairEntanglementAbility extends Ability {
             }
             if(BeyonderData.isBeyonder(targetEntity)) {
                 boolean hasMorale = InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", targetSeq, targetEntity);
-                int durationmorale = hasMorale? 20*2:20*4;
-                double reduction = -4*multiplier(entity);
-                BeyonderData.addModifierWithTimeLimit(targetEntity, "hair_entanglement_multiplier_reduction", reduction, durationmorale);
+                int durationmorale = hasMorale? 20*2:20*3;
+
+                BeyonderData.addModifierWithTimeLimit(targetEntity, "hair_entanglement_multiplier_reduction", 0.8f, durationmorale);
             }
         }
 

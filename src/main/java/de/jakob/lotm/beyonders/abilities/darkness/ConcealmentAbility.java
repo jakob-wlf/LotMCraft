@@ -43,6 +43,12 @@ public class ConcealmentAbility extends SelectableAbility {
         autoClear = false;
         cannotBeStolen = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 4, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f));
     }
 
     @Override
@@ -57,10 +63,10 @@ public class ConcealmentAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.concealment.surroundings",
+        return new String[]{
+                "ability.lotmcraft.concealment.surroundings",
                 "ability.lotmcraft.concealment.enter_concealed_area",
                 "ability.lotmcraft.concealment.conceal_thoughts"
-
         };
     }
 
@@ -82,6 +88,12 @@ public class ConcealmentAbility extends SelectableAbility {
 
         // Only works for server players
         if(!(entity instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        if(BeyonderData.getSpirituality(entity) <= BeyonderData.
+                getMaxSpirituality(BeyonderData.getPathway(entity),
+                        BeyonderData.getSequence(entity)) * 0.7f){
             return;
         }
 
@@ -233,6 +245,12 @@ public class ConcealmentAbility extends SelectableAbility {
             return;
         }
 
+        if(BeyonderData.getSpirituality(entity) <= BeyonderData.
+                getMaxSpirituality(BeyonderData.getPathway(entity),
+                        BeyonderData.getSequence(entity)) * 0.7f){
+            return;
+        }
+
         EffectManager.playEffect(EffectManager.Effect.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2 * (int) (Math.max(multiplier(entity)/2,1)));
@@ -347,7 +365,6 @@ public class ConcealmentAbility extends SelectableAbility {
             return;
         }
         thoughtconcealedEntities.add(targetEntity.getUUID());
-        float multiplier_target = multiplier(targetEntity);
         int duration = 0;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
@@ -357,7 +374,7 @@ public class ConcealmentAbility extends SelectableAbility {
         }else if (entitySeq > targetEntitySeq){
             duration = 20 * 10;
         }else{
-            duration = 20 * 3;
+            duration = 20 * 4;
         }
 
         if(!BeyonderData.isBeyonder(targetEntity) || targetEntitySeq > entitySeq-1 ) {

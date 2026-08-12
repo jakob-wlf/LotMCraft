@@ -145,7 +145,7 @@ public abstract class Ability {
         }
 
         // Decrement ability if it was copied
-        if(!isCopied) {
+        if(isCopied) {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 

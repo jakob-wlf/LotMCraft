@@ -28,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,14 @@ public class MidnightPoemAbility extends SelectableAbility {
     public MidnightPoemAbility(String id) {
         super(id, 4f, "calming");
         interactionRadius = 20;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 4, 5, 5, 6, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(20000f, 7500f, 4200f, 2500f, 2340f, 1425f, 900f, 780f, 300f));
+
+        baseDamage = 10;
     }
 
     @Override
@@ -151,12 +160,16 @@ public class MidnightPoemAbility extends SelectableAbility {
         // Wilt damage is reduced by nearby light_source interactions
         Location loc = new Location(entity.position(), level);
         int seq = AbilityUtil.getSeqWithArt(entity, this);
-        float damageMult = InteractionHandler.isInteractionPossible(loc, "light_source", seq) ? 0.4f : 1f;
+        float damageMult = InteractionHandler.
+                isInteractionPossible(loc, "light_source", seq)
+                ? 0.4f : 1f;
+
+        float damage = baseDamage;
 
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity,
-                20 * multiplier(entity), DamageLookup.lookupDamage(8, 1.1) *
-                multiplier(entity)
-                * damageMult, entity.getEyePosition(), true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
+                20 , damage
+                * damageMult, entity.getEyePosition(), true, false,
+                ModDamageTypes.source(level, ModDamageTypes.DARKNESS, entity));
     }
 
     private void lullaby(Level level, LivingEntity entity) {
@@ -166,15 +179,21 @@ public class MidnightPoemAbility extends SelectableAbility {
         level.playSound(null, entity.blockPosition(), ModSounds.MIDNIGHT_POEM.get(), entity.getSoundSource(), 1.0f, 1.0f);
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 35 * (int)(Math.max(multiplier(entity)/20,1)));
 
-        int duration = (20 * 5 * (int)(Math.max(multiplier(entity)/2,1)));
+        int duration = (20 * 2);
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
 
         targets.forEach(target -> {
-            int actualDuration = AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(target)) ? 35* (int)(Math.max(multiplier(entity)/2,1)) : AbilityUtil.isTargetSignificantlyWeaker(seq, BeyonderData.getSequence(target)) ? 20 * 25 : duration;
+            int actualDuration = AbilityUtil.
+                    isTargetSignificantlyStronger(seq, BeyonderData.getSequence(target))
+                    ? 20 :
+                    AbilityUtil.isTargetSignificantlyWeaker(seq, BeyonderData.getSequence(target))
+                            ? 20 * 20 : duration;
+
             target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, actualDuration, 1, false, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, actualDuration, 5, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, actualDuration, 4, false, false, false));
+
             ServerScheduler.scheduleForDuration(0, 3, actualDuration, () -> {
                 target.setOnGround(true);
                 var pos = target.position();
@@ -208,21 +227,23 @@ public class MidnightPoemAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
 
-
         LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
         if(luckComponent.getLuck() < 0) {
-            int amplifier = Math.min(Math.round(multiplier(entity) * 750), 3000);
+            int amplifier = 200;
             luckComponent.addLuckWithMax(amplifier, 3000);
         }
-        entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((0.15f*(int)Math.max(multiplier(entity)/20,1)), entity);
+
+        entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(0.1f, entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * (int) (Math.max(multiplier(entity)/2,1))).forEach(e ->
+
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10).forEach(e ->
         {
-            e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (0.15f*(int)Math.max(multiplier(entity)/2,1)), e);
+            e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(0.1f, e);
             e.removeEffect(ModEffects.LOOSING_CONTROL);
+
             LuckComponent luckC = e.getData(ModAttachments.LUCK_COMPONENT);
             if(luckC.getLuck() < 0) {
-                int amplifier = Math.min(Math.round(multiplier(entity) * 750), 3000);
+                int amplifier = 200;
                 luckC.addLuckWithMax(amplifier, 3000);
             }
         });
@@ -238,33 +259,33 @@ public class MidnightPoemAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
 
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * (int) (Math.max(multiplier(entity)/10,1))).forEach(e ->
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10).forEach(e ->
         {
             float multiplier_target = multiplier(e);
             float multiplier = multiplier(entity);
             int duration =  0;
 
-            int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
             int targetEntitySeq = BeyonderData.getSequence(e);
 
-
             if(entitySeq < targetEntitySeq) {
-                duration = 20 * 35*(int) Math.max(multiplier/2,1)  / (int) Math.max(multiplier_target/2,1);
-            }else if (entitySeq > targetEntitySeq){
+                duration = 20 * 20;
+            }
+            else if (entitySeq > targetEntitySeq){
                 if (!BeyonderData.getPathway(e).equals("darkness")){
-                    duration = 35*(int) Math.max(multiplier/2,1);
-                };
-            }else{
-                duration = 20*10*(int)Math.max(multiplier(entity)/2,1)/ (int) Math.max(multiplier_target/2,1);
-            };
+                    duration = 20;
+                }
+            }
+            else{
+                duration = 20*3;
+            }
 
+            BeyonderData.addModifierWithTimeLimit(e, "poem_multiplier_reduction", 0.8, duration);
 
-
-
-            BeyonderData.addModifierWithTimeLimit(e, "poem_multiplier_reduction", 0.6, duration);
             e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, duration, 5, false, false, false));
             e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 4, false, false, false));
             e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 4, false, false, false));
+
             ServerScheduler.scheduleForDuration(0, 3, duration, () -> {
                 e.setOnGround(true);
                 var pos = e.position();
@@ -287,13 +308,12 @@ public class MidnightPoemAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, dustBig, entity.getEyePosition().subtract(0, .4, 0), 800, 7, 0);
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
 
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * (int) (Math.max(multiplier(entity)/10,1))).forEach(e ->
         {
             Location currentLoc = new Location(entity.position(), serverLevel);
-            int seq = AbilityUtil.getSeqWithArt(entity, this);
+
             boolean purified = InteractionHandler.isInteractionPossible(currentLoc, "purification", seq);
-            float multiplier = multiplier(entity);
-            float multiplier_target = multiplier(e);
             int duration =  0;
 
             int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
@@ -305,7 +325,7 @@ public class MidnightPoemAbility extends SelectableAbility {
                 duration = 20 * 5;
             }else{
                 duration = 20 * 2;
-            };
+            }
 
             if(!BeyonderData.isBeyonder(e) || targetEntitySeq > entitySeq-1 ) {
                 if(e instanceof Mob) {
@@ -321,6 +341,7 @@ public class MidnightPoemAbility extends SelectableAbility {
             e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 4, false, false, false));
             e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, duration, 4, false, false, false));
             e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 4, false, false, false));
+
             ServerScheduler.scheduleForDuration(0, 3, duration, () -> {
                 e.setOnGround(true);
                 var pos = e.position();

@@ -11,6 +11,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LightLayer;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -22,7 +23,7 @@ import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DarknessRevivalAbility extends PassiveAbilityItem {
-    private static final int MAX_LIGHT_LEVEL = 7;
+    private static final int MAX_LIGHT_LEVEL = 10;
     private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(20 / 255f, 0 / 255f, 40 / 255f), 2f);
 
     public DarknessRevivalAbility(Properties properties) {
@@ -48,8 +49,15 @@ public class DarknessRevivalAbility extends PassiveAbilityItem {
 
         if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
 
+        var pos = entity.blockPosition();
         // Must be at or below light level 7
-        int lightLevel = serverLevel.getMaxLocalRawBrightness(entity.blockPosition());
+        int lightLevel = serverLevel.getBrightness(LightLayer.BLOCK, pos);
+        int skyLightLevel = serverLevel.getBrightness(LightLayer.SKY, pos);
+        boolean isDay = serverLevel.isDay();
+
+        LOTMCraft.LOGGER.info("Day: {}, Light: {}, Sky: {}", isDay, lightLevel, skyLightLevel);
+
+        if(isDay && skyLightLevel > MAX_LIGHT_LEVEL) return;
         if (lightLevel > MAX_LIGHT_LEVEL) return;
 
         // Drain sanity — if not enough sanity (like around 5% ig), revival wont trigger
@@ -57,10 +65,9 @@ public class DarknessRevivalAbility extends PassiveAbilityItem {
         if (sanity.getSanity() < 0.05) return;
 
         event.setCanceled(true);
-        entity.setHealth(entity.getMaxHealth());
+        entity.setHealth(entity.getMaxHealth()/2);
 
-        // Drain sanity after revival (like 5%? idk im bad at math tbh)
-        sanity.increaseSanityAndSync(-1.1f, entity);
+        sanity.increaseSanityAndSync(-10f, entity);
 
         ParticleUtil.spawnParticles(serverLevel, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0),
                 40, .5, entity.getEyeHeight() / 2, .5, 0.1);

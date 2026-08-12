@@ -77,9 +77,6 @@ public class DamageResistanceHandler {
                 }
             }
 
-            LOTMCraft.LOGGER.info("AUTHORITY: godhood target seq {} - path {}",BeyonderData.getSequence(entity), BeyonderData.getPathway(entity));
-            LOTMCraft.LOGGER.info("AUTHORITY: godhood mult: {}, damage: {}", mult, damage);
-
             damage *= mult;
         }
 
@@ -100,8 +97,6 @@ public class DamageResistanceHandler {
 
             float resistance = AuthorityResistanceManager.getResistance(source,
                     BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
-
-            LOTMCraft.LOGGER.info("AUTHORITY: res {}, damage {}, result {}", resistance, damage, damage * resistance);
 
             float result = damage * resistance;
 
