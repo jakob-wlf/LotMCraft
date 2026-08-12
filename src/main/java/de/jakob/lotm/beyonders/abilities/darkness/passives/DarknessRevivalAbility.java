@@ -55,8 +55,6 @@ public class DarknessRevivalAbility extends PassiveAbilityItem {
         int skyLightLevel = serverLevel.getBrightness(LightLayer.SKY, pos);
         boolean isDay = serverLevel.isDay();
 
-        LOTMCraft.LOGGER.info("Day: {}, Light: {}, Sky: {}", isDay, lightLevel, skyLightLevel);
-
         if(isDay && skyLightLevel > MAX_LIGHT_LEVEL) return;
         if (lightLevel > MAX_LIGHT_LEVEL) return;
 

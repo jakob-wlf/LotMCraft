@@ -44,7 +44,6 @@ public class AnchoringEvents {
         float anchors = (float) BeyonderData.anchoringStorage.getAnchoring(name)
                 .getAnchoring() / 100;
 
-        LOTMCraft.LOGGER.info("{}: drain: {}, anchors: {}", name, drain, anchors);
 
         drain -= anchors;
         if(drain <= 0.0f) {
