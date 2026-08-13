@@ -123,6 +123,14 @@ public class SpaceConcealmentAbility extends SelectableAbility {
     }
 
     private void createConcealedSpace(ServerLevel level, LivingEntity entity, Vec3 center) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(playerSpaces.containsKey(entity.getUUID())){
+            var list = playerSpaces.get(entity.getUUID());
+
+            if(list.size() + 1 >= getMax(entitySeq)) return;
+        }
+
         ConcealedSpace space = new ConcealedSpace(center, level, 8, entity.getUUID());
 
         // Add to player's list of spaces
@@ -199,6 +207,17 @@ public class SpaceConcealmentAbility extends SelectableAbility {
             }
         }
         return false;
+    }
+
+    private static int getMax(int seq){
+        return switch (seq){
+            case 4 -> 1;
+            case 3 -> 2;
+            case 2 -> 4;
+            case 1 -> 5;
+            case 0 -> 7;
+            default -> 0;
+        };
     }
 
     private static class ConcealedSpace {

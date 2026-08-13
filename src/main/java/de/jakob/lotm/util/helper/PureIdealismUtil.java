@@ -3,6 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
@@ -47,11 +48,11 @@ public class PureIdealismUtil {
         component.setPathway(path);
 
         // Temporary discernment form, not a real advancement — must not trigger the acting cap
-        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        ActingCapHelper.skipNextCapApplication = true;
         try {
             BeyonderData.setBeyonder(entity, path, sequence,true, false, false, false, true, false);
         } finally {
-            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+            ActingCapHelper.skipNextCapApplication = false;
         }
         component.setDiscerning(true);
 
@@ -83,15 +84,17 @@ public class PureIdealismUtil {
 
         String path = component.getPathway();
 
+        float health = player.getMaxHealth() / player.getHealth();
+
         component.setSeq(LOTMCraft.NON_BEYONDER_SEQ);
         component.setPathway("none");
 
         // Restoring the real form after discernment — must not trigger the acting cap
-        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        ActingCapHelper.skipNextCapApplication = true;
         try {
             BeyonderData.setBeyonder(entity, "visionary", component.getPreviosSeq(),true, false, false, false, true, false);
         } finally {
-            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+            ActingCapHelper.skipNextCapApplication = false;
         }
         component.setDiscerning(false);
 
@@ -100,6 +103,8 @@ public class PureIdealismUtil {
         barData.setAbilities(component.getPreviousBar().getAbilities());
 
         component.syncData(player);
+
+        player.setHealth(player.getMaxHealth() * health);
 
         if(shouldDie) {
             entity.kill();
@@ -156,7 +161,9 @@ public class PureIdealismUtil {
         float current = player.getHealth();
         float limit = max * 0.6f;
 
-        if(current <= limit){
+        var sanity = player.getData(ModAttachments.SANITY_COMPONENT.get());
+
+        if(current <= limit || sanity.getSanity() <= 0.6f){
             PureIdealismUtil.stopDiscernment(player);
         }
 

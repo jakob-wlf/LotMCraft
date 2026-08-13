@@ -154,9 +154,6 @@ public class PlacateAbility extends SelectableAbility {
 
         var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1f, true, true);
 
-        if(target != null)
-            RingEffectManager.createRingForPlayer(target.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) entity.level(), player);
-
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         List<Prophecy> list;
         if(target instanceof ServerPlayer targetPlayer){
@@ -199,8 +196,6 @@ public class PlacateAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 18 , false, true)) {
             placateEntity(entity, e);
         }
@@ -209,10 +204,6 @@ public class PlacateAbility extends SelectableAbility {
     private void placateYourself(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-
-        level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
-        level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
         placateEntity(entity, entity);
     }
@@ -250,8 +241,8 @@ public class PlacateAbility extends SelectableAbility {
                     (ServerLevel) targetPlayer.level(), targetPlayer.getName().getString(), entitySeq);
         }
 
-        if(caster instanceof ServerPlayer player)
-            RingEffectManager.createRingForPlayer(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) caster.level(), player);
+//        if(caster instanceof ServerPlayer player)
+//            RingEffectManager.createRingForPlayer(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) caster.level(), player);
     }
 
     @Override

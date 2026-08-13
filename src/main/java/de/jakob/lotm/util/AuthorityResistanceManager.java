@@ -117,6 +117,14 @@ public class AuthorityResistanceManager {
         demoness.put(ModDamageTypes.CURSE, List.of(0f, 0.4f, 0.5f, 0.7f, 0.9f));
         resistances.put("demoness", demoness);
 
+        Map<ResourceKey<DamageType>, List<Float>> darkness = new HashMap<>();
+        darkness.put(ModDamageTypes.SPIRITUAL, List.of(0.5f, 0.6f, 0.7f, 0.8f, 0.9f));
+        darkness.put(ModDamageTypes.SOUL_BASED, List.of(0.9f, 0.95f, 0.96f, 0.97f, 0.98f));
+        darkness.put(ModDamageTypes.DARKNESS, List.of(0.0f, 0.4f, 0.6f, 0.9f));
+        darkness.put(ModDamageTypes.UNLUCK, List.of(0.5f, 0.6f, 0.7f, 0.8f, 0.9f));
+        darkness.put(ModDamageTypes.HORROR, List.of(0.0f, 0.4f, 0.6f, 0.9f));
+        darkness.put(ModDamageTypes.AWE, List.of(0.5f, 0.6f, 0.7f, 0.9f));
+        resistances.put("darkness", darkness);
 
 
         Map<ResourceKey<DamageType>, List<Float>> justiciar = new HashMap<>();

@@ -7,23 +7,34 @@ import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
@@ -159,10 +170,10 @@ public class ParasitationAbility extends SelectableAbility {
             pc.setParasited(false);
             pc.setParasiteUUID(null);
 
-            if (!lowerSeq) {
-                boolean killedBySteal = performExitSteal(serverLevel, player, host);
-                if (killedBySteal) MarionetteUtils.turnEntityIntoMarionette(host, player);
-            }
+//            if (!lowerSeq) {
+//                boolean killedBySteal = performExitSteal(serverLevel, player, host);
+//                if (killedBySteal) MarionetteUtils.turnEntityIntoMarionette(host, player);
+//            }
         }
     }
 
@@ -260,11 +271,19 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(serverPlayer.getUUID());
 
-        serverPlayer.setGameMode(GameType.SPECTATOR);
-        serverPlayer.setCamera(host);
+        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
+        if(scaleAttribute != null) {
+            scaleAttribute.addTransientModifier(new AttributeModifier
+                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+                            "parasite"),
+                            -1.0,
+                            AttributeModifier.Operation.ADD_VALUE));
+        }
+
+        PsychologicalInvisibilityAbility.addInvisFromOtherSkills(serverPlayer, BeyonderData.getSequence(serverPlayer) + 1);
     }
 
-    private void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
+    static private void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
         if (concealedMap.containsKey(serverPlayer.getUUID())) {
             Entity hostEntity = serverLevel.getEntity(concealedMap.get(serverPlayer.getUUID()));
             if (hostEntity instanceof LivingEntity host) {
@@ -275,31 +294,60 @@ public class ParasitationAbility extends SelectableAbility {
         }
         concealedMap.remove(serverPlayer.getUUID());
 
-        serverPlayer.setGameMode(GameType.SURVIVAL);
-        serverPlayer.setCamera(null);
+        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
+        if(scaleAttribute != null) {
+            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+                    "parasite"));
+        }
+
+        PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(serverPlayer);
     }
 
-    // to set the player as spectator when in concealment mode
+
     @SubscribeEvent
     public static void onPlayerTargetTick(PlayerTickEvent.Post event) {
         Player target = event.getEntity();
 
         if (!(target instanceof ServerPlayer serverTarget)) return;
+        if (!(serverTarget.level() instanceof ServerLevel serverLevel)) return;
 
         if (!isConcealed(serverTarget.getUUID())) return;
 
         UUID currentHostUUID = concealedMap.get(serverTarget.getUUID());
 
-        Entity host = serverTarget.serverLevel().getEntity(currentHostUUID);
+        Entity hostEntity = serverTarget.serverLevel().getEntity(currentHostUUID);
 
-        if (isConcealed(serverTarget.getUUID())) {
-            if (host != null) {
-                serverTarget.setGameMode(GameType.SPECTATOR);
-                serverTarget.setCamera(host);
-            } else {
-                serverTarget.setGameMode(GameType.SURVIVAL);
-                serverTarget.setCamera(serverTarget);
+        if (hostEntity == null || hostEntity.isRemoved() || !(hostEntity instanceof LivingEntity host)
+                || !host.isAlive()) {
+            cancelConcealed(serverLevel, serverTarget);
+            return;
+        }
+
+        Vec3 hostPos = host.position();
+        Vec3 floatPos = hostPos.add(0, host.getBbHeight() + 0.3, 0);
+        serverTarget.teleportTo(floatPos.x, floatPos.y, floatPos.z);
+        serverTarget.setDeltaMovement(Vec3.ZERO);
+
+        serverTarget.setBoundingBox(new AABB(
+                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ(),
+                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ()
+        ));
+        serverTarget.hurtMarked = true;
+
+        if (host instanceof Mob mob) {
+            if (mob.getTarget() != null && mob.getTarget().equals(serverTarget)) {
+                mob.setTarget(null);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
+        if (!(event.getLevel() instanceof ServerLevel level)) return;
+        if(!(event.getEntity() instanceof ServerPlayer entity)) return;
+
+        if (isConcealed(entity.getUUID())) {
+            cancelConcealed(level, entity);
         }
     }
 

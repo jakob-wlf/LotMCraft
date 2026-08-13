@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.parsing.packrat.Atom;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -27,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TravelersDoorEntity extends Entity {
     private double destX;
@@ -197,7 +199,17 @@ public class TravelersDoorEntity extends Entity {
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
 
+            AtomicBoolean stopped = new AtomicBoolean(false);
+
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
+                if(stopped.get()){
+                    return;
+                }
+
+                if(!entity.isAlive()){
+                    stopped.set(true);
+                }
+
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
