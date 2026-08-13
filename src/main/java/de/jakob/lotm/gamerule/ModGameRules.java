@@ -34,6 +34,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> SEQ_8_AMOUNT;
 
     public static GameRules.Key<GameRules.IntegerValue> AFTER_DEATH_REGRESSION_INVULNERABILITY;
+    public static GameRules.Key<GameRules.BooleanValue> APPLY_ANCHORING;
 
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
@@ -278,6 +279,12 @@ public class ModGameRules {
                                 value.set(0, server);
                             }
                         })
+        );
+
+        APPLY_ANCHORING = GameRules.register(
+                "applyAnchoring",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
         );
     }
 

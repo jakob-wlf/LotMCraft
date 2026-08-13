@@ -2,6 +2,7 @@ package de.jakob.lotm.addons.anchoring;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,6 +28,11 @@ public class AnchoringEvents {
                 && BeyonderData.getDigestionProgress(player) < 1.0f;
 
         String name = player.getName().getString();
+
+        if(player.level() instanceof ServerLevel level){
+            if(!level.getGameRules().getBoolean(ModGameRules.APPLY_ANCHORING))
+                return;
+        }
 
         if(player.tickCount % 40 == 0){
             if(player.level() instanceof ServerLevel level)

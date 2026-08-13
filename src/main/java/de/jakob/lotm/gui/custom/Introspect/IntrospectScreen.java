@@ -431,7 +431,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
                 int charStack = ClientBeyonderCache.getCharStack(this.minecraft.player.getUUID());
-                canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
+                canApotheosize = charStack >= 2;
             }
             final boolean finalCanApotheosize = canApotheosize;
 
@@ -2208,9 +2208,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         guiGraphics.blit(textureLocation, iconX, iconY, 0, 0, iconSize, iconSize, iconSize, iconSize);
 
-        int kills = ClientUniquenessCache.getKillCount();
-        Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
-        guiGraphics.drawString(this.font, killText, iconX + iconSize + 3, iconY + 4, 0xFFAA00, true);
+        //int kills = ClientUniquenessCache.getKillCount();
+        //Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
+        //guiGraphics.drawString(this.font, killText, iconX + iconSize + 3, iconY + 4, 0xFFAA00, true);
     }
 
     private void renderPassiveAbilitiesText(GuiGraphics guiGraphics, int x, int y) {
