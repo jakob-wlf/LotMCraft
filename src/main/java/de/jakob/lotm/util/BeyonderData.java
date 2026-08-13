@@ -318,6 +318,14 @@ public class BeyonderData {
 
     }
 
+    public static boolean hasRitual(LivingEntity entity){
+        return hasRitual(getSequence(entity) - 1);
+    }
+
+    public static boolean hasRitual(int seq){
+        return seq < 6 && seq >= 0;
+    }
+
     private static int getMaxWormAmount(int sequence) {
         return switch (sequence) {
             case 3 -> 60;

@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -142,7 +143,7 @@ public class BigSunEntity extends Entity {
         ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.FLAME, position(), 12.1f, 200);
         ParticleUtil.spawnSphereParticles(serverLevel, ParticleTypes.END_ROD, position(), 12.1f, 180);
 
-        AbilityUtil.damageNearbyEntities(serverLevel, getOwnerEntity(), 120, getDamage(), position(), true, false, 20 * 2);
+        AbilityUtil.damageNearbyEntities(serverLevel, getOwnerEntity(), 120, ModDamageTypes.LIGHT, getDamage(), position(), true, false, 20 * 2);
 
         if(tickCount >= 20 * 30) {
             this.remove(RemovalReason.DISCARDED);

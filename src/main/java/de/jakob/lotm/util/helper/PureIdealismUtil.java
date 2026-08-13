@@ -3,16 +3,22 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -162,6 +168,21 @@ public class PureIdealismUtil {
 
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(component.getPreviosSeq())){
             PureIdealismUtil.stopDiscernment(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+
+        var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(!component.isDiscerning()) return;
+
+        ItemStack stack = event.getItemStack();
+
+        if(stack.getItem() instanceof BeyonderPotion ||
+                stack.getItem() instanceof BeyonderCharacteristicItem){
+            event.setCanceled(true);
         }
     }
 }

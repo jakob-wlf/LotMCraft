@@ -154,6 +154,17 @@ public class AdvancementUtil {
     // onSuccessPreSet runs before setBeyonder if non-null.
     private static void executeAdvancement(LivingEntity entity, String pathway, int sequence,
                                            double failureChance, Runnable onSuccessPreSet) {
+
+
+        if(entity instanceof ServerPlayer player) {
+            if (hasRitual(sequence)) {
+                var component = player.getData(ModAttachments.RITUALS.get());
+
+                if(!component.isCompleted())
+                    failureChance = 100.0;
+            }
+        }
+
         int duration = calculateAdvancementDuration(sequence);
         StartAdvanceSequencePathwayEvent event = postAdvancementEvent(entity, sequence, pathway, failureChance, duration);
 
@@ -176,6 +187,9 @@ public class AdvancementUtil {
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
             sendThirdPersonPacket(entity);
+
+            entity.resetFallDistance();
+            entity.fallDistance = 0;
         });
     }
 
