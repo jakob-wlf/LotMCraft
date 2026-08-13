@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -162,6 +163,8 @@ public class AdvancementUtil {
 
                 if(!component.isCompleted())
                     failureChance = 100.0;
+
+                RitualEffectHandlerEvent.removeRitual(player);
             }
         }
 

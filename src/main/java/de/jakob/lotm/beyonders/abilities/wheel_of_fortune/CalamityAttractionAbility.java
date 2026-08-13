@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Calamity;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Meteor;
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class CalamityAttractionAbility extends Ability {
+public class CalamityAttractionAbility extends SelectableAbility {
     public CalamityAttractionAbility(String id) {
         super(id, 10);
 
@@ -48,7 +50,32 @@ public class CalamityAttractionAbility extends Ability {
     private final Calamity[] calamities = new Calamity[]{new Tornado(), new Earthquake(), new Meteor()};
 
     @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
+    protected String[] getAbilityNames() {
+        return new String[]{
+                "ability.lotmcraft.calamity_attraction.calamity",
+                "ability.lotmcraft.calamity_attraction.unluck"
+        };
+    }
+
+    @Override
+    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
+        switch (selectedAbility){
+            case 0 -> calamity(level, entity);
+            case 1 -> unluck(level, entity);
+        }
+    }
+
+    private void unluck(Level level, LivingEntity entity){
+        if(!(level instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        var component = player.getData(ModAttachments.LUCK_COMPONENT.get());
+        component.addLuckWithMin(-500, -5000);
+    }
+
+    private void calamity(Level level, LivingEntity entity){
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }

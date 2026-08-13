@@ -51,9 +51,13 @@ public class PassiveLuckAbility extends PassiveAbilityItem {
             return;
         }
         LuckComponent component = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        //if (component.getLuck() >= getLuckLevelForSequence(sequence)) {return;};
-        if(component.getLuck() < getLuckLevelForSequence(sequence)) {
-            component.setLuck(component.getLuck() + (int) Math.round(5 * BeyonderData.getMultiplier(entity)));
+
+        if(entity.tickCount % 200 == 0) {
+            if (component.getLuck() < getLuckLevelForSequence(sequence)) {
+                int rate = getLuckRate(sequence);
+
+                component.setLuck(component.getLuck() + rate);
+            }
         }
     }
 
@@ -71,4 +75,17 @@ public class PassiveLuckAbility extends PassiveAbilityItem {
         };
     }
 
+    private int getLuckRate(int seq){
+        return switch (seq){
+            case 7 -> 1;
+            case 6 -> 1;
+            case 5 -> 30;
+            case 4 -> 100;
+            case 3 -> 125;
+            case 2 -> 200;
+            case 1 -> 250;
+            case 0 -> 300;
+            default -> 0;
+        };
+    }
 }

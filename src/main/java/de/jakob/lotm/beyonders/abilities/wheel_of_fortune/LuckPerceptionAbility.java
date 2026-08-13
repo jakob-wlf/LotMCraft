@@ -79,7 +79,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("wheel_of_fortune", 5));
+        return new HashMap<>(Map.of("wheel_of_fortune", 8));
     }
 
     @Override
