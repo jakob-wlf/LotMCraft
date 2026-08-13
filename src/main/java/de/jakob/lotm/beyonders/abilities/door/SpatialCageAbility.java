@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -18,6 +19,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -85,6 +87,12 @@ public class SpatialCageAbility extends SelectableAbility {
             List<BlockPos> barrierBlocks = new ArrayList<>();
 
             BlockPos center = BlockPos.containing(position);
+            var livingOwner = (LivingEntity) level.getEntity(owner);
+            boolean griefing = false;
+
+            if(livingOwner != null){
+                griefing = BeyonderData.isGriefingEnabled(livingOwner);
+            }
 
             for (int x = -radius; x <= radius; x++) {
                 for (int y = -radius; y <= radius; y++) {
@@ -95,6 +103,12 @@ public class SpatialCageAbility extends SelectableAbility {
 
                         if (distSq <= outerRadius * outerRadius && distSq > innerRadius * innerRadius) {
                             BlockPos blockPos = center.offset(x, y, z);
+
+                            BlockState state = level.getBlockState(blockPos);
+
+                            if (!griefing && !state.canBeReplaced()) {
+                                continue;
+                            }
 
                             if (isFrontOpen) {
                                 Vec3 blockVec = new Vec3(x, y, z).normalize();

@@ -3,10 +3,13 @@ package de.jakob.lotm.beyonders.abilities.fool.ShapeShifting;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -55,7 +58,8 @@ public class ShapeShiftingEntityTracker {
 
         List<Entity> nearbyEntities = player.level().getEntities(player,
                 player.getBoundingBox().inflate(RADIUS),
-                e -> e != player && e.isAlive() && (e instanceof Mob || e instanceof ServerPlayer));
+                e -> e != player && e.isAlive() && (e instanceof Mob || e instanceof ServerPlayer)
+        && !((LivingEntity) e).hasEffect(MobEffects.INVISIBILITY) && !VisionaryHandler.isInvisible((LivingEntity) e));
 
         Set<String> currentlyNearby = new HashSet<>();
 
