@@ -56,7 +56,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         canBeUsedInArtifact = false;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 25f, 20f, 20f, 13f, 10f));
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 25f, 13f, 10f, 7f, 5f));
     }
 
     @Override
