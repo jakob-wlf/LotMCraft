@@ -15,7 +15,13 @@ public class RitualDescriptionHelper {
         wof.put(2, "Set a prophecy on sequence 2+ player and make it true no matter what\n" +
                 "(To make a prophecy type in chat - \"Nickname_of_target will die\")");
         wof.put(1, "Make visionary beyonder place sleep, stun and seal on you");
+        wof.put(0, "Wait for the right opportunity");
         description.put("wheel_of_fortune", wof);
+
+        Map<Integer, String> visionary = new HashMap<>();
+        visionary.put(5, "Find a way to immerse in a dream and be unwilling to wake up. Then find a way to wake up");
+        visionary.put(4, "Be in the middle of massive event");
+        description.put("visionary", visionary);
     }
 
     public static String getRitualDescription(String path, int seq){

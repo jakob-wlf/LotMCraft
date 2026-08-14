@@ -55,6 +55,7 @@ public abstract class ActionBase {
             case SPIRITUALITY -> SpiritualityAction.load(tag, provider);
             case PLAYER -> PlayerAction.load(tag,provider);
             case EMPTY -> EmptyAction.load(tag, provider);
+            case WAKE_UP -> WakeUpAction.load(tag, provider);
         };
     }
 
@@ -83,6 +84,7 @@ public abstract class ActionBase {
             case SPIRITUALITY -> new SpiritualityAction(context);
             case PLAYER -> new PlayerAction(context);
             case EMPTY -> new EmptyAction(context);
+            case WAKE_UP -> new WakeUpAction(context);
         };
     }
 }

@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.jakob.lotm.addons.rituals.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "VisionarySleepMixin",
+    "VisionarySleepStatusMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
