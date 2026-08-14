@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.visionary.Seq2;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -12,6 +13,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -129,6 +131,21 @@ public class DreamWeaveAbility extends SelectableAbility {
             if (!mob.isRemoved()) mob.discard();
             removeMob(target.getUUID(), mob);
         });
+
+        if(entity instanceof ServerPlayer player) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                if (!Seq2.map.containsKey(player.getUUID())) {
+                    Seq2.map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
+                } else {
+                    var list = Seq2.map.get(player.getUUID());
+                    if (list.contains(targetPlayer.getUUID()))
+                        return;
+
+                    list.add(targetPlayer.getUUID());
+                    Seq2.map.put(player.getUUID(), list);
+                }
+            }
+        }
     }
 
     // Spawns 3 mobs, 3 sequences below the caster
@@ -171,6 +188,21 @@ public class DreamWeaveAbility extends SelectableAbility {
             }
             removeAllMobs(target.getUUID(), mobs);
         });
+
+        if(entity instanceof ServerPlayer player) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                if (!Seq2.map.containsKey(player.getUUID())) {
+                    Seq2.map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
+                } else {
+                    var list = Seq2.map.get(player.getUUID());
+                    if (list.contains(targetPlayer.getUUID()))
+                        return;
+
+                    list.add(targetPlayer.getUUID());
+                    Seq2.map.put(player.getUUID(), list);
+                }
+            }
+        }
     }
 
 

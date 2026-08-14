@@ -38,6 +38,17 @@ public class RitualDescriptionHelper {
         tyrant.put(1, "Kill 3 angel players. Alternatively: kill 1 True Deity or 2 King of Angles");
         tyrant.put(0, "Become leader of level 3 faction and survive direct attack of True Deity");
         description.put("tyrant", tyrant);
+
+        Map<Integer, String> sun = new HashMap<>();
+        sun.put(5, "Drink the potion in pure darkness and buried in packed ice");
+        sun.put(4, "Drink the potion in unstable state");
+        sun.put(3, "Kill at least " + de.jakob.lotm.addons.rituals.sun.Seq3.AMOUNT
+        + " demigods while following your justice");
+        sun.put(2, "Find an item with at least an Angel-rank authority and a deep connection to the Sun in mysticism");
+        sun.put(1, "Become worshipped");
+        sun.put(0, "Immerse into the deep void while being almost dead with darkness corruption.\n" +
+                "Note: you must be almost dead both physically and mentally");
+        description.put("sun", sun);
     }
 
     public static String getRitualDescription(String path, int seq){

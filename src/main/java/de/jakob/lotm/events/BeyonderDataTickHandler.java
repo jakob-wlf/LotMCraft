@@ -169,9 +169,7 @@ public class BeyonderDataTickHandler {
             return;
         }
 
-        if(player.getY() < -200 && !VoidImmunityAbility.IMMUNE_ENTITIES.contains(player)) {
-            player.kill();
-        }
+
 
         if (BeyonderData.isBeyonder(player)) {
             // Regenerate Spirituality

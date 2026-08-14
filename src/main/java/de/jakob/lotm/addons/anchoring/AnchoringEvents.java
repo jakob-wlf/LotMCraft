@@ -2,6 +2,7 @@ package de.jakob.lotm.addons.anchoring;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
@@ -10,6 +11,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 @EventBusSubscriber
@@ -51,9 +53,23 @@ public class AnchoringEvents {
                 .getAnchoring() / 100;
 
 
+
         drain -= anchors;
         if(drain <= 0.0f) {
             return;
+        }
+
+        var component = player.getData(ModAttachments.SANITY_COMPONENT.get());
+        component.decreaseSanityAndSync(drain, player);
+    }
+
+    private static void onVoidDrain(PlayerTickEvent.Post event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        float drain = 0.0f;
+
+        if(player.getY() < -200 && !VoidImmunityAbility.IMMUNE_ENTITIES.contains(player)) {
+            drain += 0.1f;
         }
 
         var component = player.getData(ModAttachments.SANITY_COMPONENT.get());

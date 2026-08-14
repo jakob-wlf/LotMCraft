@@ -27,8 +27,8 @@ public class RitualCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("rituals")
-                .then(info())
                 .requires(source -> source.hasPermission(2))
+                .then(info())
                 .then(setComplete())
         );
     }

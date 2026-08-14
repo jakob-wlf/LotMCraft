@@ -19,7 +19,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq3 {
-    private static final int AMOUNT = 25;
+    private static final int AMOUNT = 35;
     private static final Set<UUID> set = new HashSet<>();
 
     @SubscribeEvent

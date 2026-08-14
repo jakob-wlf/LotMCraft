@@ -18,7 +18,7 @@ import java.util.*;
 )
 public class Seq2 {
     private static final int AMOUNT = 20;
-    private static final Map<UUID, List<UUID>> map = new HashMap<>();
+    public static final Map<UUID, List<UUID>> map = new HashMap<>();
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -40,29 +40,29 @@ public class Seq2 {
         }
     }
 
-    @SubscribeEvent
-    private static void onSkillUsage(AbilityUsedEvent event){
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
-        if(!(player.level() instanceof ServerLevel level))return;
-        if(!BeyonderData.getPathway(player).equals("visionary") ||
-                BeyonderData.getSequence(player) != 3) return;
-
-        if(event.getAbility().getId().equals("dream_weave_ability")){
-            var target = event.getAbilityTarget();
-
-            if(target instanceof ServerPlayer targetPlayer){
-                if(!map.containsKey(player.getUUID())){
-                    map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
-                }
-                else{
-                    var list = map.get(player.getUUID());
-                    if(list.contains(targetPlayer.getUUID()))
-                        return;
-
-                    list.add(targetPlayer.getUUID());
-                    map.put(player.getUUID(), list);
-                }
-            }
-        }
-    }
+//    @SubscribeEvent
+//    private static void onSkillUsage(AbilityUsedEvent event){
+//        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+//        if(!(player.level() instanceof ServerLevel level))return;
+//        if(!BeyonderData.getPathway(player).equals("visionary") ||
+//                BeyonderData.getSequence(player) != 3) return;
+//
+//        if(event.getAbility().getId().equals("dream_weave_ability")){
+//            var target = event.getAbilityTarget();
+//
+//            if(target instanceof ServerPlayer targetPlayer){
+//                if(!map.containsKey(player.getUUID())){
+//                    map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
+//                }
+//                else{
+//                    var list = map.get(player.getUUID());
+//                    if(list.contains(targetPlayer.getUUID()))
+//                        return;
+//
+//                    list.add(targetPlayer.getUUID());
+//                    map.put(player.getUUID(), list);
+//                }
+//            }
+//        }
+//    }
 }

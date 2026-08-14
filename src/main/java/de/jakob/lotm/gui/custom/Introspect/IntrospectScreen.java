@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualDescriptionHelper;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
@@ -22,6 +23,7 @@ import de.jakob.lotm.util.helper.ClientTeamData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -442,6 +444,15 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             })
                     .bounds(apotheosisButtonX, apotheosisButtonY, 60, 20)
                     .build();
+
+            apotheosisButton.setTooltip(
+                    Tooltip.create(
+                            Component.literal(
+                                    RitualDescriptionHelper.getRitualDescription(menu.getPathway(),
+                                            menu.getSequence()-1)
+                            )
+                    ));
+
             apotheosisButton.active = finalCanApotheosize;
             this.addRenderableWidget(apotheosisButton);
         }

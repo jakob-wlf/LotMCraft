@@ -13,6 +13,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class Seq2 {
     private static HashMap<UUID, String> nameMap = new HashMap<>();
     public static final int FAIL_TIME = 3600;
     private static final HashMap<UUID, Long> timestamp = new HashMap<>();
+    private static String victimMsg = "Your fate grows dangerous";
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -92,7 +94,22 @@ public class Seq2 {
             component.setStage(1);
 
             nameMap.put(player.getUUID(), name);
+            if(player.level() instanceof ServerLevel level) {
+                var victim = level.getPlayerByUUID(id);
+
+                if(victim == null) return;
+
+                victim.sendSystemMessage(Component.literal(victimMsg).withStyle(ChatFormatting.DARK_RED));
+            }
         }
+    }
+
+    @SubscribeEvent
+    private static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if(!nameMap.containsValue(player.getName().getString())) return;
+
+        player.sendSystemMessage(Component.literal(victimMsg).withStyle(ChatFormatting.DARK_RED));
     }
 
     @SubscribeEvent
