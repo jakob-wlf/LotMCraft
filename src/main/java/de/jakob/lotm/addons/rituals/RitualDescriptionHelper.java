@@ -21,6 +21,10 @@ public class RitualDescriptionHelper {
         Map<Integer, String> visionary = new HashMap<>();
         visionary.put(5, "Find a way to immerse in a dream and be unwilling to wake up. Then find a way to wake up");
         visionary.put(4, "Be in the middle of massive event");
+        visionary.put(3, "Cause significant amount of players to be asleep at the same time");
+        visionary.put(2, "Uncover deepest fear of significant amount of players");
+        visionary.put(1, "Write a story that involves at least half of the server");
+        visionary.put(0, "Write a story that involves the entire server");
         description.put("visionary", visionary);
     }
 

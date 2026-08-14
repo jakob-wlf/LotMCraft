@@ -84,12 +84,8 @@ public class TriggerHelper {
     public static @Nullable TriggerBase deduceWithoutAction(String str, int casterSeq){
         TokenStream stream = new TokenStream(str);
 
-        LOTMCraft.LOGGER.info("In construct - str: {}, stream: {}", str, stream.toString());
-
         String nick = stream.peek();
         UUID id = BeyonderData.playerMap.getKeyByName(nick);
-
-        LOTMCraft.LOGGER.info("In construct - nick: {}", nick);
 
         if(id == null) return null;
 
@@ -103,15 +99,11 @@ public class TriggerHelper {
 
         if(type == null) return null;
 
-        LOTMCraft.LOGGER.info("In construct - type: {}", type.toString());
-
         var contextType = getContextType(type);
         if(contextType == null) return null;
 
         var context = TriggerContextBase.create(contextType, id);
         context.fillFromStream(stream);
-
-        LOTMCraft.LOGGER.info("In construct - context: {}", context.toString());
 
         EmptyAction emptyAction = (EmptyAction) ActionBase.create(ActionsEnum.EMPTY,
                 ActionContextBase.create(ActionContextEnum.EMPTY, id));
