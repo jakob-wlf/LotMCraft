@@ -29,6 +29,7 @@ public class FactionCore {
 
     private List<WarInfo> atWar;
     private int totalWins;
+    private int totalWinsAggressor;
 
     public FactionCore(String leader, int id, int type){
         this.id = id;
@@ -49,6 +50,7 @@ public class FactionCore {
 
         atWar = new LinkedList<>();
         totalWins = 0;
+        totalWinsAggressor = 0;
     }
 
     public static int getNoblesAmountPerLevel(int level){
@@ -363,6 +365,7 @@ public class FactionCore {
                 + "\nNobles: " + convertNobles()
                 + "\nCitizens: " + convertCitizens()
                 + "\nTotal wins: " + totalWins
+                + "\nTotal wins as aggressor: " + totalWinsAggressor
                 + "\nAt war: " + convertAtWar()
                 ;
     }
@@ -465,6 +468,9 @@ public class FactionCore {
         totalWins = value;
     }
 
+    public int getTotalWinsAggressor(){return totalWinsAggressor;}
+    public void setTotalWinsAggressor(int value) {totalWinsAggressor = value;}
+
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putInt("level", level);
         tag.putString("leader", leader);
@@ -523,6 +529,7 @@ public class FactionCore {
         tag.put("at_war", wars);
 
         tag.putInt("total_wins", totalWins);
+        tag.putInt("total_wins_a", totalWinsAggressor);
 
         return tag;
     }
@@ -582,6 +589,7 @@ public class FactionCore {
         }
 
         faction.totalWins = tag.getInt("total_wins");
+        faction.totalWinsAggressor = tag.getInt("total_wins_a");
 
         return faction;
     }

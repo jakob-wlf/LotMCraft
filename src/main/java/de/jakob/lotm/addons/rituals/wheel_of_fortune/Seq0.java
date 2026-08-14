@@ -25,8 +25,7 @@ public class Seq0 {
         Random random = new Random();
         var server = event.getServer();
 
-        //604800
-        if (server.getTickCount() % 20 == 0 && random.nextInt(100) == 0) {
+        if (server.getTickCount() % 20 == 0 && random.nextInt(604800) == 0) {
             for(var player : server.getPlayerList().getPlayers()){
                 if (!BeyonderData.getPathway(player).equals("wheel_of_fortune") ||
                         BeyonderData.getSequence(player) != 1) continue;

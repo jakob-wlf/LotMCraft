@@ -46,6 +46,10 @@ public class FactionStorage extends SavedData {
         return lastOnline.entrySet();
     }
 
+    public Set<Map.Entry<Integer, FactionCore>> getAllFactions(){
+        return factions.entrySet();
+    }
+
     public void levelUp(int id) {
         var faction = factions.get(id);
 
@@ -477,8 +481,11 @@ public class FactionStorage extends SavedData {
         for(var winnerId : winnersId) {
             var winner = factions.get(winnerId);
 
-            if(winner.getLevel() <= looserLevel)
+            if(winner.getLevel() <= looserLevel) {
                 winner.setTotalWins(winner.getTotalWins() + 1);
+                if(winner.isAggressor(looserId))
+                    winner.setTotalWinsAggressor(winner.getTotalWinsAggressor() + 1);
+            }
             winner.removeAtWar(looserId);
 
             factions.put(winnerId, winner);

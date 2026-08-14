@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import de.jakob.lotm.addons.factions.FactionCore;
 import de.jakob.lotm.addons.rituals.RitualDescriptionHelper;
+import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
@@ -74,7 +75,10 @@ public class RitualCommand {
                                         return 0;
                                     }
 
-                                    player.getData(ModAttachments.RITUALS.get()).setCompleted(value);
+                                    if(value)
+                                        player.getData(ModAttachments.RITUALS.get()).setCompleted(value);
+                                    else
+                                        RitualEffectHandlerEvent.removeRitualWithMessage(player);
 
                                     source.sendSystemMessage(Component.literal("Set completion status to " + value + "\n").withStyle(ChatFormatting.GREEN));
                                     return 0;

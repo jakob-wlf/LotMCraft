@@ -60,6 +60,18 @@ public class RitualEffectHandlerEvent {
         timestamp.remove(player.getUUID());
     }
 
+    public static void removeRitualWithMessage(ServerPlayer player){
+        var component = player.getData(ModAttachments.RITUALS.get());
+
+        player.sendSystemMessage(Component.literal("The effect of ritual has faded!")
+                .withStyle(ChatFormatting.RED));
+
+        component.setCompleted(false);
+        component.setStage(0);
+
+        timestamp.remove(player.getUUID());
+    }
+
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {

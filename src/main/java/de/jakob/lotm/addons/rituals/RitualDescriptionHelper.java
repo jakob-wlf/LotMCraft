@@ -1,5 +1,7 @@
 package de.jakob.lotm.addons.rituals;
 
+import de.jakob.lotm.addons.rituals.tyrant.Seq3;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,16 @@ public class RitualDescriptionHelper {
         visionary.put(1, "Write a story that involves at least half of the server");
         visionary.put(0, "Write a story that involves the entire server");
         description.put("visionary", visionary);
+
+        Map<Integer, String> tyrant = new HashMap<>();
+        tyrant.put(5, "Find an ancient ocean guardian");
+        tyrant.put(4, "Drink potion while facing natural disaster");
+        tyrant.put(3, "Declare ocean as your domain, then kill anyone who is in it (if you kill the player - it will have greater effect). To declare - type this in chat:\n"+
+                Seq3.message);
+        tyrant.put(2, "Make your faction win a war, but you must not be an aggressor");
+        tyrant.put(1, "Kill 3 angel players. Alternatively: kill 1 True Deity or 2 King of Angles");
+        tyrant.put(0, "Become leader of level 3 faction and survive direct attack of True Deity");
+        description.put("tyrant", tyrant);
     }
 
     public static String getRitualDescription(String path, int seq){
