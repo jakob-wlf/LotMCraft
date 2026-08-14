@@ -38,6 +38,8 @@ public class ActionsHelper {
             case "double" -> ActionsEnum.DOUBLE;
             case "spirituality" -> ActionsEnum.SPIRITUALITY;
             case "player" -> ActionsEnum.PLAYER;
+            case "aggro" -> ActionsEnum.AGGRO;
+            case "move" -> ActionsEnum.MOVE;
             default -> null;
         };
     }
@@ -67,6 +69,8 @@ public class ActionsHelper {
             case SPIRITUALITY -> ActionContextEnum.NUMBER;
             case PLAYER -> ActionContextEnum.STRING;
             case EMPTY -> ActionContextEnum.EMPTY;
+            case AGGRO -> ActionContextEnum.EMPTY;
+            case MOVE -> ActionContextEnum.POSITION;
         };
     }
 

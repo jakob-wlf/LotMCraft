@@ -25,7 +25,9 @@ public enum ActionsEnum {
     DOUBLE,
     SPIRITUALITY,
     PLAYER,
-    EMPTY
+    EMPTY,
+    AGGRO,
+    MOVE
     ;
 
     public static ActionsEnum fromNBT(CompoundTag tag, String key) {
