@@ -34,6 +34,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
@@ -342,6 +343,19 @@ public class ParasitationAbility extends SelectableAbility {
     }
 
     @SubscribeEvent
+    public static void onDamage(LivingIncomingDamageEvent event) {
+        var entity = event.getEntity();
+        if (!(entity.level() instanceof ServerLevel level)) return;
+        if((!(entity instanceof ServerPlayer player))) return;
+
+        if (concealedMap.containsKey(entity.getUUID())) {
+            if (event.getSource().is(ModDamageTypes.MIND)) {
+                cancelConcealed(level, player);
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
         if (!(event.getLevel() instanceof ServerLevel level)) return;
         if(!(event.getEntity() instanceof ServerPlayer entity)) return;
@@ -403,4 +417,5 @@ public class ParasitationAbility extends SelectableAbility {
     public static boolean isControlling(UUID uuid) {
         return controllingMap.containsKey(uuid);
     }
+
 }

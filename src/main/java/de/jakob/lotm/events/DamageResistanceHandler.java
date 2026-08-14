@@ -43,7 +43,6 @@ public class DamageResistanceHandler {
 
             float mult = 1f;
             int sourceSeq = AuthorityResistanceManager.getFromBuffer(livingSource);
-            AuthorityResistanceManager.removeFromBuffer(livingSource);
 
             if (BeyonderData.isBeyonder(entity) || entity instanceof ServerPlayer) {
 

@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.implementations;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextEnum;
 import net.minecraft.core.HolderLookup;
@@ -8,28 +10,26 @@ import net.minecraft.nbt.CompoundTag;
 
 import java.util.UUID;
 
-public class TriggerStringContext extends TriggerContextBase {
-    public String string;
+public class TriggerChainContext extends TriggerContextBase {
+    public String trigger = "";
 
-    public static String NBT_STRING = "string";
+    public static String NBT_TRIGGER_STR = "trigger_str";
 
-    public TriggerStringContext(UUID entityId) {
+    public TriggerChainContext(UUID entityId) {
         super(entityId);
-
-        string = "";
     }
 
     @Override
     public TriggerContextEnum getType() {
-        return TriggerContextEnum.STRING;
+        return TriggerContextEnum.CHAIN;
     }
 
     @Override
     public TriggerContextBase fillFromStream(TokenStream stream) {
         stream.next();
 
-        while (stream.peek() != null && !stream.match("then")){
-            string += stream.peek() + " ";
+        while (!stream.isEmpty() && !stream.match("then")){
+            trigger += stream.peek() + " ";
             stream.next();
         }
 
@@ -40,14 +40,14 @@ public class TriggerStringContext extends TriggerContextBase {
     public CompoundTag toNBT(HolderLookup.Provider provider) {
         var tag = super.toNBT(provider);
 
-        tag.putString(NBT_STRING, string);
+        tag.putString(NBT_TRIGGER_STR, trigger);
 
         return tag;
     }
 
-    public static TriggerStringContext load(CompoundTag tag, UUID id, HolderLookup.Provider provider) {
-        TriggerStringContext  context = new TriggerStringContext (id);
-        context.string = tag.getString(NBT_STRING);
+    public static TriggerChainContext load(CompoundTag tag, UUID id, HolderLookup.Provider provider) {
+        TriggerChainContext context = new TriggerChainContext(id);
+        context.trigger = tag.getString(NBT_TRIGGER_STR);
 
         return context;
     }

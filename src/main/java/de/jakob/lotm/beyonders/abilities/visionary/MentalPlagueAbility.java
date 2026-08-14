@@ -92,13 +92,7 @@ public class MentalPlagueAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-            return;
-        }
-
-        if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, targetSeq)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.target_too_strong").withColor(0xf5ca7f));
             return;
         }
 

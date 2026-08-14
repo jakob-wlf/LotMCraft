@@ -307,7 +307,7 @@ public class DreamTraversalAbility extends SelectableAbility {
         if (!(entity.level() instanceof ServerLevel level)) return;
 
         if (isHiding(entity.getUUID())) {
-            if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+            if (event.getSource().is(ModDamageTypes.MIND)) {
                 cancelHide(level, entity);
             } else {
                 event.setAmount(0.0f);

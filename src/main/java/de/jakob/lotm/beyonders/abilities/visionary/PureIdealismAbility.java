@@ -185,7 +185,7 @@ public class PureIdealismAbility extends SelectableAbility {
     private static int getMeditationDuration(int seq, int targetSeq){
         int diff = 10 - (targetSeq - seq);
 
-        return 50 * diff;
+        return 360 * diff;
     }
 
     @SubscribeEvent

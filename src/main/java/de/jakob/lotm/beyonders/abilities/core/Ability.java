@@ -192,6 +192,7 @@ public abstract class Ability {
 
     public void clearArtifactScaling(LivingEntity entity){
         artifactScalingMap.remove(entity.getUUID());
+        AuthorityResistanceManager.removeFromBuffer(entity);
     }
 
     public abstract void onAbilityUse(Level level, LivingEntity entity);
