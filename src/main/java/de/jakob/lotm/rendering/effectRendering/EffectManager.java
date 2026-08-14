@@ -111,7 +111,8 @@ public class EffectManager {
         UNIQUENESS_SPAWN(40),
         TELEPORTATION(41),
         BANISHMENT(42),
-        BLOOD_SURGE(43);
+        BLOOD_SURGE(43),
+        HISTORICAL_VOID_SUMMONING(44);
 
         private final int index;
 

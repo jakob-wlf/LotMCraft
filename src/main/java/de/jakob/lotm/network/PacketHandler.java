@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncHistoricalVoidSummoningCountPacket.TYPE,
+                SyncHistoricalVoidSummoningCountPacket.STREAM_CODEC,
+                SyncHistoricalVoidSummoningCountPacket::handle
+        );
+
+        registrar.playToClient(
                 OpenWaypointSelectionScreenPacket.TYPE,
                 OpenWaypointSelectionScreenPacket.STREAM_CODEC,
                 OpenWaypointSelectionScreenPacket::handle
@@ -568,6 +574,12 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                PlayerLeftClickWhileSummonSelfPacket.TYPE,
+                PlayerLeftClickWhileSummonSelfPacket.STREAM_CODEC,
+                PlayerLeftClickWhileSummonSelfPacket::handle
         );
 
         registrar.playToServer(

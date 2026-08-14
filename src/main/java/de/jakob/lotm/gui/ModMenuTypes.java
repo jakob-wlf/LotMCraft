@@ -8,6 +8,7 @@ import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
+import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -48,6 +49,10 @@ public class ModMenuTypes {
             "ability_wheel_menu",
             () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
     );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<HistoricalVoidMenu>> HISTORICAL_VOID_MENU =
+            MENU_TYPES.register("historical_void_menu",
+                    () -> IMenuTypeExtension.create((containerId, inv, buf) -> new HistoricalVoidMenu(containerId, inv)));
 
     public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(
             "artifact_wheel_menu",

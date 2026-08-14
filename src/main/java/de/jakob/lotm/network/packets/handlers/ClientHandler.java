@@ -687,4 +687,8 @@ public class ClientHandler {
         if (player == null) return;
         selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
     }
+
+    public static void handleSyncHistoricalVoidSummoningCountPacket(SyncHistoricalVoidSummoningCountPacket packet) {
+        getPlayer().getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedCount = packet.amount();
+    }
 }

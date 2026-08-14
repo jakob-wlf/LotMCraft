@@ -24,6 +24,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -214,7 +215,7 @@ public class BeyonderDataTickHandler {
                 return;
             }
 
-            String abilityId = component.getAbilities().get(component.getSelectedAbility());
+            String abilityId = component.getAbilities().get(component.getSelectedAbility()).split(":")[0];
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if(ability != null) {
                 ability.onHold(player.serverLevel(), player);

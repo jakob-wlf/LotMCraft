@@ -119,6 +119,23 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
+                                    bootstrap.register(ModDimensions.HISTORICAL_VOID_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.5f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0xAAAAAA)
+                                                            .waterColor(0xAAAAAA)
+                                                            .waterFogColor(0xBBBBBB)
+                                                            .grassColorOverride(0xAAAAAA)
+                                                            .foliageColorOverride(0xAAAAAA)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.SPIRIT_BIOME_WOOL_MEADOWS,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
@@ -418,6 +435,14 @@ public class DimensionProvider {
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world"),
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
+                                    bootstrap.register(ModDimensions.HISTORICAL_VOID_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(6000), true, false, false, false,
+                                            1.0, true, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
                                 })
 
                                 .add(Registries.LEVEL_STEM, bootstrap -> {
@@ -487,6 +512,13 @@ public class DimensionProvider {
                                                     new ConcealmentWorldChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.HISTORICAL_VOID_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.HISTORICAL_VOID_TYPE_KEY),
+                                                    new HistoricalVoidChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.HISTORICAL_VOID_BIOME_KEY)))));
                                 }),
                         Set.of(LOTMCraft.MOD_ID)
                 )

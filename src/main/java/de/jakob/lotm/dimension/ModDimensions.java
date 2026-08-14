@@ -38,6 +38,9 @@ public class ModDimensions {
     public static final Supplier<MapCodec<ConcealmentWorldChunkGenerator>> CONCEALMENT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("concealment_world", () -> ConcealmentWorldChunkGenerator.CODEC);
 
+    public static final Supplier<MapCodec<HistoricalVoidChunkGenerator>> HISTORICAL_VOID_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("historical_void", () -> HistoricalVoidChunkGenerator.CODEC);
+
     public static final Supplier<MapCodec<NatureDimensionWorldChunkGenerator>> NATURE_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("nature", () -> NatureDimensionWorldChunkGenerator.CODEC);
 
@@ -270,6 +273,26 @@ public class ModDimensions {
     public static final ResourceKey<Biome> CONCEALMENT_WORLD_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world_biome"));
+
+    // =========================================================================
+    // HISTORICAL VOID dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> HISTORICAL_VOID_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"));
+
+    public static final ResourceKey<Level> HISTORICAL_VOID_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"));
+
+    public static final ResourceKey<DimensionType> HISTORICAL_VOID_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"));
+
+    public static final ResourceKey<Biome> HISTORICAL_VOID_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void_biome"));
 
     // -------------------------------------------------------------------------
     // Registration
