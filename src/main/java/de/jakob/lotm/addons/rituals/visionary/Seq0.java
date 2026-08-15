@@ -26,6 +26,7 @@ public class Seq0 {
         if(!(player.level() instanceof ServerLevel level))return;
         if(!BeyonderData.getPathway(player).equals("visionary") ||
                 BeyonderData.getSequence(player) != 1) return;
+        if(!BeyonderData.hasUniqueness(player)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;

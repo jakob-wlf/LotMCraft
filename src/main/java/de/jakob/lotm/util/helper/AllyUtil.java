@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -85,6 +86,11 @@ public class AllyUtil {
 
         AllyComponent comp1 = entity1.getData(ModAttachments.ALLY_COMPONENT.get());
         return comp1.isAlly(entity2.getUUID());
+    }
+
+    public static Set<String> getAllAllies(LivingEntity entity){
+        var comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
+        return comp.allies();
     }
 
     /**

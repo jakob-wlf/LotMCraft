@@ -29,6 +29,7 @@ public class Seq0 {
             for(var player : server.getPlayerList().getPlayers()){
                 if (!BeyonderData.getPathway(player).equals("wheel_of_fortune") ||
                         BeyonderData.getSequence(player) != 1) continue;
+                if(!BeyonderData.hasUniqueness(player)) continue;
 
                 player.getData(ModAttachments.RITUALS.get()).setCompleted(true);
             }

@@ -30,12 +30,13 @@ public class Seq4 {
             var target = AbilityUtil.getTargetEntity(player, 12, 1.0f, true, true);
 
             if(target == null) return;
+            if(!(target instanceof ServerPlayer targetPlayer)) return;
 
-            if(target.hasEffect(MobEffects.INVISIBILITY)
-                    || VisionaryHandler.isInvisible(target)) return;
+            if(targetPlayer.hasEffect(MobEffects.INVISIBILITY)
+                    || VisionaryHandler.isInvisible(targetPlayer)) return;
 
-            String path = BeyonderData.getPathway(target);
-            int seq = BeyonderData.getSequence(target);
+            String path = BeyonderData.getPathway(targetPlayer);
+            int seq = BeyonderData.getSequence(targetPlayer);
 
             if((path.equals("tyrant") && seq <= 4) || seq <= 2){
                 component.setCompleted(true);

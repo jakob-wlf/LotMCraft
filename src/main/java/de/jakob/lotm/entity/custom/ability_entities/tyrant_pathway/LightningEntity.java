@@ -267,23 +267,16 @@ public class LightningEntity extends Entity {
         hasHit = true;
         // Handle entity hit - damage, effects, etc.
         if (!level().isClientSide && source != null) {
-            explode(pos);
+            //explode(pos);
 
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower, 10));
 
             // Check for water interaction - lightning deals more damage in water
             boolean inWater = isNearWater(pos);
-            float waterMultiplier = inWater ? 2.0f : 1.0f;
+            float waterMultiplier = inWater ? 1.5f : 1.0f;
 
             entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LIGHTNING, source), (float) damage * waterMultiplier);
 
-            // If in water, deal AoE damage to entities in water
-            if(inWater) {
-                dealWaterConductionDamage(pos);
-            }
-
-            // Check for water wall interaction
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(12, this::discardEntityAndBranches);
         }
@@ -302,17 +295,9 @@ public class LightningEntity extends Entity {
         if (!level().isClientSide) {
             Vec3 pos = hit.getLocation();
             if(source != null) {
-                explode(pos);
+                //explode(pos);
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower, 10));
             }
-
-            // Check for water interaction
-            if(isNearWater(pos)) {
-                dealWaterConductionDamage(pos);
-            }
-
-            // Check for water wall interaction
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(12, this::discardEntityAndBranches);
         }

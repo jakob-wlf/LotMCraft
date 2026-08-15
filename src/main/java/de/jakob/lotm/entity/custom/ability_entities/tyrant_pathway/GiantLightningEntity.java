@@ -300,7 +300,7 @@ public class GiantLightningEntity extends Entity {
         hasHit = true;
 
         if (!level().isClientSide && source != null) {
-            explode(pos);
+            //explode(pos);
 
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower * 1.5, 15));
 
@@ -319,14 +319,6 @@ public class GiantLightningEntity extends Entity {
                     nearby.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source), (float) (damage * 0.3));
                 }
             }
-
-            // If in water, deal AoE damage to entities in water
-            if (inWater) {
-                dealWaterConductionDamage(pos);
-            }
-
-            // Check for water wall interaction
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else if (level().isClientSide) {
@@ -350,17 +342,9 @@ public class GiantLightningEntity extends Entity {
         if (!level().isClientSide) {
             Vec3 pos = hit.getLocation();
             if (source != null) {
-                explode(pos);
+               // explode(pos);
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower * 1.5, 15));
             }
-
-            // Check for water interaction
-            if (isNearWater(pos)) {
-                dealWaterConductionDamage(pos);
-            }
-
-            // Check for water wall interaction
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else {

@@ -21,6 +21,7 @@ public class Seq0 {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
         if(!BeyonderData.getPathway(player).equals("tyrant") ||
                 BeyonderData.getSequence(player) != 1) return;
+        if(!BeyonderData.hasUniqueness(player)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;

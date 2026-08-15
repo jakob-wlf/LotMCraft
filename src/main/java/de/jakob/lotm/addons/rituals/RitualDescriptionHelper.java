@@ -1,5 +1,6 @@
 package de.jakob.lotm.addons.rituals;
 
+import de.jakob.lotm.addons.rituals.red_priest.Seq4;
 import de.jakob.lotm.addons.rituals.tyrant.Seq3;
 
 import java.util.HashMap;
@@ -46,9 +47,18 @@ public class RitualDescriptionHelper {
         + " demigods while following your justice");
         sun.put(2, "Find an item with at least an Angel-rank authority and a deep connection to the Sun in mysticism");
         sun.put(1, "Become worshipped");
-        sun.put(0, "Immerse into the deep void while being almost dead with darkness corruption.\n" +
+        sun.put(0, "Immerse into deep void while enveiled with true darkness that symbolizes the destination of all things.\n" +
                 "Note: you must be almost dead both physically and mentally");
         description.put("sun", sun);
+
+        Map<Integer, String> red_priest = new HashMap<>();
+        red_priest.put(5, "Capture weakened beyonder whose sequence is higher than yours");
+        red_priest.put(4, "Help at least " + Seq4.MIN_ALLY_AMOUNT + " allies progress to your sequence");
+        red_priest.put(3, "Win a faction war");
+        red_priest.put(2, "Forcefully change the weather of a region without external aid");
+        red_priest.put(1, "Win a war against far superior enemy");
+        red_priest.put(0, "Put the world into war");
+        description.put("red_priest", red_priest);
     }
 
     public static String getRitualDescription(String path, int seq){

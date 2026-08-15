@@ -31,6 +31,8 @@ public class FactionCore {
     private int totalWins;
     private int totalWinsAggressor;
 
+    private List<Integer> defeatedLevels;
+
     public FactionCore(String leader, int id, int type){
         this.id = id;
         level = 0;
@@ -51,6 +53,8 @@ public class FactionCore {
         atWar = new LinkedList<>();
         totalWins = 0;
         totalWinsAggressor = 0;
+
+        defeatedLevels = new LinkedList<>();
     }
 
     public static int getNoblesAmountPerLevel(int level){
@@ -456,6 +460,10 @@ public class FactionCore {
         return atWar.stream().anyMatch(obj -> obj.id() == id);
     }
 
+    public boolean isAtAnyWar(){
+        return atWar.isEmpty();
+    }
+
     public boolean isAggressor(int id){
         return atWar.stream().anyMatch(obj -> obj.id() == id && obj.isAggressor());
     }
@@ -467,6 +475,9 @@ public class FactionCore {
     public void setTotalWins(int value){
         totalWins = value;
     }
+
+    public List<Integer> getDefeatedLevels(){return defeatedLevels;}
+    public void addDefeatedLevel(int value){defeatedLevels.add(value);}
 
     public int getTotalWinsAggressor(){return totalWinsAggressor;}
     public void setTotalWinsAggressor(int value) {totalWinsAggressor = value;}
@@ -531,6 +542,9 @@ public class FactionCore {
         tag.putInt("total_wins", totalWins);
         tag.putInt("total_wins_a", totalWinsAggressor);
 
+        tag.putIntArray("defeated",
+                defeatedLevels.stream().mapToInt(Integer::intValue).toArray());
+
         return tag;
     }
 
@@ -590,6 +604,13 @@ public class FactionCore {
 
         faction.totalWins = tag.getInt("total_wins");
         faction.totalWinsAggressor = tag.getInt("total_wins_a");
+
+        int[] levels = tag.getIntArray("defeated");
+        faction.defeatedLevels = new ArrayList<>();
+
+        for (int level : levels) {
+            faction.defeatedLevels.add(level);
+        }
 
         return faction;
     }

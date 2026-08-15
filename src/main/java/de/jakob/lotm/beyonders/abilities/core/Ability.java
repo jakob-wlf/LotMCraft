@@ -151,9 +151,8 @@ public abstract class Ability {
 
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
-        int trueCooldown = getCooldown(seq);
 
-        int inflatedCooldown = trueCooldown;
+        int inflatedCooldown = getCooldown(seq);
         component.setCooldown(id, inflatedCooldown);
 
         // Use ability client and server sided
@@ -281,7 +280,7 @@ public abstract class Ability {
     }
 
     protected boolean shouldConsumeSpirituality(LivingEntity entity) {
-        return !entity.hasInfiniteMaterials() && entity instanceof Player;
+        return !entity.hasInfiniteMaterials();
     }
 
     public int lowestSequenceUsable() {

@@ -27,6 +27,7 @@ public class Seq0 {
         if(!BeyonderData.getPathway(player).equals("sun") ||
                 BeyonderData.getSequence(player) != 1) return;
         if(!(player.level() instanceof ServerLevel level)) return;
+        if(!BeyonderData.hasUniqueness(player)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
@@ -61,6 +62,13 @@ public class Seq0 {
 
         var source = event.getSource();
         if(!source.is(ModDamageTypes.DARKNESS)) return;
+
+        var sourceEntity = source.getEntity();
+        if(sourceEntity == null) return;
+        if(!(sourceEntity instanceof ServerPlayer sourcePlayer)) return;
+
+        if(BeyonderData.getPathway(sourcePlayer).equals("darkness") &&
+                BeyonderData.hasUniqueness(sourcePlayer))
 
         if(player.getHealth() <= player.getMaxHealth() * 0.4f){
             component.setStage(1);

@@ -131,6 +131,16 @@ public class BeyonderData {
         };
     }
 
+    public static boolean hasUniqueness(ServerPlayer player){
+        var dataOp = playerMap.get(player);
+        if(dataOp.isEmpty()) return false;
+
+        boolean has = !dataOp.get().uniqueness().isEmpty();
+        boolean isSeq0 = getSequence(player) == 0;
+
+        return isSeq0 || has;
+    }
+
     public static String getSequenceName(String pathway, int sequence) {
         if(!pathwayInfos.containsKey(pathway))
             return "Unknown";
@@ -427,8 +437,7 @@ public class BeyonderData {
     }
 
     public static void reduceSpirituality(LivingEntity entity, float amount) {
-        if(!(entity instanceof Player))
-            return;
+
         float current = getSpirituality(entity);
         entity.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(Math.max(0, current - amount));
 

@@ -483,9 +483,12 @@ public class FactionStorage extends SavedData {
 
             if(winner.getLevel() <= looserLevel) {
                 winner.setTotalWins(winner.getTotalWins() + 1);
+
                 if(winner.isAggressor(looserId))
                     winner.setTotalWinsAggressor(winner.getTotalWinsAggressor() + 1);
             }
+            winner.addDefeatedLevel(looserLevel);
+
             winner.removeAtWar(looserId);
 
             factions.put(winnerId, winner);

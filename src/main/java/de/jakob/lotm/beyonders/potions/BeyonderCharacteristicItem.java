@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.potions;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -53,8 +54,20 @@ public class BeyonderCharacteristicItem extends Item {
         int seq = beChar.getSequence();
         String path = beChar.getPathway();
 
-        if(path.equals(BeyonderData.getPathway(player))){
-            if(seq >= BeyonderData.getSequence(player)){
+        int playerSeq = BeyonderData.getSequence(player);
+        String playerPath = BeyonderData.getPathway(player);
+
+        if(playerPath.equals("red_priest") && path.equals(playerPath)){
+            if(playerSeq == 3 && seq <= 2){
+                var component = player.getData(ModAttachments.RITUALS.get());
+                component.setStage(1);
+
+                return InteractionResultHolder.success(ItemStack.EMPTY);
+            }
+        }
+
+        if(path.equals(playerPath)){
+            if(seq >= playerSeq){
                 var stacks = BeyonderData.getCharStacks(player);
 
                 if(stacks[seq] >= 0 && seq >= 1 && BeyonderData.getDigestionProgress(player) == 1.0){

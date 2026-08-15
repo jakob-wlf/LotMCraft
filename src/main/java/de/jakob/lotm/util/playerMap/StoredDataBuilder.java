@@ -35,7 +35,7 @@ public class StoredDataBuilder {
         charStack = new int[11];
         pathwayHistory = new String[10];
         prophecyList = new LinkedList<>();
-        uniqueness = "none";
+        uniqueness = "";
         sefirot = "";
     }
 

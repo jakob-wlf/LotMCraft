@@ -150,7 +150,7 @@ public class WindManipulationAbility extends SelectableAbility {
         Location loc = new Location(targetPos, level);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        ServerScheduler.scheduleForDuration(0, 1, (int) (20 * 13* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, (int) 20 * 5, () -> {
             for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetPos, 2.5)) {
                 // Blink Escape - only the bound entity can free itself
                 if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", entitySeq, e)) {

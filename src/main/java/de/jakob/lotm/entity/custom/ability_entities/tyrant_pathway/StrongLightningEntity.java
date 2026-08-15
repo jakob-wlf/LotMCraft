@@ -293,12 +293,6 @@ public class StrongLightningEntity extends Entity {
                 }
             }
 
-            if(inWater) {
-                dealWaterConductionDamage(pos);
-            }
-
-            dealWaterWallDamage(pos);
-
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else if(level().isClientSide) {
             ClientHandler.applyCameraShakeToPlayersInRadius(3f, 25, (ClientLevel) level(), pos, 50);
@@ -320,15 +314,9 @@ public class StrongLightningEntity extends Entity {
         if (!level().isClientSide) {
             Vec3 pos = hit.getLocation();
             if(source != null) {
-                explode(pos);
+                //explode(pos);
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower, 12));
             }
-
-            if(isNearWater(pos)) {
-                dealWaterConductionDamage(pos);
-            }
-
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else {
