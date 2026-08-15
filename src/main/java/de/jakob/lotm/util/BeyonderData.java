@@ -132,10 +132,11 @@ public class BeyonderData {
     }
 
     public static boolean hasUniqueness(ServerPlayer player){
-        var dataOp = playerMap.get(player);
+        var dataOp = playerMap.get(player.getUUID());
+
         if(dataOp.isEmpty()) return false;
 
-        boolean has = !dataOp.get().uniqueness().isEmpty();
+        boolean has = player.getData(ModAttachments.UNIQUENESS_COMPONENT.get()).hasUniqueness();
         boolean isSeq0 = getSequence(player) == 0;
 
         return isSeq0 || has;

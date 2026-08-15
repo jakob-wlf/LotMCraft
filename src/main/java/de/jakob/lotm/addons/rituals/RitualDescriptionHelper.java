@@ -56,9 +56,27 @@ public class RitualDescriptionHelper {
         red_priest.put(4, "Help at least " + Seq4.MIN_ALLY_AMOUNT + " allies progress to your sequence");
         red_priest.put(3, "Win a faction war");
         red_priest.put(2, "Forcefully change the weather of a region without external aid");
-        red_priest.put(1, "Win a war against far superior enemy");
+        red_priest.put(1, "Win a war against far superior enemy nation");
         red_priest.put(0, "Put the world into war");
         description.put("red_priest", red_priest);
+
+        Map<Integer, String> mother = new HashMap<>();
+        mother.put(5, "Examine physical structure of various ordinary creatures");
+        mother.put(4, "Collect large amount of life essence from beyonder creatures");
+        mother.put(3, "Witness death of Mythical Creature of darkness pathway");
+        mother.put(2, "Nurture your very own faction to it's maximum");
+        mother.put(1, "Find dimension without any element and dimension filled with elements");
+        mother.put(0, "Give birth to a Deity");
+        description.put("mother", mother);
+
+        Map<Integer, String> fool = new HashMap<>();
+        fool.put(5, "Drink potion while under effect of buffing siren song");
+        fool.put(4, "Orchestrate a grand performance before many spectators to kill " +
+                "a Beyonder creature at the level of a demigod or higher");
+        fool.put(3, "Be separated from reality for a long time");
+        fool.put(2, "Return a piece of history that has been left behind to the present era");
+        fool.put(0, "Fool time or fate once");
+        description.put("fool", fool);
     }
 
     public static String getRitualDescription(String path, int seq){

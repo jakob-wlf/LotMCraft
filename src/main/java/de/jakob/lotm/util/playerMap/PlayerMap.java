@@ -91,8 +91,8 @@ public class PlayerMap extends SavedData {
 
         if (!contains(entity)) put(entity);
 
-        var data = map.get(entity.getUUID());
-        map.put(entity.getUUID(), StoredData.builder.copyFrom(data).uniqueness(pathway).build());
+        map.compute(entity.getUUID(), (k, data) ->
+                StoredData.builder.copyFrom(data).uniqueness(pathway).build());
 
         setDirty();
     }

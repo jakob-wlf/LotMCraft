@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
+import de.jakob.lotm.addons.rituals.fool.Seq5;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -14,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -108,16 +110,37 @@ public class SirenSongAbility extends SelectableAbility {
         int strengthLevel = strength == null ? 1 : strength.getAmplifier() + 1;
         int speedLevel = speed == null ? 1 : speed.getAmplifier() + 1;
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 20* multiplier(entity)), strengthLevel, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 20* multiplier(entity)), speedLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 20, strengthLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 20, speedLevel, false, false, false));
 
-        ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 20* multiplier(entity)), () -> {
+        Set<UUID> buff = new HashSet<>();
+        ServerScheduler.scheduleForDuration(0,  2, 20 * 20, () -> {
             if(entity.level().isClientSide)
                 return;
             loc.setPosition(entity.position());
             loc.setLevel(entity.level());
+
+            if(entity instanceof ServerPlayer playerEntity) {
+                var nearby = AbilityUtil.getNearbyEntities(playerEntity, (ServerLevel) playerEntity.level(), playerEntity.position(), 20);
+
+                for (var obj : nearby) {
+                    if(!(obj instanceof ServerPlayer target)) continue;
+
+                    if(BeyonderData.getSequence(target) == 6 && BeyonderData.getPathway(target).equals("fool")){
+                        Seq5.affected.add(target.getUUID());
+                        buff.add(target.getUUID());
+                    }
+                }
+            }
+
         }, level);
-        ServerScheduler.scheduleDelayed((int) (20 * 20* multiplier(entity)), () -> BeyonderData.removeModifier(entity, "buff_song"));
+        ServerScheduler.scheduleDelayed(20 * 20, () -> {
+            BeyonderData.removeModifier(entity, "buff_song");
+
+            for(var obj : buff){
+                Seq5.affected.remove(obj);
+            }
+        });
     }
 
     private void deathMelody(ServerLevel level, LivingEntity entity) {

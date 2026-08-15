@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.fool.Seq0;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.LocationGraftingEntity;
@@ -17,6 +19,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -119,6 +122,17 @@ public class GraftingAbility extends SelectableAbility {
         LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2);
         LivingEntity graftingStartEntity = graftingTargetsEntities.get(entity.getUUID());
 
+        if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
+            if ((BeyonderData.getPathway(targetPlayer).equals("wheel_of_fortune") ||
+                    BeyonderData.getPathway(targetPlayer).equals("error")) &&
+                    BeyonderData.getSequence(targetPlayer) <= 0){
+                if(BeyonderData.getPathway(player).equals("fool")
+                        && BeyonderData.getSequence(player) == 1){
+                    Seq0.affected.add(player.getUUID());
+                }
+            }
+        }
+
         if(graftingStartEntity == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.failed", targetEntity.getName().getString()).withColor(color));
             graftingTargetsEntities.remove(entity.getUUID());
@@ -205,6 +219,17 @@ public class GraftingAbility extends SelectableAbility {
         LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2);
         if(targetEntity == null) {
             targetEntity = entity;
+        }
+
+        if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
+            if ((BeyonderData.getPathway(targetPlayer).equals("wheel_of_fortune") ||
+                    BeyonderData.getPathway(targetPlayer).equals("error")) &&
+                    BeyonderData.getSequence(targetPlayer) <= 0){
+                if(BeyonderData.getPathway(player).equals("fool")
+                        && BeyonderData.getSequence(player) == 1){
+                    Seq0.affected.add(player.getUUID());
+                }
+            }
         }
 
         UUID targetUUID = targetEntity.getUUID();

@@ -30,17 +30,18 @@ public class Seq0 {
         for(var faction : factions){
             if(faction.getValue().getLevel() >= 1) {
                 amount++;
-
-                if(faction.getValue().isAtAnyWar()){
-                    component.setStage(component.getStage() + 1);
-                }
             }
         }
 
-        if(amount == component.getStage()){
-            component.setCompleted(true);
+        String name = player.getName().getString();
+        var factionPart = BeyonderData.factionStorage.getPartOfFactionType(name, 1);
+        if(factionPart != null){
+            if(factionPart.getLeader().equals(name)){
+                if(factionPart.getAllAtWar().size() >= amount){
+                    component.setCompleted(true);
+                }
+            }
         }
-
     }
 
 }
