@@ -539,8 +539,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 .build();
         this.addRenderableWidget(toggleMissedActingButton);
 
-        int characteristicsButtonX = baseLeftPos - 65;
-        int characteristicsButtonY = this.topPos + 180;
+        int characteristicsButtonX = baseLeftPos - 130;
+        int characteristicsButtonY = this.topPos + 10;
 
         toggleCharacteristicsButton = Button.builder(Component.literal(showCharacteristics ? "< Hide" : "Chars >"),
                         button -> {
@@ -558,8 +558,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         this.addRenderableWidget(toggleCharacteristicsButton);
 
-        int anchorsButtonX = baseLeftPos - 65;
-        int anchorsButtonY = this.topPos + 135;
+        int anchorsButtonX = baseLeftPos - 130;
+        int anchorsButtonY = this.topPos + 35;
 
         toggleAnchorsButton = Button.builder(Component.literal(showAnchors ? "< Hide" : "Anchors >"),
                         button -> {
