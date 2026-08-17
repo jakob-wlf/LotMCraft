@@ -105,6 +105,15 @@ public class RitualDescriptionHelper {
         demoness.put(1, "Advance during the signs and process of the apocalypse's arrival");
         demoness.put(0, "Collect sequence 1 characteristic of every pathway related to Chaos Sea");
         description.put("demoness", demoness);
+
+        Map<Integer, String> darkness = new HashMap<>();
+        darkness.put(5, "Find a way to enter Spirit World");
+        darkness.put(4, "Collect bloodline characteristics of Mythical Creatures' descendants");
+        darkness.put(3, "Drink the potion in near true death state");
+        darkness.put(2, "Live isolated in darkness and silence for long period of time");
+        darkness.put(1, "Bring Misfortune to an Archangel");
+        darkness.put(0, "Induce eternal slumber upon A True Deity");
+        description.put("darkness", darkness);
     }
 
     public static String getRitualDescription(String path, int seq){
