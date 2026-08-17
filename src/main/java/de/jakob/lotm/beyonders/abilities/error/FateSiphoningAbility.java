@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.events.ProhibitionHandler;
@@ -8,6 +9,7 @@ import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,6 +65,23 @@ public class FateSiphoningAbility extends Ability {
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.no_target").withColor(0x6d32a8));
             return;
+        }
+
+        if(entity instanceof ServerPlayer player){
+            if(BeyonderData.getPathway(player).equals("error")
+                    && BeyonderData.getSequence(player) == 1){
+                if(target instanceof ServerPlayer targetPlayer){
+                    var targetComponent = targetPlayer.getData(ModAttachments.APOTHEOSIS_COMPONENT.get());
+
+                    if(targetComponent.getApotheosisTicksLeft() > 0){
+                        targetComponent.setApotheosisTicksLeftAndSync(0, serverLevel, targetPlayer);
+                        RitualEffectHandlerEvent.removeRitual(targetPlayer);
+                        targetPlayer.sendSystemMessage(Component.literal("Your apotheosis was stolen!").withStyle(ChatFormatting.DARK_RED));
+
+                        player.getData(ModAttachments.RITUALS.get()).setStage(1);
+                    }
+                }
+            }
         }
 
         if(linkedEntities.containsKey(target.getUUID()) &&

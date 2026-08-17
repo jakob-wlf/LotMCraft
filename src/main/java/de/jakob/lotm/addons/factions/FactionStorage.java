@@ -112,6 +112,7 @@ public class FactionStorage extends SavedData {
 
         FactionCore core = new FactionCore(leader, id, type);
         core.setName(factionName);
+        core.setCreatedBy(leader);
 
         factions.put(core.getId(), core);
 

@@ -4,6 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -168,7 +169,7 @@ public class UniquenessEntity extends Entity {
 
         serverLevel.players().forEach(p ->
                 p.displayClientMessage(
-                        Component.literal(player.getName().getString())
+                        Component.literal("Somebody ")
                                 .append(Component.translatable("lotm.uniqueness.picked_up"))
                                 .withColor(color),
                         false
@@ -179,7 +180,7 @@ public class UniquenessEntity extends Entity {
 
         // Sync uniqueness component to client
         if (player instanceof ServerPlayer serverPlayer) {
-            de.jakob.lotm.network.PacketHandler.syncUniquenessToPlayer(serverPlayer);
+           PacketHandler.syncUniquenessToPlayer(serverPlayer);
         }
 
         // Remove from active map and discard entity

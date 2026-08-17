@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.door.Seq0;
+import de.jakob.lotm.addons.rituals.door.Seq1;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -256,6 +258,8 @@ public class ConcealmentAbility extends SelectableAbility {
         AtomicDouble radius = new AtomicDouble(2 * (int) (Math.max(multiplier(entity)/2,1)));
         Vec3 finalTargetLoc = entity.position();
 
+        boolean isDarkness0 = BeyonderData.getSequence(entity) == 0 && BeyonderData.getPathway(entity).equals("darkness");
+
         final HashSet<BlockPos> processedBlocks = new HashSet<>();
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 5* (int) (Math.max(multiplier(entity)/2,1)), () -> {
@@ -317,6 +321,14 @@ public class ConcealmentAbility extends SelectableAbility {
                     teleportedEntity.setHealth(1);
                     if(!(targetEntity instanceof Player))
                         return;
+                }
+
+                if(targetEntity instanceof ServerPlayer playerTarget){
+                    if(BeyonderData.getPathway(playerTarget).equals("door") && BeyonderData.getSequence(playerTarget) == 1){
+                        if(isDarkness0){
+                            Seq0.affected.add(playerTarget.getUUID());
+                        }
+                    }
                 }
 
                 int returnTime = AbilityUtil.isTargetSignificantlyWeaker(entitySeq, BeyonderData.getSequence(teleportedEntity)) ? 20 * 60 * 2 :

@@ -1,8 +1,12 @@
 package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.factions.FactionCore;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -18,6 +22,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.parsing.packrat.Atom;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -45,6 +50,7 @@ public class TravelersDoorEntity extends Entity {
 
     private static final double TELEPORT_RANGE = 1.0;
 
+    private ServerPlayer owner = null;
 
     public TravelersDoorEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -60,7 +66,7 @@ public class TravelersDoorEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
-    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use, int casterSeq) {
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use, int casterSeq, ServerPlayer owner) {
         this(type, level);
 
         Vec3 dir = new Vec3(facing.x, 0.0, facing.z);
@@ -71,10 +77,11 @@ public class TravelersDoorEntity extends Entity {
         this.moveTo(center.x, center.y, center.z, yaw, pitch);
 
         this.use = use;
+        this.owner = owner;
     }
 
     public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, double destX, double destY, double destZ) {
-        this(type, level, facing, center, 0, 5);
+        this(type, level, facing, center, 0, 5, null);
         this.destX = destX;
         this.destY = destY;
         this.destZ = destZ;
@@ -118,6 +125,22 @@ public class TravelersDoorEntity extends Entity {
             ServerLevel spiritWorldLevel = serverLevel.getServer().getLevel(spiritWorld);
             if (spiritWorldLevel == null) return;
 
+            var factions = BeyonderData.factionStorage.getPartOfFaction(owner.getName().getString());
+
+            FactionCore nation = null;
+            FactionCore church = null;
+
+            switch (factions.size()) {
+                case 1 -> {
+                    nation = factions.getFirst();
+                }
+                case 2 -> {
+                    nation = factions.getFirst();
+                    church = factions.getLast();
+                }
+            }
+
+            boolean allGood = true;
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
@@ -137,6 +160,25 @@ public class TravelersDoorEntity extends Entity {
 
                     entity.teleportTo(spiritWorldLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
                             Set.of(), entity.getYRot(), entity.getXRot());
+
+
+                    if(owner != null) {
+                        if (BeyonderData.getPathway(owner).equals("door") && BeyonderData.getSequence(owner) == 5) {
+                            if (entity instanceof ServerPlayer target) {
+                                if (nation != null && nation.isPartOfFaction(target.getName().getString()))
+                                    allGood = false;
+                                if (church != null && church.isPartOfFaction(target.getName().getString()))
+                                    allGood = false;
+
+                                if (allGood)
+                                    allGood = AllyUtil.areAllies(target, owner);
+
+                                if (allGood && BeyonderData.getSequence(target) <= 4) {
+                                    owner.getData(ModAttachments.RITUALS.get()).setStage(1);
+                                }
+                            }
+                        }
+                    }
 
                 } else {
                     ResourceKey<Level> OVERWORLD = Level.OVERWORLD;

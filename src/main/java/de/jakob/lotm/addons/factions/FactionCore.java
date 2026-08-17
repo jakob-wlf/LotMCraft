@@ -17,6 +17,7 @@ public class FactionCore {
     private int level;
     private final int type; // 1 - nation, 2 - church
     private String leader;
+    private String createdBy;
     private String name;
     private List<String> coLeaders;
     private Map<String, Integer> nobles;
@@ -186,6 +187,9 @@ public class FactionCore {
     public boolean isCitizen(String name){
         return citizens.contains(name);
     }
+
+    public void setCreatedBy(String name) {createdBy = name;}
+    public String getCreatedBy(){return createdBy;}
 
     public int getLevel(){
         return level;
@@ -545,6 +549,9 @@ public class FactionCore {
         tag.putIntArray("defeated",
                 defeatedLevels.stream().mapToInt(Integer::intValue).toArray());
 
+
+        tag.putString("created_by", createdBy);
+
         return tag;
     }
 
@@ -611,6 +618,8 @@ public class FactionCore {
         for (int level : levels) {
             faction.defeatedLevels.add(level);
         }
+
+        faction.createdBy = tag.getString("created_by");
 
         return faction;
     }

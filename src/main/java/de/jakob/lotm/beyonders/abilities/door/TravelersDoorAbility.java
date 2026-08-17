@@ -88,7 +88,12 @@ public class TravelersDoorAbility extends SelectableAbility {
 
         BeyonderData.reduceSpirituality(player, 70);
 
-        TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, 2, AbilityUtil.getSeqWithArt(player, this));
+        TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(),
+                serverLevel, player.getLookAngle().normalize().scale(-1),
+                targetLoc, 2,
+                AbilityUtil.getSeqWithArt(player, this),
+                player);
+
         serverLevel.addFreshEntity(door);
         serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
 
@@ -126,7 +131,10 @@ public class TravelersDoorAbility extends SelectableAbility {
                 }
                 BeyonderData.reduceSpirituality(player, spiritualityCost);
 
-                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, pos.getX(), pos.getY(), pos.getZ());
+                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(),
+                        serverLevel, player.getLookAngle().normalize().scale(-1),
+                        targetLoc, pos.getX(), pos.getY(), pos.getZ());
+
                 serverLevel.addFreshEntity(door);
                 serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
 

@@ -77,6 +77,25 @@ public class RitualDescriptionHelper {
         fool.put(2, "Return a piece of history that has been left behind to the present era");
         fool.put(0, "Fool time or fate once");
         description.put("fool", fool);
+
+        Map<Integer, String> error = new HashMap<>();
+        error.put(5, "Examine dreams of many players");
+        error.put(4, "Convince" + de.jakob.lotm.addons.rituals.error.Seq4.AMOUNT
+                + " targets to willingly offer all they possess to sustain you");
+        error.put(2, "Replace high-tier target in it's own social circle");
+        error.put(1, "Plunge a faction into temporal disorder");
+        error.put(0, "Replace someone during \"Their\" Sequence 0 apotheosis ritual");
+        description.put("error", error);
+
+        Map<Integer, String> door = new HashMap<>();
+        door.put(5, "Set up special coordinates in four completely different spots" +
+                " which are all set up extremely far away from each other");
+        door.put(4, "Seal hostile demigod");
+        door.put(3, "Wander through different dimensions");
+        door.put(2, "Wander through different dimensions that are inaccessible");
+        door.put(1, "Find a way to establish sufficient mystical connections with objects from space");
+        door.put(0, "Break out of the seal and banishment of a True God");
+        description.put("door", door);
     }
 
     public static String getRitualDescription(String path, int seq){

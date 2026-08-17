@@ -1,38 +1,38 @@
-package de.jakob.lotm.addons.rituals.fool;
+package de.jakob.lotm.addons.rituals.door;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.border.WorldBorder;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
-public class Seq0 {
-    public static Set<UUID> affected = new HashSet<>();
+public class Seq4 {
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
-        if(!BeyonderData.getPathway(player).equals("fool") ||
-        BeyonderData.getSequence(player) != 1) return;
-        if(!BeyonderData.hasUniqueness(player)) return;
+        if(!(player.level() instanceof ServerLevel level))return;
+        if(!BeyonderData.getPathway(player).equals("door") ||
+                BeyonderData.getSequence(player) != 5) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(affected.contains(player.getUUID())){
+        if(component.getStage() == 1){
             component.setCompleted(true);
-            affected.remove(player.getUUID());
+            component.setStage(0);
         }
     }
+
 
 }

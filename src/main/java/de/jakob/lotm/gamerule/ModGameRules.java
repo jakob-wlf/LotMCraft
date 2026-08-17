@@ -35,6 +35,7 @@ public class ModGameRules {
 
     public static GameRules.Key<GameRules.IntegerValue> AFTER_DEATH_REGRESSION_INVULNERABILITY;
     public static GameRules.Key<GameRules.BooleanValue> APPLY_ANCHORING;
+    public static GameRules.Key<GameRules.BooleanValue> APPLY_RITUALS;
 
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
@@ -283,6 +284,12 @@ public class ModGameRules {
 
         APPLY_ANCHORING = GameRules.register(
                 "applyAnchoring",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
+        );
+
+        APPLY_RITUALS = GameRules.register(
+                "applyRituals",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
         );

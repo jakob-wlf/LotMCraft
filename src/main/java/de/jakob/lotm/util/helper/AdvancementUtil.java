@@ -8,6 +8,7 @@ import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
@@ -161,8 +162,12 @@ public class AdvancementUtil {
             if (hasRitual(sequence)) {
                 var component = player.getData(ModAttachments.RITUALS.get());
 
-                if(!component.isCompleted())
-                    failureChance = 100.0;
+                if(entity.level() instanceof ServerLevel level) {
+                    if(level.getGameRules().getBoolean(ModGameRules.APPLY_RITUALS)) {
+                        if (!component.isCompleted())
+                            failureChance = 100.0;
+                    }
+                }
 
                 RitualEffectHandlerEvent.removeRitual(player);
             }
