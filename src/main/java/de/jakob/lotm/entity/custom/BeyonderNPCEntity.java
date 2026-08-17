@@ -94,6 +94,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private Boolean _hasTrade = null;
     private boolean defaultHostile;
     private long tickCounter = 0;
+    private boolean shouldDrop = true;
 
     // ========================= Constructors =========================
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -344,8 +345,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
     }
 
+    public void setShouldDrop(Boolean value){
+        shouldDrop = value;
+    }
+
     @Override
     protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
+        if(!shouldDrop) return;
+
         if (!BeyonderData.playerMap.check(_pathway, _sequence)) {
             return;
         }

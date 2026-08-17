@@ -96,6 +96,15 @@ public class RitualDescriptionHelper {
         door.put(1, "Find a way to establish sufficient mystical connections with objects from space");
         door.put(0, "Break out of the seal and banishment of a True God");
         description.put("door", door);
+
+        Map<Integer, String> demoness = new HashMap<>();
+        demoness.put(5, "Without substitutes, be burned for a long time");
+        demoness.put(4, "Kill significant amount of players with plague");
+        demoness.put(3, "Find and kill your mirror self");
+        demoness.put(2, "Destroy at least 2 factions");
+        demoness.put(1, "Advance during the signs and process of the apocalypse's arrival");
+        demoness.put(0, "Collect sequence 1 characteristic of every pathway related to Chaos Sea");
+        description.put("demoness", demoness);
     }
 
     public static String getRitualDescription(String path, int seq){
