@@ -43,6 +43,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.ONE_SOLI);
                         output.accept(ModItems.UNIQUENESS_MAP);
                         output.accept(ModItems.CITY_MAP);
+                        output.accept(ModBlocks.RITUALISTIC_TABLE);
                     })
                     .build());
 

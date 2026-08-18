@@ -3,6 +3,7 @@ package de.jakob.lotm.block;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.BrewingCauldronBlockEntity;
 import de.jakob.lotm.block.custom.MysticalRingBlockEntity;
+import de.jakob.lotm.block.custom.RitualisticTableBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
@@ -18,6 +19,10 @@ public class ModBlockEntities {
     public static final Supplier<BlockEntityType<BrewingCauldronBlockEntity>> BREWING_BLOCK_BE =
             BLOCK_ENTITIES.register("brewing_block_be", () -> BlockEntityType.Builder.of(
                     BrewingCauldronBlockEntity::new, ModBlocks.BREWING_CAULDRON.get()).build(null));
+
+    public static final Supplier<BlockEntityType<RitualisticTableBlockEntity>> RITUALISTIC_TABLE_BE =
+            BLOCK_ENTITIES.register("ritualistic_table_be", () -> BlockEntityType.Builder.of(
+                    RitualisticTableBlockEntity::new, ModBlocks.RITUALISTIC_TABLE.get()).build(null));
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MysticalRingBlockEntity>> MYSTICAL_RING_BE =
             BLOCK_ENTITIES.register("mystical_ring_be", () ->

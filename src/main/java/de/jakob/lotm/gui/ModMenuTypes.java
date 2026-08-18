@@ -7,6 +7,7 @@ import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.recipe.RecipeMenu;
+import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import de.jakob.lotm.gui.custom.trades.BeyonderTradeMenu;
 import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
 import net.minecraft.core.registries.Registries;
@@ -32,6 +33,10 @@ public class ModMenuTypes {
                 return new BeyonderTradeMenu(windowId, inv, npcEntityId);
             })
     );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RitualMenu>> RITUAL_MENU =
+            MENU_TYPES.register("ritual_menu", () ->
+                    IMenuTypeExtension.create(RitualMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeMenu>> RECIPE_MENU =
             MENU_TYPES.register("recipe_menu", () ->

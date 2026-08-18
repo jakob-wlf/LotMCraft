@@ -1,10 +1,7 @@
 package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.block.custom.BrewingCauldronBlock;
-import de.jakob.lotm.block.custom.MysticalRingBlock;
-import de.jakob.lotm.block.custom.RealityPortalBlock;
-import de.jakob.lotm.block.custom.VoidBlock;
+import de.jakob.lotm.block.custom.*;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -24,6 +21,13 @@ public class ModBlocks {
 
     public static final DeferredBlock<Block> BREWING_CAULDRON = registerBlock("brewing_cauldron",
             () -> new BrewingCauldronBlock(BlockBehaviour.Properties.of()
+                    .strength(2.0f)
+                    .noOcclusion()
+                    .sound(SoundType.METAL)
+            ));
+
+    public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
+            () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
                     .strength(2.0f)
                     .noOcclusion()
                     .sound(SoundType.METAL)

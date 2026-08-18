@@ -35,7 +35,7 @@ public class RitualisticTableBlock extends BaseEntityBlock {
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new BrewingCauldronBlockEntity(blockPos, blockState);
+        return new RitualisticTableBlockEntity(blockPos, blockState);
     }
 
     @Override
@@ -53,8 +53,8 @@ public class RitualisticTableBlock extends BaseEntityBlock {
 
         if (!pLevel.isClientSide()) {
             BlockEntity entity = pLevel.getBlockEntity(pPos);
-            if(entity instanceof BrewingCauldronBlockEntity brewingCauldronBlockEntity) {
-                pPlayer.openMenu(new SimpleMenuProvider(brewingCauldronBlockEntity, Component.literal("Brewing Cauldron")), pPos);
+            if(entity instanceof RitualisticTableBlockEntity ritualisticTableBlockEntity) {
+                pPlayer.openMenu(new SimpleMenuProvider(ritualisticTableBlockEntity, Component.literal("Ritualistic Table")), pPos);
             } else {
                 throw new IllegalStateException("Our Container provider is missing!");
             }
@@ -67,19 +67,11 @@ public class RitualisticTableBlock extends BaseEntityBlock {
     public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pIsMoving) {
         if (pState.getBlock() != pNewState.getBlock()) {
             BlockEntity blockEntity = pLevel.getBlockEntity(pPos);
-            if (blockEntity instanceof BrewingCauldronBlockEntity brewingCauldronBlockEntity) {
-                brewingCauldronBlockEntity.drops();
+            if (blockEntity instanceof RitualisticTableBlockEntity ritualisticTableBlockEntity) {
+                ritualisticTableBlockEntity.drops();
             }
         }
 
         super.onRemove(pState, pLevel, pPos, pNewState, pIsMoving);
-    }
-
-    @Override
-    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if(level.isClientSide)
-            return null;
-
-        return createTickerHelper(blockEntityType, ModBlockEntities.BREWING_BLOCK_BE.get(), (l, blockPos, blockState, blockEntity) -> blockEntity.tick(l, blockPos, blockState));
     }
 }
