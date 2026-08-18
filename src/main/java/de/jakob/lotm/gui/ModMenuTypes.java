@@ -1,13 +1,13 @@
 package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelMenu;
-import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
-import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
-import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
-import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
+import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesMenu;
+import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
+import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu;
+import de.jakob.lotm.gui.custom.introspect.IntrospectMenu;
+import de.jakob.lotm.gui.custom.recipe.RecipeMenu;
+import de.jakob.lotm.gui.custom.trades.BeyonderTradeMenu;
 import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
