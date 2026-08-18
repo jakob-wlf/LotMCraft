@@ -310,7 +310,7 @@ public class LOTMCraft
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
 
             event.enqueueWork(() -> {
-                ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
+                //ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
 
                 PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
                         player -> new PlayerAnimationController(player,

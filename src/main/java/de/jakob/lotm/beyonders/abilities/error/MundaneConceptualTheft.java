@@ -118,7 +118,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
         if(entitySeq > 6) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, Math.max(10, baseDistance), true).getCenter().add(0, 1, 0);
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, baseDistance, true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         var validatedPos = TeleportationUtil.clampToBorder(level, targetLoc);

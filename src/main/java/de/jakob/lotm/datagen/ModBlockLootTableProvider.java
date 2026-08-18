@@ -19,7 +19,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     @Override
     protected void generate() {
         this.dropSelf(ModBlocks.BREWING_CAULDRON.get());
-        this.dropOther(ModBlocks.MYSTICAL_RING.get(), Items.DIAMOND);
+        //this.dropOther(ModBlocks.MYSTICAL_RING.get(), Items.DIAMOND);
     }
 
     @Override

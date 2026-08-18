@@ -15,6 +15,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.apache.logging.log4j.core.jackson.ListOfMapEntryDeserializer;
+
+import java.util.Arrays;
 
 public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 

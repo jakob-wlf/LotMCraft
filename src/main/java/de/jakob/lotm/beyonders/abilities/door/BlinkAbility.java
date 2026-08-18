@@ -70,14 +70,17 @@ public class BlinkAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.blink.blink", "ability.lotmcraft.blink.barrage"};
+        return new String[]{
+                "ability.lotmcraft.blink.blink"
+               // "ability.lotmcraft.blink.barrage"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         switch (selectedAbility) {
             case 0 -> performBlink(level, entity);
-            case 1 -> blinkBarrage(level, entity);
+           // case 1 -> blinkBarrage(level, entity);
         }
     }
 

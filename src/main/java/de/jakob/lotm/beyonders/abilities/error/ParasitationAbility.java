@@ -71,16 +71,16 @@ public class ParasitationAbility extends SelectableAbility {
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
-                "ability.lotmcraft.parasitation.controlling",
                 "ability.lotmcraft.parasitation.concealed"
+                //"ability.lotmcraft.parasitation.controlling"
         };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch (abilityIndex) {
-            case 0 -> controlling(level, entity);
-            case 1 -> concealed(level, entity);
+            case 0 -> concealed(level, entity);
+            //case 1 -> controlling(level, entity);
         }
     }
 
@@ -272,6 +272,10 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(serverPlayer.getUUID());
 
+        var comp = serverPlayer.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(true);
+        comp.setParasitingUUID(host.getUUID());
+
         AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
         if(scaleAttribute != null) {
             scaleAttribute.addTransientModifier(new AttributeModifier
@@ -294,6 +298,10 @@ public class ParasitationAbility extends SelectableAbility {
             }
         }
         concealedMap.remove(serverPlayer.getUUID());
+
+        var comp = serverPlayer.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(false);
+        comp.setParasitingUUID(null);
 
         AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
         if(scaleAttribute != null) {
@@ -318,8 +326,10 @@ public class ParasitationAbility extends SelectableAbility {
 
         Entity hostEntity = serverTarget.serverLevel().getEntity(currentHostUUID);
 
+        int seq = BeyonderData.getSequence(serverTarget);
+
         if (hostEntity == null || hostEntity.isRemoved() || !(hostEntity instanceof LivingEntity host)
-                || !host.isAlive()) {
+                || !host.isAlive() || seq >= BeyonderData.getSequence(host)) {
             cancelConcealed(serverLevel, serverTarget);
             return;
         }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import com.google.common.util.concurrent.AtomicDouble;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -26,21 +27,28 @@ import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PuppeteeringAbility extends Ability {
 
     private final HashMap<UUID, LivingEntity> entitiesBeingManipulated = new HashMap<>();
 
     public PuppeteeringAbility(String id) {
         super(id, 1);
+        canBeUsedByNPC = false;
 
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(17500f, 7000f, 3800f, 2500f, 2275f, 1660f));
     }
 
     @Override
@@ -146,9 +154,7 @@ public class PuppeteeringAbility extends Ability {
         if(!BeyonderData.isBeyonder(entity) || sequence < 0 || sequence > 9)
             return;
 
-
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
         if(target == null || target == entity || target instanceof Phantom) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d));
@@ -165,6 +171,11 @@ public class PuppeteeringAbility extends Ability {
                 entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 5, false, false, false));
                 return;
             }
+        }
+
+        var comp = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(comp.marionettes.size() + 1 >= getMax(sequence)){
+            return;
         }
 
         entitiesBeingManipulated.put(entity.getUUID(), target);
@@ -208,7 +219,7 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
 
-            if(entity.getHealth() < casterHealth.get() * 0.5) {
+            if(entity.getHealth() < casterHealth.get()) {
                 entitiesBeingManipulated.remove(entity.getUUID());
                 stopped.set(true);
                 return;
@@ -258,17 +269,29 @@ public class PuppeteeringAbility extends Ability {
         }, (ServerLevel) level);
     }
 
+    private static int getMax(int seq){
+        return switch (seq){
+          case 5 -> 2;
+          case 4 -> 7;
+          case 3 -> 13;
+          case 2 -> 25;
+          case 1 -> 30;
+          case 0 -> 40;
+            default -> 0;
+        };
+    }
+
     private void turnIntoMarionette(LivingEntity target, Player player) {
         if(target instanceof Player) {
             Vec3 pos = target.position();
             if(BeyonderData.isBeyonder(target)) {
                 int sequence = BeyonderData.getSequence(target);
                 String pathway = BeyonderData.getPathway(target);
-                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                target.kill();
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, pathway, sequence);
             }
             else {
-                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                target.kill();
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, "none", 10);
             }
 
@@ -280,10 +303,35 @@ public class PuppeteeringAbility extends Ability {
             mob.setTarget(null);
             mob.getNavigation().stop();
         }
+
+
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));
         } else {
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
+        }
+
+        var comp = player.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        comp.marionettes.add(target.getUUID());
+    }
+
+    @SubscribeEvent
+    private static void onPlayerTick(PlayerTickEvent.Post event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if(!(player.level() instanceof ServerLevel level)) return;
+
+        if(player.tickCount % 20 == 0) {
+            var comp = player.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+            List<UUID> buff = new LinkedList<>();
+
+            for (var obj : comp.marionettes) {
+                var target = level.getEntity(obj);
+                if (target == null) {
+                    buff.add(obj);
+                }
+            }
+
+            comp.marionettes.removeAll(buff);
         }
     }
 }

@@ -209,7 +209,7 @@ public class AbilityHandler {
         // DOOR PATHWAY
         abilities.add(new DoorOpeningAbility("door_opening_ability"));
         abilities.add(new SpellsAbility("spells_ability"));
-        //abilities.add(new RecordingAbility("recording_ability"));
+        abilities.add(new RecordingAbility("recording_ability"));
         abilities.add(new BlinkAbility("blink_ability"));
         abilities.add(new TravelersDoorAbility("travelers_door_ability"));
         abilities.add(new InvisibleHandAbility("invisible_hand_ability"));
@@ -309,7 +309,7 @@ public class AbilityHandler {
         abilities.add(new MentalDisruptionAbility("mental_disruption_ability"));
         abilities.add(new DecryptionAbility("decryption_ability"));
         abilities.add(new GiftAbility("gift_ability"));
-        //abilities.add(new AbilityTheftAbility("ability_theft_ability"));
+        abilities.add(new AbilityTheftAbility("ability_theft_ability"));
         abilities.add(new MundaneConceptualTheft("mundane_conceptual_theft_ability"));
         abilities.add(new ParasitationAbility("parasitation_ability"));
         abilities.add(new HostControllingAbility("host_controlling_ability"));

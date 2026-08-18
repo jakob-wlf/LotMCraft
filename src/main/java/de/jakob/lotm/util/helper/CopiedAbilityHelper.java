@@ -76,8 +76,8 @@ public class CopiedAbilityHelper {
 
     private static boolean shouldReduceUsesForType(String copyType) {
         return switch (copyType) {
-            default -> true;
             case "replicated" -> false;
+            default -> true;
         };
     }
 

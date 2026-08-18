@@ -86,16 +86,26 @@ public class AbilityWheelHelper {
 
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        var copied = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+
         for(String abilityId : new ArrayList<>(component.getAbilities())) {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId.split(":")[0]);
-            if((ability == null || !ability.hasAbility(player)) && (abilityId.split(":").length < 3 || !abilityId.split(":")[2].equals("copied"))) {
+
+            if((ability == null || !ability.hasAbility(player))) {
+                if((abilityId.split(":").length >= 3
+                        && abilityId.split(":")[2].equals("copied")
+                        && copied.getAbilityIds().contains(abilityId.split(":")[0])
+                )) continue;
+
                 component.getAbilities().remove(abilityId);
             }
         }
+
         int selected = component.getSelectedAbility();
         if (selected >= component.getAbilities().size()) {
             component.setSelectedAbility(Math.max(0, component.getAbilities().size() - 1));
         }
+
         syncToClient(player);
     }
 

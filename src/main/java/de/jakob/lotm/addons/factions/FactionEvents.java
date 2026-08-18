@@ -1,6 +1,7 @@
 package de.jakob.lotm.addons.factions;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.command.FactionAdminCommand;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
@@ -107,8 +108,29 @@ public class FactionEvents {
     @SubscribeEvent
     public static void onRightClick(PlayerInteractEvent.RightClickBlock event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(player.level() instanceof ServerLevel level)) return;
 
         var pos = player.level().getChunkAt(event.getPos()).getPos();
+
+
+        var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+        if (comp.isParasiting()) {
+            var id = comp.getParasitingUUID();
+            var target = level.getEntity(id);
+
+            if (target instanceof ServerPlayer targetPlayer) {
+                if (!shouldFail(targetPlayer, pos)) {
+                    if (BeyonderData.getPathway(player).equals("error") &&
+                            BeyonderData.getSequence(player) == 4) {
+                        var ritual = player.getData(ModAttachments.RITUALS.get());
+                        ritual.setStage(1);
+                    }
+
+                    return;
+                }
+            }
+        }
+
 
         if (!shouldFail(player, pos)) return;
 
@@ -175,7 +197,7 @@ public class FactionEvents {
                             if (value == 1)
                                 type = 1;
                             var attacker = event.getServer().overworld().getPlayerByUUID(Objects.requireNonNull(BeyonderData.playerMap.getKeyByName(obj)));
-                            if(attacker == null) continue;
+                            if (attacker == null) continue;
 
                             attackersList.add((ServerPlayer) attacker);
 
@@ -212,7 +234,7 @@ public class FactionEvents {
                         }
                     }
 
-                    if(claimedAmount == 8) break;
+                    if (claimedAmount == 8) break;
 
                     if (ticks % (20 * 10) * BeyonderData.factionStorage.getClaimLevel(entry.getKey(), type) == 0) {
                         Tuple<Integer, Integer> pair;
@@ -231,17 +253,17 @@ public class FactionEvents {
                         if (pair.getB() == 100) {
                             var blockpos = entry.getKey().getWorldPosition();
                             BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
-                                    Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] was lost").withStyle(ChatFormatting.RED));
+                                    Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] was lost").withStyle(ChatFormatting.RED));
 
-                            messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] was conquered").withStyle(ChatFormatting.DARK_GREEN));
+                            messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] was conquered").withStyle(ChatFormatting.DARK_GREEN));
                             BeyonderData.factionStorage.unclaim(faction, entry.getKey());
                         } else {
                             if (pair.getB() % 25 == 0 || pair.getB() == 1) {
                                 var blockpos = entry.getKey().getWorldPosition();
                                 BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
-                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] is under attack - " + pair.getB() + "%").withStyle(ChatFormatting.RED));
+                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] is under attack - " + pair.getB() + "%").withStyle(ChatFormatting.RED));
 
-                                messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() +"] - " + pair.getB() + "%").withStyle(ChatFormatting.DARK_GREEN));
+                                messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] - " + pair.getB() + "%").withStyle(ChatFormatting.DARK_GREEN));
                             }
                         }
 
@@ -274,8 +296,8 @@ public class FactionEvents {
 //            BeyonderData.factionStorage.disband(obj);
 //        }
 
-        for(var obj : warProgress.entrySet()){
-            if(obj.getValue().getA() == 0){
+        for (var obj : warProgress.entrySet()) {
+            if (obj.getValue().getA() == 0) {
                 warProgress.remove(obj.getKey());
             }
         }
@@ -336,8 +358,8 @@ public class FactionEvents {
     }
 
 
-    private static void messageAll(List<ServerPlayer> list, Component msg){
-        for(var obj : list){
+    private static void messageAll(List<ServerPlayer> list, Component msg) {
+        for (var obj : list) {
             obj.sendSystemMessage(msg);
         }
     }

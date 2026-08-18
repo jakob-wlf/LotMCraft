@@ -75,6 +75,7 @@ public class RitualDescriptionHelper {
                 "a Beyonder creature at the level of a demigod or higher");
         fool.put(3, "Be separated from reality for a long time");
         fool.put(2, "Return a piece of history that has been left behind to the present era");
+        fool.put(1, "Build a town consisting only of marionettes");
         fool.put(0, "Fool time or fate once");
         description.put("fool", fool);
 
@@ -82,6 +83,7 @@ public class RitualDescriptionHelper {
         error.put(5, "Examine dreams of many players");
         error.put(4, "Convince" + de.jakob.lotm.addons.rituals.error.Seq4.AMOUNT
                 + " targets to willingly offer all they possess to sustain you");
+        error.put(3, "Without violence, find and exploit loopholes in rules");
         error.put(2, "Replace high-tier target in it's own social circle");
         error.put(1, "Plunge a faction into temporal disorder");
         error.put(0, "Replace someone during \"Their\" Sequence 0 apotheosis ritual");

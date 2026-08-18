@@ -204,6 +204,10 @@ public class DreamTraversalAbility extends SelectableAbility {
         parasitationComponent.setParasited(true);
         parasitationComponent.setParasiteUUID(entity.getUUID());
 
+        var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(true);
+        comp.setParasitingUUID(target.getUUID());
+
         player.setBoundingBox(new AABB(
                 player.getX(), player.getY(), player.getZ(),
                 player.getX(), player.getY(), player.getZ()
@@ -242,6 +246,10 @@ public class DreamTraversalAbility extends SelectableAbility {
             ));
             player.onUpdateAbilities();
             player.hurtMarked = true;
+
+            var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+            comp.setParasiting(false);
+            comp.setParasitingUUID(null);
         }
 
         AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
@@ -288,6 +296,10 @@ public class DreamTraversalAbility extends SelectableAbility {
         ));
         player.onUpdateAbilities();
         player.hurtMarked = true;
+
+        var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(true);
+        comp.setParasitingUUID(target.getUUID());
 
         AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
         if(scaleAttribute != null) {

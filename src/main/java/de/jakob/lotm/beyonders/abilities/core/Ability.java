@@ -160,7 +160,8 @@ public abstract class Ability {
         baseDamage *= multiplier(newUser);
 
         if(!hasManualDistance)
-            baseDistance = (int) (Math.max(Math.max((1 << (9 - seq)), 15), 125) * multiplier(newUser));
+            baseDistance = (int) (Math.min(Math.max((1 << (9 - seq)), 10), 200) * multiplier(newUser));
+
         AuthorityResistanceManager.addToBuffer(entity, seq);
 
         onAbilityUse(serverLevel, newUser);

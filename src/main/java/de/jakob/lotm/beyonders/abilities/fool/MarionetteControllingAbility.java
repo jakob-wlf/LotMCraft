@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -21,6 +23,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Phantom;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -28,6 +31,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.*;
 import java.util.stream.StreamSupport;
@@ -57,12 +61,21 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.marionette_controlling.swap", "ability.lotmcraft.marionette_controlling.damage_auto_swap", "ability.lotmcraft.marionette_controlling.control", "ability.lotmcraft.marionette_controlling.get_item"};
+        return new String[]{
+                "ability.lotmcraft.marionette_controlling.swap",
+                "ability.lotmcraft.marionette_controlling.damage_auto_swap",
+                "ability.lotmcraft.marionette_controlling.control",
+                "ability.lotmcraft.marionette_controlling.get_item"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player))
+            return;
+
+        var comp = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(abilityIndex == 2 && comp.isDiscerning())
             return;
 
         switch (abilityIndex) {
@@ -291,6 +304,22 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         if (target != null) {
             ControllingUtil.possess(player, target, true);
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+
+        var component = player.getData(ModAttachments.CONTROLLING_DATA.get());
+        if(!component.isControlling()) return;
+
+        ItemStack stack = event.getItemStack();
+
+        if(stack.getItem() instanceof BeyonderPotion ||
+                stack.getItem() instanceof BeyonderCharacteristicItem){
+            event.setCanceled(true);
         }
     }
 }

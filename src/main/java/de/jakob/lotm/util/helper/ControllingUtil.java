@@ -13,6 +13,7 @@ import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.AABB;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
@@ -38,6 +40,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -55,7 +58,7 @@ public class ControllingUtil {
 
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA.get());
 
-        if (data.isControlling()) return ;
+        if (data.isControlling()) return;
 
         boolean isTargetPlayer = target instanceof ServerPlayer;
 
@@ -77,7 +80,7 @@ public class ControllingUtil {
         copyPosition(target, player);
 
         // save the target to the player
-        if (!isTargetPlayer){
+        if (!isTargetPlayer) {
             CompoundTag targetTag = new CompoundTag();
             target.saveWithoutId(targetTag);
 
@@ -115,7 +118,7 @@ public class ControllingUtil {
         ShapeShiftingUtil.shapeShift(player, target, false);
 
         // remove the target if he is not a player
-        if (!(target instanceof ServerPlayer serverTarget)){
+        if (!(target instanceof ServerPlayer serverTarget)) {
             target.discard();
         } else {
             ControllingDataComponent targetData = target.getData(ModAttachments.CONTROLLING_DATA);
@@ -126,7 +129,7 @@ public class ControllingUtil {
         }
     }
 
-    public static void reset(ServerPlayer player, ServerLevel level, boolean resetData){
+    public static void reset(ServerPlayer player, ServerLevel level, boolean resetData) {
         if (player == null) return;
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
         CompoundTag targetTag = data.getTargetEntity();
@@ -229,7 +232,7 @@ public class ControllingUtil {
                 Entity bodyEntity = EntityType.loadEntityRecursive(bodyTag, level, (entity) -> {
                     ListTag posList = bodyTag.getList("Pos", 6);
                     if (posList.size() >= 3) {
-                        entity.setPos(posList.getDouble(0),posList.getDouble(1),posList.getDouble(2));
+                        entity.setPos(posList.getDouble(0), posList.getDouble(1), posList.getDouble(2));
                     } else {
                         entity.setPos(player.position());
                     }
@@ -342,7 +345,7 @@ public class ControllingUtil {
         }
     }
 
-    private static void copyEntities (LivingEntity source, LivingEntity target) {
+    private static void copyEntities(LivingEntity source, LivingEntity target) {
         copyInventories(source, target);
 
         copyData(source, target);
@@ -404,7 +407,8 @@ public class ControllingUtil {
             }
 
             // sync max health
-            if (targetInstance.getAttribute().equals(Attributes.MAX_HEALTH)) {}
+            if (targetInstance.getAttribute().equals(Attributes.MAX_HEALTH)) {
+            }
         }
 
         // copy effects
@@ -464,22 +468,19 @@ public class ControllingUtil {
             for (int i = 0; i < Math.min(sourceInv.getContainerSize(), targetInv.getContainerSize()); i++) {
                 targetInv.setItem(i, sourceInv.getItem(i).copy());
             }
-        }
-        else if (source instanceof Player player) {
+        } else if (source instanceof Player player) {
             SimpleContainer targetInv = target.getData(ModAttachments.COPIED_INVENTORY).getInv();
             targetInv.clearContent();
             for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
                 targetInv.setItem(i, player.getInventory().getItem(i).copy());
             }
             target.setItemSlot(EquipmentSlot.MAINHAND, source.getMainHandItem().copy());
-        }
-        else if (target instanceof Player player) {
+        } else if (target instanceof Player player) {
             SimpleContainer sourceInv = source.getData(ModAttachments.COPIED_INVENTORY).getInv();
             for (int i = 0; i < Math.min(sourceInv.getContainerSize(), player.getInventory().getContainerSize()); i++) {
                 player.getInventory().setItem(i, sourceInv.getItem(i).copy());
             }
-        }
-        else {
+        } else {
             SimpleContainer sourceInv = source.getData(ModAttachments.COPIED_INVENTORY).getInv();
             SimpleContainer targetInv = target.getData(ModAttachments.COPIED_INVENTORY).getInv();
             targetInv.clearContent();
@@ -497,7 +498,7 @@ public class ControllingUtil {
     }
 
     @SubscribeEvent
-    public static void onOriginalBodyDeath(LivingIncomingDamageEvent event){
+    public static void onOriginalBodyDeath(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
         float damage = event.getAmount();
         if (damage >= entity.getHealth()) {
@@ -518,7 +519,7 @@ public class ControllingUtil {
 
                 // reset the player
                 if (entity.level() instanceof ServerLevel serverLevel) {
-                    reset(player,serverLevel, false);
+                    reset(player, serverLevel, false);
                 }
 
                 // clean up data
@@ -535,7 +536,7 @@ public class ControllingUtil {
     }
 
     @SubscribeEvent
-    public static void onPlayerDeath(LivingIncomingDamageEvent event){
+    public static void onPlayerDeath(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
         float damage = event.getAmount();
         if (damage >= entity.getHealth()) {
@@ -561,7 +562,7 @@ public class ControllingUtil {
 
     // drop targets inventory after death
     @SubscribeEvent
-    public static void onTargetDeath(LivingDeathEvent event){
+    public static void onTargetDeath(LivingDeathEvent event) {
         LivingEntity entity = event.getEntity();
 
         CopiedInventoryComponent data = entity.getData(ModAttachments.COPIED_INVENTORY);
@@ -574,12 +575,12 @@ public class ControllingUtil {
 
     // reset before logout
     @SubscribeEvent
-    public static void onPlayerLogout (PlayerEvent.PlayerLoggedOutEvent event){
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         Player player = event.getEntity();
         if (player.level() instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
             ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
             if (data.isControlling() || data.getBodyUUID() != null) {
-                reset(serverPlayer,serverLevel, true);
+                reset(serverPlayer, serverLevel, true);
             }
             if (data.isControlled() && data.getOwnerUUID() != null) {
                 reset(getPlayerByUUID(data.getOwnerUUID()), serverLevel, true);
@@ -588,14 +589,70 @@ public class ControllingUtil {
     }
 
     // reset before logout
+//    @SubscribeEvent
+//    public static void onPlayerChangedDimension(EntityTravelToDimensionEvent event) {
+//        if (event.getEntity().level() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
+//            ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
+//
+//            if (data.isControlling() || data.getBodyUUID() != null) {
+//                event.setCanceled(true);
+//                reset(serverPlayer, serverLevel, true);
+//            }
+//
+//        }
+//    }
+
     @SubscribeEvent
-    public static void onPlayerChangedDimension (EntityTravelToDimensionEvent event){
-        if (event.getEntity().level() instanceof ServerLevel serverLevel && event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (!serverPlayer.serverLevel().dimension().equals(event.getDimension())) {
-                ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
-                if (data.isControlling() || data.getBodyUUID() != null) {
-                    event.setCanceled(true);
-                    reset(serverPlayer,serverLevel, true);
+    public static void onPlayerChangedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+        if(!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
+        var data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA.get());
+
+        if(data.isControlling()){
+            var body = serverLevel.getEntity(data.getBodyUUID());
+            if(body != null){
+                body.kill();
+            }
+
+            reset(serverPlayer, serverLevel, false);
+            data.setControlling(false, serverPlayer);
+            data.setTargetEntity(null);
+            data.setOwnerUUID(null);
+            data.setBodyUUID(null);
+            data.setTargetUUID(null);
+        }
+    }
+
+    static private int tick = 0;
+    @SubscribeEvent
+    private static void bodyCleanUp(ServerTickEvent.Post event){
+        MinecraftServer server = event.getServer();
+        tick++;
+
+        if(tick % 20 == 0) {
+            for (ServerLevel level : server.getAllLevels()) {
+                for (Entity entity : level.getEntities().getAll()) {
+                    if (!(entity instanceof OriginalBodyEntity body)) {
+                        continue;
+                    }
+
+                    boolean isInUse = false;
+
+                    for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                        var comp = player.getData(ModAttachments.CONTROLLING_DATA.get());
+
+                        if (comp.isControlling()
+                                && body.getUUID().equals(comp.getBodyUUID())) {
+                            isInUse = true;
+                            break;
+                        }
+                    }
+
+                    if (!isInUse) {
+                        body.kill();
+                    }
                 }
             }
         }
@@ -636,7 +693,7 @@ public class ControllingUtil {
 
     // track the distance between the main body and the player
     @SubscribeEvent
-    public static void onPlayerTickDistanceFromBody (PlayerTickEvent.Post event){
+    public static void onPlayerTickDistanceFromBody(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
 
         if (player.level() instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
@@ -654,16 +711,16 @@ public class ControllingUtil {
 
                 // get the seq of main body and not the current player
                 int sequence = bodyData.getInt("sequence");
-                if (sequence == 0) return;
 
                 int controllingDistance;
                 switch (sequence) {
-                    case 5 -> controllingDistance = 500;
-                    case 4 -> controllingDistance = 1250;
-                    case 3 -> controllingDistance = 2000;
+                    case 5 -> controllingDistance = 100;
+                    case 4 -> controllingDistance = 500;
+                    case 3 -> controllingDistance = 2500;
                     case 2 -> controllingDistance = 5000;
-                    case 1 -> controllingDistance = 15000;
-                    default -> controllingDistance = 250;
+                    case 1 -> controllingDistance = 7500;
+                    case 0 -> controllingDistance = 12500;
+                    default -> controllingDistance = 10;
                 }
 
                 // calculate the distance between main body and player
@@ -672,7 +729,7 @@ public class ControllingUtil {
                 double dz = serverPlayer.getZ() - mainBodyEntity.getZ();
 
                 if (controllingDistance < Math.sqrt(dx * dx + dy * dy + dz * dz)) {
-                    reset(serverPlayer,serverLevel, true);
+                    reset(serverPlayer, serverLevel, true);
                 }
             }
         }

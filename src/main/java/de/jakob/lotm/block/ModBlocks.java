@@ -2,7 +2,7 @@ package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.BrewingCauldronBlock;
-import de.jakob.lotm.block.custom.MysticalRingBlock;
+//import de.jakob.lotm.block.custom.MysticalRingBlock;
 import de.jakob.lotm.block.custom.RealityPortalBlock;
 import de.jakob.lotm.block.custom.VoidBlock;
 import de.jakob.lotm.item.ModItems;
@@ -39,16 +39,16 @@ public class ModBlocks {
                     .strength(-1.0f, 3600000.0F)
             ));
 
-    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
-            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
-                    .strength(0.1f)
-                    .sound(SoundType.WOOL)
-                    .noOcclusion()
-                    .lightLevel(state -> 7)
-                    .isViewBlocking((state, level, pos) -> false)
-                    .isSuffocating((state, level, pos) -> false)
-            )
-    );
+//    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
+//            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
+//                    .strength(0.1f)
+//                    .sound(SoundType.WOOL)
+//                    .noOcclusion()
+//                    .lightLevel(state -> 7)
+//                    .isViewBlocking((state, level, pos) -> false)
+//                    .isSuffocating((state, level, pos) -> false)
+//            )
+//    );
 
     public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
             () -> new RealityPortalBlock(BlockBehaviour.Properties.of()

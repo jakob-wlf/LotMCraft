@@ -77,13 +77,13 @@ public class UniquenessEntity extends Entity {
             return;
         }
 
-        if(!ACTIVE_ENTITIES.containsValue(this.getId()) || getPathway().isEmpty() || !ACTIVE_ENTITIES.containsKey(getPathway())) {
+        if (!ACTIVE_ENTITIES.containsValue(this.getId()) || getPathway().isEmpty() || !ACTIVE_ENTITIES.containsKey(getPathway())) {
             ACTIVE_ENTITIES.remove(getPathway());
             AABB hitbox = this.getBoundingBox().inflate(2);
             List<LivingEntity> nearby = level().getEntitiesOfClass(LivingEntity.class, hitbox);
 
-            for(LivingEntity entity : nearby) {
-                if(BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 3) {
+            for (LivingEntity entity : nearby) {
+                if (BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 3) {
                     spawnUniqueness(entity);
                     return;
                 }
@@ -158,6 +158,15 @@ public class UniquenessEntity extends Entity {
     }
 
     private void pickUp(Player player, String pathway, ServerLevel serverLevel) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            var pureIdealism = serverPlayer.getData(ModAttachments.DISCERNMENT_DATA.get());
+            var controlling = serverPlayer.getData(ModAttachments.CONTROLLING_DATA.get());
+
+            if (pureIdealism.isDiscerning() | controlling.isControlling()) {
+                return;
+            }
+        }
+
         UniquenessComponent component = player.getData(ModAttachments.UNIQUENESS_COMPONENT);
         component.setHasUniqueness(true);
         component.setUniquenessPathway(pathway);
@@ -180,7 +189,7 @@ public class UniquenessEntity extends Entity {
 
         // Sync uniqueness component to client
         if (player instanceof ServerPlayer serverPlayer) {
-           PacketHandler.syncUniquenessToPlayer(serverPlayer);
+            PacketHandler.syncUniquenessToPlayer(serverPlayer);
         }
 
         // Remove from active map and discard entity
@@ -215,7 +224,7 @@ public class UniquenessEntity extends Entity {
             }
         }
 
-        if(BeyonderData.playerMap.anyPlayerHoldsUniqueness(pathway)) {
+        if (BeyonderData.playerMap.anyPlayerHoldsUniqueness(pathway)) {
             return true;
         }
 
