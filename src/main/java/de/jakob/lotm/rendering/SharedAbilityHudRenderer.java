@@ -31,9 +31,9 @@ public class SharedAbilityHudRenderer {
     private static final int COLOR_ACCENT  = 0xFF4444AA;
 
     private static final ResourceLocation backgroundTexture =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_frame.png");
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/abilities/ability_frame.png");
     private static final ResourceLocation foregroundTexture =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_frame_foreground.png");
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/abilities/ability_frame_foreground.png");
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {

@@ -14,7 +14,7 @@ public class RecipeScreen extends AbstractContainerScreen<RecipeMenu> {
     public RecipeScreen(RecipeMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
 
-        this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/recipe.png");
+        this.containerBackground = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/recipes/recipe.png");
 
         this.imageHeight = 134;
         this.imageWidth = 216;

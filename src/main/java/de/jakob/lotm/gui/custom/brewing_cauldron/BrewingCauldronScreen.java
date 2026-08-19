@@ -13,7 +13,7 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
     private static final ResourceLocation GUI_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/gui/brewing_cauldron/brewing_cauldron_gui.png");
     private static final ResourceLocation ARROW_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/gui/brewing_progress.png");
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/gui/brewing_cauldron/brewing_progress.png");
 
     public BrewingCauldronScreen(BrewingCauldronMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);

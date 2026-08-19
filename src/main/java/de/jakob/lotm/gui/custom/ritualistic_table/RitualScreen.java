@@ -12,11 +12,12 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
     private static final ResourceLocation GUI_TEXTURE =
-            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ritual/ritual_gui.png");
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ritualistic_magic/ritualistic_table.png");
 
     private EditBox field1;
     private EditBox field2;
@@ -65,8 +66,7 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.drawString(this.font, this.title, this.titleLabelX, this.titleLabelY, 4210752, false);
+    protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
     }
 
     @Override

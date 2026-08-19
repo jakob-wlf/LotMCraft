@@ -38,7 +38,7 @@ public class RitualMenu extends AbstractContainerMenu {
             addPlayerInventory(inv);
             addPlayerHotbar(inv);
 
-            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, CANDLE_SLOT, 79, 20));
+            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, CANDLE_SLOT, 79, 26));
 
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, SACRIFICE_SLOT_1, 53, 50));
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, SACRIFICE_SLOT_2, 79, 50));
@@ -50,7 +50,7 @@ public class RitualMenu extends AbstractContainerMenu {
             addPlayerInventory(inv);
             addPlayerHotbar(inv);
 
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(RITUAL_SLOT_COUNT), CANDLE_SLOT, 79, 20));
+            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(RITUAL_SLOT_COUNT), CANDLE_SLOT, 79, 26));
             this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(RITUAL_SLOT_COUNT), SACRIFICE_SLOT_1, 53, 50));
             this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(RITUAL_SLOT_COUNT), SACRIFICE_SLOT_2, 79, 50));
             this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(RITUAL_SLOT_COUNT), SACRIFICE_SLOT_3, 105, 50));
