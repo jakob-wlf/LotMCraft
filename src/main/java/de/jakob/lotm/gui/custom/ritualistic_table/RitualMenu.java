@@ -38,15 +38,12 @@ public class RitualMenu extends AbstractContainerMenu {
             addPlayerInventory(inv);
             addPlayerHotbar(inv);
 
-            // Candle slot
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, CANDLE_SLOT, 79, 20));
 
-            // Sacrificial item slots (up to 3)
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, SACRIFICE_SLOT_1, 53, 50));
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, SACRIFICE_SLOT_2, 79, 50));
             this.addSlot(new SlotItemHandler(blockEntity.itemHandler, SACRIFICE_SLOT_3, 105, 50));
         } else {
-            // Client-side fallback when block entity isn't available
             this.blockEntity = null;
             this.level = inv.player.level();
 

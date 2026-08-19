@@ -35,7 +35,7 @@ public class RitualisticTableBlockEntity extends BlockEntity implements MenuProv
     };
 
     public RitualisticTableBlockEntity(BlockPos pos, BlockState blockState) {
-        super(ModBlockEntities.RITUALISTIC_TABLE_BE.get(), pos, blockState); // consider renaming this registry entry too
+        super(ModBlockEntities.RITUALISTIC_TABLE_BE.get(), pos, blockState);
     }
 
     @Override

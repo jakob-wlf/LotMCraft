@@ -1,0 +1,35 @@
+{
+  "id": "lotm:sailors_calming_tide",
+  "discovered_from": "lotm:waterlogged_logbook",
+  "candle": "minecraft:blue_candle",
+  "sacrifices": [
+    { "item": "minecraft:nautilus_shell", "count": 1 },
+    { "item": "minecraft:water_bucket", "count": 1 },
+    { "item": "minecraft:prismarine_shard", "count": 4 }
+  ],
+  "honorific": {
+    "lines": [
+      "Lord who rides the storm and rules the restless waters,",
+      "Grant a sailor's lungs to this landbound supplicant,",
+      "Let the deep hold its breath as I hold mine."
+    ]
+  },
+  "conditions": {
+    "min_sequence": 10
+  },
+  "particle_color": {
+    "r": 0.0,
+    "g": 0.5,
+    "b": 1.0
+  },
+  "duration_ticks": 300,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:water_breathing", "duration_ticks": 6000, "amplifier": 0 },
+        { "id": "minecraft:dolphins_grace", "duration_ticks": 6000, "amplifier": 0 }
+      ]
+    }
+  }
+}

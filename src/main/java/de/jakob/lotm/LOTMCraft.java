@@ -99,6 +99,7 @@ import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
+import de.jakob.lotm.rituals.RitualManager;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
@@ -122,6 +123,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -231,6 +233,11 @@ public class LOTMCraft
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
+    }
+
+    @SubscribeEvent
+    public void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new RitualManager());
     }
 
     @SubscribeEvent

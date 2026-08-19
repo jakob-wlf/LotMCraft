@@ -577,6 +577,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                RitualStartPacket.TYPE,
+                RitualStartPacket.STREAM_CODEC,
+                RitualStartPacket::handle
+        );
+
+        registrar.playToServer(
                 PlayerLeftClickWhileSummonSelfPacket.TYPE,
                 PlayerLeftClickWhileSummonSelfPacket.STREAM_CODEC,
                 PlayerLeftClickWhileSummonSelfPacket::handle

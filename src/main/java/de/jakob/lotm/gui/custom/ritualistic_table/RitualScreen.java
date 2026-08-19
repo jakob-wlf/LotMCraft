@@ -2,6 +2,8 @@ package de.jakob.lotm.gui.custom.ritualistic_table;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RitualStartPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -19,7 +21,6 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
     private EditBox field1;
     private EditBox field2;
     private EditBox field3;
-    private EditBox field4;
 
     public RitualScreen(RitualMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -36,22 +37,28 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
         int y = (height - imageHeight) / 2 + 12;
 
         field1 = new EditBox(this.font, x + 20, y + 66, 136, 16, Component.literal("Field 1"));
-        field1.setMaxLength(32);
+        field1.setMaxLength(128);
         field1.setHint(Component.literal("..."));
         this.addRenderableWidget(field1);
 
         field2 = new EditBox(this.font, x + 20, y + 83, 136, 16, Component.literal("Field 2"));
-        field2.setMaxLength(32);
+        field2.setMaxLength(128);
         field2.setHint(Component.literal("..."));
         this.addRenderableWidget(field2);
 
         field3 = new EditBox(this.font, x + 20, y + 100, 136, 16, Component.literal("Field 3"));
-        field3.setMaxLength(32);
+        field3.setMaxLength(128);
         field3.setHint(Component.literal("..."));
         this.addRenderableWidget(field3);
 
         this.addRenderableWidget(Button.builder(Component.literal("Start Ritual"), button -> {
-                    // no functionality yet
+                    if(menu.blockEntity == null) return;
+                    PacketHandler.sendToServer(new RitualStartPacket(
+                            menu.blockEntity.getBlockPos(),
+                            field1.getValue(),
+                            field2.getValue(),
+                            field3.getValue()
+                    ));
                 })
                 .bounds(x + 38, y + 120, 100, 20)
                 .build());
@@ -90,7 +97,6 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
         if (field1.isFocused() && field1.keyPressed(keyCode, scanCode, modifiers)) return true;
         if (field2.isFocused() && field2.keyPressed(keyCode, scanCode, modifiers)) return true;
         if (field3.isFocused() && field3.keyPressed(keyCode, scanCode, modifiers)) return true;
-        if (field4.isFocused() && field4.keyPressed(keyCode, scanCode, modifiers)) return true;
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
