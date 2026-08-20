@@ -2,7 +2,7 @@ package de.jakob.lotm.dimension;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.LevelHeightAccessor;

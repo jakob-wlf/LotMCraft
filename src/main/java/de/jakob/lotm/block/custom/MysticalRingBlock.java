@@ -1,5 +1,6 @@
 package de.jakob.lotm.block.custom;
 
+import de.jakob.lotm.block.entity.MysticalRingBlockEntity;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;

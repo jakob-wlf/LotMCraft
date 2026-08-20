@@ -1,6 +1,5 @@
-package de.jakob.lotm.block.custom;
+package de.jakob.lotm.block.entity;
 
-import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;

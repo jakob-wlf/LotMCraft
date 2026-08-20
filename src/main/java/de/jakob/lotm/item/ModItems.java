@@ -2,7 +2,7 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlocks;
 import de.jakob.lotm.data.ModTags;
 import de.jakob.lotm.item.custom.*;
 import net.minecraft.tags.BlockTags;

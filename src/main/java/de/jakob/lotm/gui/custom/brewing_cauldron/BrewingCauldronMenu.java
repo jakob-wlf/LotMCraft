@@ -1,7 +1,7 @@
 package de.jakob.lotm.gui.custom.brewing_cauldron;
 
-import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.block.custom.BrewingCauldronBlockEntity;
+import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.entity.BrewingCauldronBlockEntity;
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

@@ -1,7 +1,8 @@
 package de.jakob.lotm.block.custom;
 
 import com.mojang.serialization.MapCodec;
-import de.jakob.lotm.block.ModBlockEntities;
+import de.jakob.lotm.block.entity.ModBlockEntities;
+import de.jakob.lotm.block.entity.BrewingCauldronBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;

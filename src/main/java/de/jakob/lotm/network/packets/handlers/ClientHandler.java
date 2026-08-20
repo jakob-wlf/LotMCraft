@@ -11,7 +11,7 @@ import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.coordinate_input.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
@@ -79,6 +79,10 @@ public class ClientHandler {
                     0
             );
         }
+    }
+
+    public static Minecraft getMinecraftInstance() {
+        return Minecraft.getInstance();
     }
 
     public static void handleSyncPlayerData(SyncPlayerActingDataPayload payload, IPayloadContext context) {

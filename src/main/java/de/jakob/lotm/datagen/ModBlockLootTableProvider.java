@@ -1,6 +1,6 @@
 package de.jakob.lotm.datagen;
 
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlocks;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;

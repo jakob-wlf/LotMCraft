@@ -1,6 +1,5 @@
-package de.jakob.lotm.block.custom;
+package de.jakob.lotm.block.entity;
 
-import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -86,4 +85,6 @@ public class RitualisticTableBlockEntity extends BlockEntity implements MenuProv
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
+
 }

@@ -7,8 +7,9 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.block.ModBlockEntities;
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlockEntities;
+import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
@@ -120,6 +121,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -372,6 +374,11 @@ public class LOTMCraft
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
             event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
+        }
+
+        @SubscribeEvent
+        public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerBlockEntityRenderer(ModBlockEntities.RITUALISTIC_TABLE_BE.get(), RitualisticTableBlockEntityRenderer::new);
         }
     }
 

@@ -2,7 +2,7 @@ package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlocks;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;

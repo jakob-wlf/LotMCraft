@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.DreamMazeData;
+import de.jakob.lotm.block.entity.ModBlocks;
 import de.jakob.lotm.dimension.DreamMazeEventHandler;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
@@ -196,10 +197,10 @@ public class DreamMazeAbility extends SelectableAbility {
 
                 level.setBlockAndUpdate(
                         new BlockPos(origin.getX() + x, floorY, origin.getZ() + z),
-                        de.jakob.lotm.block.ModBlocks.SOLID_VOID.get().defaultBlockState());
+                        ModBlocks.SOLID_VOID.get().defaultBlockState());
                 level.setBlockAndUpdate(
                         new BlockPos(origin.getX() + x, ceilY, origin.getZ() + z),
-                        de.jakob.lotm.block.ModBlocks.SOLID_VOID.get().defaultBlockState());
+                        ModBlocks.SOLID_VOID.get().defaultBlockState());
 
                 for (int y = floorY + 1; y < ceilY; y++) {
                     BlockPos pos = new BlockPos(origin.getX() + x, y, origin.getZ() + z);

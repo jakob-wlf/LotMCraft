@@ -1,6 +1,5 @@
-package de.jakob.lotm.block.custom;
+package de.jakob.lotm.block.entity;
 
-import de.jakob.lotm.block.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

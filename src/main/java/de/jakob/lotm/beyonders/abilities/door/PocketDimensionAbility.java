@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.PocketDimensionData;
-import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ReturnPortalEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
