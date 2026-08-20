@@ -2,7 +2,7 @@ package de.jakob.lotm.villager;
 
 import com.google.common.collect.ImmutableSet;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.ModBlocks;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;

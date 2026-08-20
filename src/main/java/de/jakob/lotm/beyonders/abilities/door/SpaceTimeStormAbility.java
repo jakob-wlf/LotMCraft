@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;

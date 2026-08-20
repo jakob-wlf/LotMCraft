@@ -2,7 +2,7 @@ package de.jakob.lotm.quest.impl.kill_beyonder_quests;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
-import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.MysticalRingBlockEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.quest.Quest;

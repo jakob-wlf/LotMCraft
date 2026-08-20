@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.ritualistic_table;
 
-import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.RitualisticTableBlockEntity;
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;

@@ -1,9 +1,10 @@
 package de.jakob.lotm.block.custom;
 
 import com.mojang.serialization.MapCodec;
-import de.jakob.lotm.block.entity.ModBlocks;
+import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.RitualisticTableBlockEntity;
 import de.jakob.lotm.block.entity.RitualisticTablePartBlockEntity;
+import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -13,6 +14,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
@@ -50,6 +52,23 @@ public class RitualisticTableBlock extends BaseEntityBlock {
     public RitualisticTableBlock(Properties properties) {
         super(properties);
         registerDefaultState(getStateDefinition().any().setValue(FACING, Direction.NORTH));
+    }
+
+    @Override
+    public boolean hasDynamicLightEmission(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public int getLightEmission(BlockState state, BlockGetter level, BlockPos pos) {
+        if(!(level.getBlockEntity(pos) instanceof RitualisticTableBlockEntity be)) {
+            return 0;
+        }
+
+        if(!be.itemHandler.getStackInSlot(RitualMenu.CANDLE_SLOT).isEmpty()) {
+             return 12;
+        }
+        return 5;
     }
 
     @Override

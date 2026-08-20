@@ -1,5 +1,6 @@
 package de.jakob.lotm.block.entity;
 
+import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -28,6 +29,8 @@ public class RitualisticTableBlockEntity extends BlockEntity implements MenuProv
         protected void onContentsChanged(int slot) {
             setChanged();
             if (level != null && !level.isClientSide()) {
+                level.getChunkSource().getLightEngine().checkBlock(worldPosition);
+
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
             }
         }

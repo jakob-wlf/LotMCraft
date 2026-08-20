@@ -1,6 +1,10 @@
-package de.jakob.lotm.block.entity;
+package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.block.entity.BrewingCauldronBlockEntity;
+import de.jakob.lotm.block.entity.MysticalRingBlockEntity;
+import de.jakob.lotm.block.entity.RitualisticTableBlockEntity;
+import de.jakob.lotm.block.entity.RitualisticTablePartBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;

@@ -1,4 +1,4 @@
-package de.jakob.lotm.block.entity;
+package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.*;
@@ -31,6 +31,7 @@ public class ModBlocks {
             () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
                     .strength(2.0f)
                     .noOcclusion()
+                    .lightLevel(state -> 12)
                     .sound(SoundType.METAL)
             ));
 
