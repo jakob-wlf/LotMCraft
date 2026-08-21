@@ -20,10 +20,14 @@
   "result": {
     "type": "area_effect",
     "params": {
-      "effect": "lightning",
-      "target": "nearby",
-      "max_distance": 25,
-      "power": 6
+      "effects": [
+        {
+          "effect": "lightning",
+          "target": "nearby",
+          "max_distance": 25,
+          "power": 6
+        }
+      ]
     }
   }
 }

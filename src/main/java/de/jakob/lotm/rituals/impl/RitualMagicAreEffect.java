@@ -27,18 +27,24 @@ public class RitualMagicAreEffect implements RitualResultHandler {
 
     @Override
     public void perform(Map<String, Object> params, ServerPlayer player) {
+        System.out.println("RitualMagicAreEffect.perform: " + params);
         AreaEffectResult result = deserializeParams(params, AreaEffectResult.class);
         if (result == null) return;
 
+        System.out.println("RitualMagicAreEffect.perform: " + result.effects());
+
         for (AreaEffectResult.AreaEffectEntry effect : result.effects()) {
+            System.out.println("RitualMagicAreEffect.perform: " + effect.effect() + ", target: " + effect.target() + ", maxDistance: " + effect.maxDistance() + ", power: " + effect.power());
             List<LivingEntity> targets = getTargetEntity(effect.target(), player, effect.maxDistance());
             for (LivingEntity target : targets) {
+                System.out.println("RitualMagicAreEffect.perform: applying effect " + effect.effect() + " to target " + target.getName().getString() + " at position " + target.position());
                 applyAreaEffect(effect.effect(), target, player, Math.clamp(effect.power(), 1, 10));
             }
         }
     }
 
     private void applyAreaEffect(String effect, LivingEntity target, ServerPlayer source, int power) {
+        System.out.println("RitualMagicAreEffect.applyAreaEffect: effect=" + effect + ", target=" + target.getName().getString() + ", source=" + source.getName().getString() + ", power=" + power);
         switch(effect) {
             case "lightning" -> {
                 if(power <= 6) {

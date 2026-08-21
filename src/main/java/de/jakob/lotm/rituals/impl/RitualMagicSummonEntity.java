@@ -22,7 +22,7 @@ public class RitualMagicSummonEntity implements RitualResultHandler {
         SummonEntityResult result = deserializeParams(params, SummonEntityResult.class);
         if (result == null) return;
 
-        for (SummonEntityResult.EntityEntry entry : result.effects()) {
+        for (SummonEntityResult.EntityEntry entry : result.entities) {
             for (int i = 0; i < entry.count(); i++) {
                 summonEntity(entry.entityId(), player);
             }
@@ -48,7 +48,7 @@ public class RitualMagicSummonEntity implements RitualResultHandler {
         player.level().addFreshEntity(entity);
     }
 
-    public record SummonEntityResult(List<EntityEntry> effects) {
+    public record SummonEntityResult(List<EntityEntry> entities) {
 
         public record EntityEntry(
                 @SerializedName("entity_id") String entityId,

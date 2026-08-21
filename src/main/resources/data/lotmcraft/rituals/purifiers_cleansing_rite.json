@@ -5,7 +5,7 @@
   "sacrifices": [
     { "item": "minecraft:glowstone_dust", "count": 4 },
     { "item": "minecraft:gold_nugget", "count": 4 },
-    { "item": "minecraft:seed", "count": 2 }
+    { "item": "minecraft:wheat_seeds", "count": 2 }
   ],
   "honorific": {
     "lines": [
@@ -20,10 +20,20 @@
   "result": {
     "type": "area_effect",
     "params": {
-      "effect": "cleanse",
-      "target": "nearby",
-      "max_distance": 6,
-      "power": 5
+      "effects": [
+        {
+          "effect": "cleanse",
+          "target": "self",
+          "max_distance": -1,
+          "power": 5
+        },
+        {
+          "effect": "cleanse",
+          "target": "nearby",
+          "max_distance": 10,
+          "power": 5
+        }
+      ]
     }
   }
 }
