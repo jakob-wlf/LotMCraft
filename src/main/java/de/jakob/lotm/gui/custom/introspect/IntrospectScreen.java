@@ -32,6 +32,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private Tab currentTab = Tab.ABILITY_WHEEL;
+
+    private EditBox allyNameInput;
 
     private final List<Ability> availableAbilities = new ArrayList<>();
     private final List<SubAbilityEntry> subAbilityEntries = new ArrayList<>();
@@ -324,6 +327,17 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         KEYBIND_LABELS[4] = LOTMCraft.useAbilityBarAbility5.getKey().getDisplayName().getString();
         KEYBIND_LABELS[5] = LOTMCraft.useAbilityBarAbility6.getKey().getDisplayName().getString();
 
+        int panelX = this.leftPos + this.imageWidth + 5;
+        int inputWidth = ALLY_PANEL_WIDTH - 10;
+        int inputHeight = 16;
+        int inputX = panelX + 5;
+        int inputY = this.topPos + ALLY_PANEL_HEIGHT + 5;
+
+        allyNameInput = new EditBox(this.font, inputX, inputY, inputWidth, inputHeight, Component.literal("Ally name"));
+        allyNameInput.setMaxLength(32);
+        allyNameInput.setHint(Component.literal("Enter player name"));
+        this.addWidget(allyNameInput);
+
         updateCompletedQuestsScroll();
         updateButtonPositions();
     }
@@ -343,6 +357,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         int baseLeftPos = this.leftPos;
 
+        this.addRenderableWidget(allyNameInput);
+        allyNameInput.setVisible(showAllies);
+        allyNameInput.setEditable(showAllies);
+
         int abilitiesButtonX = baseLeftPos - 65;
         int abilitiesButtonY = this.topPos + 10;
 
@@ -354,6 +372,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 showQuests = false;
                                 showActing = false;
                                 showMissedActing = false;
+                                allyNameInput.setFocused(false);
                             }
                             button.setMessage(Component.literal(showAbilities ? "< Hide" : "Abilities >"));
                             updateButtonPositions();
@@ -373,6 +392,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 showAbilities = false;
                                 showActing = false;
                                 showMissedActing = false;
+                                allyNameInput.setFocused(false);
                             }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Quests >"));
                             updateButtonPositions();
@@ -392,6 +412,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 showAbilities = false;
                                 showQuests = false;
                                 showMissedActing = false;
+                                allyNameInput.setFocused(false);
                             }
                             button.setMessage(Component.literal(showActing ? "< Hide" : "Acting >"));
                             updateButtonPositions();
@@ -411,6 +432,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 showAbilities = false;
                                 showQuests = false;
                                 showActing = false;
+                                allyNameInput.setFocused(false);
                             }
                             button.setMessage(Component.literal(showMissedActing ? "< Hide" : "Missed >"));
                             updateButtonPositions();
@@ -483,6 +505,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                                 showActing = false;
                                 showMissedActing = false;
                             }
+                            else {
+                                allyNameInput.setFocused(false);
+                            }
                             button.setMessage(Component.literal(showQuests ? "< Hide" : "Allies >"));
                             updateButtonPositions();
                         })
@@ -498,6 +523,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showQuests) {
             addQuestButtons(baseLeftPos);
         }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (allyNameInput.isFocused() && allyNameInput.isVisible()) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                allyNameInput.setFocused(false);
+                return true;
+            }
+            return allyNameInput.keyPressed(keyCode, scanCode, modifiers)
+                    || allyNameInput.canConsumeInput();
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void addAbilityButtons(int baseLeftPos) {
@@ -795,7 +833,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             // Draw background
             int backgroundWidth = this.font.width(allyName) + 10;
             int backgroundHeight = this.font.lineHeight + 8;
-            guiGraphics.fill(panelX, textY - 4, panelX + backgroundWidth, textY - 4 + backgroundHeight, 0x88000000);
+            guiGraphics.fill(panelX + 1, textY - 4, panelX + backgroundWidth, textY - 4 + backgroundHeight, 0xFF666666);
 
             guiGraphics.drawString(this.font, allyName, panelX + 5, textY, 0xFFCCCCCC, false);
 
@@ -823,7 +861,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             // Draw background
             int backgroundWidth = this.font.width(allyName) + 10;
             int backgroundHeight = this.font.lineHeight + 8;
-            guiGraphics.fill(panelX, textY - 4, panelX + backgroundWidth, textY - 4 + backgroundHeight, 0x88000000);
+            guiGraphics.fill(panelX + 1, textY - 4, panelX + backgroundWidth, textY - 4 + backgroundHeight, 0xFF666666);
 
             guiGraphics.drawString(this.font, allyName, panelX + 5, textY, 0xFFCCCCCC, false);
 
@@ -831,15 +869,18 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             button -> {
                                 PacketHandler.sendToServer(new HandleAllyRequestPacket(ally.uuid(), ally.playerName(), true));
                                 allyRequests.remove(ally);
+                                ClientHandler.closeGUI();
                             })
-                    .bounds(panelX + backgroundWidth + 5, textY - 2, 60, this.font.lineHeight + 4)
+                    .bounds(panelX + backgroundWidth + 5, textY - 2, this.font.lineHeight + 4, this.font.lineHeight + 4)
                     .build();
             Button denyAllyButton = Button.builder(Component.literal("✗").withStyle(ChatFormatting.RED),
                             button -> {
                                 PacketHandler.sendToServer(new HandleAllyRequestPacket(ally.uuid(), ally.playerName(), false));
                                 allyRequests.remove(ally);
+                                this.removeWidget(button);
+                                ClientHandler.closeGUI();
                             })
-                    .bounds(panelX + backgroundWidth + 70, textY - 2, 60, this.font.lineHeight + 4)
+                    .bounds(panelX + backgroundWidth + this.font.lineHeight + 10, textY - 2, this.font.lineHeight + 4, this.font.lineHeight + 4)
                     .build();
             this.addRenderableWidget(acceptAllyButton);
             this.addRenderableWidget(denyAllyButton);
@@ -850,18 +891,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int inputX = panelX + 5;
         int inputY = panelY + ALLY_PANEL_HEIGHT + 5;
 
-        EditBox allyNameInput = new EditBox(this.font, inputX, inputY, inputWidth, inputHeight, Component.literal("Ally name"));
-        allyNameInput.setMaxLength(32);
-        allyNameInput.setHint(Component.literal("Enter player name"));
-        this.addRenderableWidget(allyNameInput);
-
         int buttonY = inputY + inputHeight + 5;
         Button requestAllyButton = Button.builder(Component.literal("Request Ally"),
                         button -> {
                             String targetName = allyNameInput.getValue();
-                            if (targetName != null && !targetName.isBlank()) {
+                            if (!targetName.isBlank()) {
                                 PacketHandler.sendToServer(new SendAllyRequestPacket(targetName));
                             }
+                            allyNameInput.setValue("");
                         })
                 .bounds(inputX, buttonY, inputWidth, 20)
                 .build();

@@ -85,7 +85,7 @@ public class AllyUtil {
 
         LivingEntity allyEntity = null;
         if (entity instanceof ServerPlayer player) {
-            allyEntity = player.serverLevel().getPlayerByUUID(allyUUID);
+            allyEntity = player.getServer().getPlayerList().getPlayer(allyUUID);
         }
 
         if (allyEntity != null) {

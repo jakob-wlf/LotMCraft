@@ -37,6 +37,7 @@ public record SendAllyRequestPacket(String allyName) implements CustomPacketPayl
                 return;
             }
             AllyUtil.sendAllyRequest(player, target);
+            player.sendSystemMessage(Component.translatable("lotm.ally.request_sent", packet.allyName()).withStyle(style -> style.withColor(0x4CAF50)));
         });
     }
 }

@@ -39,7 +39,7 @@ public record HandleAllyRequestPacket(UUID allyUUID, String allyName, boolean ac
 
             if(!packet.accepted()) {
                 player.sendSystemMessage(Component.translatable("lotm.ally.request.declined", packet.allyName()).withStyle(style -> style.withColor(0xF44336)));
-                Player target = player.serverLevel().getPlayerByUUID(packet.allyUUID());
+                Player target = player.getServer().getPlayerList().getPlayer(packet.allyUUID());
                 if(target != null) {
                     target.sendSystemMessage(Component.translatable("lotm.ally.request.declined_by", player.getName()).withStyle(style -> style.withColor(0xF44336)));
                 }
@@ -47,8 +47,9 @@ public record HandleAllyRequestPacket(UUID allyUUID, String allyName, boolean ac
                 return;
             }
             else {
-                Player target = player.serverLevel().getPlayerByUUID(packet.allyUUID());
+                Player target = player.getServer().getPlayerList().getPlayer(packet.allyUUID());
                 if(target == null) {
+                    player.sendSystemMessage(Component.translatable("lotm.ally.request.not_found", packet.allyName()).withStyle(style -> style.withColor(0xF44336)));
                     return;
                 }
 

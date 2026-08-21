@@ -81,6 +81,10 @@ public class ClientHandler {
         }
     }
 
+    public static void closeGUI() {
+        Minecraft.getInstance().setScreen(null);
+    }
+
     public static Minecraft getMinecraftInstance() {
         return Minecraft.getInstance();
     }
