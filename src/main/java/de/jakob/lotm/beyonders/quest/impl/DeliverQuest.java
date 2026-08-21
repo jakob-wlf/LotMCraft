@@ -1,10 +1,10 @@
-package de.jakob.lotm.quest.impl;
+package de.jakob.lotm.beyonders.quest.impl;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestManager;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

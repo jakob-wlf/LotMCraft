@@ -10,35 +10,11 @@ import net.minecraft.world.phys.Vec3;
 
 public class EffectFactory {
 
-    /**
-     * Create an effect at a fixed position with no time scaling (normal speed).
-     */
+
     public static ActiveEffect createEffect(int effectIndex, double x, double y, double z) {
         return createEffect(effectIndex, x, y, z, null);
     }
 
-    /**
-     * Create an effect that automatically adjusts its playback speed based on
-     * the entity's position inside a {@code TimeChangeEntity} area.
-     * <p>
-     * The entity's position is re-sampled every client tick, so the effect
-     * responds continuously as the entity moves in or out of the area:
-     * <ul>
-     *   <li>Multiplier > 1 → effect plays faster / finishes sooner</li>
-     *   <li>Multiplier < 1 → effect plays slower / finishes later</li>
-     * </ul>
-     * Falls back to normal speed (1.0) if the client level is unavailable or
-     * the entity is {@code null}.
-     *
-     * @param effectIndex Index into the effect registry
-     * @param x           Spawn X coordinate
-     * @param y           Spawn Y coordinate
-     * @param z           Spawn Z coordinate
-     * @param entity      Entity whose position is used for the time lookup.
-     *                    Pass {@code null} to get the same behaviour as the
-     *                    no-entity overload.
-     * @return Fully configured {@link ActiveEffect}
-     */
     public static ActiveEffect createEffect(int effectIndex,
                                             double x, double y, double z,
                                             LivingEntity entity) {
@@ -93,8 +69,6 @@ public class EffectFactory {
 
         ClientLevel level = Minecraft.getInstance().level;
         if (level != null) {
-            // The lambda re-evaluates entity.position() every tick, so the
-            // multiplier tracks the entity as it moves around the world.
             effect.setTimeMultiplier(
                     () -> AbilityUtil.getTimeInArea(entity,
                             new Location(new Vec3(x, y, z), level))

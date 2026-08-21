@@ -18,8 +18,8 @@ import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.quest.QuestAcceptanceScreen;
 import de.jakob.lotm.gui.custom.selection_gui.*;
 import de.jakob.lotm.network.packets.toClient.*;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestRegistry;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -376,7 +376,7 @@ public class ClientHandler {
 
     public static void handleAllyPacket(SyncAllyDataPacket packet) {
         if (Minecraft.getInstance().player != null) {
-            AllyComponent newComponent = new AllyComponent(packet.allies());
+            AllyComponent newComponent = new AllyComponent(packet.allies(), packet.requests());
             Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
         }
     }

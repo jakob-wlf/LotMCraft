@@ -1,9 +1,9 @@
-package de.jakob.lotm.rituals.impl;
+package de.jakob.lotm.beyonders.rituals.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
-import de.jakob.lotm.rituals.RitualManager;
-import de.jakob.lotm.rituals.RitualResultHandler;
+import de.jakob.lotm.beyonders.rituals.RitualManager;
+import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

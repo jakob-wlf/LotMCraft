@@ -1,4 +1,4 @@
-package de.jakob.lotm.quest;
+package de.jakob.lotm.beyonders.quest;
 
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.item.ModItems;

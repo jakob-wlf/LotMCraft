@@ -363,12 +363,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                PendingAllyRequestPacket.TYPE,
-                PendingAllyRequestPacket.STREAM_CODEC,
-                PendingAllyRequestPacket::handle
-        );
-
-        registrar.playToClient(
                 PendingTeamInvitePacket.TYPE,
                 PendingTeamInvitePacket.STREAM_CODEC,
                 PendingTeamInvitePacket::handle
@@ -577,6 +571,24 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                RemoveAllyPacket.TYPE,
+                RemoveAllyPacket.STREAM_CODEC,
+                RemoveAllyPacket::handle
+        );
+
+        registrar.playToServer(
+                HandleAllyRequestPacket.TYPE,
+                HandleAllyRequestPacket.STREAM_CODEC,
+                HandleAllyRequestPacket::handle
+        );
+
+        registrar.playToServer(
+                SendAllyRequestPacket.TYPE,
+                SendAllyRequestPacket.STREAM_CODEC,
+                SendAllyRequestPacket::handle
+        );
+
+        registrar.playToServer(
                 RitualStartPacket.TYPE,
                 RitualStartPacket.STREAM_CODEC,
                 RitualStartPacket::handle
@@ -707,13 +719,6 @@ public class PacketHandler {
                 UseSharedAbilityPacket.STREAM_CODEC,
                 UseSharedAbilityPacket::handle
         );
-
-        registrar.playToServer(
-                AllyRequestResponsePacket.TYPE,
-                AllyRequestResponsePacket.STREAM_CODEC,
-                AllyRequestResponsePacket::handle
-        );
-
 
         registrar.playToServer(
                 OpenIntrospectMenuPacket.TYPE,

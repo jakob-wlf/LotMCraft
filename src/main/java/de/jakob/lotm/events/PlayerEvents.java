@@ -91,23 +91,6 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            // Prune stale ally entries: remove any ally UUID whose owner no longer lists
-            // this player back (e.g. the player was removed while they were offline).
-            AllyComponent comp = player.getData(ModAttachments.ALLY_COMPONENT.get());
-            for (String uuidStr : new java.util.HashSet<>(comp.allies())) {
-                try {
-                    java.util.UUID allyUUID = java.util.UUID.fromString(uuidStr);
-                    ServerPlayer ally = player.getServer().getPlayerList().getPlayer(allyUUID);
-                    if (ally != null && !AllyUtil.isAlly(ally, player.getUUID())) {
-                        // Ally is online but doesn't have us listed — remove the stale entry
-                        player.setData(ModAttachments.ALLY_COMPONENT.get(),
-                                player.getData(ModAttachments.ALLY_COMPONENT.get()).removeAlly(allyUUID));
-                    }
-                    // If ally is offline we can't check their data, so leave it for the
-                    // next time they log in and this same check runs on their side.
-                } catch (IllegalArgumentException ignored) {}
-            }
-
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);

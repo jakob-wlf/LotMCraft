@@ -1,4 +1,4 @@
-package de.jakob.lotm.rituals;
+package de.jakob.lotm.beyonders.rituals;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;

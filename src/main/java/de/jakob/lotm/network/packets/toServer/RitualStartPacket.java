@@ -2,8 +2,8 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.block.entity.RitualisticTableBlockEntity;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
-import de.jakob.lotm.rituals.RitualManager;
-import de.jakob.lotm.rituals.RitualRecipe;
+import de.jakob.lotm.beyonders.rituals.RitualManager;
+import de.jakob.lotm.beyonders.rituals.RitualRecipe;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;

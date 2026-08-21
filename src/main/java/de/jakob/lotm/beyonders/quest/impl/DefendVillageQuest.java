@@ -1,13 +1,11 @@
-package de.jakob.lotm.quest.impl;
+package de.jakob.lotm.beyonders.quest.impl;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.goals.KillOutsideRadiusGoal;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
-import de.jakob.lotm.beyonders.potions.PotionItemHandler;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestManager;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
@@ -24,8 +22,6 @@ import net.minecraft.world.item.Items;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static net.minecraft.world.item.Items.DIAMOND;
 
 public class DefendVillageQuest extends Quest {
 

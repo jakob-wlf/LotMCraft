@@ -31,7 +31,6 @@ public class AbilityHandler {
     private void registerAbilities() {
         // COMMON
         abilities.add(new CogitationAbility("cogitation_ability"));
-        abilities.add(new AllyAbility("ally_ability"));
         abilities.add(new DivinationAbility("divination_ability"));
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));

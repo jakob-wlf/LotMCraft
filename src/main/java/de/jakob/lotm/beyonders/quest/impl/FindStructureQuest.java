@@ -1,9 +1,7 @@
-package de.jakob.lotm.quest.impl;
+package de.jakob.lotm.beyonders.quest.impl;
 
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestManager;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
-import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestManager;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;

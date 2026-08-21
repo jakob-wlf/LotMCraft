@@ -1882,6 +1882,7 @@
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",
   "lotm.ally.removed": "Removed alliance with %s",
+  "lotm.ally.remove.not_found": "%s is not online",
   "lotm.ally.cannot_ally_beyonder": "Cannot ally with beyonder entities without their permission",
   "lotm.ally.cannot_ally": "Cannot ally with entity",
   "lotm.ally.request_sent": "Ally request sent to %s",
@@ -1899,6 +1900,9 @@
   "lotm.ally.remove_self": "You cannot remove yourself as an ally",
   "lotm.ally.list_empty": "You have no allies",
   "lotm.ally.list_header": "Allies (%s):",
+  "lotm.ally.request.declined": "Declined Ally Request from %s",
+  "lotm.ally.request.declined_by": "Your ally request to %s was declined",
+  "lotm.ally.request.not_found": "%s is not online",
 
   "_comment014": "Quests-------------------------------------------------------------------------",
   "lotm.quest.already_accepted": "You have already accepted/completed this quest",
@@ -2266,5 +2270,6 @@
   "lotmcraft.honorific_praying_not_met_req_button": "[ INACCESSIBLE ]",
   "lotmcraft.honorific_praying_not_met_req_desc": "You have not met requirements to use this option",
   "lotmcraft.honorific_praying_use_skill_button": "[ USE SKILL ]",
-  "lotmcraft.honorific_praying_use_skill_desc": "Will use one of your abilities for/against the prayer"
+  "lotmcraft.honorific_praying_use_skill_desc": "Will use one of your abilities for/against the prayer",
+  "lotm.ally.request.received": "Received an Ally request from %s"
 }

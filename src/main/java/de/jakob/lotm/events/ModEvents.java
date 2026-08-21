@@ -225,8 +225,6 @@ public class ModEvents {
         BeyonderCommand.register(event.getDispatcher());
         SpawnBeyonderSpawnerCommand.register(event.getDispatcher());
         LuckCheckCommand.register(event.getDispatcher());
-        AllyRequestCommands.register(event.getDispatcher());
-        AllyCommand.register(event.getDispatcher());
         EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());

@@ -1,12 +1,12 @@
-package de.jakob.lotm.quest.impl.kill_beyonder_quests;
+package de.jakob.lotm.beyonders.quest.impl.kill_beyonder_quests;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.MysticalRingBlockEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestManager;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;

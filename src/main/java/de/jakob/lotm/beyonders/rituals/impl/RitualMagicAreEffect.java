@@ -1,15 +1,13 @@
-package de.jakob.lotm.rituals.impl;
+package de.jakob.lotm.beyonders.rituals.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.rituals.RitualManager;
-import de.jakob.lotm.rituals.RitualResultHandler;
-import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.beyonders.rituals.RitualManager;
+import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;

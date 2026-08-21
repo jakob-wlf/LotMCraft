@@ -1,4 +1,4 @@
-package de.jakob.lotm.rituals;
+package de.jakob.lotm.beyonders.rituals;
 
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerPlayer;

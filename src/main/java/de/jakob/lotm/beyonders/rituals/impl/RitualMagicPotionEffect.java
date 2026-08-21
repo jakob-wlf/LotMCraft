@@ -1,9 +1,9 @@
-package de.jakob.lotm.rituals.impl;
+package de.jakob.lotm.beyonders.rituals.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
-import de.jakob.lotm.rituals.RitualManager;
-import de.jakob.lotm.rituals.RitualResultHandler;
+import de.jakob.lotm.beyonders.rituals.RitualManager;
+import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -11,9 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import org.w3c.dom.stylesheets.LinkStyle;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 

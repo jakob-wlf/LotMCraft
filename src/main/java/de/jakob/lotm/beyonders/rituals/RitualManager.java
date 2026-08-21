@@ -1,10 +1,9 @@
-package de.jakob.lotm.rituals;
+package de.jakob.lotm.beyonders.rituals;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
-import de.jakob.lotm.rituals.impl.RitualMagicPotionEffect;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

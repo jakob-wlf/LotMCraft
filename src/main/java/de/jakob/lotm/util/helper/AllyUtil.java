@@ -11,18 +11,13 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.player.Player;
 
+import java.util.Set;
 import java.util.UUID;
 
-/**
- * Utility class for managing ally relationships between entities.
- * Allies cannot target or damage each other.
- */
 public class AllyUtil {
 
-    /**
-     * Make two entities allies (bidirectional)
-     */
     public static void makeAllies(LivingEntity entity1, LivingEntity entity2) {
         makeAllies(entity1, entity2, true);
     }
@@ -33,10 +28,10 @@ public class AllyUtil {
 
         // Add each other as allies
         AllyComponent comp1 = entity1.getData(ModAttachments.ALLY_COMPONENT.get());
-        entity1.setData(ModAttachments.ALLY_COMPONENT.get(), comp1.addAlly(entity2.getUUID()));
+        entity1.setData(ModAttachments.ALLY_COMPONENT.get(), comp1.addAlly(entity2.getUUID(), entity2.getDisplayName().getString(), entity2 instanceof Player));
 
         AllyComponent comp2 = entity2.getData(ModAttachments.ALLY_COMPONENT.get());
-        entity2.setData(ModAttachments.ALLY_COMPONENT.get(), comp2.addAlly(entity1.getUUID()));
+        entity2.setData(ModAttachments.ALLY_COMPONENT.get(), comp2.addAlly(entity1.getUUID(), entity1.getDisplayName().getString(), entity1 instanceof Player));
 
         // Sync to clients if they're players
         if (entity1 instanceof ServerPlayer player1) {
@@ -51,9 +46,6 @@ public class AllyUtil {
         }
     }
 
-    /**
-     * Remove ally relationship between two entities (bidirectional)
-     */
     public static void removeAllies(LivingEntity entity1, LivingEntity entity2) {
         if (entity1 == null || entity2 == null) return;
 
@@ -74,9 +66,49 @@ public class AllyUtil {
         }
     }
 
-    /**
-     * Check if two entities are allies
-     */
+    public static void declineAllyRequest(LivingEntity entity, UUID allyUUID) {
+        if (entity == null || allyUUID == null) return;
+
+        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
+        entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.removeRequest(allyUUID));
+
+        if (entity instanceof ServerPlayer player) {
+            syncAllyData(player);
+        }
+    }
+
+    public static void acceptAllyRequest(LivingEntity entity, UUID allyUUID) {
+        if (entity == null || allyUUID == null) return;
+
+        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
+        entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.removeRequest(allyUUID));
+
+        LivingEntity allyEntity = null;
+        if (entity instanceof ServerPlayer player) {
+            allyEntity = player.serverLevel().getPlayerByUUID(allyUUID);
+        }
+
+        if (allyEntity != null) {
+            makeAllies(entity, allyEntity);
+        }
+
+        if (entity instanceof ServerPlayer player) {
+            syncAllyData(player);
+        }
+    }
+
+    public static void sendAllyRequest(LivingEntity entity, LivingEntity target) {
+        if (entity == null || target == null) return;
+
+        AllyComponent comp = target.getData(ModAttachments.ALLY_COMPONENT.get());
+        target.setData(ModAttachments.ALLY_COMPONENT.get(), comp.addRequest(entity.getUUID(), entity.getDisplayName().getString(), entity instanceof Player));
+
+        if (target instanceof ServerPlayer player) {
+            syncAllyData(player);
+            player.sendSystemMessage(Component.translatable("lotm.ally.request.received", entity.getName()).withColor(0x2196F3));
+        }
+    }
+
     public static boolean areAllies(LivingEntity entity1, LivingEntity entity2) {
         if (entity1 == null || entity2 == null) return false;
         if (entity1.getUUID().equals(entity2.getUUID())) return true;
@@ -87,9 +119,6 @@ public class AllyUtil {
         return comp1.isAlly(entity2.getUUID());
     }
 
-    /**
-     * Check if an entity is an ally by UUID
-     */
     public static boolean isAlly(LivingEntity entity, UUID allyUUID) {
         if (entity == null || allyUUID == null) return false;
         if (entity.getUUID().equals(allyUUID)) return true;
@@ -100,117 +129,24 @@ public class AllyUtil {
         return comp.isAlly(allyUUID);
     }
 
-    /**
-     * Clear all allies for an entity
-     */
-    public static void clearAllAllies(LivingEntity entity) {
-        if (entity == null) return;
 
-        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        
-        // Remove bidirectional relationships
-        for (String allyUUIDStr : comp.allies()) {
-            try {
-                UUID allyUUID = UUID.fromString(allyUUIDStr);
-                LivingEntity ally = (LivingEntity) entity.level().getPlayerByUUID(allyUUID);
-                if (ally != null) {
-                    AllyComponent allyComp = ally.getData(ModAttachments.ALLY_COMPONENT.get());
-                    ally.setData(ModAttachments.ALLY_COMPONENT.get(), allyComp.removeAlly(entity.getUUID()));
-                    
-                    if (ally instanceof ServerPlayer serverPlayer) {
-                        syncAllyData(serverPlayer);
-                    }
-                }
-            } catch (IllegalArgumentException ignored) {}
-        }
-
-        entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.clearAllies());
-
-        if (entity instanceof ServerPlayer player) {
-            syncAllyData(player);
-        }
-    }
-
-    /**
-     * Get total ally count for an entity (includes mobs)
-     */
-    public static int getAllyCount(LivingEntity entity) {
-        if (entity == null) return 0;
-        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        return comp.allyCount();
-    }
-
-    /**
-     * Get the number of player allies only (excludes mobs).
-     * Used for the maxAllyCount gamerule limit.
-     */
-    public static int getPlayerAllyCount(LivingEntity entity) {
-        if (entity == null) return 0;
-        if (!(entity.level() instanceof ServerLevel serverLevel)) return 0;
-
-        MinecraftServer server = serverLevel.getServer();
-        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        int count = 0;
-        for (String uuidStr : comp.allies()) {
-            try {
-                UUID uuid = UUID.fromString(uuidStr);
-                if (server.getProfileCache().get(uuid).isPresent()) {
-                    count++;
-                }
-            } catch (IllegalArgumentException ignored) {}
-        }
-        return count;
-    }
-
-    /**
-     * Check if entity has any allies
-     */
-    public static boolean hasAllies(LivingEntity entity) {
-        if (entity == null) return false;
-        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        return comp.hasAllies();
-    }
-
-    /**
-     * Check if entity can be allied (non-beyonder entities can always be allied,
-     * beyonder entities/players need to accept)
-     */
-    public static boolean canBeAllied(LivingEntity entity) {
-        if (entity == null) return false;
-
-        if(entity.getType().getCategory() == MobCategory.MONSTER) return false;
-
-        return !BeyonderData.isBeyonder(entity);
-    }
-
-    /**
-     * Sync ally data to client
-     */
     private static void syncAllyData(ServerPlayer player) {
         AllyComponent comp = player.getData(ModAttachments.ALLY_COMPONENT.get());
-        SyncAllyDataPacket packet = new SyncAllyDataPacket(comp.allies());
+        SyncAllyDataPacket packet = new SyncAllyDataPacket(comp.allies(), comp.requests());
         PacketHandler.sendToPlayer(player, packet);
     }
 
-    /**
-     * Add an ally to an entity without making it bidirectional
-     * (Use with caution - prefer makeAllies for standard use)
-     */
-    public static void addAllyOneWay(LivingEntity entity, UUID allyUUID) {
-        if (entity == null || allyUUID == null) return;
+    public static void addAllyOneWay(LivingEntity entity, LivingEntity ally) {
+        if (entity == null || ally == null) return;
 
         AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.addAlly(allyUUID));
+        entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.addAlly(ally.getUUID(), ally.getDisplayName().getString(), ally instanceof Player));
 
         if (entity instanceof ServerPlayer player) {
             syncAllyData(player);
         }
     }
 
-    /**
-     * Remove an ally from an entity without removing the reverse relationship
-     * (Use with caution - prefer removeAllies for standard use)
-     */
     public static void removeAllyOneWay(LivingEntity entity, UUID allyUUID) {
         if (entity == null || allyUUID == null) return;
 

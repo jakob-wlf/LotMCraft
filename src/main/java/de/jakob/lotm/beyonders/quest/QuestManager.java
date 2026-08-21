@@ -1,4 +1,4 @@
-package de.jakob.lotm.quest;
+package de.jakob.lotm.beyonders.quest;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -17,7 +17,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)

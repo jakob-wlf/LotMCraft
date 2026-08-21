@@ -100,7 +100,7 @@ public class ControllingUtil {
 
         if (spawnOriginalBody) {
             // add the main body to the allies
-            AllyUtil.addAllyOneWay(player, originalBody.getUUID());
+            AllyUtil.addAllyOneWay(player, originalBody);
 
             // add the original body
             level.addFreshEntity(originalBody);

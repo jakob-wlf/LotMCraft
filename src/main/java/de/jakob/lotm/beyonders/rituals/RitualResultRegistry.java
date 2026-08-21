@@ -1,8 +1,8 @@
-package de.jakob.lotm.rituals;
+package de.jakob.lotm.beyonders.rituals;
 
-import de.jakob.lotm.rituals.impl.RitualMagicAreEffect;
-import de.jakob.lotm.rituals.impl.RitualMagicPotionEffect;
-import de.jakob.lotm.rituals.impl.RitualMagicSummonEntity;
+import de.jakob.lotm.beyonders.rituals.impl.RitualMagicAreEffect;
+import de.jakob.lotm.beyonders.rituals.impl.RitualMagicPotionEffect;
+import de.jakob.lotm.beyonders.rituals.impl.RitualMagicSummonEntity;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
