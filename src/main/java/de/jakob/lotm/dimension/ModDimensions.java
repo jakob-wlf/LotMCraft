@@ -217,10 +217,21 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_gilded_ruins"));
 
-    /**
-     * Convenience array — same order as {@link SpiritWorldBiome#values()} and
-     * {@link SpiritWorldBiomeSource#BIOME_ORDER}.
-     */
+    /** index 9 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_WASTES =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world_wastes"));
+
+    /** index 10 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_MIRE_HOLLOW =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_mire_hollow"));
+
+    /** index 11 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_BONE_STEPPES =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_bone_steppes"));
+
     @SuppressWarnings("unchecked")
     public static final ResourceKey<Biome>[] SPIRIT_WORLD_BIOME_KEYS = new ResourceKey[]{
             SPIRIT_BIOME_WOOL_MEADOWS,       // 0
@@ -232,6 +243,9 @@ public class ModDimensions {
             SPIRIT_BIOME_FUNGAL_DEPTHS,      // 6
             SPIRIT_BIOME_GLACIAL_SHELF,      // 7
             SPIRIT_BIOME_GILDED_RUINS,       // 8
+            SPIRIT_BIOME_WASTES,             // 9
+            SPIRIT_BIOME_MIRE_HOLLOW,        // 10
+            SPIRIT_BIOME_BONE_STEPPES,       // 11
     };
 
     // =========================================================================
