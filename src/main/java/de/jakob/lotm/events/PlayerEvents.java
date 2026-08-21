@@ -93,6 +93,10 @@ public class PlayerEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
 
+            if(player instanceof ServerPlayer serverPlayer) {
+                AllyUtil.syncAllyData(serverPlayer);
+            }
+
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
                 player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));

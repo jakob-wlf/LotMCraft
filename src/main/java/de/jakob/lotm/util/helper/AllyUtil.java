@@ -130,7 +130,7 @@ public class AllyUtil {
     }
 
 
-    private static void syncAllyData(ServerPlayer player) {
+    public static void syncAllyData(ServerPlayer player) {
         AllyComponent comp = player.getData(ModAttachments.ALLY_COMPONENT.get());
         SyncAllyDataPacket packet = new SyncAllyDataPacket(comp.allies(), comp.requests());
         PacketHandler.sendToPlayer(player, packet);

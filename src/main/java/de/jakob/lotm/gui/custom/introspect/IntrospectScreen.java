@@ -831,18 +831,19 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int textY = panelY + 15 + i * (this.font.lineHeight + 2);
 
             // Draw background
-            int backgroundWidth = this.font.width(allyName) + 10;
-            int backgroundHeight = this.font.lineHeight + 8;
-            guiGraphics.fill(panelX + 1, textY - 4, panelX + backgroundWidth, textY - 4 + backgroundHeight, 0xFF666666);
+            int backgroundWidth = this.font.width(allyName) + 6;
+            int backgroundHeight = this.font.lineHeight + 4;
+            guiGraphics.fill(panelX + 1, textY - 2, panelX + backgroundWidth, textY - 2 + backgroundHeight, 0xFF222222);
+            guiGraphics.renderOutline(panelX + 1, textY - 2, backgroundWidth, backgroundHeight, 0xFF555555);
 
             guiGraphics.drawString(this.font, allyName, panelX + 5, textY, 0xFFCCCCCC, false);
 
-            Button removeAllyButton = Button.builder(Component.literal("Remove").withStyle(ChatFormatting.RED),
+            Button removeAllyButton = Button.builder(Component.literal("✗").withStyle(ChatFormatting.RED),
                             button -> {
                                 PacketHandler.sendToServer(new RemoveAllyPacket(ally.uuid(), ally.playerName()));
                                 allies.remove(ally);
                             })
-                    .bounds(panelX + backgroundWidth + 5, textY - 2, 60, this.font.lineHeight + 4)
+                    .bounds(panelX + backgroundWidth + 5, textY - 2, this.font.lineHeight + 4, this.font.lineHeight + 4)
                     .build();
             this.addRenderableWidget(removeAllyButton);
         }
@@ -859,9 +860,10 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int textY = requestsY + 15 + i * (this.font.lineHeight + 2);
 
             // Draw background
-            int backgroundWidth = this.font.width(allyName) + 10;
-            int backgroundHeight = this.font.lineHeight + 8;
-            guiGraphics.fill(panelX + 1, textY - 4, panelX + backgroundWidth, textY - 4 + backgroundHeight, 0xFF666666);
+            int backgroundWidth = this.font.width(allyName) + 6;
+            int backgroundHeight = this.font.lineHeight + 4;
+            guiGraphics.fill(panelX + 1, textY - 2, panelX + backgroundWidth, textY - 2 + backgroundHeight, 0xFF222222);
+            guiGraphics.renderOutline(panelX + 1, textY - 2, backgroundWidth, backgroundHeight, 0xFF555555);
 
             guiGraphics.drawString(this.font, allyName, panelX + 5, textY, 0xFFCCCCCC, false);
 
