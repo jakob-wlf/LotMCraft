@@ -67,7 +67,7 @@ public record RitualStartPacket(BlockPos pos, String field1, String field2, Stri
 
                 RitualRecipe ritual = RitualManager.getRitualByRecipe(candle, sacrifices, BeyonderData.getSequence(serverPlayer), honorificLines);
 
-                RitualManager.performRitual(ritual, serverPlayer);
+                RitualManager.performRitual(ritual, serverPlayer, payload.pos());
             }
         });
     }

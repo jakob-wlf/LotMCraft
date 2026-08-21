@@ -10,7 +10,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import org.w3c.dom.stylesheets.LinkStyle;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -26,11 +29,15 @@ public class RitualMagicPotionEffect implements RitualResultHandler {
                     .getHolder(id)
                     .orElseThrow();
 
-            player.addEffect(new MobEffectInstance(
-                    mobEffect,
-                    effect.durationTicks(),
-                    effect.amplifier()
-            ));
+            List<LivingEntity> targets = getTargetEntity(effect.target(), player, effect.maxDistance());
+            for (LivingEntity target : targets) {
+                MobEffectInstance effectInstance = new MobEffectInstance(
+                        mobEffect,
+                        effect.durationTicks(),
+                        effect.amplifier()
+                );
+                target.addEffect(effectInstance);
+            }
         }
     }
 
@@ -39,7 +46,9 @@ public class RitualMagicPotionEffect implements RitualResultHandler {
         public record EffectEntry(
                 String id,
                 @SerializedName("duration_ticks") int durationTicks,
-                int amplifier
+                int amplifier,
+                String target,
+                @SerializedName("max_distance") int maxDistance
         ) {}
     }
 

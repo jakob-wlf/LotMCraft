@@ -1,6 +1,8 @@
 package de.jakob.lotm.rituals;
 
+import de.jakob.lotm.rituals.impl.RitualMagicAreEffect;
 import de.jakob.lotm.rituals.impl.RitualMagicPotionEffect;
+import de.jakob.lotm.rituals.impl.RitualMagicSummonEntity;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -12,6 +14,8 @@ public final class RitualResultRegistry {
 
     static {
         register("potion_effect", new RitualMagicPotionEffect());
+        register("area_effect", new RitualMagicAreEffect());
+        register("summon_entity", new RitualMagicSummonEntity());
     }
 
     private RitualResultRegistry() {}

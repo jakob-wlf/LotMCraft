@@ -1,0 +1,29 @@
+{
+  "id": "lotm:storms_judgment",
+  "discovered_from": "lotm:stormcallers_almanac",
+  "candle": "minecraft:light_blue_candle",
+  "sacrifices": [
+    { "item": "minecraft:iron_ingot", "count": 1 },
+    { "item": "minecraft:prismarine_shard", "count": 4 },
+    { "item": "minecraft:copper_ingot", "count": 12 }
+  ],
+  "honorific": {
+    "lines": [
+      "Ancient one who slumbers beneath a ceiling of endless waves,",
+      "Lord of drowned fleets and the graveyards of sailors,",
+      "Loose your storm's fury upon those who stand against me."
+    ]
+  },
+  "conditions": { "min_sequence": 6 },
+  "particle_color": { "r": 0.0, "g": 0.6, "b": 1.0 },
+  "duration_ticks": 300,
+  "result": {
+    "type": "area_effect",
+    "params": {
+      "effect": "lightning",
+      "target": "nearby",
+      "max_distance": 25,
+      "power": 6
+    }
+  }
+}

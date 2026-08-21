@@ -1,0 +1,29 @@
+{
+  "id": "lotm:verdant_mothers_embrace",
+  "discovered_from": "lotm:druids_hymnal",
+  "candle": "minecraft:green_candle",
+  "sacrifices": [
+    { "item": "minecraft:bone_meal", "count": 8 },
+    { "item": "minecraft:oak_sapling", "count": 2 },
+    { "item": "minecraft:seed", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "Mother whose breath turns barren stone into blossoming field,",
+      "She who feeds the roots that hold the world together,",
+      "Let life surge forth and green swallow this scarred earth."
+    ]
+  },
+  "conditions": { "min_sequence": 8 },
+  "particle_color": { "r": 0.2, "g": 0.8, "b": 0.2 },
+  "duration_ticks": 300,
+  "result": {
+    "type": "area_effect",
+    "params": {
+      "effect": "bloom",
+      "target": "self",
+      "max_distance": -1,
+      "power": 5
+    }
+  }
+}

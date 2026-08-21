@@ -1,0 +1,29 @@
+{
+  "id": "lotm:purifiers_cleansing_rite",
+  "discovered_from": "lotm:cathedral_scripture",
+  "candle": "minecraft:white_candle",
+  "sacrifices": [
+    { "item": "minecraft:glowstone_dust", "count": 4 },
+    { "item": "minecraft:gold_nugget", "count": 4 },
+    { "item": "minecraft:seed", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "Judge who weighs the sins hidden beneath a smiling face,",
+      "Flame that burns away corruption without consuming the innocent,",
+      "Scour this ground clean of what should not linger here."
+    ]
+  },
+  "conditions": { "min_sequence": 7 },
+  "particle_color": { "r": 1.0, "g": 1.0, "b": 0.9 },
+  "duration_ticks": 300,
+  "result": {
+    "type": "area_effect",
+    "params": {
+      "effect": "cleanse",
+      "target": "nearby",
+      "max_distance": 6,
+      "power": 5
+    }
+  }
+}

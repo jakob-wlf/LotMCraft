@@ -1,0 +1,28 @@
+{
+  "id": "lotm:seers_third_eye",
+  "discovered_from": "lotm:fortune_tellers_ledger",
+  "candle": "minecraft:orange_candle",
+  "sacrifices": [
+    { "item": "minecraft:glass_bottle", "count": 1 },
+    { "item": "minecraft:gold_nugget", "count": 4 }
+  ],
+  "honorific": {
+    "lines": [
+      "Watcher who reads tomorrow in cards and candle smoke,",
+      "Eye that pierces fog where mortal sight goes blind,",
+      "Open the veil before me, that hidden things stand revealed."
+    ]
+  },
+  "conditions": { "min_sequence": 8 },
+  "particle_color": { "r": 1.0, "g": 0.6, "b": 0.0 },
+  "duration_ticks": 200,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:night_vision", "duration_ticks": 6000, "amplifier": 0, "target": "self", "max_distance": -1 },
+        { "id": "minecraft:glowing", "duration_ticks": 200, "amplifier": 0, "target": "nearest", "max_distance": 16 }
+      ]
+    }
+  }
+}

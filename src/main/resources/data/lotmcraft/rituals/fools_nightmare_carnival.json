@@ -1,0 +1,28 @@
+{
+  "id": "lotm:fools_nightmare_carnival",
+  "discovered_from": "lotm:carnival_playbill",
+  "candle": "minecraft:black_candle",
+  "sacrifices": [
+    { "item": "minecraft:rotten_flesh", "count": 3 },
+    { "item": "minecraft:ink_sac", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "Ringmaster whose smile hides a thousand writhing faces,",
+      "Clown who laughs loudest when the world begins to unravel,",
+      "Send your carnival to dance around my enemies until they break."
+    ]
+  },
+  "conditions": { "min_sequence": 6 },
+  "particle_color": { "r": 0.1, "g": 0.1, "b": 0.1 },
+  "duration_ticks": 300,
+  "result": {
+    "type": "summon_entity",
+    "params": {
+      "entities": [
+        { "entity_id": "lotmcraft:spirit_ghost", "count": 2 },
+        { "entity_id": "lotmcraft:spirit_dervish", "count": 1 }
+      ]
+    }
+  }
+}

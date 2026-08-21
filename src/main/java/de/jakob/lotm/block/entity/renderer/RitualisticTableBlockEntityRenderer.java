@@ -57,8 +57,8 @@ public class RitualisticTableBlockEntityRenderer implements BlockEntityRenderer<
     private void renderSlot(ItemStack stack, float x, float y, float z, RitualisticTableBlockEntity be,
                             ItemRenderer itemRenderer, PoseStack poseStack, MultiBufferSource multiBufferSource) {
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
-        poseStack.scale(0.35f, 2, 0.35f);
+        poseStack.translate(x, y + 0.035f, z);
+        poseStack.scale(0.35f, .5f, 0.35f);
         poseStack.mulPose(Axis.XP.rotationDegrees(90));
         poseStack.mulPose(Axis.ZP.rotationDegrees(-90));
 
