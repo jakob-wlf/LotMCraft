@@ -208,7 +208,6 @@ public class AcidSwampEffect extends ActiveEffect {
         consumer.addVertex(matrix, x, y, z).setColor(r, g, b, a);
     }
 
-    // ---- Inner classes ----
 
     private class RippleRing {
         float radius;

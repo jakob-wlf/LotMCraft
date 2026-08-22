@@ -26,9 +26,9 @@ public class ProhibitionEffect extends ActiveEffect {
 
         float progress = getProgress();
 
-        // Phase 1 (0-40t = 0.0-0.25): cylinder expands from 0 to MAX_RADIUS
-        // Phase 2 (40-120t = 0.25-0.75): hold at full size with slow pulsing glow
-        // Phase 3 (120-160t = 0.75-1.0): fade out
+
+
+
         float radius;
         float alpha;
 
@@ -56,7 +56,7 @@ public class ProhibitionEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
 
         float r = 1.0f, g = 0.85f, b = 0.1f;
-        int segments = 48; // more segments for larger radius
+        int segments = 48;
 
         renderRing(consumer, matrix, radius, 0.0f, r, g, b, alpha, segments);
         renderRing(consumer, matrix, radius, HEIGHT, r, g, b, alpha, segments);

@@ -30,22 +30,22 @@ public class BloodInfernoEffect extends ActiveEffect {
     public BloodInfernoEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
 
-        // Initialize flame spirals - the main body of the vortex
+
         for (int i = 0; i < 80; i++) {
             flameSpirals.add(new FlameSpiral());
         }
 
-        // Initialize ember particles
+
         for (int i = 0; i < 400; i++) {
             emberParticles.add(new EmberParticle());
         }
 
-        // Initialize fire waves that pulse outward
+
         for (int i = 0; i < 10; i++) {
             fireWaves.add(new FireWave(i * 0.1f));
         }
 
-        // Initialize flame wisps for more fire-like appearance
+
         for (int i = 0; i < 150; i++) {
             flameWisps.add(new FlameWisp());
         }
@@ -57,7 +57,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Level level = mc.level;
         if (level == null) return;
 
-        // Update animation state
+
         float progress = getProgress();
         vortexProgress = Mth.clamp(progress * 1.1f, 0f, 1f);
         intensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
@@ -66,7 +66,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         poseStack.translate(getX(), getY(), getZ());
         poseStack.scale(0.4f, 0.4f, 0.4f);
 
-        // Render all layers of the fire vortex - reordered for better depth
+
         renderGroundFire(poseStack, vortexProgress, intensity);
         renderFireWaves(poseStack, vortexProgress, intensity);
         renderFireBurst(poseStack, vortexProgress, intensity);
@@ -77,10 +77,10 @@ public class BloodInfernoEffect extends ActiveEffect {
         renderFireSpirals(poseStack, vortexProgress, intensity);
         renderFlameSpirals(poseStack, vortexProgress, intensity);
         renderFlameWisps(poseStack, vortexProgress, intensity);
-        //renderOuterVortex(poseStack, vortexProgress, intensity);
+
         renderEmberParticles(poseStack, vortexProgress, intensity);
         renderFlameTendrils(poseStack, vortexProgress, intensity);
-        //renderVortexColumn(poseStack, vortexProgress, intensity);
+
         renderInfernoRings(poseStack, vortexProgress, intensity);
         renderHeatDistortion(poseStack, vortexProgress, intensity);
         renderFlameColumns(poseStack, vortexProgress, intensity);
@@ -98,7 +98,7 @@ public class BloodInfernoEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multi-layered ground fire for solidity
+
         for (int layer = 0; layer < 5; layer++) {
             float layerRadius = 4f + expansion * (25f + layer * 3f);
             float layerHeight = 0.1f + layer * 0.3f;
@@ -107,10 +107,10 @@ public class BloodInfernoEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
 
-            // Flickering effect
+
             float flicker = (float) Math.sin(currentTick * 0.4f + layer) * 0.15f + 0.85f;
 
-            // Center point - bright but not white
+
             buffer.addVertex(matrix, 0, layerHeight, 0)
                     .setColor(1.0f, 0.55f, 0.0f, intensity * 0.6f * flicker);
 
@@ -122,10 +122,10 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float x = cos * layerRadius;
                 float z = sin * layerRadius;
 
-                // Color transitions from orange center to red-purple edges
+
                 float edgeDist = (float) i / segments;
                 float r = 1.0f - edgeDist * 0.2f;
-                float g = 0.45f * (1f - edgeDist);  // yellow-orange center to red edge
+                float g = 0.45f * (1f - edgeDist);
                 float b = 0.0f;
                 float a = intensity * (0.5f - edgeDist * 0.4f) * flicker;
 
@@ -154,7 +154,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         int heightSegments = 40;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Solid flame column with realistic fire colors
+
         for (int h = 0; h < heightSegments; h++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -170,7 +170,7 @@ public class BloodInfernoEffect extends ActiveEffect {
             for (int i = 0; i <= segments; i++) {
                 float angle = (float) (i * Math.PI * 2 / segments) + currentTick * 0.12f + t1 * 1.5f;
 
-                // Add noise to radius for flame-like flickering
+
                 float flicker1 = (float) (Math.sin(angle * 3 + currentTick * 0.3f) * 0.15f +
                         Math.sin(angle * 7 + currentTick * 0.5f) * 0.1f);
                 float flicker2 = (float) (Math.sin(angle * 3 + currentTick * 0.3f) * 0.15f +
@@ -187,32 +187,32 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float x2 = cos * r2;
                 float z2 = sin * r2;
 
-                // Realistic fire colors - orange at base, transitioning to purple
+
                 float r, g, b, a;
 
                 if (t1 < 0.25f) {
-                    // Bottom - yellow-orange
+
                     float bt = t1 / 0.25f;
                     r = 1.0f;
                     g = 0.5f - bt * 0.15f;
                     b = 0.0f;
                     a = intensity * 0.6f;
                 } else if (t1 < 0.55f) {
-                    // Lower-middle - bright red
+
                     float mt = (t1 - 0.25f) / 0.3f;
                     r = 1.0f;
                     g = 0.06f * (1f - mt);
                     b = 0.0f;
                     a = intensity * (0.55f - mt * 0.05f);
                 } else if (t1 < 0.8f) {
-                    // Upper-middle - blood red
+
                     float mt = (t1 - 0.55f) / 0.25f;
                     r = 0.85f - mt * 0.1f;
                     g = 0.0f;
                     b = 0.0f;
                     a = intensity * (0.5f - mt * 0.1f);
                 } else {
-                    // Top - deep blood red
+
                     float tt = (t1 - 0.8f) / 0.2f;
                     r = 0.75f - tt * 0.2f;
                     g = 0.0f;
@@ -249,18 +249,18 @@ public class BloodInfernoEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Wisp shape - elongated flame
+
             float width = wisp.size * 0.7f;
             float height = wisp.size * 2f;
 
             Vec3 pos = wisp.pos;
 
-            // Flickering colors
+
             float r = wisp.isHot ? 1.0f : 0.75f;
-            float g = wisp.isHot ? 0.45f : 0.0f;  // isHot = yellow-orange, cool = blood red
+            float g = wisp.isHot ? 0.45f : 0.0f;
             float b = 0.0f;
 
-            // Draw elongated quad
+
             buffer.addVertex(matrix, (float)(pos.x - width), (float)(pos.y), (float)(pos.z))
                     .setColor(r, g, b, wisp.alpha);
             buffer.addVertex(matrix, (float)(pos.x + width), (float)(pos.y), (float)(pos.z))
@@ -290,7 +290,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float maxHeight = expansion * 65f;
 
-        // Thick flame columns rising from base
+
         for (int i = 0; i < 20; i++) {
             float angle = (float) (i * Math.PI * 2 / 20) + currentTick * 0.03f;
             float baseRadius = 5f + expansion * 18f;
@@ -309,7 +309,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float t = (float) seg / segments;
                 float y = t * maxHeight * 0.8f;
 
-                // Column tapers and waves
+
                 float taper = 1f - t * 0.6f;
                 float wave = (float) Math.sin(currentTick * 0.2f + i + t * 3f) * 0.3f;
                 float columnRadius = (2f + wave) * taper;
@@ -317,16 +317,16 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float x = xBase * taper;
                 float z = zBase * taper;
 
-                // Fire colors
+
                 float r, g, b, a;
                 if (t < 0.4f) {
                     r = 1.0f;
-                    g = 0.5f * (1f - t / 0.4f);  // yellow-orange at base
+                    g = 0.5f * (1f - t / 0.4f);
                     b = 0.0f;
                     a = intensity * 0.8f;
                 } else {
                     float tt = (t - 0.4f) / 0.6f;
-                    r = 1.0f - tt * 0.35f;         // bright red to blood red
+                    r = 1.0f - tt * 0.35f;
                     g = 0.0f;
                     b = 0.0f;
                     a = intensity * (0.7f - tt * 0.5f);
@@ -357,7 +357,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float height = expansion * 70f;
 
-        // Rotating fire pillars
+
         for (int pillar = 0; pillar < 8; pillar++) {
             float baseAngle = (float) (pillar * Math.PI * 2 / 8);
             float rotation = currentTick * 0.08f;
@@ -380,11 +380,11 @@ public class BloodInfernoEffect extends ActiveEffect {
 
                 float pillarRadius = 1.5f * (1f - t * 0.7f);
 
-                // Perpendicular to radius
+
                 float perpX = -sin * pillarRadius;
                 float perpZ = cos * pillarRadius;
 
-                // Yellow-orange at base, blood red at top
+
                 float r = 1.0f;
                 float g = 0.55f * (1f - t);
                 float b = 0.0f;
@@ -420,7 +420,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         Tesselator tesselator = Tesselator.getInstance();
 
-        // Bright core with pulsing
+
         float pulse = (float) Math.sin(currentTick * 0.4f) * 0.2f + 0.8f;
 
         for (int i = 0; i < segments; i++) {
@@ -434,11 +434,11 @@ public class BloodInfernoEffect extends ActiveEffect {
             float x2 = (float) Math.cos(angle2) * radius * pulse;
             float z2 = (float) Math.sin(angle2) * radius * pulse;
 
-            // Bottom - yellow-orange core
+
             buffer.addVertex(matrix, x1, 0, z1).setColor(1.0f, 0.5f, 0.0f, intensity * 0.7f);
             buffer.addVertex(matrix, x2, 0, z2).setColor(1.0f, 0.5f, 0.0f, intensity * 0.7f);
 
-            // Top - blood red fading out
+
             buffer.addVertex(matrix, x1 * 0.4f, height, z1 * 0.4f).setColor(0.5f, 0.0f, 0.0f, 0f);
             buffer.addVertex(matrix, x2 * 0.4f, height, z2 * 0.4f).setColor(0.5f, 0.0f, 0.0f, 0f);
 
@@ -462,7 +462,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         int segments = 48;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multiple layers of swirling flames with more intensity
+
         for (int layer = 0; layer < 4; layer++) {
             float layerOffset = layer * 0.25f;
             float baseRadius = 4f + layer * 2f;
@@ -475,18 +475,18 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float angle = t * (float) Math.PI * 2 + currentTick * 0.18f * (1 + layer * 0.6f);
                 float heightPos = t * height;
 
-                // Radius increases as we go up, creating vortex shape
+
                 float radius = (baseRadius + expansion * (12f + layer * 4f)) * (1f + t * 2.2f);
 
                 float x = (float) Math.cos(angle) * radius;
                 float z = (float) Math.sin(angle) * radius;
 
-                // Fire colors transitioning to purple
+
                 float r, g, b, a;
                 if (t < 0.3f) {
                     float bt = t / 0.3f;
                     r = 1.0f;
-                    g = 0.5f - bt * 0.2f;  // yellow-orange to bright red
+                    g = 0.5f - bt * 0.2f;
                     b = 0.0f;
                     a = intensity * 0.5f;
                 } else if (t < 0.6f) {
@@ -497,7 +497,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                     a = intensity * (0.5f - mt * 0.1f);
                 } else {
                     float tt = (t - 0.6f) / 0.4f;
-                    r = 0.85f - tt * 0.3f;  // blood red
+                    r = 0.85f - tt * 0.3f;
                     g = 0.0f;
                     b = 0.0f;
                     a = intensity * (0.4f - tt * 0.2f);
@@ -527,7 +527,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         int segments = 36;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Purple flame spirals mixed throughout
+
         for (int layer = 0; layer < 3; layer++) {
             float baseRadius = 5f + layer * 3f;
 
@@ -544,7 +544,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float x = (float) Math.cos(angle) * radius;
                 float z = (float) Math.sin(angle) * radius;
 
-                // Deep blood red secondary spirals
+
                 float r, g, b, a;
                 if (t < 0.4f) {
                     float bt = t / 0.4f;
@@ -582,7 +582,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float height = expansion * 60f;
 
-        // More spiraling flame ribbons with better colors
+
         for (int spiral = 0; spiral < 25; spiral++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -617,22 +617,22 @@ public class BloodInfernoEffect extends ActiveEffect {
                 Vec3 dir = pos2.subtract(pos1).normalize();
                 Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(1.2f);
 
-                // Fire colors with purple
+
                 float r, g, b, a;
                 if (t < 0.3f) {
                     r = 1.0f;
-                    g = 0.5f;  // yellow-orange
+                    g = 0.5f;
                     b = 0.0f;
                     a = intensity * 0.6f;
                 } else if (t < 0.6f) {
                     float mt = (t - 0.3f) / 0.3f;
                     r = 1.0f;
-                    g = 0.15f * (1f - mt);  // bright red
+                    g = 0.15f * (1f - mt);
                     b = 0.0f;
                     a = intensity * (0.55f - mt * 0.05f);
                 } else {
                     float tt = (t - 0.6f) / 0.4f;
-                    r = 0.85f - tt * 0.3f;  // blood red
+                    r = 0.85f - tt * 0.3f;
                     g = 0.0f;
                     b = 0.0f;
                     a = intensity * (0.5f - tt * 0.25f);
@@ -695,17 +695,17 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float t = (float) i / spiral.points.size();
                 float alpha = spiral.alpha * (1f - t * 0.3f) * 0.6f;
 
-                // Vibrant fire colors with purple variation
+
                 float r, g, b;
                 if (spiral.isPurple) {
-                    // dark blood red variation
+
                     r = 0.7f - t * 0.2f;
                     g = 0.0f;
                     b = 0.0f;
                 } else {
                     if (t < 0.5f) {
                         r = 1.0f;
-                        g = 0.5f - t * 0.5f;  // yellow-orange to red
+                        g = 0.5f - t * 0.5f;
                         b = 0.0f;
                     } else {
                         r = 1.0f - (t - 0.5f) * 0.3f;
@@ -758,7 +758,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         int segments = 48;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Outer swirling vortex shell with fire colors
+
         for (int layer = 0; layer < 3; layer++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -775,7 +775,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float x = (float) Math.cos(angle) * radius;
                 float z = (float) Math.sin(angle) * radius;
 
-                // Fire colors for outer edge
+
                 float r, g, b, a;
                 if (t < 0.4f) {
                     r = 1.0f;
@@ -836,7 +836,7 @@ public class BloodInfernoEffect extends ActiveEffect {
 
                 float alpha = wave.alpha * (1f - wave.progress) * 0.9f;
 
-                // Bright orange-yellow fire wave
+
                 buffer.addVertex(matrix, x1, 0.3f, z1).setColor(1.0f, 0.4f, 0.0f, alpha);
                 buffer.addVertex(matrix, x2, 0.3f, z2).setColor(0.8f, 0.0f, 0.0f, 0f);
             }
@@ -869,7 +869,7 @@ public class BloodInfernoEffect extends ActiveEffect {
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
             float r = particle.isPurple ? 0.6f : 0.95f;
-            float g = particle.isPurple ? 0.0f : 0.3f;  // dark blood vs orange-red ember
+            float g = particle.isPurple ? 0.0f : 0.3f;
             float b = 0.0f;
 
             buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y - size), (float)(particle.pos.z - size))
@@ -899,7 +899,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float height = expansion * 60f;
 
-        // Semi-transparent heat haze layers
+
         for (int wave = 0; wave < 5; wave++) {
             float waveProgress = (expansion + wave * 0.2f) % 1f;
             float radius = 5f + waveProgress * 40f;
@@ -948,7 +948,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float maxHeight = expansion * 60f;
 
-        // Flame tendrils shooting up from the vortex
+
         for (int i = 0; i < 40; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -982,20 +982,20 @@ public class BloodInfernoEffect extends ActiveEffect {
 
                 float alpha = intensity * (1f - t * 0.5f) * 0.85f;
 
-                // Bright fire colors
+
                 float r, g, b;
                 if (t < 0.4f) {
                     r = 1.0f;
-                    g = 0.55f - t * 1.4f;  // yellow-orange at base
+                    g = 0.55f - t * 1.4f;
                     b = 0.0f;
                 } else if (t < 0.7f) {
                     float mt = (t - 0.4f) / 0.3f;
                     r = 1.0f;
-                    g = 0.0f;  // bright red
+                    g = 0.0f;
                     b = 0.0f;
                 } else {
                     float tt = (t - 0.7f) / 0.3f;
-                    r = 0.85f - tt * 0.3f;  // blood red
+                    r = 0.85f - tt * 0.3f;
                     g = 0.0f;
                     b = 0.0f;
                 }
@@ -1046,7 +1046,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         int segments = 60;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Main vortex column with swirling patterns
+
         for (int i = 0; i < segments; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -1065,7 +1065,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                 float x1 = cos * radius;
                 float z1 = sin * radius;
 
-                // Vibrant fire gradient
+
                 float r, g, b, a;
                 if (t < 0.35f) {
                     r = 1.0f;
@@ -1105,7 +1105,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        // Rotating rings of fire around the vortex
+
         for (int ring = 0; ring < 18; ring++) {
             poseStack.pushPose();
 
@@ -1134,15 +1134,15 @@ public class BloodInfernoEffect extends ActiveEffect {
 
                 float alpha = intensity * 0.7f * (float) Math.sin(t * Math.PI);
 
-                // Fire colored rings
+
                 float heightRatio = (float) ring / 18f;
                 float r, g, b;
                 if (heightRatio < 0.5f) {
                     r = 1.0f;
-                    g = 0.5f * (1f - heightRatio * 2f);  // yellow-orange at bottom
+                    g = 0.5f * (1f - heightRatio * 2f);
                     b = 0.0f;
                 } else {
-                    r = 0.85f - (heightRatio - 0.5f) * 0.4f;  // blood red at top
+                    r = 0.85f - (heightRatio - 0.5f) * 0.4f;
                     g = 0.0f;
                     b = 0.0f;
                 }
@@ -1168,7 +1168,7 @@ public class BloodInfernoEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Explosive fire bursts radiating outward
+
         for (int i = 0; i < 120; i++) {
             float angle = (float) (i * Math.PI * 2 / 120);
             float length = expansion * 45f * (0.8f + (float) Math.sin(currentTick * 0.25f + i) * 0.2f);
@@ -1188,16 +1188,16 @@ public class BloodInfernoEffect extends ActiveEffect {
             float alpha1 = intensity * 0.9f;
             float alpha2 = 0f;
 
-            // Bright fire bursts with variation
+
             boolean isPurple = i % 4 == 0;
             float r, g, b;
             if (isPurple) {
-                r = 0.65f;  // dark blood red variation
+                r = 0.65f;
                 g = 0.0f;
                 b = 0.0f;
             } else {
                 r = 1.0f;
-                g = 0.45f - (i % 3) * 0.1f;  // yellow-orange variants
+                g = 0.45f - (i % 3) * 0.1f;
                 b = 0.0f;
             }
 
@@ -1218,7 +1218,7 @@ public class BloodInfernoEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    // Helper classes for animated elements
+
     private class FlameSpiral {
         List<Vec3> points = new ArrayList<>();
         float alpha = 0f;
@@ -1229,7 +1229,7 @@ public class BloodInfernoEffect extends ActiveEffect {
 
         FlameSpiral() {
             targetHeight = 30f + random.nextFloat() * 25f;
-            isPurple = random.nextFloat() < 0.3f; // 30% purple, 70% orange
+            isPurple = random.nextFloat() < 0.3f;
             angleOffset = random.nextFloat() * 360f;
             regeneratePoints();
         }
@@ -1297,7 +1297,7 @@ public class BloodInfernoEffect extends ActiveEffect {
             maxLifetime = 35f + random.nextFloat() * 60f;
             lifetime = 0f;
             alpha = 0f;
-            isPurple = random.nextFloat() < 0.25f; // 25% purple, 75% orange
+            isPurple = random.nextFloat() < 0.25f;
         }
 
         void update(float expansion, float intensity) {
@@ -1310,7 +1310,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                 return;
             }
 
-            // Spiral upward motion
+
             float angle = lifetime * 0.18f;
             float spiralRadius = 2.5f + lifetime * 0.4f;
             pos = pos.add(
@@ -1374,7 +1374,7 @@ public class BloodInfernoEffect extends ActiveEffect {
             maxLifetime = 25f + random.nextFloat() * 40f;
             lifetime = 0f;
             alpha = 0f;
-            isHot = random.nextFloat() < 0.7f; // 70% hot (yellow-orange), 30% cooler (orange-red)
+            isHot = random.nextFloat() < 0.7f;
         }
 
         void update(float expansion, float intensity) {
@@ -1387,7 +1387,7 @@ public class BloodInfernoEffect extends ActiveEffect {
                 return;
             }
 
-            // Wavy upward motion like real flames
+
             float waveX = (float) Math.sin(lifetime * 0.15f) * 0.15f;
             float waveZ = (float) Math.cos(lifetime * 0.12f) * 0.15f;
 
@@ -1399,7 +1399,7 @@ public class BloodInfernoEffect extends ActiveEffect {
 
             velocity = velocity.add(0, 0.015, 0);
 
-            // Fade in and out
+
             if (progress < 0.2f) {
                 alpha = intensity * (progress / 0.2f) * 0.9f;
             } else if (progress > 0.7f) {

@@ -92,7 +92,6 @@ public class AbilityTheftEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(layerRadius, theta1, phi);
                     Vec3 v2 = spherePoint(layerRadius, theta2, phi);
 
-                    // Add gradient effect from poles
                     float gradient1 = 0.7f + 0.3f * (float)Math.abs(Math.cos(theta1));
                     float gradient2 = 0.7f + 0.3f * (float)Math.abs(Math.cos(theta2));
 

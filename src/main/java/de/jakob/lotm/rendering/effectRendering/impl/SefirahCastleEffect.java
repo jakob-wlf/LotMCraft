@@ -30,7 +30,7 @@ public class SefirahCastleEffect extends ActiveEffect {
     }
 
     private void initializeEffect() {
-        // Initialize cube particles
+
         for (int i = 0; i < PARTICLE_COUNT; i++) {
             float offsetX = (random.nextFloat() - 0.5f) * SPAWN_RADIUS;
             float offsetY = random.nextFloat() * 3.0f;
@@ -46,7 +46,7 @@ public class SefirahCastleEffect extends ActiveEffect {
             cubes.add(new MysticalCube(offsetX, offsetY, offsetZ, velocityX, velocityY, velocityZ, rotationSpeed, phaseOffset));
         }
 
-        // Initialize energy particles orbiting the sphere
+
         for (int i = 0; i < ENERGY_PARTICLE_COUNT; i++) {
             float theta = random.nextFloat() * (float) Math.PI;
             float phi = random.nextFloat() * 2 * (float) Math.PI;
@@ -54,7 +54,7 @@ public class SefirahCastleEffect extends ActiveEffect {
             particles.add(new EnergyParticle(theta, phi, speed));
         }
 
-        // Initialize lightning arcs
+
         for (int i = 0; i < ARC_COUNT; i++) {
             float startTheta = random.nextFloat() * (float) Math.PI;
             float startPhi = random.nextFloat() * 2 * (float) Math.PI;
@@ -66,7 +66,7 @@ public class SefirahCastleEffect extends ActiveEffect {
     protected void render(PoseStack poseStack, float tick) {
         float progress = tick / maxDuration;
 
-        // Setup render state
+
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
@@ -76,24 +76,24 @@ public class SefirahCastleEffect extends ActiveEffect {
         poseStack.pushPose();
         poseStack.translate(getX(), getY(), getZ());
 
-        // Render solid transparent sphere shell
+
         renderSolidSphere(poseStack, tick, progress);
 
-        // Render energy particles orbiting the sphere
+
         renderEnergyParticles(poseStack, tick, progress);
 
-        // Render lightning arcs across the sphere
+
         renderLightningArcs(poseStack, tick, progress);
 
-        // Render cube particles
+
         renderCubeParticles(poseStack, tick, progress);
 
-        // Render core glow
+
         renderCoreGlow(poseStack, tick, progress);
 
         poseStack.popPose();
 
-        // Restore render state
+
         RenderSystem.depthMask(true);
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
@@ -103,7 +103,7 @@ public class SefirahCastleEffect extends ActiveEffect {
         Tesselator tesselator = Tesselator.getInstance();
 
         float radius = 1.5f + progress * 1.5f;
-        float alpha = calculateAlpha(progress) * 0.25f; // Semi-transparent
+        float alpha = calculateAlpha(progress) * 0.25f;
 
         int segments = 20;
 
@@ -118,7 +118,7 @@ public class SefirahCastleEffect extends ActiveEffect {
                 float phi1 = lon * 2 * (float) Math.PI / segments;
                 float phi2 = (lon + 1) * 2 * (float) Math.PI / segments;
 
-                // Create quad vertices
+
                 float[][] coords = {
                         {theta1, phi1}, {theta2, phi1}, {theta2, phi2}, {theta1, phi2}
                 };
@@ -171,7 +171,7 @@ public class SefirahCastleEffect extends ActiveEffect {
         for (LightningArc arc : arcs) {
             arc.update(tick);
 
-            if (tick % 20 < 15) { // Arcs flicker on and off
+            if (tick % 20 < 15) {
                 BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
                 Matrix4f matrix = poseStack.last().pose();
 
@@ -179,11 +179,11 @@ public class SefirahCastleEffect extends ActiveEffect {
                 for (int i = 0; i <= points; i++) {
                     float t = (float) i / points;
 
-                    // Interpolate between start and end points on sphere surface
+
                     float theta = arc.startTheta + (arc.endTheta - arc.startTheta) * t;
                     float phi = arc.startPhi + (arc.endPhi - arc.startPhi) * t;
 
-                    // Add jagged variation
+
                     float variance = (random.nextFloat() - 0.5f) * 0.15f;
                     float currentRadius = radius + variance;
 
@@ -360,14 +360,14 @@ public class SefirahCastleEffect extends ActiveEffect {
 
         void update(float tick) {
             lifetime++;
-            if (lifetime > 30) { // Regenerate arc every 30 ticks
+            if (lifetime > 30) {
                 regenerateEndpoint();
                 lifetime = 0;
             }
         }
 
         void regenerateEndpoint() {
-            // Pick a random point roughly opposite on the sphere
+
             this.endTheta = (float) (Math.PI - startTheta + (Math.random() - 0.5) * 0.5);
             this.endPhi = (float) (startPhi + Math.PI + (Math.random() - 0.5) * 0.5);
         }

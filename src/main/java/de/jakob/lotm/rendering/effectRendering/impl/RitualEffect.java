@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,7 +16,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiscernEffect extends ActiveEffect {
+public class RitualEffect extends ActiveEffect {
 
     private final RandomSource random = RandomSource.create();
     private final List<CascadingWave> waves = new ArrayList<>();
@@ -24,54 +25,71 @@ public class DiscernEffect extends ActiveEffect {
     private final List<GoldenRay> goldenRays = new ArrayList<>();
     private final List<CleansingOrb> cleansingOrbs = new ArrayList<>();
 
-    private static final float PRIMARY_R = 212f / 255f;
-    private static final float PRIMARY_G = 175f / 255f;
-    private static final float PRIMARY_B = 55f / 255f;
+    private float PRIMARY_R = 0.87f;
+    private float PRIMARY_G = 0.87f;
+    private float PRIMARY_B = 0.87f;
 
-    private static final float GOLD_R = 1.0f;
-    private static final float GOLD_G = 200f / 255f;
-    private static final float GOLD_B = 30f / 255f;
+    private float GOLD_R = 255f / 255f;
+    private float GOLD_G = 215f / 255f;
+    private float GOLD_B = 120f / 255f;
 
     private float baptismIntensity = 0f;
     private float waveRotation = 0f;
     private float cleansePulse = 0f;
+    private float animTick = 0f;
 
-    public DiscernEffect(Location location, int duration, boolean infinite) {
+    public RitualEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
+    }
 
+    private boolean initialized = false;
+    private void initFromParams() {
+        if (initialized) return;
+        initialized = true;
+        float[] params = getParams();
+        if (params[0] >= 0 && params[1] >= 0 && params[2] >= 0
+                && params[0] <= 1 && params[1] <= 1 && params[2] <= 1) {
+            GOLD_R = params[0];
+            GOLD_G = params[1];
+            GOLD_B = params[2];
+
+            PRIMARY_R = GOLD_R * 0.775f;
+            PRIMARY_G = GOLD_G * 0.775f;
+            PRIMARY_B = GOLD_B * 0.775f;
+        }
 
         for (int i = 0; i < 8; i++) {
             waves.add(new CascadingWave(i));
         }
 
-
         for (int i = 0; i < 200; i++) {
             particles.add(new PurificationParticle());
         }
-
 
         for (int i = 0; i < 15; i++) {
             fragments.add(new SpiritFragment());
         }
 
-
         for (int i = 0; i < 6; i++) {
             goldenRays.add(new GoldenRay(i));
         }
-
 
         for (int i = 0; i < 10; i++) {
             cleansingOrbs.add(new CleansingOrb(i));
         }
     }
 
+
     @Override
     protected void render(PoseStack poseStack, float tick) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        float progress = tick / maxDuration;
+        initFromParams();
 
+        float progress = getProgress();
+        float loopLength = maxDuration > 0 ? maxDuration : 100;
+        animTick = progress * loopLength;
 
         if (progress < 0.1f) {
             baptismIntensity = progress / 0.1f;
@@ -81,14 +99,13 @@ public class DiscernEffect extends ActiveEffect {
             baptismIntensity = 1f;
         }
 
-        waveRotation += 0.04f;
-        cleansePulse = Mth.sin(currentTick * 0.1f) * 0.5f + 0.5f;
+        waveRotation = animTick * 0.04f;
+        cleansePulse = Mth.sin(animTick * 0.1f) * 0.5f + 0.5f;
 
         poseStack.pushPose();
-        poseStack.translate(location.getX(), location.getY(), location.getZ());
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
-
 
         renderDivineColumn(poseStack, bufferSource, progress);
         renderGoldenRays(poseStack, bufferSource, progress);
@@ -107,8 +124,7 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-
-        float columnRadius = 0.8f + Mth.sin(currentTick * 0.07f) * 0.15f;
+        float columnRadius = 0.8f + Mth.sin(animTick * 0.07f) * 0.15f;
         int segments = 24;
 
         for (int i = 0; i < segments; i++) {
@@ -122,7 +138,6 @@ public class DiscernEffect extends ActiveEffect {
 
             float alpha = 0.6f * baptismIntensity;
 
-
             addVertex(consumer, matrix, x1, 4f, z1,
                     1f, 1f, 1f, alpha);
             addVertex(consumer, matrix, x2, 4f, z2,
@@ -132,7 +147,6 @@ public class DiscernEffect extends ActiveEffect {
             addVertex(consumer, matrix, x1, -1.5f, z1,
                     PRIMARY_R * 0.6f, PRIMARY_G * 0.6f, PRIMARY_B * 0.6f, alpha * 0.2f);
         }
-
 
         float coreRadius = columnRadius * 0.4f;
         for (int i = 0; i < segments; i++) {
@@ -162,19 +176,19 @@ public class DiscernEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
 
         for (CascadingWave wave : waves) {
-            wave.update(progress, baptismIntensity, currentTick);
+            wave.update(progress, baptismIntensity, animTick);
 
             if (wave.alpha <= 0f) continue;
 
             int segments = 32;
             float waveY = wave.height;
-            
+
             for (int i = 0; i < segments; i++) {
                 float angle1 = (float) (i * Math.PI * 2 / segments + wave.rotation);
                 float angle2 = (float) ((i + 1) * Math.PI * 2 / segments + wave.rotation);
 
-                float ripple1 = Mth.sin(angle1 * 4f + currentTick * 0.15f) * 0.15f;
-                float ripple2 = Mth.sin(angle2 * 4f + currentTick * 0.15f) * 0.15f;
+                float ripple1 = Mth.sin(angle1 * 4f + animTick * 0.15f) * 0.15f;
+                float ripple2 = Mth.sin(angle2 * 4f + animTick * 0.15f) * 0.15f;
 
                 float r1 = wave.radius + ripple1;
                 float r2 = wave.radius + ripple2;
@@ -183,7 +197,6 @@ public class DiscernEffect extends ActiveEffect {
                 float z1 = Mth.sin(angle1) * r1;
                 float x2 = Mth.cos(angle2) * r2;
                 float z2 = Mth.sin(angle2) * r2;
-
 
                 float goldMix = wave.goldRatio;
                 float r = PRIMARY_R + (GOLD_R - PRIMARY_R) * goldMix;
@@ -225,10 +238,8 @@ public class DiscernEffect extends ActiveEffect {
 
             if (fragment.alpha <= 0f) continue;
 
-
             float size = fragment.size;
             float alpha = fragment.alpha * baptismIntensity;
-
 
             addVertex(consumer, matrix, fragment.x - size * 0.1f, fragment.y - size, fragment.z,
                     fragment.r, fragment.g, fragment.b, alpha * 0.6f);
@@ -238,7 +249,6 @@ public class DiscernEffect extends ActiveEffect {
                     1f, 1f, 1f, alpha);
             addVertex(consumer, matrix, fragment.x - size * 0.1f, fragment.y + size, fragment.z,
                     1f, 1f, 1f, alpha);
-
 
             addVertex(consumer, matrix, fragment.x - size, fragment.y - size * 0.1f, fragment.z,
                     fragment.r, fragment.g, fragment.b, alpha * 0.6f);
@@ -292,10 +302,8 @@ public class DiscernEffect extends ActiveEffect {
 
             if (orb.alpha <= 0f) continue;
 
-
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, orb.size,
                     orb.r, orb.g, orb.b, orb.alpha * baptismIntensity);
-
 
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, orb.size * 1.8f,
                     orb.r * 0.8f, orb.g * 0.8f, orb.b * 0.8f, orb.alpha * baptismIntensity * 0.3f);
@@ -305,7 +313,6 @@ public class DiscernEffect extends ActiveEffect {
     private void renderBaptismVortex(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource, float progress) {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
-
 
         int vortexLayers = 3;
         for (int layer = 0; layer < vortexLayers; layer++) {
@@ -317,8 +324,8 @@ public class DiscernEffect extends ActiveEffect {
                 float angle1 = (float) (i * Math.PI * 2 / segments - waveRotation * (1 + layer * 0.3f));
                 float angle2 = (float) ((i + 1) * Math.PI * 2 / segments - waveRotation * (1 + layer * 0.3f));
 
-                float spiral1 = Mth.sin(angle1 * 3f + currentTick * 0.12f) * 0.2f;
-                float spiral2 = Mth.sin(angle2 * 3f + currentTick * 0.12f) * 0.2f;
+                float spiral1 = Mth.sin(angle1 * 3f + animTick * 0.12f) * 0.2f;
+                float spiral2 = Mth.sin(angle2 * 3f + animTick * 0.12f) * 0.2f;
 
                 float x1 = Mth.cos(angle1) * (layerRadius + spiral1);
                 float z1 = Mth.sin(angle1) * (layerRadius + spiral1);
@@ -343,7 +350,6 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-
         int ringCount = 5;
         for (int r = 0; r < ringCount; r++) {
             float ringOffset = r * 0.2f;
@@ -362,7 +368,6 @@ public class DiscernEffect extends ActiveEffect {
                 float z1 = Mth.sin(angle1) * ringRadius;
                 float x2 = Mth.cos(angle2) * ringRadius;
                 float z2 = Mth.sin(angle2) * ringRadius;
-
 
                 float goldMix = 1f - ringProgress;
                 float red = PRIMARY_R + (GOLD_R - PRIMARY_R) * goldMix;
@@ -385,8 +390,7 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-
-        float crownY = 2.5f + Mth.sin(currentTick * 0.08f) * 0.2f;
+        float crownY = 2.5f + Mth.sin(animTick * 0.08f) * 0.2f;
         int points = 8;
 
         for (int i = 0; i < points; i++) {
@@ -406,8 +410,7 @@ public class DiscernEffect extends ActiveEffect {
             float peakY = crownY + 0.4f;
 
             float alpha = 0.6f * baptismIntensity;
-            float pulse = Mth.sin(currentTick * 0.15f + i * 0.5f) * 0.3f + 0.7f;
-
+            float pulse = Mth.sin(animTick * 0.15f + i * 0.5f) * 0.3f + 0.7f;
 
             addVertex(consumer, matrix, x1, crownY, z1,
                     GOLD_R * 0.8f, GOLD_G * 0.8f, GOLD_B * 0.8f, alpha * pulse);
@@ -433,9 +436,9 @@ public class DiscernEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-                cameraPos.x - (this.location.getX() + x),
-                cameraPos.y - (this.location.getY() + y),
-                cameraPos.z - (this.location.getZ() + z)
+                cameraPos.x - (getX() + x),
+                cameraPos.y - (getY() + y),
+                cameraPos.z - (getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);
@@ -480,11 +483,9 @@ public class DiscernEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity, float tick) {
-
             this.height -= descendSpeed;
             this.radius = 0.5f + (4f - height) * 0.4f;
             this.rotation = tick * 0.03f + index * 0.5f;
-
 
             if (height > 2f) {
                 this.alpha = Mth.clamp((4f - height) / 2f, 0f, 1f) * 0.7f;
@@ -522,7 +523,6 @@ public class DiscernEffect extends ActiveEffect {
             this.y = height;
             this.z = Mth.sin(angle) * dist;
 
-
             this.vx = -x * 0.006f + (random.nextFloat() - 0.5f) * 0.01f;
             this.vy = -0.02f - random.nextFloat() * 0.01f;
             this.vz = -z * 0.006f + (random.nextFloat() - 0.5f) * 0.01f;
@@ -530,7 +530,6 @@ public class DiscernEffect extends ActiveEffect {
             this.size = 0.05f + random.nextFloat() * 0.06f;
             this.lifetime = 80f + random.nextFloat() * 60f;
             this.age = 0f;
-
 
             if (random.nextFloat() < 0.3f) {
                 this.r = GOLD_R;
@@ -586,7 +585,6 @@ public class DiscernEffect extends ActiveEffect {
             this.heightBase = 0.8f + random.nextFloat() * 2f;
             this.dissolveRate = 0.005f + random.nextFloat() * 0.003f;
 
-
             if (random.nextFloat() < 0.25f) {
                 this.r = GOLD_R;
                 this.g = GOLD_G;
@@ -600,11 +598,10 @@ public class DiscernEffect extends ActiveEffect {
 
         void update(float progress, float intensity, float rotation) {
             float angle = angleOffset + rotation * rotationSpeed;
-            
-            this.x = Mth.cos(angle) * orbitRadius;
-            this.y = heightBase + Mth.sin(currentTick * 0.11f + angleOffset) * 0.3f;
-            this.z = Mth.sin(angle) * orbitRadius;
 
+            this.x = Mth.cos(angle) * orbitRadius;
+            this.y = heightBase + Mth.sin(animTick * 0.11f + angleOffset) * 0.3f;
+            this.z = Mth.sin(angle) * orbitRadius;
 
             orbitRadius -= dissolveRate;
             if (orbitRadius < 0.3f) {
@@ -632,19 +629,19 @@ public class DiscernEffect extends ActiveEffect {
         }
 
         void updatePositions() {
-            float angle = angleOffset + currentTick * 0.02f;
-            
+            float angle = angleOffset + animTick * 0.02f;
+
             this.start = new Vec3(0, 4f, 0);
             this.end = new Vec3(
-                Mth.cos(angle) * length,
-                0.5f + Mth.sin(currentTick * 0.1f + angleOffset) * 0.5f,
-                Mth.sin(angle) * length
+                    Mth.cos(angle) * length,
+                    0.5f + Mth.sin(animTick * 0.1f + angleOffset) * 0.5f,
+                    Mth.sin(angle) * length
             );
         }
 
         void update(float progress, float intensity) {
             updatePositions();
-            
+
             float pulse = Mth.sin(progress * 6f + angleOffset) * 0.3f + 0.7f;
             this.alpha = 0.6f * pulse;
         }
@@ -669,20 +666,16 @@ public class DiscernEffect extends ActiveEffect {
             this.heightBase = 0.5f + (index % 4) * 0.6f;
             this.phaseOffset = random.nextFloat() * Mth.TWO_PI;
 
-
             float colorChoice = random.nextFloat();
             if (colorChoice < 0.3f) {
-
                 this.r = GOLD_R;
                 this.g = GOLD_G;
                 this.b = GOLD_B;
             } else if (colorChoice < 0.6f) {
-
                 this.r = 1f;
                 this.g = 1f;
                 this.b = 1f;
             } else {
-
                 this.r = PRIMARY_R + (1f - PRIMARY_R) * 0.5f;
                 this.g = PRIMARY_G + (1f - PRIMARY_G) * 0.5f;
                 this.b = PRIMARY_B + (1f - PRIMARY_B) * 0.5f;
@@ -691,9 +684,9 @@ public class DiscernEffect extends ActiveEffect {
 
         void update(float progress, float intensity, float rotation) {
             float angle = angleOffset + rotation * orbitSpeed;
-            
+
             this.x = Mth.cos(angle) * orbitRadius;
-            this.y = heightBase + Mth.sin(currentTick * 0.1f + phaseOffset) * 0.35f;
+            this.y = heightBase + Mth.sin(animTick * 0.1f + phaseOffset) * 0.35f;
             this.z = Mth.sin(angle) * orbitRadius;
 
             float pulse = Mth.sin(progress * 9f + angleOffset) * 0.2f + 0.8f;

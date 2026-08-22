@@ -25,7 +25,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
     private static final float FIELD_RADIUS = 20f;
     private static final float DOME_HEIGHT = 15f;
     
-    // Colors: Bronze/Orange and Light Blue
+
     private static final float BRONZE_R = 171f / 255f;
     private static final float BRONZE_G = 116f / 255f;
     private static final float BRONZE_B = 56f / 255f;
@@ -40,17 +40,17 @@ public class MisfortuneFieldEffect extends ActiveEffect {
     public MisfortuneFieldEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
 
-        // Initialize misfortune particles floating throughout the field
+
         for (int i = 0; i < 200; i++) {
             misfortuneParticles.add(new MisfortuneParticle());
         }
 
-        // Initialize curse wisps that spiral around
+
         for (int i = 0; i < 30; i++) {
             curseWisps.add(new CurseWisp());
         }
 
-        // Initialize ominous symbols that appear on the dome
+
         for (int i = 0; i < 15; i++) {
             ominousSymbols.add(new OminousSymbol());
         }
@@ -63,7 +63,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Field expands quickly, sustains, then fades
+
         if (progress < 0.15f) {
             fieldIntensity = progress / 0.15f;
             domeOpacity = fieldIntensity * 0.8f;
@@ -80,7 +80,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render components in order
+
         renderGroundCircle(poseStack, bufferSource, progress);
         renderDome(poseStack, bufferSource, progress);
         renderDomeEdge(poseStack, bufferSource, progress);
@@ -101,7 +101,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
         int segments = 64;
         float yOffset = 0.02f;
 
-        // Draw filled circle on the ground with gradient
+
         for (int ring = 0; ring < 5; ring++) {
             float innerRadius = radius * (ring / 5f);
             float outerRadius = radius * ((ring + 1) / 5f);
@@ -120,7 +120,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
                 float x2Outer = Mth.cos(angle2) * outerRadius;
                 float z2Outer = Mth.sin(angle2) * outerRadius;
 
-                // Alternate colors between bronze and blue in rings
+
                 float t = ring / 5f;
                 float r = Mth.lerp(t, BRONZE_R, BLUE_R);
                 float g = Mth.lerp(t, BRONZE_G, BLUE_G);
@@ -129,7 +129,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
                 float innerAlpha = 0.4f * fieldIntensity;
                 float outerAlpha = 0.2f * fieldIntensity;
 
-                // Draw quad
+
                 addVertex(consumer, matrix, x1Inner, yOffset, z1Inner, r, g, b, innerAlpha);
                 addVertex(consumer, matrix, x2Inner, yOffset, z2Inner, r, g, b, innerAlpha);
                 addVertex(consumer, matrix, x2Outer, yOffset, z2Outer, r, g, b, outerAlpha);
@@ -137,7 +137,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
             }
         }
 
-        // Add glowing edge ring
+
         float edgeThickness = 0.5f;
         for (int i = 0; i < segments; i++) {
             float angle1 = (float) (i * Math.PI * 2 / segments);
@@ -172,7 +172,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
         int latSegments = 16;
         int lonSegments = 32;
 
-        // Only render the upper hemisphere (dome)
+
         for (int lat = 0; lat < latSegments / 2; lat++) {
             float theta1 = (float) (lat * Math.PI / latSegments);
             float theta2 = (float) ((lat + 1) * Math.PI / latSegments);
@@ -181,7 +181,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
                 float phi1 = (float) (lon * 2 * Math.PI / lonSegments);
                 float phi2 = (float) ((lon + 1) * 2 * Math.PI / lonSegments);
 
-                // Add subtle distortion
+
                 float distortion = Mth.sin(phi1 * 3f + currentTick * 0.05f) * 0.2f;
 
                 float x1 = (radius + distortion) * Mth.sin(theta1) * Mth.cos(phi1);
@@ -200,13 +200,13 @@ public class MisfortuneFieldEffect extends ActiveEffect {
                 float y4 = height * Mth.cos(theta2);
                 float z4 = (radius + distortion) * Mth.sin(theta2) * Mth.sin(phi1);
 
-                // Color gradient from bronze at bottom to blue at top
+
                 float heightFactor = y1 / height;
                 float r = Mth.lerp(heightFactor, BRONZE_R, BLUE_R);
                 float g = Mth.lerp(heightFactor, BRONZE_G, BLUE_G);
                 float b = Mth.lerp(heightFactor, BRONZE_B, BLUE_B);
 
-                // Swirling color effect
+
                 float colorSwirl = Mth.sin(phi1 * 2f - currentTick * 0.08f + theta1 * 3f) * 0.5f + 0.5f;
                 r = Mth.lerp(colorSwirl * 0.3f, r, heightFactor > 0.5f ? BLUE_R : BRONZE_R);
                 g = Mth.lerp(colorSwirl * 0.3f, g, heightFactor > 0.5f ? BLUE_G : BRONZE_G);
@@ -229,7 +229,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
         float radius = FIELD_RADIUS * fieldIntensity;
         int segments = 64;
 
-        // Vertical glowing pillars around the dome edge
+
         int pillarCount = 24;
         for (int p = 0; p < pillarCount; p++) {
             float angle = (float) (p * 2 * Math.PI / pillarCount);
@@ -242,12 +242,12 @@ public class MisfortuneFieldEffect extends ActiveEffect {
             float pulse = Mth.sin(currentTick * 0.1f + p * 0.5f) * 0.5f + 0.5f;
             float alpha = 0.5f * fieldIntensity * pulse;
 
-            // Alternating colors
+
             float r = (p % 2 == 0) ? BRONZE_R : BLUE_R;
             float g = (p % 2 == 0) ? BRONZE_G : BLUE_G;
             float b = (p % 2 == 0) ? BRONZE_B : BLUE_B;
 
-            // Draw pillar as vertical quad
+
             Vec3 perp = new Vec3(-Mth.sin(angle), 0, Mth.cos(angle)).scale(width);
 
             addVertex(consumer, matrix, (float)(x - perp.x), 0.05f, (float)(z - perp.z), r, g, b, alpha);
@@ -261,7 +261,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Expanding energy rings along the ground
+
         int pulseCount = 4;
         for (int p = 0; p < pulseCount; p++) {
             float pulseDelay = p * 0.25f;
@@ -296,7 +296,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Shimmering bands that move up the dome
+
         int bandCount = 3;
         for (int band = 0; band < bandCount; band++) {
             float bandProgress = ((progress * 0.8f + band * 0.33f) % 1f);
@@ -310,7 +310,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
                 float angle1 = (float) (i * Math.PI * 2 / segments);
                 float angle2 = (float) ((i + 1) * Math.PI * 2 / segments);
 
-                // Calculate dome surface position at this height
+
                 float theta = (float) Math.acos(1f - 2f * bandProgress);
                 float r = FIELD_RADIUS * Mth.sin(theta);
 
@@ -355,7 +355,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
 
             if (wisp.alpha <= 0f) continue;
 
-            // Draw wisp trail
+
             for (int i = 0; i < wisp.trail.size() - 1; i++) {
                 Vec3 p1 = wisp.trail.get(i);
                 Vec3 p2 = wisp.trail.get(i + 1);
@@ -377,7 +377,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
 
             if (symbol.alpha <= 0f) continue;
 
-            // Draw symbol as a simple cross pattern
+
             float size = symbol.size;
             renderBillboardQuad(consumer, matrix, symbol.x, symbol.y, symbol.z,
                 size, symbol.r, symbol.g, symbol.b, symbol.alpha * fieldIntensity);
@@ -466,7 +466,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
             this.y += vy;
             this.z += vz;
 
-            // Keep within dome
+
             float dist = (float) Math.sqrt(x * x + z * z);
             if (dist > FIELD_RADIUS * 0.95f || y < 0f || y > DOME_HEIGHT * 0.9f) {
                 respawn();
@@ -529,7 +529,7 @@ public class MisfortuneFieldEffect extends ActiveEffect {
         OminousSymbol() {
             random.setSeed(System.nanoTime());
             
-            // Position on dome surface
+
             float angle = random.nextFloat() * Mth.TWO_PI;
             float heightFactor = 0.3f + random.nextFloat() * 0.5f;
             float theta = (float) Math.acos(1f - 2f * heightFactor);

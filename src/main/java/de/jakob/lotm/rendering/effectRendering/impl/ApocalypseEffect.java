@@ -28,8 +28,8 @@ public class ApocalypseEffect extends ActiveEffect {
     private final List<VoidTentacle> voidTentacles = new ArrayList<>();
     private final List<EnergySpiral> energySpirals = new ArrayList<>();
 
-    // === Cached sphere trig data ===
-    private static final int SPHERE_SEGMENTS = 24; // was 32/36/40, this is enough for VFX
+
+    private static final int SPHERE_SEGMENTS = 24;
 
     private static final float[] SPHERE_THETA       = new float[SPHERE_SEGMENTS + 1];
     private static final float[] SPHERE_PHI         = new float[SPHERE_SEGMENTS + 1];
@@ -39,7 +39,7 @@ public class ApocalypseEffect extends ActiveEffect {
     private static final float[] SPHERE_COS_PHI     = new float[SPHERE_SEGMENTS + 1];
 
     static {
-        // Precompute theta (0..π)
+
         for (int i = 0; i <= SPHERE_SEGMENTS; i++) {
             float theta = (float) (Math.PI * i / SPHERE_SEGMENTS);
             SPHERE_THETA[i]     = theta;
@@ -47,7 +47,7 @@ public class ApocalypseEffect extends ActiveEffect {
             SPHERE_COS_THETA[i] = Mth.cos(theta);
         }
 
-        // Precompute phi (0..2π)
+
         for (int i = 0; i <= SPHERE_SEGMENTS; i++) {
             float phi = (float) (2.0 * Math.PI * i / SPHERE_SEGMENTS);
             SPHERE_PHI[i]     = phi;
@@ -56,7 +56,7 @@ public class ApocalypseEffect extends ActiveEffect {
         }
     }
 
-    // Helper using cached trig
+
     private static Vec3 spherePointCached(float radius, int thetaIndex, int phiIndex) {
         float sinTheta = SPHERE_SIN_THETA[thetaIndex];
         float cosTheta = SPHERE_COS_THETA[thetaIndex];
@@ -105,32 +105,32 @@ public class ApocalypseEffect extends ActiveEffect {
     public ApocalypseEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
 
-        // Initialize void particles - MASSIVE amount for density
+
         for (int i = 0; i < 800; i++) {
             voidParticles.add(new VoidParticle());
         }
 
-        // Initialize reality tears
+
         for (int i = 0; i < 30; i++) {
             realityTears.add(new RealityTear());
         }
 
-        // Initialize collapsing rings
+
         for (int i = 0; i < 14; i++) {
             collapsingRings.add(new CollapsingRing(i * 0.04f));
         }
 
-        // Initialize chaos lightning
+
         for (int i = 0; i < 40; i++) {
             chaosLightning.add(new ChaosLightning());
         }
 
-        // Initialize void tentacles - new visual element
+
         for (int i = 0; i < 25; i++) {
             voidTentacles.add(new VoidTentacle());
         }
 
-        // Initialize energy spirals
+
         for (int i = 0; i < 15; i++) {
             energySpirals.add(new EnergySpiral(i));
         }
@@ -142,7 +142,7 @@ public class ApocalypseEffect extends ActiveEffect {
         Level level = mc.level;
         if (level == null) return;
 
-        // Update animation state
+
         float progress = getProgress();
         expansionProgress = Mth.clamp(progress * 1.1f, 0f, 1f);
         apocalypseIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
@@ -150,7 +150,7 @@ public class ApocalypseEffect extends ActiveEffect {
         poseStack.pushPose();
         poseStack.translate(location.getX(), location.getY(), location.getZ());
 
-        // Render all effect layers - MANY layers for density
+
         renderDenseFog(poseStack, expansionProgress, apocalypseIntensity);
         renderVoidCore(poseStack, expansionProgress, apocalypseIntensity);
         renderInnerDarkness(poseStack, expansionProgress, apocalypseIntensity);
@@ -319,7 +319,7 @@ public class ApocalypseEffect extends ActiveEffect {
             float radius = ring.radius;
             int segments = 80;
 
-            // Render thick rings with multiple passes
+
             for (int pass = 0; pass < 3; pass++) {
                 Tesselator tesselator = Tesselator.getInstance();
                 BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -363,7 +363,7 @@ public class ApocalypseEffect extends ActiveEffect {
 
             if (tentacle.alpha <= 0.05f || tentacle.segments.size() < 2) continue;
 
-            // Render tentacle as a thick tube
+
             for (int i = 0; i < tentacle.segments.size() - 1; i++) {
                 Vec3 p1 = tentacle.segments.get(i);
                 Vec3 p2 = tentacle.segments.get(i + 1);
@@ -377,7 +377,7 @@ public class ApocalypseEffect extends ActiveEffect {
                 Tesselator tesselator = Tesselator.getInstance();
                 BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-                // Black tentacle with purple edges
+
                 float edgeR = 0.4f;
                 float edgeG = 0.05f;
                 float edgeB = 0.6f;
@@ -385,7 +385,7 @@ public class ApocalypseEffect extends ActiveEffect {
                 float coreG = 0.02f;
                 float coreB = 0.1f;
 
-                // Four sides of the tentacle
+
                 Vec3[] offsets = {
                         perp1.scale(width),
                         perp2.scale(width),
@@ -472,7 +472,7 @@ public class ApocalypseEffect extends ActiveEffect {
 
             if (tear.alpha <= 0.05f || tear.points.size() < 2) continue;
 
-            // Render tear with multiple width layers
+
             for (int layer = 0; layer < 3; layer++) {
                 float widthMult = 1f + layer * 0.4f;
 
@@ -524,7 +524,7 @@ public class ApocalypseEffect extends ActiveEffect {
 
             if (lightning.alpha <= 0.05f || lightning.points.size() < 2) continue;
 
-            // Render lightning with glow effect
+
             for (int pass = 0; pass < 2; pass++) {
                 Tesselator tesselator = Tesselator.getInstance();
                 BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.DEBUG_LINE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -626,7 +626,7 @@ public class ApocalypseEffect extends ActiveEffect {
 
 
 
-    // Helper classes for animated elements
+
     private class VoidParticle {
         Vec3 pos;
         Vec3 velocity;
@@ -661,7 +661,7 @@ public class ApocalypseEffect extends ActiveEffect {
             maxLifetime = 35f + random.nextFloat() * 70f;
             lifetime = 0f;
             alpha = 0f;
-            isPurple = random.nextFloat() < 0.75f; // 75% purple, 25% black
+            isPurple = random.nextFloat() < 0.75f;
         }
 
         void update(float expansion, float intensity) {
@@ -674,7 +674,7 @@ public class ApocalypseEffect extends ActiveEffect {
                 return;
             }
 
-            // Particles spiral and drift
+
             float angle = lifetime * 0.08f;
             Vec3 spiral = new Vec3(
                     Math.cos(angle) * 0.08,

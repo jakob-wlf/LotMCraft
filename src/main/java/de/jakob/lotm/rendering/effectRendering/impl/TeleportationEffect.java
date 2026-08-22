@@ -37,7 +37,7 @@ public class TeleportationEffect extends ActiveEffect {
         Level level = mc.level;
         if (level == null) return;
 
-        // Update animation state
+
         float progress = getProgress();
         float expansionProgress = Mth.clamp(progress * 1.15f, 0f, 1f);
         float dominanceIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
@@ -115,7 +115,7 @@ public class TeleportationEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Dark particles with red highlights
+
             float r = particle.isRed ? 233 / 255f : 89 / 255f;
             float g = particle.isRed ? 92 / 255f : 203 / 255f;
             float b = 1;
@@ -178,7 +178,7 @@ public class TeleportationEffect extends ActiveEffect {
             maxLifetime = 25f + random.nextFloat() * 45f;
             lifetime = 0f;
             alpha = 0f;
-            isRed = random.nextFloat() < 0.6f; // 60% red, 40% dark
+            isRed = random.nextFloat() < 0.6f;
         }
 
         void update(float expansion, float intensity) {

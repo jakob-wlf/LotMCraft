@@ -36,17 +36,17 @@ public class HolyLightEffect extends ActiveEffect {
         this.beamProgress = 0f;
         this.expansionProgress = 0f;
 
-        // Initialize light rays emanating from center
+
         for (int i = 0; i < 64; i++) {
             lightRays.add(new LightRay());
         }
 
-        // Initialize floating holy particles
+
         for (int i = 0; i < 200; i++) {
             holyParticles.add(new HolyParticle());
         }
 
-        // Initialize divine sparks
+
         for (int i = 0; i < 150; i++) {
             divineSparks.add(new DivineSpark());
         }
@@ -60,10 +60,10 @@ public class HolyLightEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // === PHASE 1: Beam descends from the sky (0.0 → 0.16) ===
+
         beamProgress = Mth.clamp(progress / 0.16f, 0f, 1f);
 
-        // === PHASE 2: Expansion starts right when beam hits ground (≥ 0.16) ===
+
         if (progress > 0.16f) {
             float adjustedProgress = (progress - 0.16f) / 0.84f;
             expansionProgress = Mth.clamp(adjustedProgress, 0f, 1f);
@@ -72,7 +72,7 @@ public class HolyLightEffect extends ActiveEffect {
         }
 
 
-        // Radiance pulses and fades
+
         radiance = 1f - (float) Math.pow(progress, 1.5);
         radiance *= (1f + 0.15f * Mth.sin(tick * 0.3f));
 
@@ -81,12 +81,12 @@ public class HolyLightEffect extends ActiveEffect {
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // === Render beam & glow while descending AND for a short delay after ===
-        if (progress <= 0.33f) { // stays visible until 0.33 progress (~1s after expansion begins)
+
+        if (progress <= 0.33f) {
             float beamFade = 1f;
             if (progress > 0.16f) {
-                // start fading out after it hits the ground
-                beamFade = 1f - ((progress - 0.16f) / (0.17f)); // fades to 0 at progress=0.33
+
+                beamFade = 1f - ((progress - 0.16f) / (0.17f));
                 beamFade = Mth.clamp(beamFade, 0f, 1f);
             }
 
@@ -96,7 +96,7 @@ public class HolyLightEffect extends ActiveEffect {
         }
 
 
-        // Render expansion once beam reaches ground
+
         if (expansionProgress > 0f) {
             renderHolySphere(poseStack, bufferSource, expansionProgress, radiance);
             renderInnerRadiance(poseStack, bufferSource, expansionProgress, radiance);
@@ -117,10 +117,10 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        float startHeight = 60f; // starting point high above
-        float beamLength = startHeight * progress; // how much of the beam has come down so far
-        float topY = startHeight;                  // top always high above
-        float bottomY = startHeight - beamLength;  // descends downward over time
+        float startHeight = 60f;
+        float beamLength = startHeight * progress;
+        float topY = startHeight;
+        float bottomY = startHeight - beamLength;
         float beamRadius = 1.2f;
         int segments = 32;
 
@@ -133,7 +133,7 @@ public class HolyLightEffect extends ActiveEffect {
             float x2 = Mth.cos(angle2) * beamRadius;
             float z2 = Mth.sin(angle2) * beamRadius;
 
-            // now draw from topY -> bottomY instead of 0 -> beamHeight
+
             addVertex(consumer, matrix, x1, topY, z1, 1f, 1f, 1f, radiance * 0.9f);
             addVertex(consumer, matrix, x2, topY, z2, 1f, 1f, 1f, radiance * 0.9f);
             addVertex(consumer, matrix, x2, bottomY, z2, 1f, 1f, 1f, radiance);
@@ -146,12 +146,12 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        float startHeight = 60f; // where the beam starts in the sky
-        float beamLength = startHeight * progress; // how far it has descended
+        float startHeight = 60f;
+        float beamLength = startHeight * progress;
         float topY = startHeight;
         float bottomY = startHeight - beamLength;
 
-        // Layered glow cylinders descending with the beam
+
         for (int layer = 0; layer < 3; layer++) {
             float radius = 1.2f + layer * 0.8f;
             float alpha = radiance * (0.4f - layer * 0.1f);
@@ -179,7 +179,7 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        float startHeight = 60f; // top of the beam
+        float startHeight = 60f;
         float beamLength = startHeight * progress;
         float topY = startHeight;
         float bottomY = startHeight - beamLength;
@@ -189,7 +189,7 @@ public class HolyLightEffect extends ActiveEffect {
         for (int i = 0; i < particleCount; i++) {
             float t = (i / (float) particleCount + progress * 2f) % 1f;
 
-            // Y position moves *downward* from top to bottom
+
             float yPos = topY - beamLength * t;
 
             random.setSeed(i * 1234L);
@@ -215,7 +215,7 @@ public class HolyLightEffect extends ActiveEffect {
         int latSegments = 24;
         int lonSegments = 32;
 
-        // Smooth sphere with proper lighting
+
         for (int lat = 0; lat < latSegments; lat++) {
             float theta1 = (float) (lat * Math.PI / latSegments);
             float theta2 = (float) ((lat + 1) * Math.PI / latSegments);
@@ -255,7 +255,7 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Pulsing inner core
+
         float coreRadius = 2f + Mth.sin(currentTick * 0.2f) * 0.5f;
         int segments = 20;
 
@@ -309,7 +309,7 @@ public class HolyLightEffect extends ActiveEffect {
 
             Vec3 end = new Vec3(dir.x * length, dir.y * length, dir.z * length);
 
-            // Perpendicular vector for width
+
             Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(width);
 
             float alpha = radiance * ray.alpha * (1f - progress * 0.3f);
@@ -382,7 +382,7 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Ground-level expanding wave
+
         float waveRadius = MAX_RADIUS * progress;
         float waveHeight = 0.05f;
         int segments = 64;
@@ -476,7 +476,7 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Expanding pulse shells
+
         int pulseCount = 4;
         for (int p = 0; p < pulseCount; p++) {
             float pulseDelay = p * 0.1f;
@@ -525,7 +525,7 @@ public class HolyLightEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Soft outer glow that fades out
+
         float auraRadius = MAX_RADIUS * progress * 1.3f;
         int segments = 48;
 
@@ -546,13 +546,13 @@ public class HolyLightEffect extends ActiveEffect {
             float alphaInner = radiance * 0.4f;
             float alphaOuter = 0f;
 
-            // Ground level aura
+
             addVertex(consumer, matrix, x1Inner, 0.02f, z1Inner, 1f, 1f, 0.95f, alphaInner);
             addVertex(consumer, matrix, x2Inner, 0.02f, z2Inner, 1f, 1f, 0.95f, alphaInner);
             addVertex(consumer, matrix, x2Outer, 0.02f, z2Outer, 1f, 1f, 0.9f, alphaOuter);
             addVertex(consumer, matrix, x1Outer, 0.02f, z1Outer, 1f, 1f, 0.9f, alphaOuter);
 
-            // Rising aura
+
             float height = 3f;
             addVertex(consumer, matrix, x1Inner, 0.02f, z1Inner, 1f, 1f, 0.95f, alphaInner * 0.7f);
             addVertex(consumer, matrix, x2Inner, 0.02f, z2Inner, 1f, 1f, 0.95f, alphaInner * 0.7f);
@@ -561,21 +561,21 @@ public class HolyLightEffect extends ActiveEffect {
         }
     }
 
-    // Helper method to add a vertex
+
     private void addVertex(VertexConsumer consumer, Matrix4f matrix, float x, float y, float z,
                           float r, float g, float b, float a) {
         consumer.addVertex(matrix, x, y, z)
                 .setColor(r, g, b, a);
     }
 
-    // Helper method to render a billboard quad (always faces camera)
+
     private void renderBillboardQuad(VertexConsumer consumer, Matrix4f matrix,
                                      float x, float y, float z, float size,
                                      float r, float g, float b, float a) {
         Minecraft mc = Minecraft.getInstance();
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
-        // Calculate vectors to orient quad towards camera
+
         Vec3 toCamera = new Vec3(
             cameraPos.x - (getX() + x),
             cameraPos.y - (getY() + y),
@@ -586,7 +586,7 @@ public class HolyLightEffect extends ActiveEffect {
         Vec3 right = toCamera.cross(up).normalize().scale(size);
         up = right.cross(toCamera).normalize().scale(size);
 
-        // Four corners of the quad
+
         addVertex(consumer, matrix,
             (float) (x - right.x - up.x), (float) (y - right.y - up.y), (float) (z - right.z - up.z),
             r, g, b, a);
@@ -601,7 +601,7 @@ public class HolyLightEffect extends ActiveEffect {
             r, g, b, a);
     }
 
-    // Inner classes for particle systems
+
     private class LightRay {
         float angle;
         float elevation;
@@ -666,13 +666,13 @@ public class HolyLightEffect extends ActiveEffect {
             float distance = (float) Math.sqrt(x * x + y * y + z * z);
             float currentRadius = MAX_RADIUS * progress;
 
-            // Fade based on distance from expansion edge
+
             float edgeDist = Math.abs(distance - currentRadius);
             float fadeFactor = 1f - Mth.clamp(edgeDist / 5f, 0f, 1f);
 
             this.alpha = (0.7f + random.nextFloat() * 0.3f) * fadeFactor * radiance;
 
-            // Respawn if too far
+
             if (distance > currentRadius + 8f) {
                 respawn();
             }
@@ -704,7 +704,7 @@ public class HolyLightEffect extends ActiveEffect {
             float currentRadius = MAX_RADIUS * progress;
             float distance = (float) Math.sqrt(x * x + y * y + z * z);
 
-            // Sparks appear at the expansion edge
+
             float edgeDist = Math.abs(distance - currentRadius);
             if (edgeDist < 2f) {
                 this.alpha = (0.8f + random.nextFloat() * 0.2f) * (1f - edgeDist / 2f) * radiance;

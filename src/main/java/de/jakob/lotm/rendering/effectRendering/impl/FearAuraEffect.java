@@ -145,7 +145,7 @@ public class FearAuraEffect extends ActiveEffect {
                 float y4 = Mth.cos(theta2) * coreRadius;
                 float z4 = Mth.sin(theta2) * Mth.sin(phi1) * coreRadius;
 
-                // Pure black core with slight red tint
+
                 float r = 0.05f;
                 float g = 0.0f;
                 float b = 0.0f;
@@ -184,7 +184,7 @@ public class FearAuraEffect extends ActiveEffect {
                 float x2 = Mth.cos(angle2) * r2;
                 float z2 = Mth.sin(angle2) * r2;
 
-                // Deep black with red highlights
+
                 float heightFactor = h / 8f;
                 float r = 0.08f + layer.redIntensity * 0.1f * heightFactor;
                 float g = 0.01f * heightFactor;
@@ -296,7 +296,7 @@ public class FearAuraEffect extends ActiveEffect {
         for (int layer = 0; layer < 3; layer++) {
             float layerSize = orb.size * (1f + layer * 0.5f);
             float layerAlpha = orb.alpha / (1f + layer * 0.8f);
-            // Red glow instead of blue
+
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, layerSize,
                     0.4f * (3 - layer), 0.05f * (3 - layer), 0.0f, layerAlpha);
         }

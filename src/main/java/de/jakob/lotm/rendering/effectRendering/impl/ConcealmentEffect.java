@@ -28,12 +28,12 @@ public class ConcealmentEffect extends ActiveEffect {
     public ConcealmentEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
 
-        // Initialize particles
+
         for (int i = 0; i < 120; i++) {
             particles.add(new ConcealmentParticle());
         }
 
-        // Initialize larger, slower mist particles
+
         for (int i = 0; i < 40; i++) {
             largeMistParticles.add(new LargeMistParticle());
         }
@@ -47,10 +47,10 @@ public class ConcealmentEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Calculate expanding radius with smooth easing
+
         float radius = MAX_RADIUS * easeOutQuad(progress);
 
-        // Opacity fades in quickly, then fades out gradually
+
         if (progress < 0.15f) {
             opacity = progress / 0.15f;
         } else {
@@ -63,19 +63,19 @@ public class ConcealmentEffect extends ActiveEffect {
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render main sphere
+
         renderConcealmentSphere(poseStack, bufferSource, radius, opacity);
 
-        // Render inner glow layers
+
         renderInnerGlow(poseStack, bufferSource, radius, opacity);
 
-        // Render particles
+
         renderParticles(poseStack, bufferSource, progress, radius, opacity);
 
-        // Render large mist particles
+
         renderLargeMistParticles(poseStack, bufferSource, progress, radius, opacity);
 
-        // Render mist effect
+
         renderMistLayer(poseStack, bufferSource, radius, opacity);
 
         poseStack.popPose();
@@ -113,17 +113,17 @@ public class ConcealmentEffect extends ActiveEffect {
                 float y4 = radius * Mth.cos(theta2);
                 float z4 = radius * Mth.sin(theta2) * Mth.sin(phi1);
 
-                // White/gray color with translucency
+
                 float grayValue = 0.85f + Mth.sin(currentTick * 0.05f + lat * 0.3f) * 0.1f;
                 float alpha = opacity * 0.5f;
 
-                // Render front-facing (outside view)
+
                 addVertex(consumer, matrix, x1, y1, z1, grayValue, grayValue, grayValue + 0.05f, alpha);
                 addVertex(consumer, matrix, x2, y2, z2, grayValue, grayValue, grayValue + 0.05f, alpha);
                 addVertex(consumer, matrix, x3, y3, z3, grayValue, grayValue, grayValue + 0.05f, alpha);
                 addVertex(consumer, matrix, x4, y4, z4, grayValue, grayValue, grayValue + 0.05f, alpha);
 
-                // Render back-facing (inside view) - reversed winding order
+
                 addVertex(consumer, matrix, x1, y1, z1, grayValue, grayValue, grayValue + 0.05f, alpha);
                 addVertex(consumer, matrix, x4, y4, z4, grayValue, grayValue, grayValue + 0.05f, alpha);
                 addVertex(consumer, matrix, x3, y3, z3, grayValue, grayValue, grayValue + 0.05f, alpha);
@@ -137,7 +137,7 @@ public class ConcealmentEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multiple layers for depth
+
         for (int layer = 0; layer < 3; layer++) {
             float layerRadius = radius * (0.7f + layer * 0.1f);
             float layerAlpha = opacity * (0.3f - layer * 0.08f);
@@ -167,13 +167,13 @@ public class ConcealmentEffect extends ActiveEffect {
                     float y4 = layerRadius * Mth.cos(theta2);
                     float z4 = layerRadius * Mth.sin(theta2) * Mth.sin(phi1);
 
-                    // Front-facing
+
                     addVertex(consumer, matrix, x1, y1, z1, 0.95f, 0.95f, 0.98f, layerAlpha);
                     addVertex(consumer, matrix, x2, y2, z2, 0.95f, 0.95f, 0.98f, layerAlpha);
                     addVertex(consumer, matrix, x3, y3, z3, 0.95f, 0.95f, 0.98f, layerAlpha);
                     addVertex(consumer, matrix, x4, y4, z4, 0.95f, 0.95f, 0.98f, layerAlpha);
 
-                    // Back-facing
+
                     addVertex(consumer, matrix, x1, y1, z1, 0.95f, 0.95f, 0.98f, layerAlpha);
                     addVertex(consumer, matrix, x4, y4, z4, 0.95f, 0.95f, 0.98f, layerAlpha);
                     addVertex(consumer, matrix, x3, y3, z3, 0.95f, 0.95f, 0.98f, layerAlpha);
@@ -197,7 +197,7 @@ public class ConcealmentEffect extends ActiveEffect {
                     particle.y * particle.y +
                     particle.z * particle.z);
 
-            // Only show particles near the sphere surface
+
             if (Math.abs(distance - radius) > 4f) continue;
 
             float particleAlpha = particle.alpha * opacity;
@@ -220,7 +220,7 @@ public class ConcealmentEffect extends ActiveEffect {
                     particle.y * particle.y +
                     particle.z * particle.z);
 
-            // Show particles in a wider range around the sphere
+
             if (Math.abs(distance - radius) > 6f) continue;
 
             float particleAlpha = particle.alpha * opacity;
@@ -234,7 +234,7 @@ public class ConcealmentEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Ground-level mist ring
+
         float mistRadius = radius * 1.1f;
         int segments = 48;
 
@@ -328,17 +328,17 @@ public class ConcealmentEffect extends ActiveEffect {
 
             float elevation = random.nextFloat() * Mth.PI;
 
-            // Position particles around the sphere surface
+
             this.x = Mth.cos(baseAngle) * radius * Mth.sin(elevation);
             this.y = Mth.cos(elevation) * radius;
             this.z = Mth.sin(baseAngle) * radius * Mth.sin(elevation);
 
-            // Add some drift
+
             this.x += vx * currentTick * 0.1f;
             this.y += vy * currentTick * 0.1f;
             this.z += vz * currentTick * 0.1f;
 
-            // Fade in and out with the effect
+
             this.alpha = 0.6f + random.nextFloat() * 0.3f;
             this.alpha *= Mth.sin(progress * Mth.PI);
         }
@@ -356,12 +356,12 @@ public class ConcealmentEffect extends ActiveEffect {
         LargeMistParticle() {
             random.setSeed(System.nanoTime());
             this.baseAngle = random.nextFloat() * Mth.TWO_PI;
-            this.orbitSpeed = 0.005f + random.nextFloat() * 0.008f; // Slower than regular particles
-            this.size = 0.25f + random.nextFloat() * 0.35f; // Much bigger
+            this.orbitSpeed = 0.005f + random.nextFloat() * 0.008f;
+            this.size = 0.25f + random.nextFloat() * 0.35f;
             this.pulseOffset = random.nextFloat() * Mth.TWO_PI;
 
             float elevation = random.nextFloat() * Mth.PI;
-            this.vx = (random.nextFloat() - 0.5f) * 0.02f; // Slower drift
+            this.vx = (random.nextFloat() - 0.5f) * 0.02f;
             this.vy = (random.nextFloat() - 0.5f) * 0.02f;
             this.vz = (random.nextFloat() - 0.5f) * 0.02f;
         }
@@ -371,17 +371,17 @@ public class ConcealmentEffect extends ActiveEffect {
 
             float elevation = random.nextFloat() * Mth.PI;
 
-            // Position particles around the sphere surface
+
             this.x = Mth.cos(baseAngle) * radius * Mth.sin(elevation);
             this.y = Mth.cos(elevation) * radius;
             this.z = Mth.sin(baseAngle) * radius * Mth.sin(elevation);
 
-            // Add some slow drift
+
             this.x += vx * currentTick * 0.15f;
             this.y += vy * currentTick * 0.15f;
             this.z += vz * currentTick * 0.15f;
 
-            // Gentle pulsing alpha
+
             float pulse = Mth.sin(currentTick * 0.03f + pulseOffset) * 0.15f;
             this.alpha = 0.4f + pulse;
             this.alpha *= Mth.sin(progress * Mth.PI);

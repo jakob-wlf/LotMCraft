@@ -27,9 +27,6 @@ public class ImprisonEffect extends ActiveEffect {
 
         float progress = getProgress();
 
-        // Phase 1 (0-20t = 0.0-0.167): bars slide down from above
-        // Phase 2 (20-100t = 0.167-0.833): hold, rotate slowly, golden pulse
-        // Phase 3 (100-120t = 0.833-1.0): fade out
         float alpha;
         float rotation;
         float yOffset;

@@ -307,7 +307,7 @@ public class BloodSurgeEffect extends ActiveEffect {
 
     private void renderApex(VertexConsumer vc, Matrix4f mat,
                              float tick, float intensity, float progress) {
-        // Apex blooms after 30% of the effect
+
         float apexT = Mth.clamp((progress - 0.30f) / 0.25f, 0f, 1f);
         if (apexT <= 0f) return;
 

@@ -18,16 +18,16 @@ public class LightOfHolinessEffect extends ActiveEffect {
     private float intensity = 1f;
     private int particleSpawnTimer = 0;
 
-    private static final float BEAM_RADIUS = 3.5f; // Thicker beam
-    private static final float MAX_CIRCLE_RADIUS = 40f; // Larger circles
+    private static final float BEAM_RADIUS = 3.5f;
+    private static final float MAX_CIRCLE_RADIUS = 40f;
     private static final float BEAM_HEIGHT_ABOVE = 60f;
 
-    // Core colors
+
     private static final float GOLD_R = 1.0f;
     private static final float GOLD_G = 0.6f;
     private static final float GOLD_B = 0.05f;
     
-    // White core accent
+
     private static final float WHITE_R = 1.0f;
     private static final float WHITE_G = 1.0f;
     private static final float WHITE_B = 1.0f;
@@ -47,17 +47,17 @@ public class LightOfHolinessEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Beam descends (0.0 → 0.2)
+
         beamProgress = Mth.clamp(progress / 0.2f, 0f, 1f);
 
-        // Expansion starts after beam hits (≥ 0.2)
+
         if (progress > 0.2f) {
             expansionProgress = Mth.clamp((progress - 0.2f) / 0.8f, 0f, 1f);
         } else {
             expansionProgress = 0f;
         }
 
-        // Pulsing intensity
+
         intensity = 1f - (float) Math.pow(progress, 1.5);
         intensity *= (1f + 0.15f * Mth.sin(tick * 0.3f));
 
@@ -66,7 +66,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render beam (visible until 0.35 progress)
+
         if (progress <= 0.35f) {
             float beamFade = 1f;
             if (progress > 0.2f) {
@@ -76,7 +76,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
             renderBeam(poseStack, bufferSource, beamProgress, intensity * beamFade);
         }
 
-        // Render expanding circles - more dramatic
+
         if (expansionProgress > 0f) {
             renderExpandingCircles(poseStack, bufferSource, expansionProgress, intensity, progress);
         }
@@ -93,9 +93,9 @@ public class LightOfHolinessEffect extends ActiveEffect {
         float topY = BEAM_HEIGHT_ABOVE;
         float bottomY = BEAM_HEIGHT_ABOVE - beamLength;
 
-        int segments = 48; // More segments for smoother beam
+        int segments = 48;
 
-        // Bright white core
+
         float coreRadius = BEAM_RADIUS * 0.3f;
         for (int i = 0; i < segments; i++) {
             float angle1 = (float) (i * Math.PI * 2 / segments);
@@ -112,7 +112,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
             addVertex(consumer, matrix, x1, bottomY, z1, WHITE_R, WHITE_G, WHITE_B, intensity);
         }
 
-        // Main gold beam cylinder
+
         for (int i = 0; i < segments; i++) {
             float angle1 = (float) (i * Math.PI * 2 / segments);
             float angle2 = (float) ((i + 1) * Math.PI * 2 / segments);
@@ -128,7 +128,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
             addVertex(consumer, matrix, x1, bottomY, z1, GOLD_R, GOLD_G, GOLD_B, intensity);
         }
 
-        // Multiple glow layers for thickness
+
         for (int layer = 1; layer <= 3; layer++) {
             float glowRadius = BEAM_RADIUS + layer * 0.7f;
             float alpha = intensity * (0.7f - layer * 0.18f);
@@ -155,8 +155,8 @@ public class LightOfHolinessEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        int circleCount = 5; // More circles
-        int segments = 64; // Smoother circles
+        int circleCount = 5;
+        int segments = 64;
 
         for (int c = 0; c < circleCount; c++) {
             float delay = c * 0.12f;
@@ -164,17 +164,17 @@ public class LightOfHolinessEffect extends ActiveEffect {
 
             if (circleProgress <= 0f) continue;
 
-            // Easing for more dramatic expansion
+
             float easedProgress = (float) (1 - Math.pow(1 - circleProgress, 3));
             float radius = MAX_CIRCLE_RADIUS * easedProgress;
             float yOffset = 0.05f + c * 0.015f;
             float alpha = intensity * (0.9f - c * 0.12f) * (1f - circleProgress * 0.3f);
 
-            // Pulsing effect
+
             float pulse = 1f + 0.2f * Mth.sin(overallProgress * 10 + c * 2);
             alpha *= pulse;
 
-            // White center flash for first circle
+
             if (c == 0 && circleProgress < 0.3f) {
                 float flashAlpha = alpha * (1f - circleProgress / 0.3f);
                 for (int i = 0; i < segments; i++) {
@@ -193,7 +193,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
                 }
             }
 
-            // Main circle - gold
+
             for (int i = 0; i < segments; i++) {
                 float angle1 = (float) (i * Math.PI * 2 / segments);
                 float angle2 = (float) ((i + 1) * Math.PI * 2 / segments);
@@ -209,7 +209,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
                 addVertex(consumer, matrix, 0, yOffset, 0, GOLD_R, GOLD_G, GOLD_B, alpha);
             }
 
-            // Double glow ring for more impressive look
+
             for (int glowLayer = 1; glowLayer <= 2; glowLayer++) {
                 float outerRadius = radius * (1.1f + glowLayer * 0.08f);
                 float glowAlpha = alpha * (0.6f - glowLayer * 0.2f);

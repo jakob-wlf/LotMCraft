@@ -29,17 +29,17 @@ public class CollapseEffect extends ActiveEffect {
     public CollapseEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
 
-        // Initialize dominance chains
+
         for (int i = 0; i < 40; i++) {
             chains.add(new Chain());
         }
 
-        // Initialize conquest particles
+
         for (int i = 0; i < 120; i++) {
             particles.add(new Particle());
         }
 
-        // Initialize crushing waves
+
         for (int i = 0; i < 8; i++) {
             crushingWaves.add(new CrushingWave(i * 0.125f));
         }
@@ -51,7 +51,7 @@ public class CollapseEffect extends ActiveEffect {
         Level level = mc.level;
         if (level == null) return;
 
-        // Update animation state
+
         float progress = getProgress();
         expansionProgress = Mth.clamp(progress * 1.15f, 0f, 1f);
         dominanceIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
@@ -59,7 +59,7 @@ public class CollapseEffect extends ActiveEffect {
         poseStack.pushPose();
         poseStack.translate(location.getX(), location.getY(), location.getZ());
 
-        // Render all effect layers - from core to outer elements
+
         renderCore(poseStack, expansionProgress, dominanceIntensity);
         renderBloodSphere(poseStack, expansionProgress, dominanceIntensity);
         renderDarknessShell(poseStack, expansionProgress, dominanceIntensity);
@@ -90,7 +90,7 @@ public class CollapseEffect extends ActiveEffect {
         int segments = 32;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multiple layers for deep purple appearance
+
         for (int layer = 0; layer < 3; layer++) {
             float layerRadius = radius * (1f + layer * 0.1f);
             float layerAlpha = intensity * (1f - layer * 0.3f) * 0.7f;
@@ -109,13 +109,13 @@ public class CollapseEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(layerRadius, theta1, phi);
                     Vec3 v2 = spherePoint(layerRadius, theta2, phi);
 
-                    // Deep purple with dark undertones
+
                     float r = 0.45f + intensity * 0.2f;
                     float g = 0.1f + intensity * 0.05f;
                     float b = 0.65f + intensity * 0.2f;
                     float a = layerAlpha;
 
-                    // Occasional dark pulses
+
                     if (random.nextFloat() < 0.04f) {
                         r *= 0.4f;
                         g *= 0.3f;
@@ -165,7 +165,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float a = intensity * 0.5f * (1f - expansion * 0.4f);
 
-                // Dark gray-black shell with purple highlights
+
                 float noise = random.nextFloat();
                 float r = 0.15f + noise * 0.08f;
                 float g = 0.12f + noise * 0.05f;
@@ -211,7 +211,7 @@ public class CollapseEffect extends ActiveEffect {
                 Vec3 v1 = spherePoint(pulseRadius, theta1, phi);
                 Vec3 v2 = spherePoint(pulseRadius, theta2, phi);
 
-                // Intense purple core
+
                 float a = intensity * intensity * 0.7f;
                 a = Mth.clamp(a, 0f, 1f);
 
@@ -237,7 +237,7 @@ public class CollapseEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float radius = 4.5f + expansion * 24f;
 
-        // Jagged spikes radiating outward
+
         for (int i = 0; i < 60; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -271,7 +271,7 @@ public class CollapseEffect extends ActiveEffect {
                 float alpha1 = intensity * (1f - segProgress * 0.3f) * 0.55f;
                 float alpha2 = intensity * (1f - (segProgress + 1f / segments) * 0.3f) * 0.55f;
 
-                // Dark purple spikes with black edges
+
                 float r = 0.35f - segProgress * 0.1f;
                 float g = 0.05f;
                 float b = 0.55f - segProgress * 0.15f;
@@ -334,7 +334,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float alpha = chain.alpha * (1f - (float) i / chain.points.size()) * 0.65f;
 
-                // Dark purple chains
+
                 float r = 0.3f + (float) i / chain.points.size() * 0.2f;
                 float g = 0.08f;
                 float b = 0.5f + (float) i / chain.points.size() * 0.2f;
@@ -405,7 +405,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float alpha = wave.alpha * (1f - wave.progress) * 0.7f;
 
-                // Dark purple crushing wave
+
                 buffer.addVertex(matrix, x1, 0.15f, z1).setColor(0.4f, 0.1f, 0.6f, alpha);
                 buffer.addVertex(matrix, x2, 0.15f, z2).setColor(0.2f, 0.05f, 0.3f, 0f);
             }
@@ -425,7 +425,7 @@ public class CollapseEffect extends ActiveEffect {
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        // Rotating dark rings with purple highlights
+
         for (int ring = 0; ring < 9; ring++) {
             poseStack.pushPose();
 
@@ -452,7 +452,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float alpha = intensity * 0.45f * (float) Math.sin(t * Math.PI);
 
-                // Dark rings with purple highlights
+
                 float r = 0.2f + (float) Math.sin(t * Math.PI * 4) * 0.15f;
                 float g = 0.1f;
                 float b = 0.35f + (float) Math.sin(t * Math.PI * 4) * 0.2f;
@@ -481,7 +481,7 @@ public class CollapseEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float radius = 3.5f + expansion * 18f;
 
-        // Writhing tendrils between distant points
+
         for (int i = 0; i < 40; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -511,7 +511,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float alpha = intensity * 0.6f * (1f - t * 0.4f);
 
-                // Purple tendrils
+
                 float r = 0.45f + random.nextFloat() * 0.15f;
                 float g = 0.08f;
                 float b = 0.65f + random.nextFloat() * 0.2f;
@@ -560,7 +560,7 @@ public class CollapseEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Pulsing waves of dominance
+
         for (int wave = 0; wave < 6; wave++) {
             float waveProgress = (expansion + wave * 0.16f) % 1f;
             float radius = 3.5f + waveProgress * 20f;
@@ -580,7 +580,7 @@ public class CollapseEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(radius, theta1, phi);
                     Vec3 v2 = spherePoint(radius, theta2, phi);
 
-                    // Dark purple to black gradient
+
                     float r = 0.3f - waveProgress * 0.2f;
                     float g = 0.05f;
                     float b = 0.5f - waveProgress * 0.3f;
@@ -618,7 +618,7 @@ public class CollapseEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Dark particles with purple highlights
+
             float r = particle.isRed ? 0.5f : 0.2f;
             float g = particle.isRed ? 0.1f : 0.15f;
             float b = particle.isRed ? 0.7f : 0.3f;
@@ -649,7 +649,7 @@ public class CollapseEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Swirling vortex of darkness
+
         for (int vortex = 0; vortex < 4; vortex++) {
             float vortexOffset = vortex * 0.25f;
             int segments = 48;
@@ -671,7 +671,7 @@ public class CollapseEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(radius, theta1, phi + currentTick * 0.05f);
                     Vec3 v2 = spherePoint(radius, theta2, phi + currentTick * 0.05f);
 
-                    // Dark swirling mass with purple tint
+
                     float r = 0.15f;
                     float g = 0.1f;
                     float b = 0.2f;
@@ -701,7 +701,7 @@ public class CollapseEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float pulseIntensity = (float) Math.abs(Math.sin(currentTick * 0.15f));
 
-        // Pulsing purple energy layer
+
         float radius = 3.2f + expansion * 19f + pulseIntensity * 1.5f;
         int segments = 36;
 
@@ -721,7 +721,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float a = intensity * pulseIntensity * 0.4f;
 
-                // Pulsing purple
+
                 buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.55f, 0.12f, 0.75f, a);
                 buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(0.55f, 0.12f, 0.75f, a);
             }
@@ -743,7 +743,7 @@ public class CollapseEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Spiraling dominance energy
+
         for (int spiral = 0; spiral < 10; spiral++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -780,7 +780,7 @@ public class CollapseEffect extends ActiveEffect {
 
                 float alpha = intensity * (1f - t * 0.4f) * 0.6f;
 
-                // Dark purple spirals
+
                 float r = 0.35f - t * 0.1f;
                 float g = 0.08f;
                 float b = 0.55f - t * 0.15f;
@@ -828,7 +828,7 @@ public class CollapseEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Radiating cracks of oppression
+
         for (int i = 0; i < 30; i++) {
             float angle = (float) (i * Math.PI * 2 / 30);
             float length = expansion * 22f;
@@ -845,7 +845,7 @@ public class CollapseEffect extends ActiveEffect {
 
             float alpha = intensity * 0.65f;
 
-            // Dark cracks with purple glow
+
             buffer.addVertex(matrix, perpX, 0.08f, perpZ).setColor(0.35f, 0.08f, 0.55f, alpha);
             buffer.addVertex(matrix, -perpX, 0.08f, -perpZ).setColor(0.35f, 0.08f, 0.55f, alpha);
             buffer.addVertex(matrix, cos * length - perpX, 0.08f, sin * length - perpZ).setColor(0.15f, 0.05f, 0.2f, 0f);
@@ -869,7 +869,7 @@ public class CollapseEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Crown-like flares of domination
+
         for (int i = 0; i < 60; i++) {
             float angle = (float) (i * Math.PI * 2 / 60);
             float length = (3.5f + expansion * 16f) * (1f + (float) Math.sin(currentTick * 0.25f + i) * 0.5f);
@@ -889,7 +889,7 @@ public class CollapseEffect extends ActiveEffect {
             float alpha1 = intensity * 0.6f;
             float alpha2 = 0f;
 
-            // Purple corona
+
             buffer.addVertex(matrix, cos * startDist + perpX, 0, sin * startDist + perpZ)
                     .setColor(0.5f, 0.15f, 0.75f, alpha1);
             buffer.addVertex(matrix, cos * startDist - perpX, 0, sin * startDist - perpZ)
@@ -915,7 +915,7 @@ public class CollapseEffect extends ActiveEffect {
     }
 
 
-    // Helper classes for animated elements
+
     private class Chain {
         List<Vec3> points = new ArrayList<>();
         float alpha = 0f;
@@ -997,7 +997,7 @@ public class CollapseEffect extends ActiveEffect {
             maxLifetime = 25f + random.nextFloat() * 45f;
             lifetime = 0f;
             alpha = 0f;
-            isRed = random.nextFloat() < 0.6f; // 60% purple, 40% dark
+            isRed = random.nextFloat() < 0.6f;
         }
 
         void update(float expansion, float intensity) {

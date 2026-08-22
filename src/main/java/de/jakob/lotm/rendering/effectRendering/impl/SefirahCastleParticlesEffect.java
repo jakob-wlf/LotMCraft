@@ -45,7 +45,7 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
     protected void render(PoseStack poseStack, float tick) {
         float progress = tick / maxDuration;
 
-        // Setup render state
+
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();
@@ -57,7 +57,7 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
         for (MysticalCube cube : cubes) {
             poseStack.pushPose();
 
-            // Calculate fade in/out
+
             float alpha = 1.0f;
             float fadeInDuration = 0.15f;
             float fadeOutDuration = 0.25f;
@@ -68,30 +68,30 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
                 alpha = (1.0f - progress) / fadeOutDuration;
             }
 
-            // Update cube position with floating motion
+
             cube.update(tick);
 
-            // Translate to effect origin first
+
             poseStack.translate(getX(), getY(), getZ());
 
-            // Then position the cube relative to origin
+
             poseStack.translate(cube.x, cube.y, cube.z);
 
-            // Add mystical floating rotation
+
             poseStack.mulPose(new org.joml.Quaternionf().rotationAxis((float) Math.toRadians(cube.rotation), 0, 1, 0));
             poseStack.mulPose(new org.joml.Quaternionf().rotationAxis((float) Math.toRadians(cube.rotation * 0.7f), 1, 0, 0));
 
-            // Add pulsing scale effect
+
             float pulse = 0.9f + (float) Math.sin((tick + cube.phaseOffset) * 0.1f) * 0.1f;
             poseStack.scale(pulse, pulse, pulse);
 
-            // Render the cube with mystical white glow
+
             renderCube(poseStack, tesselator, alpha);
 
             poseStack.popPose();
         }
 
-        // Restore render state
+
         RenderSystem.depthMask(true);
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
@@ -101,35 +101,35 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         float size = CUBE_SIZE;
 
-        // White mystical color with glow
+
         float r = 1.0f;
         float g = 1.0f;
         float b = 1.0f;
         float a = alpha * 0.85f;
 
-        // Define cube vertices
+
         float[][] vertices = {
-                {-size, -size, -size}, {size, -size, -size}, {size, size, -size}, {-size, size, -size}, // Front
-                {-size, -size, size}, {size, -size, size}, {size, size, size}, {-size, size, size}      // Back
+                {-size, -size, -size}, {size, -size, -size}, {size, size, -size}, {-size, size, -size},
+                {-size, -size, size}, {size, -size, size}, {size, size, size}, {-size, size, size}
         };
 
-        // Define cube faces (as quads)
+
         int[][] faces = {
-                {0, 1, 2, 3}, // Front
-                {5, 4, 7, 6}, // Back
-                {4, 0, 3, 7}, // Left
-                {1, 5, 6, 2}, // Right
-                {3, 2, 6, 7}, // Top
-                {4, 5, 1, 0}  // Bottom
+                {0, 1, 2, 3},
+                {5, 4, 7, 6},
+                {4, 0, 3, 7},
+                {1, 5, 6, 2},
+                {3, 2, 6, 7},
+                {4, 5, 1, 0}
         };
 
-        // Begin rendering
+
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         for (int[] face : faces) {
             for (int i : face) {
                 float[] v = vertices[i];
-                // Transform vertex by matrix
+
                 org.joml.Vector4f vec = new org.joml.Vector4f(v[0], v[1], v[2], 1.0f);
                 vec.mul(matrix);
 
@@ -161,12 +161,12 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
         }
 
         void update(float tick) {
-            // Floating motion with sine wave
+
             x += vx + (float) Math.sin((tick + phaseOffset) * 0.05f) * 0.01f;
             y += vy + (float) Math.sin((tick + phaseOffset) * 0.08f) * 0.005f;
             z += vz + (float) Math.cos((tick + phaseOffset) * 0.05f) * 0.01f;
 
-            // Rotate the cube
+
             rotation += rotationSpeed;
         }
     }

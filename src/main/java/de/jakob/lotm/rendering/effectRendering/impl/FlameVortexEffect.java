@@ -21,7 +21,7 @@ public class FlameVortexEffect extends ActiveEffect {
         super(location, duration, infinite);
     }
 
-    // Custom additive render type for fire effect
+
     private static final RenderType FIRE_ADDITIVE = RenderType.create(
             "fire_vortex_additive",
             DefaultVertexFormat.NEW_ENTITY,
@@ -49,19 +49,19 @@ public class FlameVortexEffect extends ActiveEffect {
         float rotation = tick * 12.0f;
         float ageInTicks = tick;
 
-        // Render main fire spiral
+
         renderFireSpiral(poseStack, tesselator, rotation, ageInTicks);
 
-        // Render inner flames
+
         renderInnerFlames(poseStack, tesselator, rotation, ageInTicks);
 
-        // Render fire ribbons
+
         renderFireRibbons(poseStack, tesselator, rotation, ageInTicks);
 
-        // Render ember particles
+
         renderEmberSwirls(poseStack, tesselator, rotation, ageInTicks);
 
-        // Render core heat glow
+
         renderCoreGlow(poseStack, tesselator, ageInTicks);
 
         poseStack.popPose();
@@ -96,7 +96,7 @@ public class FlameVortexEffect extends ActiveEffect {
                 float radius2 = maxRadius * (nextHeightRatio * 0.6f + 0.4f);
 
 
-                // Spiral twist
+
                 float twist1 = heightRatio * 720.0f + (ageInTicks * 5.0f);
                 float twist2 = nextHeightRatio * 720.0f + (ageInTicks * 5.0f);
 
@@ -115,16 +115,16 @@ public class FlameVortexEffect extends ActiveEffect {
                     float x4 = Mth.cos(angle4 * Mth.DEG_TO_RAD) * radius2;
                     float z4 = Mth.sin(angle4 * Mth.DEG_TO_RAD) * radius2;
 
-                    // Orange at bottom, purple at top
+
                     int r, g, b;
                     if (heightRatio < 0.4f) {
-                        // Orange-red at bottom
+
                         float t = heightRatio / 0.4f;
                         r = 255;
                         g = (int)(100 + t * 50);
                         b = (int)(20 * (1.0f - t));
                     } else {
-                        // Purple at top
+
                         float t = (heightRatio - 0.4f) / 0.6f;
                         r = (int)(255 - t * 100);
                         g = (int)(150 - t * 100);
@@ -183,21 +183,21 @@ public class FlameVortexEffect extends ActiveEffect {
                 float y = t * maxHeight;
                 float z = Mth.sin(t * Mth.PI * 4 + ageInTicks * 0.3f) * 0.4f;
 
-                // Bright orange-yellow at bottom, dark purple at top
+
                 int r, g, b;
                 if (t < 0.3f) {
-                    // Bright orange-yellow
+
                     r = 255;
                     g = (int)(180 + Mth.sin(ageInTicks * 0.5f + flame) * 50);
                     b = 30;
                 } else if (t < 0.6f) {
-                    // Orange to magenta
+
                     float blend = (t - 0.3f) / 0.3f;
                     r = 255;
                     g = (int)(180 * (1.0f - blend) + 80 * blend);
                     b = (int)(30 + blend * 170);
                 } else {
-                    // Deep purple
+
                     r = (int)(200 - (t - 0.6f) * 50);
                     g = 50;
                     b = (int)(200 + (t - 0.6f) * 55);
@@ -280,15 +280,15 @@ public class FlameVortexEffect extends ActiveEffect {
                 float x2_outer = Mth.cos(angle2) * (radius2 + ribbonWidth);
                 float z2_outer = Mth.sin(angle2) * (radius2 + ribbonWidth);
 
-                // Alternating orange and purple ribbons
+
                 int r, g, b;
                 if (ribbon % 2 == 0) {
-                    // Bright orange with yellow tint
+
                     r = 255;
                     g = (int)(140 + Mth.sin(ageInTicks * 0.2f + heightRatio * 2) * 40);
                     b = 20;
                 } else {
-                    // Vibrant purple
+
                     r = (int)(200 + Mth.sin(ageInTicks * 0.2f + heightRatio * 2) * 30);
                     g = 60;
                     b = 255;
@@ -335,7 +335,7 @@ public class FlameVortexEffect extends ActiveEffect {
 
             float size = 0.15f * (1.0f - t * 0.5f);
 
-            // Glowing orange-yellow embers
+
             int r = 255;
             int g = (int)(200 - t * 100);
             int b = (int)(50 * (1.0f - t));
@@ -398,7 +398,7 @@ public class FlameVortexEffect extends ActiveEffect {
                 float x4 = Mth.cos(angle2 * Mth.DEG_TO_RAD) * radius2;
                 float z4 = Mth.sin(angle2 * Mth.DEG_TO_RAD) * radius2;
 
-                // Bright white-yellow core
+
                 int r = 255;
                 int g = (int)(250 - heightRatio * 50);
                 int b = (int)(200 - heightRatio * 180);

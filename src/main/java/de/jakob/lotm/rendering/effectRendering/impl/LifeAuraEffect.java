@@ -30,32 +30,32 @@ public class LifeAuraEffect extends ActiveEffect {
     public LifeAuraEffect(Location location, int maxDuration, boolean infinite) {
         super(location, maxDuration, infinite);
 
-        // Floating leaves
+
         for (int i = 0; i < 30; i++) {
             leaves.add(new FloatingLeaf());
         }
 
-        // Energy wisps
+
         for (int i = 0; i < 45; i++) {
             wisps.add(new EnergyWisp());
         }
 
-        // Growing vines
+
         for (int i = 0; i < 8; i++) {
             vines.add(new GrowthVine(i));
         }
 
-        // Golden orbs
+
         for (int i = 0; i < 12; i++) {
             goldenOrbs.add(new GoldenOrb());
         }
 
-        // Life particles
+
         for (int i = 0; i < 120; i++) {
             lifeParticles.add(new LifeParticle());
         }
 
-        // Radiant rings
+
         for (int i = 0; i < 5; i++) {
             rings.add(new RadiantRing(i));
         }
@@ -73,25 +73,25 @@ public class LifeAuraEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Calculate looping progress (0 to 1 and back to 0 smoothly)
+
         float loopProgress = (tick % CYCLE_DURATION) / CYCLE_DURATION;
 
-        // Render core energy sphere
+
         renderCoreEnergySphere(consumer, matrix, tick, loopProgress);
 
-        // Render radiant rings
+
         for (RadiantRing ring : rings) {
             ring.update(tick, loopProgress);
             renderRadiantRing(consumer, matrix, ring);
         }
 
-        // Render growth vines
+
         for (GrowthVine vine : vines) {
             vine.update(tick, loopProgress);
             renderGrowthVine(consumer, matrix, vine);
         }
 
-        // Render golden orbs
+
         for (GoldenOrb orb : goldenOrbs) {
             orb.update(tick, loopProgress);
             if (orb.alpha > 0.01f) {
@@ -99,7 +99,7 @@ public class LifeAuraEffect extends ActiveEffect {
             }
         }
 
-        // Render energy wisps
+
         for (EnergyWisp wisp : wisps) {
             wisp.update(tick, loopProgress);
             if (wisp.alpha > 0.01f) {
@@ -108,7 +108,7 @@ public class LifeAuraEffect extends ActiveEffect {
             }
         }
 
-        // Render floating leaves
+
         for (FloatingLeaf leaf : leaves) {
             leaf.update(tick, loopProgress);
             if (leaf.alpha > 0.01f) {
@@ -116,7 +116,7 @@ public class LifeAuraEffect extends ActiveEffect {
             }
         }
 
-        // Render life particles
+
         for (LifeParticle particle : lifeParticles) {
             particle.update(tick, loopProgress);
             if (particle.alpha > 0.01f) {
@@ -132,7 +132,7 @@ public class LifeAuraEffect extends ActiveEffect {
         int segments = 24;
         int rings = 12;
         
-        // Pulsing radius that loops smoothly
+
         float pulsePhase = Mth.sin(loopProgress * Mth.TWO_PI);
         float coreRadius = 0.6f + 0.2f * pulsePhase;
         float rotation = tick * 0.05f;
@@ -161,7 +161,7 @@ public class LifeAuraEffect extends ActiveEffect {
                 float y4 = Mth.cos(theta2) * coreRadius;
                 float z4 = Mth.sin(theta2) * Mth.sin(phi1) * coreRadius;
 
-                // Vibrant green-gold core
+
                 float heightFactor = (Mth.cos(theta1) + 1f) * 0.5f;
                 float r = 0.4f + 0.3f * heightFactor;
                 float g = 0.8f;
@@ -361,7 +361,7 @@ public class LifeAuraEffect extends ActiveEffect {
         }
 
         void update(float tick, float loopProgress) {
-            // Smooth loop for spawn/despawn
+
             float adjustedProgress = (loopProgress + spawnPhase) % 1f;
             float cycleFade = Mth.sin(adjustedProgress * Mth.PI);
             
@@ -444,7 +444,7 @@ public class LifeAuraEffect extends ActiveEffect {
         void update(float tick, float loopProgress) {
             float adjustedProgress = (loopProgress + phaseOffset) % 1f;
             
-            // Smooth growth cycle
+
             this.growthFactor = Mth.sin(adjustedProgress * Mth.PI);
             this.length = 3f * growthFactor;
             this.alpha = 0.8f * growthFactor;
@@ -561,12 +561,12 @@ public class LifeAuraEffect extends ActiveEffect {
         void update(float tick, float loopProgress) {
             float adjustedProgress = (loopProgress + phaseOffset) % 1f;
             
-            // Expanding and contracting ring
+
             this.radius = 1.5f + 2f * Mth.sin(adjustedProgress * Mth.PI);
             this.rotation = tick * 0.03f * (isGolden ? 1 : -1);
             this.waveOffset = tick * 0.1f;
             
-            // Fade in and out smoothly
+
             this.alpha = 0.5f * Mth.sin(adjustedProgress * Mth.PI);
         }
     }
