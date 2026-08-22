@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.RandomSource;
 import org.joml.Matrix4f;
@@ -18,8 +19,8 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
     private static final float SPAWN_RADIUS = 2.5f;
     private static final float FLOAT_SPEED = 0.02f;
 
-    public SefirahCastleParticlesEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 3);
+    public SefirahCastleParticlesEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         initializeCubes();
     }
 
@@ -71,7 +72,7 @@ public class SefirahCastleParticlesEffect extends ActiveEffect {
             cube.update(tick);
 
             // Translate to effect origin first
-            poseStack.translate(x, y, z);
+            poseStack.translate(getX(), getY(), getZ());
 
             // Then position the cube relative to origin
             poseStack.translate(cube.x, cube.y, cube.z);

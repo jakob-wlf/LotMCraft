@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.RandomSource;
 import org.joml.Matrix4f;
@@ -23,8 +24,8 @@ public class SefirahCastleEffect extends ActiveEffect {
     private static final float SPAWN_RADIUS = 3.5f;
     private static final float FLOAT_SPEED = 0.025f;
 
-    public SefirahCastleEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 4); // 80 ticks = 4 seconds
+    public SefirahCastleEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         initializeEffect();
     }
 
@@ -73,7 +74,7 @@ public class SefirahCastleEffect extends ActiveEffect {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         // Render solid transparent sphere shell
         renderSolidSphere(poseStack, tick, progress);

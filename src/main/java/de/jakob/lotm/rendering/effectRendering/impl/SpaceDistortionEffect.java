@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -24,8 +25,8 @@ public class SpaceDistortionEffect extends ActiveEffect {
     private final List<FloatingOrb> floatingOrbs = new ArrayList<>();
     private float rotation = 0f;
 
-    public SpaceDistortionEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 60); // 60 second duration
+    public SpaceDistortionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Initialize particles
         for (int i = 0; i < 150; i++) {
@@ -69,7 +70,7 @@ public class SpaceDistortionEffect extends ActiveEffect {
         rotation += 0.5f * tick;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         // Render pulsating core (larger)
         renderCore(poseStack, intensity, pulse, secondaryPulse);

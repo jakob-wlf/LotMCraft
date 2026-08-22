@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -31,8 +32,8 @@ public class LightOfHolinessEffect extends ActiveEffect {
     private static final float WHITE_G = 1.0f;
     private static final float WHITE_B = 1.0f;
 
-    public LightOfHolinessEffect(double x, double y, double z) {
-        super(x, y, z, 70); // Same duration - 70 ticks
+    public LightOfHolinessEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         this.currentTick = 0;
         this.beamProgress = 0f;
         this.expansionProgress = 0f;
@@ -61,7 +62,7 @@ public class LightOfHolinessEffect extends ActiveEffect {
         intensity *= (1f + 0.15f * Mth.sin(tick * 0.3f));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 

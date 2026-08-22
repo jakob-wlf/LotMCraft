@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -20,13 +21,12 @@ public class AbilityTheftEffect extends ActiveEffect {
     private final RandomSource random = RandomSource.create();
     private final List<ConquestParticle> conquestParticles = new ArrayList<>();
 
-    // Harmonized color palette - ethereal teal and deep purple
     private static final float[] TEAL_COLOR = {0.2f, 0.8f, 0.7f};      // Cyan-teal (51, 204, 178)
     private static final float[] PURPLE_COLOR = {0.4f, 0.2f, 0.7f};     // Deep purple (102, 51, 178)
     private static final float[] ACCENT_COLOR = {0.6f, 0.9f, 1.0f};    // Light cyan highlight
 
-    public AbilityTheftEffect(double x, double y, double z) {
-        super(x, y, z, 8);
+    public AbilityTheftEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         for (int i = 0; i < 150; i++) {
             conquestParticles.add(new ConquestParticle());
@@ -45,17 +45,14 @@ public class AbilityTheftEffect extends ActiveEffect {
         float pulseEffect = (float) (Math.sin(progress * Math.PI * 4) * 0.15 + 0.85);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
-        // Outer teal sphere with pulse
         renderSphere(poseStack, expansionProgress, dominanceIntensity * pulseEffect,
                 TEAL_COLOR[0], TEAL_COLOR[1], TEAL_COLOR[2], 3.8f, 2.4f, 0.5f);
 
-        // Inner purple core with inverse pulse
         renderSphere(poseStack, expansionProgress, dominanceIntensity * (2f - pulseEffect),
                 PURPLE_COLOR[0], PURPLE_COLOR[1], PURPLE_COLOR[2], 2.0f, 1.8f, 0.7f);
 
-        // Accent shimmer layer
         renderSphere(poseStack, expansionProgress, dominanceIntensity * 0.3f * pulseEffect,
                 ACCENT_COLOR[0], ACCENT_COLOR[1], ACCENT_COLOR[2], 2.8f, 2.0f, 0.3f);
 
@@ -133,17 +130,14 @@ public class AbilityTheftEffect extends ActiveEffect {
             float r, g, b;
 
             if (particle.particleType == 0) {
-                // Teal particles
                 r = TEAL_COLOR[0];
                 g = TEAL_COLOR[1];
                 b = TEAL_COLOR[2];
             } else if (particle.particleType == 1) {
-                // Purple particles
                 r = PURPLE_COLOR[0];
                 g = PURPLE_COLOR[1];
                 b = PURPLE_COLOR[2];
             } else {
-                // Accent particles
                 r = ACCENT_COLOR[0];
                 g = ACCENT_COLOR[1];
                 b = ACCENT_COLOR[2];
@@ -274,7 +268,6 @@ public class AbilityTheftEffect extends ActiveEffect {
                 return;
             }
 
-            // Orbital motion
             double currentRadius = Math.sqrt(pos.x * pos.x + pos.z * pos.z);
             double currentAngle = Math.atan2(pos.z, pos.x);
             double newAngle = currentAngle + orbitSpeed;
@@ -288,7 +281,6 @@ public class AbilityTheftEffect extends ActiveEffect {
             pos = pos.add(velocity.scale(expansion * 0.5).add(orbitalVelocity));
             velocity = velocity.add(pos.normalize().scale(-0.02));
 
-            // Pulsing alpha with fade in/out
             float fadeIn = Mth.clamp(progress * 4f, 0f, 1f);
             float fadeOut = Mth.clamp((1f - progress) * 2f, 0f, 1f);
             float pulse = (float) (Math.sin(globalProgress * Math.PI * 3 + lifetime * 0.1) * 0.2 + 0.8);

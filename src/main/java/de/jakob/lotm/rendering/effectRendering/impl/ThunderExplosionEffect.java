@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -24,8 +25,8 @@ public class ThunderExplosionEffect extends ActiveEffect {
     private final List<LightningChain> lightningChains = new ArrayList<>();
     private final List<EnergyParticle> energyParticles = new ArrayList<>();
 
-    public ThunderExplosionEffect(double x, double y, double z) {
-        super(x, y, z, 60); // 80 ticks = 4 seconds
+    public ThunderExplosionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Initialize lightning chains
         for (int i = 0; i < 32; i++) {
@@ -50,7 +51,7 @@ public class ThunderExplosionEffect extends ActiveEffect {
         flashIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         // Render all effect layers
         renderMainSphere(poseStack, expansionProgress, flashIntensity);

@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.justiciar;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -205,7 +206,7 @@ public class OrderProxyAbility extends SelectableAbility {
             }
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, casterLocation));
 
-        EffectManager.playEffect(EffectManager.Effect.PROHIBITION, pos.x, pos.y, pos.z, serverLevel);
+        EffectManager.playEffect(EffectIds.PROHIBITION, pos.x, pos.y, pos.z, serverLevel);
 
         broadcastToNearby(serverLevel, entity,
                 Component.translatable("ability.lotmcraft.order_proxy.prohibition_permanent", type.displayName)

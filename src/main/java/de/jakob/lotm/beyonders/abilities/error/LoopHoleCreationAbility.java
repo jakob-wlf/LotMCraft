@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.VirtualPersonaAbility;
 import de.jakob.lotm.events.ProhibitionHandler;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -60,7 +61,7 @@ public class LoopHoleCreationAbility extends Ability {
         UUID loopholeId = UUID.randomUUID();
 
         if(entity instanceof ServerPlayer serverPlayer) {
-            EffectManager.playEffect(EffectManager.Effect.LOOPHOLE, targetLoc.x, targetLoc.y, targetLoc.z, serverPlayer, entity);
+            EffectManager.playEffect(EffectIds.LOOPHOLE, targetLoc.x, targetLoc.y, targetLoc.z, serverPlayer, entity);
         }
 
         // Register the loophole
@@ -258,7 +259,7 @@ public class LoopHoleCreationAbility extends Ability {
 //        }
 //
 //        if(entity instanceof ServerPlayer serverPlayer)  {
-//            EffectManager.playEffect(EffectManager.Effect.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer);
+//            EffectManager.playEffect(EffectIds.ABILITY_THEFT, target.position().x, target.position().y + target.getEyeHeight(), target.position().z, serverPlayer);
 //        }
 //
 //        List<AbilityItem> stolenItems = new ArrayList<>();

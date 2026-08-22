@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,8 +15,8 @@ public class ProhibitionEffect extends ActiveEffect {
     private static final float MAX_RADIUS = 40f;
     private static final float HEIGHT = 6f;
 
-    public ProhibitionEffect(double x, double y, double z) {
-        super(x, y, z, 160); // 8 seconds total
+    public ProhibitionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ProhibitionEffect extends ActiveEffect {
         if (radius < 0.01f || alpha < 0.01f) return;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());

@@ -2,7 +2,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,7 +15,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HorrorAuraEffect extends ActiveMovableEffect {
+public class HorrorAuraEffect extends ActiveEffect {
 
     private final RandomSource random = RandomSource.create();
     private final List<DarknessLayer> layers = new ArrayList<>();

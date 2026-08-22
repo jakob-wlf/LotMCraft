@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -17,7 +18,6 @@ import java.util.List;
 public class AcidSwampEffect extends ActiveEffect {
 
     private static final float SWAMP_RADIUS = 15f;
-    // Base green colour components
     private static final float CR = 0.08f;
     private static final float CG = 0.55f;
     private static final float CB = 0.04f;
@@ -28,8 +28,8 @@ public class AcidSwampEffect extends ActiveEffect {
     private final List<SwampMist> mists = new ArrayList<>();
     private float intensity;
 
-    public AcidSwampEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 8);
+    public AcidSwampEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         for (int i = 0; i < 5; i++) {
             ripples.add(new RippleRing(i));
         }
@@ -84,7 +84,6 @@ public class AcidSwampEffect extends ActiveEffect {
         poseStack.popPose();
     }
 
-    /** Flat filled disk rendered as concentric annular rings with subtle wave distortion. */
     private void renderSwampFloor(VertexConsumer consumer, Matrix4f matrix, float tick) {
         int segments = 64;
         int rings = 12;
@@ -93,7 +92,6 @@ public class AcidSwampEffect extends ActiveEffect {
         for (int r = 0; r < rings; r++) {
             float innerR = (r / (float) rings) * SWAMP_RADIUS;
             float outerR = ((r + 1) / (float) rings) * SWAMP_RADIUS;
-            // Slightly alternate shading between rings for a murky, layered look
             float shade = (r % 2 == 0) ? 0.55f : 0.70f;
             float alpha = intensity * (0.50f + 0.10f * Mth.sin(tick * 0.04f + r * 0.5f));
             float distortAmt = 0.20f * Mth.sin(tick * 0.03f + r * 0.8f);
@@ -123,7 +121,6 @@ public class AcidSwampEffect extends ActiveEffect {
         }
     }
 
-    /** Bright glowing edge ring that pulses and turbulates. */
     private void renderBorderRing(VertexConsumer consumer, Matrix4f matrix, float tick) {
         int segments = 80;
         float ringHeight = 0.30f;
@@ -140,7 +137,6 @@ public class AcidSwampEffect extends ActiveEffect {
             float x2 = Mth.cos(angle2) * (SWAMP_RADIUS + t2);
             float z2 = Mth.sin(angle2) * (SWAMP_RADIUS + t2);
 
-            // Bright at ground, fades upward
             addVertex(consumer, matrix, x1, 0.05f,      z1, CR * 2f, CG * 2f, CB * 2f, borderAlpha);
             addVertex(consumer, matrix, x2, 0.05f,      z2, CR * 2f, CG * 2f, CB * 2f, borderAlpha);
             addVertex(consumer, matrix, x2, ringHeight, z2, CR,       CG,       CB,       borderAlpha * 0.2f);
@@ -148,7 +144,6 @@ public class AcidSwampEffect extends ActiveEffect {
         }
     }
 
-    /** Expanding ripple rings that scroll outward from the centre and fade. */
     private void renderRipple(VertexConsumer consumer, Matrix4f matrix, RippleRing ripple) {
         if (ripple.alpha <= 0.01f) return;
         int segments = 56;
@@ -175,7 +170,6 @@ public class AcidSwampEffect extends ActiveEffect {
         }
     }
 
-    /** Thin vertical wisps of green gas rising near the edge of the swamp. */
     private void renderMist(VertexConsumer consumer, Matrix4f matrix, SwampMist mist) {
         if (mist.alpha <= 0.01f) return;
         float halfW = 0.35f;

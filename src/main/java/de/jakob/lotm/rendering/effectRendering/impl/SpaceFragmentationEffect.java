@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -36,8 +37,8 @@ public class SpaceFragmentationEffect extends ActiveEffect {
     private static final float EFFECT_RADIUS = 50.0f;
     private static final int DENSITY_MULTIPLIER = 4; // Massive density increase
 
-    public SpaceFragmentationEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 25);
+    public SpaceFragmentationEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Pre-calculate vortex geometry - multiple dense layers
         cachedVortexGeometry = calculateVortexGeometry(8, 48, 40);
@@ -84,7 +85,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
     @Override
     protected void render(PoseStack poseStack, float tick) {
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         float progress = getProgress();
         float intensity = calculateIntensity(progress);

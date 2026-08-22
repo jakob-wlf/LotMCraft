@@ -14,6 +14,7 @@ import de.jakob.lotm.network.packets.toClient.OpenHistoricalVoidBorrowingScreenP
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.network.packets.toClient.SyncHistoricalVoidSummoningCountPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
@@ -391,7 +392,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         );
 
         player.getInventory().add(item);
-        EffectManager.playEffect(EffectManager.Effect.HISTORICAL_VOID_SUMMONING, player.getX(), player.getY(), player.getZ(), level);
+        EffectManager.playEffect(EffectIds.HISTORICAL_VOID_SUMMONING, player.getX(), player.getY(), player.getZ(), level);
 
         incrementSummonedCount(player, summonTime, SummonType.ITEM, null);
 
@@ -689,7 +690,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             boolean spawned = level.addFreshEntity(entity);
 
             if(spawned) {
-                EffectManager.playEffect(EffectManager.Effect.HISTORICAL_VOID_SUMMONING, entity.getX(), entity.getY(), entity.getZ(), level);
+                EffectManager.playEffect(EffectIds.HISTORICAL_VOID_SUMMONING, entity.getX(), entity.getY(), entity.getZ(), level);
                 final UUID entityUUID = entity.getUUID();
 
                 // Track this summon

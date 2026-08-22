@@ -2,7 +2,8 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.jakob.lotm.rendering.effectRendering.ActiveDirectionalEffect;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -10,7 +11,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
-public class HolyBeamEffect extends ActiveDirectionalEffect {
+public class HolyBeamEffect extends ActiveEffect {
 
     private static final float[] WHITE         = {1f, 1f, 1f};
     private static final float[] YELLOW        = {1f, 0.95f, 0.5f};
@@ -25,12 +26,11 @@ public class HolyBeamEffect extends ActiveDirectionalEffect {
     private final Vec3 perp1;
     private final Vec3 perp2;
 
-    public HolyBeamEffect(double startX, double startY, double startZ,
-                          double endX, double endY, double endZ, int duration) {
-        super(startX, startY, startZ, endX, endY, endZ, duration);
+    public HolyBeamEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        perp1 = new Vec3(-direction.z, 0, direction.x).normalize();
-        perp2 = direction.cross(perp1).normalize();
+        perp1 = new Vec3(-getDirection().z, 0, getDirection().x).normalize();
+        perp2 = getDirection().cross(perp1).normalize();
 
         for (int i = 0; i < RING_SIDES; i++) {
             float angle = (float) (i * Math.PI * 2 / RING_SIDES);
@@ -78,13 +78,13 @@ public class HolyBeamEffect extends ActiveDirectionalEffect {
             float t1 = step / (float) BEAM_STEPS;
             float t2 = (step + 1) / (float) BEAM_STEPS;
 
-            float ax1 = (float) (startX + (endX - startX) * t1);
-            float ay1 = (float) (startY + (endY - startY) * t1);
-            float az1 = (float) (startZ + (endZ - startZ) * t1);
+            float ax1 = (float) (getStartPos().x + (getEndPos().x - getStartPos().x) * t1);
+            float ay1 = (float) (getStartPos().y + (getEndPos().y - getStartPos().y) * t1);
+            float az1 = (float) (getStartPos().z + (getEndPos().z - getStartPos().z) * t1);
 
-            float ax2 = (float) (startX + (endX - startX) * t2);
-            float ay2 = (float) (startY + (endY - startY) * t2);
-            float az2 = (float) (startZ + (endZ - startZ) * t2);
+            float ax2 = (float) (getStartPos().x + (getEndPos().x - getStartPos().x) * t2);
+            float ay2 = (float) (getStartPos().y + (getEndPos().y - getStartPos().y) * t2);
+            float az2 = (float) (getStartPos().z + (getEndPos().z - getStartPos().z) * t2);
 
             for (int s = 0; s < RING_SIDES; s++) {
                 int sNext = (s + 1) % RING_SIDES;

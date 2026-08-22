@@ -7,6 +7,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -90,8 +91,8 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         entity.teleportTo(historicalVoid, entity.getX(), findSafeY(historicalVoid, (int) entity.getX(), (int) entity.getZ()), entity.getZ(), Set.of(), entity.getYRot(), entity.getXRot());
         entity.playSound(SoundEvents.ENDER_CHEST_OPEN);
 
-        EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, playerLocation.getPosition().x(), playerLocation.getPosition().y(), playerLocation.getPosition().z(), (ServerLevel) level);
-        EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, entity.position().x(), entity.position().y(), entity.position().z(), (ServerLevel) entity.level());
+        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, playerLocation.getPosition().x(), playerLocation.getPosition().y(), playerLocation.getPosition().z(), (ServerLevel) level);
+        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, entity.position().x(), entity.position().y(), entity.position().z(), (ServerLevel) entity.level());
 
     }
 
@@ -126,7 +127,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         Location returnLocation = getReturnPosition(entity);
         entity.teleportTo((ServerLevel) returnLocation.getLevel(), returnLocation.getPosition().x(), returnLocation.getPosition().y(), returnLocation.getPosition().z(), Set.of(), entity.getYRot(), entity.getXRot());
         entity.playSound(SoundEvents.ENDER_CHEST_CLOSE);
-        EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, returnLocation.getPosition().x(), returnLocation.getPosition().y(), returnLocation.getPosition().z(), (ServerLevel) returnLocation.getLevel());
+        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x(), returnLocation.getPosition().y(), returnLocation.getPosition().z(), (ServerLevel) returnLocation.getLevel());
 
         locations.remove(entity.getUUID());
     }

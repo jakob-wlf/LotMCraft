@@ -2,7 +2,8 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.jakob.lotm.rendering.effectRendering.ActiveDirectionalEffect;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -14,7 +15,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FateSiphoningEffect extends ActiveDirectionalEffect {
+public class FateSiphoningEffect extends ActiveEffect {
 
     private final RandomSource random = RandomSource.create();
     private final List<FateThread> fateThreads = new ArrayList<>();
@@ -27,9 +28,8 @@ public class FateSiphoningEffect extends ActiveDirectionalEffect {
     private static final float[] PURPLE_COLOR = {0.6f, 0.2f, 0.8f}; // Purple
     private static final float[] DARK_PURPLE_COLOR = {0.4f, 0.1f, 0.6f}; // Dark purple
 
-    public FateSiphoningEffect(double startX, double startY, double startZ,
-                               double endX, double endY, double endZ, int duration) {
-        super(startX, startY, startZ, endX, endY, endZ, duration);
+    public FateSiphoningEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Create multiple fate threads that spiral from target to caster
         for (int i = 0; i < 8; i++) {
@@ -121,13 +121,13 @@ public class FateSiphoningEffect extends ActiveDirectionalEffect {
 
                 // Purple aura at target
                 addVertex(consumer, matrix, 
-                    (float) endX, (float) (endY + 1f), (float) endZ,
+                    (float) getEndPos().x, (float) (getEndPos().y + 1f), (float) getEndPos().z,
                     PURPLE_COLOR[0], PURPLE_COLOR[1], PURPLE_COLOR[2], layerAlpha * 0.5f);
                 addVertex(consumer, matrix,
-                    (float) (endX + x1), (float) (endY + 0.2f + wave), (float) (endZ + z1),
+                    (float) (getEndPos().x + x1), (float) (getEndPos().y + 0.2f + wave), (float) (getEndPos().z + z1),
                     DARK_PURPLE_COLOR[0], DARK_PURPLE_COLOR[1], DARK_PURPLE_COLOR[2], layerAlpha);
                 addVertex(consumer, matrix,
-                    (float) (endX + x2), (float) (endY + 0.2f + wave), (float) (endZ + z2),
+                    (float) (getEndPos().x + x2), (float) (getEndPos().y + 0.2f + wave), (float) (getEndPos().z + z2),
                     DARK_PURPLE_COLOR[0], DARK_PURPLE_COLOR[1], DARK_PURPLE_COLOR[2], layerAlpha);
             }
         }
@@ -199,13 +199,13 @@ public class FateSiphoningEffect extends ActiveDirectionalEffect {
 
             // Golden aura at caster
             addVertex(consumer, matrix,
-                (float) startX, (float) (startY + 1f + pulse), (float) startZ,
+                (float) getStartPos().x, (float) (getStartPos().y + 1f + pulse), (float) getStartPos().z,
                 GOLD_COLOR[0], GOLD_COLOR[1], GOLD_COLOR[2], auraIntensity * 0.6f);
             addVertex(consumer, matrix,
-                (float) (startX + x1), (float) (startY + 0.1f), (float) (startZ + z1),
+                (float) (getStartPos().x + x1), (float) (getStartPos().y + 0.1f), (float) (getStartPos().z + z1),
                 GOLD_COLOR[0], GOLD_COLOR[1], GOLD_COLOR[2], auraIntensity * 0.4f);
             addVertex(consumer, matrix,
-                (float) (startX + x2), (float) (startY + 0.1f), (float) (startZ + z2),
+                (float) (getStartPos().x + x2), (float) (getStartPos().y + 0.1f), (float) (getStartPos().z + z2),
                 GOLD_COLOR[0], GOLD_COLOR[1], GOLD_COLOR[2], auraIntensity * 0.4f);
         }
     }
@@ -277,15 +277,15 @@ public class FateSiphoningEffect extends ActiveDirectionalEffect {
                 
                 // Start from target (end) and go to caster (start)
                 Vec3 basePos = new Vec3(
-                    endX + (startX - endX) * t,
-                    endY + (startY - endY) * t,
-                    endZ + (startZ - endZ) * t
+                    getEndPos().x + (getStartPos().x - getEndPos().x) * t,
+                    getEndPos().y + (getStartPos().y - getEndPos().y) * t,
+                    getEndPos().z + (getStartPos().z - getEndPos().z) * t
                 );
 
                 // Add spiral motion
                 float spiralAngle = angleOffset + t * Mth.TWO_PI * 3f;
-                Vec3 perpendicular1 = new Vec3(-direction.z, 0, direction.x).normalize();
-                Vec3 perpendicular2 = direction.cross(perpendicular1).normalize();
+                Vec3 perpendicular1 = new Vec3(-getDirection().z, 0, getDirection().x).normalize();
+                Vec3 perpendicular2 = getDirection().cross(perpendicular1).normalize();
 
                 float spiralX = Mth.cos(spiralAngle) * spiralRadius * (1f - t * 0.5f);
                 float spiralY = Mth.sin(spiralAngle) * spiralRadius * (1f - t * 0.5f);
@@ -422,9 +422,9 @@ public class FateSiphoningEffect extends ActiveDirectionalEffect {
             float t = travelProgress;
             float bob = Mth.sin(tick * 0.2f + bobOffset) * 0.3f;
 
-            this.x = (float) (endX + (startX - endX) * t);
-            this.y = (float) (endY + (startY - endY) * t + bob);
-            this.z = (float) (endZ + (startZ - endZ) * t);
+            this.x = (float) (getEndPos().x + (getStartPos().x - getEndPos().x) * t);
+            this.y = (float) (getEndPos().y + (getStartPos().y - getEndPos().y) * t + bob);
+            this.z = (float) (getEndPos().z + (getStartPos().z - getEndPos().z) * t);
 
             // Fade
             if (t < 0.15f) {

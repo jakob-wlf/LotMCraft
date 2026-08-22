@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -26,8 +27,8 @@ public class ConceptualTheftEffect extends ActiveEffect {
     private static final float[] DRAIN_COLOR = {0.25f, 0.1f, 0.4f};      // Darker purple
     private static final float[] ESSENCE_COLOR = {0.7f, 0.5f, 0.9f};     // Light purple glow
 
-    public ConceptualTheftEffect(double x, double y, double z) {
-        super(x, y, z, 30);
+    public ConceptualTheftEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Create concept fragments that represent stolen abilities
         for (int i = 0; i < 50; i++) {
@@ -50,7 +51,7 @@ public class ConceptualTheftEffect extends ActiveEffect {
         float intensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         // Render the central void - where concepts are being absorbed
         renderCentralVoid(poseStack, progress, intensity);

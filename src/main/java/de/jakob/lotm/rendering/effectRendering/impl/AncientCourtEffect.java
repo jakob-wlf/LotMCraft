@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -17,8 +18,8 @@ public class AncientCourtEffect extends ActiveEffect {
     private static final float GOLD_R = 1.0f, GOLD_G = 0.80f, GOLD_B = 0.10f;
     private static final float WHITE_R = 1.0f, WHITE_G = 1.0f, WHITE_B = 0.85f;
 
-    public AncientCourtEffect(double x, double y, double z) {
-        super(x, y, z, 120); // 6 seconds — entity re-fires every 5s for overlap
+    public AncientCourtEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
     }
 
     @Override
@@ -39,7 +40,7 @@ public class AncientCourtEffect extends ActiveEffect {
         if (alpha < 0.01f) return;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
         VertexConsumer consumer = buf.getBuffer(RenderType.lightning());

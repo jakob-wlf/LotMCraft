@@ -21,7 +21,8 @@ import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.beyonders.quest.Quest;
 import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
-import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
+import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.data.ClientSpiritCache;
@@ -285,42 +286,27 @@ public class ClientHandler {
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
     }
 
-    public static void addEffect(int index, double x, double y, double z, int entityId) {
-        if (entityId == AddEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveEffect(index, x, y, z);
-        } else {
-            VFXRenderer.addActiveEffect(index, x, y, z, entityId);
+    public static void addEffect(AddEffectPacket packet) {
+        LivingEntity entity = null;
+        if (packet.entityId() != AddEffectPacket.NO_ENTITY && Minecraft.getInstance().level != null) {
+            var raw = Minecraft.getInstance().level.getEntity(packet.entityId());
+            if (raw instanceof LivingEntity le) entity = le;
         }
+
+        Integer duration = packet.duration() == AddEffectPacket.NO_DURATION_OVERRIDE ? null : packet.duration();
+        Boolean infinite = packet.infiniteOverridden() ? packet.infinite() : null;
+        EffectParams overrides = new EffectParams(duration, infinite, packet.params());
+
+        VFXRenderer.addActiveEffect(packet.effectId(), packet.index(),
+                packet.x(), packet.y(), packet.z(), entity, packet.followEntity(), overrides);
     }
 
-    public static void addDirectionalEffect(int index,
-                                            double startX, double startY, double startZ,
-                                            double endX, double endY, double endZ,
-                                            int duration, int entityId) {
-        if (entityId == AddDirectionalEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
-        } else {
-            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration, entityId);
-        }
+    public static void updateEffectPosition(UUID effectId, double x, double y, double z) {
+        VFXRenderer.updateEffectPosition(effectId, x, y, z);
     }
 
-    public static void addMovableEffect(UUID effectId, int index,
-                                        double x, double y, double z,
-                                        int duration, boolean infinite,
-                                        int entityId) {
-        if (entityId == AddMovableEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
-        } else {
-            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite, entityId);
-        }
-    }
-
-    public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
-        VFXRenderer.updateMovableEffectPosition(effectId, x, y, z);
-    }
-
-    public static void removeMovableEffect(UUID effectId) {
-        VFXRenderer.removeMovableEffect(effectId);
+    public static void cancelEffect(UUID effectId) {
+        VFXRenderer.cancelEffect(effectId);
     }
 
     public static void cancelEffectsNear(double x, double y, double z, double radius) {

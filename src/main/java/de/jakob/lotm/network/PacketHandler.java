@@ -190,12 +190,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                AddDirectionalEffectPacket.TYPE,
-                AddDirectionalEffectPacket.STREAM_CODEC,
-                AddDirectionalEffectPacket::handle
-        );
-
-        registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
                 OpenCoordinateScreenPacket.CODEC,
                 OpenCoordinateScreenPacket::handle
@@ -388,9 +382,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                RemoveMovableEffectPacket.TYPE,
-                RemoveMovableEffectPacket.STREAM_CODEC,
-                RemoveMovableEffectPacket::handle
+                CancelEffectPacket.TYPE,
+                CancelEffectPacket.STREAM_CODEC,
+                CancelEffectPacket::handle
         );
 
         registrar.playToClient(
@@ -400,9 +394,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                UpdateMovableEffectPositionPacket.TYPE,
-                UpdateMovableEffectPositionPacket.STREAM_CODEC,
-                UpdateMovableEffectPositionPacket::handle
+                UpdateEffectPositionPacket.TYPE,
+                UpdateEffectPositionPacket.STREAM_CODEC,
+                UpdateEffectPositionPacket::handle
         );
 
         registrar.playToClient(
@@ -415,13 +409,6 @@ public class PacketHandler {
                 HotGroundEffectPacket.TYPE,
                 HotGroundEffectPacket.STREAM_CODEC,
                 HotGroundEffectPacket::handle
-        );
-
-
-        registrar.playToClient(
-                AddMovableEffectPacket.TYPE,
-                AddMovableEffectPacket.STREAM_CODEC,
-                AddMovableEffectPacket::handle
         );
 
         registrar.playToClient(

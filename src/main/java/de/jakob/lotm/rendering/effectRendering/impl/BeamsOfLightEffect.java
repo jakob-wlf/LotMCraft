@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -37,7 +36,7 @@ import org.joml.Vector3f;
  *       wherever they overlap.</li>
  * </ol>
  */
-public class BeamsOfLightEffect extends ActiveMovableEffect {
+public class BeamsOfLightEffect extends ActiveEffect  {
 
     private static int LOOP_PERIOD = 120;
 
@@ -72,9 +71,9 @@ public class BeamsOfLightEffect extends ActiveMovableEffect {
 
     // ─────────────────────────────────────────────────────────────────────────
 
-    public BeamsOfLightEffect(Location location, int duration) {
+    public BeamsOfLightEffect(Location location, int duration, boolean infinite) {
         // Infinite duration — caller controls lifetime via cancel().
-        super(location, duration);
+        super(location, duration, infinite);
         LOOP_PERIOD = duration;
         bakeBeams();
     }

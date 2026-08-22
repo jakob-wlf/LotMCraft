@@ -8,6 +8,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.PlayerLeftClickWhileSummonSelfPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -73,7 +74,7 @@ public class HistoricalVoidSummonSelfAbility extends Ability {
         avatar.setPos(avatarPos);
         avatar.setNoGravity(true);
         level.addFreshEntity(avatar);
-        EffectManager.playEffect(EffectManager.Effect.HISTORICAL_VOID_SUMMONING, avatar.getX(), avatar.getY(), avatar.getZ(), (ServerLevel) level);
+        EffectManager.playEffect(EffectIds.HISTORICAL_VOID_SUMMONING, avatar.getX(), avatar.getY(), avatar.getZ(), (ServerLevel) level);
 
         long currentTime = System.currentTimeMillis();
 
@@ -81,7 +82,7 @@ public class HistoricalVoidSummonSelfAbility extends Ability {
                 , () -> {
             entity.teleportTo((ServerLevel) avatar.level(), avatar.getX(), avatar.getY(), avatar.getZ(), Set.of(), avatar.getYRot(), avatar.getXRot());
             avatar.discard();
-            EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, entity.getX(), entity.getY(), entity.getZ(), (ServerLevel) level);
+            EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, entity.getX(), entity.getY(), entity.getZ(), (ServerLevel) level);
             entity.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).hasSummonedSelf = true;
             entity.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedSelfMillis = currentTime;
         });
@@ -93,7 +94,7 @@ public class HistoricalVoidSummonSelfAbility extends Ability {
 
             entity.teleportTo(historicalVoid, returnLocation.getPosition().x(), HistoricalVoidHidingAbility.findSafeY(historicalVoid, (int) returnLocation.getPosition().x(), (int) returnLocation.getPosition().z()), returnLocation.getPosition().z(), Set.of(), entity.getYRot(), entity.getXRot());
             entity.playSound(SoundEvents.ENDER_CHEST_OPEN);
-            EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, entity.getX(), entity.getY(), entity.getZ(), (ServerLevel) level);
+            EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, entity.getX(), entity.getY(), entity.getZ(), (ServerLevel) level);
 
             entity.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).hasSummonedSelf = false;
             entity.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedSelfMillis = 0;

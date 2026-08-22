@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -25,8 +26,8 @@ public class CollapseEffect extends ActiveEffect {
     private final List<Particle> particles = new ArrayList<>();
     private final List<CrushingWave> crushingWaves = new ArrayList<>();
 
-    public CollapseEffect(double x, double y, double z) {
-        super(x, y, z, 70); // 3.5 seconds of absolute dominance
+    public CollapseEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Initialize dominance chains
         for (int i = 0; i < 40; i++) {
@@ -56,7 +57,7 @@ public class CollapseEffect extends ActiveEffect {
         dominanceIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         // Render all effect layers - from core to outer elements
         renderCore(poseStack, expansionProgress, dominanceIntensity);

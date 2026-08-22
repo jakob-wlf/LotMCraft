@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
@@ -131,7 +132,7 @@ public class RitualMagicAreEffect implements RitualResultHandler {
                 }
             }
             case "cleanse" -> {
-                EffectManager.playEffect(EffectManager.Effect.SPIRITUAL_BAPTISM, target.getX(), target.getY(), target.getZ(), source.serverLevel());
+                EffectManager.playEffect(EffectIds.SPIRITUAL_BAPTISM, target.getX(), target.getY(), target.getZ(), source.serverLevel());
                 target.removeAllEffects();
                 target.setRemainingFireTicks(0);
                 target.setAirSupply(target.getMaxAirSupply());

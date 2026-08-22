@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -25,8 +26,8 @@ public class HolyLightSmallEffect extends ActiveEffect {
     private static final float GOLD_G = 0.6f;  // Reduced from 0.75
     private static final float GOLD_B = 0.05f; // Reduced from 0.15
 
-    public HolyLightSmallEffect(double x, double y, double z) {
-        super(x, y, z, 70); // 6 seconds
+    public HolyLightSmallEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         this.currentTick = 0;
         this.beamProgress = 0f;
         this.expansionProgress = 0f;
@@ -55,7 +56,7 @@ public class HolyLightSmallEffect extends ActiveEffect {
         intensity *= (1f + 0.1f * Mth.sin(tick * 0.25f));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 

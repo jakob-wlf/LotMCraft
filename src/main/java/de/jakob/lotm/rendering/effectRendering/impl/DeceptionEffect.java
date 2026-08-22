@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -22,8 +23,8 @@ public class DeceptionEffect extends ActiveEffect {
 
     private static final float MAX_CIRCLE_RADIUS = 8f;
 
-    public DeceptionEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 4); // 4 seconds duration
+    public DeceptionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Create overlapping circles with different colors and timings
         circles.add(new DeceptionCircle(0.2f, 0.4f, 0.8f, 0f, 0.8f)); // Blue
@@ -46,7 +47,7 @@ public class DeceptionEffect extends ActiveEffect {
         float progress = tick / maxDuration;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
@@ -147,9 +148,9 @@ public class DeceptionEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-            cameraPos.x - (this.x + x),
-            cameraPos.y - (this.y + y),
-            cameraPos.z - (this.z + z)
+            cameraPos.x - (this.location.getX() + x),
+            cameraPos.y - (this.location.getY() + y),
+            cameraPos.z - (this.location.getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);

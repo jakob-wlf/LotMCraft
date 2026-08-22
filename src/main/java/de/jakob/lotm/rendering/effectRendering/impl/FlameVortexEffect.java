@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderStateShard;
@@ -16,8 +17,8 @@ import org.joml.Matrix4f;
 public class FlameVortexEffect extends ActiveEffect {
     private static final ResourceLocation FLAME_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/netherrack.png");
 
-    public FlameVortexEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 6);
+    public FlameVortexEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
     }
 
     // Custom additive render type for fire effect
@@ -41,7 +42,7 @@ public class FlameVortexEffect extends ActiveEffect {
     @Override
     protected void render(PoseStack poseStack, float tick) {
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         Tesselator tesselator = Tesselator.getInstance();
 

@@ -2,8 +2,8 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -60,7 +60,7 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         Location loc = new Location(entity.position(), level);
-        UUID effectId = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.SPACE_TEAR, loc, 20 * 10, false, level);
+        UUID effectId = EffectManager.playEffect(EffectIds.SPACE_TEAR, loc.getX(), loc.getY(), loc.getZ(), level, entity);
 
         AtomicInteger ticks = new AtomicInteger();
 
@@ -71,7 +71,11 @@ public class SpaceTimeStormAbility extends SelectableAbility {
             ticks.addAndGet(1);
 
             loc.setPosition(target);
-            MovableEffectManager.updateEffectPosition(effectId, loc, level);
+            if(entity.level() != level) {
+                EffectManager.cancelEffect(effectId, level);
+                return;
+            }
+            EffectManager.updateEffectPosition(effectId, loc.getX(), loc.getY(), loc.getZ(), level);
 
             level.playSound(null, BlockPos.containing(target), SoundEvents.WITHER_SHOOT, SoundSource.AMBIENT, 1.5f, 0.75f + random.nextFloat() * 0.5f);
 
@@ -93,7 +97,7 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         Vec3 center = AbilityUtil.getTargetLocation(entity, 60*(int) multiplier(entity), 3);
 
-        EffectManager.playEffect(EffectManager.Effect.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel, entity);
+        EffectManager.playEffect(EffectIds.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel, entity);
 
         serverLevel.playSound(null, BlockPos.containing(center), SoundEvents.WITHER_SPAWN, SoundSource.AMBIENT, 1.5f, 0.75f + random.nextFloat() * 0.5f);
 

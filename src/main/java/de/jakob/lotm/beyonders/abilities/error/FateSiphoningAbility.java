@@ -4,7 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.events.ProhibitionHandler;
-import de.jakob.lotm.rendering.effectRendering.DirectionalEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -79,11 +80,10 @@ public class FateSiphoningAbility extends Ability {
             return;
         }
 
-        DirectionalEffectManager.playEffect(DirectionalEffectManager.DirectionalEffect.FATE_SIPHONING, entity.getEyePosition().x, entity.getEyePosition().y, entity.getEyePosition().z,
+        EffectManager.playDirectionalEffect(EffectIds.FATE_SIPHONING,
+                entity.getEyePosition().x, entity.getEyePosition().y, entity.getEyePosition().z,
                 target.getX(), target.getY() + target.getEyeHeight() * 0.5, target.getZ(),
-                40,
-                serverLevel,
-                entity);
+                40, serverLevel, entity);
 
         linkedEntities.put(entity.getUUID(), target.getUUID());
         ServerScheduler.scheduleDelayed((int) (20 * 7*multiplier(entity)), () -> linkedEntities.remove(entity.getUUID()));

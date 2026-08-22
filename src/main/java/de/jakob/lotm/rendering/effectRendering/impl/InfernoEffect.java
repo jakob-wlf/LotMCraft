@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -26,8 +27,8 @@ public class InfernoEffect extends ActiveEffect {
     private final List<FireWave> fireWaves = new ArrayList<>();
     private final List<FlameWisp> flameWisps = new ArrayList<>();
 
-    public InfernoEffect(double x, double y, double z) {
-        super(x, y, z, 120); // 6 seconds (120 ticks at 20 tps)
+    public InfernoEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Initialize flame spirals - the main body of the vortex
         for (int i = 0; i < 80; i++) {
@@ -62,7 +63,7 @@ public class InfernoEffect extends ActiveEffect {
         intensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         // Render all layers of the fire vortex - reordered for better depth
         renderGroundFire(poseStack, vortexProgress, intensity);

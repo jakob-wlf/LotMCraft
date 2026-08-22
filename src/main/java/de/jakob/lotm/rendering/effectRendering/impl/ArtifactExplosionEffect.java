@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -64,8 +65,8 @@ public class ArtifactExplosionEffect extends ActiveEffect {
 
     // ─────────────────────────────────────────────────────────────────────────
 
-    public ArtifactExplosionEffect(double x, double y, double z) {
-        super(x, y, z, 90); // ~3.5 s — extra tail for smoke to clear
+    public ArtifactExplosionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         bakeParticles();
     }
 
@@ -160,7 +161,7 @@ public class ArtifactExplosionEffect extends ActiveEffect {
         Vector3f up    = new Vector3f(0f, 1f, 0f).rotate(camRot);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
         Matrix4f m = poseStack.last().pose();
 
         RenderSystem.depthMask(false);

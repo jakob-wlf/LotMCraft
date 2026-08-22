@@ -10,6 +10,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -209,7 +210,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1f, 1f);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1f, 1f);
 
-        EffectManager.playEffect(EffectManager.Effect.ROTATING_RINGS, targetLoc.x, targetLoc.y, targetLoc.z, level);
+        EffectManager.playEffect(EffectIds.ROTATING_RINGS, targetLoc.x, targetLoc.y, targetLoc.z, level);
 
         sealedEntities.add(target.getUUID());
 

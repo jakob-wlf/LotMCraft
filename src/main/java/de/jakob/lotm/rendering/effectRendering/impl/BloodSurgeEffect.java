@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -28,8 +29,8 @@ public class BloodSurgeEffect extends ActiveEffect {
     private final List<BloodDroplet> droplets = new ArrayList<>();
     private final List<RuneRing>    runeRings = new ArrayList<>();
 
-    public BloodSurgeEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 8);
+    public BloodSurgeEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         for (int i = 0; i < 220; i++) droplets.add(new BloodDroplet());
         for (int i = 0; i < 5;   i++) runeRings.add(new RuneRing(i));
@@ -45,7 +46,7 @@ public class BloodSurgeEffect extends ActiveEffect {
                 : (progress > 0.75f ? 1f - (progress - 0.75f) / 0.25f : 1f);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource buf = Minecraft.getInstance().renderBuffers().bufferSource();
         VertexConsumer vc = buf.getBuffer(RenderType.lightning());
@@ -232,9 +233,9 @@ public class BloodSurgeEffect extends ActiveEffect {
 
             float ex = d.ex, ey = d.ey, ez = d.ez;
             Vec3 toCamera = new Vec3(
-                    cam.x - (x + ex),
-                    cam.y - (y + ey),
-                    cam.z - (z + ez)).normalize();
+                    cam.x - (getX() + ex),
+                    cam.y - (getY() + ey),
+                    cam.z - (getZ() + ez)).normalize();
 
             Vec3 up    = new Vec3(0, 1, 0);
             Vec3 right = toCamera.cross(up).normalize().scale(d.size);

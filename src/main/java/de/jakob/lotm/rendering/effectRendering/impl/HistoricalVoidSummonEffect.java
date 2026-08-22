@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.RandomSource;
 import org.joml.Matrix4f;
@@ -21,10 +22,9 @@ public class HistoricalVoidSummonEffect extends ActiveEffect {
     private static final int FOG_LAYER_COUNT = 14;
     private static final float SPAWN_RADIUS = 2.2f;
     private static final float SHARD_SIZE = 0.09f;
-    private static final int DURATION_TICKS = (int) (20 * 1.5f);
 
-    public HistoricalVoidSummonEffect(double x, double y, double z) {
-        super(x, y, z, DURATION_TICKS);
+    public HistoricalVoidSummonEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         initializeShards();
         initializeFog();
     }
@@ -113,7 +113,7 @@ public class HistoricalVoidSummonEffect extends ActiveEffect {
 
             fog.update(tick);
 
-            poseStack.translate(x, y, z);
+            poseStack.translate(getX(), getY(), getZ());
             poseStack.translate(fog.x, fog.y, fog.z);
 
             poseStack.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(tick * 0.6f + fog.phaseOffset * 20f), 0, 1, 0));
@@ -168,7 +168,7 @@ public class HistoricalVoidSummonEffect extends ActiveEffect {
 
             shard.update(tick, progress);
 
-            poseStack.translate(x, y, z);
+            poseStack.translate(getX(), getY(), getZ());
             poseStack.translate(shard.x, shard.y, shard.z);
 
             poseStack.mulPose(new Quaternionf().rotationAxis((float) Math.toRadians(shard.rotation), 0, 1, 0));

@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -182,7 +183,7 @@ public class NationOfTheDeadAbility extends Ability {
         level.playSound(null, entity.blockPosition(),
                 SoundEvents.SCULK_SHRIEKER_SHRIEK, SoundSource.PLAYERS, 2.5f, 0.50f);
 
-        EffectManager.playEffect(EffectManager.Effect.NATION_OF_THE_DEAD, center.x, center.y, center.z, serverLevel, entity);
+        EffectManager.playEffect(EffectIds.NATION_OF_THE_DEAD, center.x, center.y, center.z, serverLevel, entity);
 
         List<UUID> subordinateMobs = new ArrayList<>();
         ActiveDomain domain = new ActiveDomain(entity.getUUID(), center, serverLevel, subordinateMobs);

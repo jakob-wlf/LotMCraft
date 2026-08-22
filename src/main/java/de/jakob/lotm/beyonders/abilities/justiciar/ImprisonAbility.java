@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.justiciar;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -109,7 +110,7 @@ public class ImprisonAbility extends Ability {
         UUID effectTaskId = ServerScheduler.scheduleRepeating(0, 100, duration, () -> {
             Entity e = serverLevel.getEntity(targetId);
             if (!(e instanceof LivingEntity t) || !t.isAlive()) return;
-            EffectManager.playEffect(EffectManager.Effect.IMPRISON, t.getX(), t.getY() + .3, t.getZ(), serverLevel);
+            EffectManager.playEffect(EffectIds.IMPRISON, t.getX(), t.getY() + .3, t.getZ(), serverLevel);
         }, serverLevel, () -> IMPRISONED.contains(targetId));
 
         UUID drainTaskId = ServerScheduler.scheduleRepeating(80, 80, duration, () -> {
@@ -130,7 +131,7 @@ public class ImprisonAbility extends Ability {
 
         IMPRISON_DATA.put(caster.getUUID(), new UUID[]{targetId, velTaskId, vfxTaskId, effectTaskId, drainTaskId});
 
-        EffectManager.playEffect(EffectManager.Effect.IMPRISON, target.getX(), target.getY(), target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.IMPRISON, target.getX(), target.getY(), target.getZ(), serverLevel);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, caster.position(), caster, this, interactionFlags, 15, 0));
     }
 

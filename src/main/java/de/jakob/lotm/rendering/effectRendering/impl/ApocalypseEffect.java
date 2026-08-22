@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -101,8 +102,8 @@ public class ApocalypseEffect extends ActiveEffect {
     }
 
 
-    public ApocalypseEffect(double x, double y, double z) {
-        super(x, y, z, 140); // 7 seconds of total annihilation
+    public ApocalypseEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         // Initialize void particles - MASSIVE amount for density
         for (int i = 0; i < 800; i++) {
@@ -147,7 +148,7 @@ public class ApocalypseEffect extends ActiveEffect {
         apocalypseIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         // Render all effect layers - MANY layers for density
         renderDenseFog(poseStack, expansionProgress, apocalypseIntensity);
