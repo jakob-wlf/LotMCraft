@@ -20,6 +20,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// Removed particles using event handler in client events
 public class RitualisticTablePartBlock extends BaseEntityBlock {
 
     public static final MapCodec<RitualisticTablePartBlock> CODEC = simpleCodec(RitualisticTablePartBlock::new);

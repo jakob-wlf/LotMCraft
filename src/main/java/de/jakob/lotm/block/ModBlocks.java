@@ -6,6 +6,7 @@ import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -29,10 +30,10 @@ public class ModBlocks {
 
     public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
             () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
-                    .strength(2.0f)
+                    .strength(3.0f)
                     .noOcclusion()
                     .lightLevel(state -> 12)
-                    .sound(SoundType.METAL)
+                    .sound(SoundType.WOOD)
             ));
 
     public static final DeferredHolder<Block, RitualisticTablePartBlock> RITUALISTIC_TABLE_PART =

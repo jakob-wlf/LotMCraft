@@ -4,7 +4,9 @@
     "lotmcraft:spirit_crystalline_peaks",
     "lotmcraft:spirit_void_gardens",
     "lotmcraft:spirit_quartz_flats",
-    "lotmcraft:spirit_glacial_shelf"
+    "lotmcraft:spirit_glacial_shelf",
+    "lotmcraft:spirit_world_wastes",
+    "lotmcraft:spirit_mire_hollow"
   ],
   "spawners": [
     {
