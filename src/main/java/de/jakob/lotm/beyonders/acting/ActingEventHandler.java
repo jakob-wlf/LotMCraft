@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.BlockTags;
@@ -463,7 +464,7 @@ public class ActingEventHandler {
         if (player.getMainHandItem().isEmpty())
             fire(player, "kill_unarmed");
 
-        if (event.getEntity().getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD))
+        if (AbilityUtil.isUndead(event.getEntity()))
             fire(player, "kill_undead");
 
         if (event.getEntity() instanceof net.minecraft.world.entity.boss.wither.WitherBoss

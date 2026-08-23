@@ -201,7 +201,8 @@ public class NationOfTheDeadAbility extends Ability {
         }
 
         taskId.set(ServerScheduler.scheduleForDuration(0, 1, DURATION_TICKS, () -> {
-            Location loc = new Location(center, serverLevel);
+            Vec3 tickCenter = domain.currentCenter();
+            Location loc = new Location(tickCenter, serverLevel);
 
             if (InteractionHandler.isInteractionPossibleStrictlyHigher(loc, "purification_holy", casterSeq, -1)) {
                 activeDomains.remove(entity.getUUID());
@@ -213,66 +214,66 @@ public class NationOfTheDeadAbility extends Ability {
             double helixAngle = tick * 0.08;
 
             if (tick % 5 == 0) {
-                spawnShellParticles(serverLevel, VOID_DUST, center, domainRadius, 18);
-                spawnShellParticles(serverLevel, ParticleTypes.SOUL, center, domainRadius, 12);
+                spawnShellParticles(serverLevel, VOID_DUST, tickCenter, domainRadius, 18);
+                spawnShellParticles(serverLevel, ParticleTypes.SOUL, tickCenter, domainRadius, 12);
             }
 
             if (tick % 4 == 0) {
-                spawnShellParticles(serverLevel, SOUL_DUST, center, domainRadius * 0.65, 14);
+                spawnShellParticles(serverLevel, SOUL_DUST, tickCenter, domainRadius * 0.65, 14);
             }
 
-            spawnRingParticles(serverLevel, DEATH_DUST, center, domainRadius,
+            spawnRingParticles(serverLevel, DEATH_DUST, tickCenter, domainRadius,
                     48, 0, 0.15);
-            spawnRingParticles(serverLevel, DEATH_DUST, center, domainRadius,
+            spawnRingParticles(serverLevel, DEATH_DUST, tickCenter, domainRadius,
                     48, 2.5, 0.12);
-            spawnRingParticles(serverLevel, DEATH_DUST, center, domainRadius,
+            spawnRingParticles(serverLevel, DEATH_DUST, tickCenter, domainRadius,
                     48, -2.5, 0.12);
 
             if (tick % 2 == 0) {
-                spawnRingParticles(serverLevel, SOUL_DUST, center, domainRadius * 0.6,
+                spawnRingParticles(serverLevel, SOUL_DUST, tickCenter, domainRadius * 0.6,
                         36, 0, 0.10);
-                spawnRingParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, center, domainRadius * 0.6,
+                spawnRingParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, tickCenter, domainRadius * 0.6,
                         24, 1.5, 0.08);
             }
 
             if (tick % 3 == 0) {
-                spawnRingParticles(serverLevel, BONE_DUST, center, domainRadius * 0.3,
+                spawnRingParticles(serverLevel, BONE_DUST, tickCenter, domainRadius * 0.3,
                         28, 0, 0.08);
-                spawnRingParticles(serverLevel, PALE_SOUL_DUST, center, domainRadius * 0.45,
+                spawnRingParticles(serverLevel, PALE_SOUL_DUST, tickCenter, domainRadius * 0.45,
                         32, 0.8, 0.07);
             }
 
-            spawnHelixParticles(serverLevel, SOUL_DUST, center,
+            spawnHelixParticles(serverLevel, SOUL_DUST, tickCenter,
                     domainRadius * 0.25, 18, 3, 60, helixAngle);
-            spawnHelixParticles(serverLevel, DEATH_DUST, center,
+            spawnHelixParticles(serverLevel, DEATH_DUST, tickCenter,
                     domainRadius * 0.25, 18, 3, 60, helixAngle + Math.PI);
 
             if (tick % 2 == 0) {
-                spawnHelixParticles(serverLevel, VOID_DUST, center,
+                spawnHelixParticles(serverLevel, VOID_DUST, tickCenter,
                         domainRadius * 0.55, 22, 2, 48, helixAngle * 0.5);
-                spawnHelixParticles(serverLevel, PALE_SOUL_DUST, center,
+                spawnHelixParticles(serverLevel, PALE_SOUL_DUST, tickCenter,
                         domainRadius * 0.55, 22, 2, 48, helixAngle * 0.5 + Math.PI);
             }
 
             if (tick % 8 == 0) {
-                spawnSoulColumns(serverLevel, center, domainRadius, 6, 5);
+                spawnSoulColumns(serverLevel, tickCenter, domainRadius, 6, 5);
             }
 
             if (tick % 3 == 0) {
-                spawnAmbientFog(serverLevel, center, domainRadius, 20);
+                spawnAmbientFog(serverLevel, tickCenter, domainRadius, 20);
             }
 
             if (tick % 10 == 0) {
-                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, center,
+                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, tickCenter,
                         domainRadius * 0.85, 30);
-                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, center,
+                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, tickCenter,
                         domainRadius * 0.40, 20);
             }
 
             if (tick % 40 == 0) {
-                spawnShockwaveRing(serverLevel, center, domainRadius, 72);
-                spawnShockwaveRing(serverLevel, center, domainRadius * 0.7, 56);
-                spawnShockwaveRing(serverLevel, center, domainRadius * 0.4, 40);
+                spawnShockwaveRing(serverLevel, tickCenter, domainRadius, 72);
+                spawnShockwaveRing(serverLevel, tickCenter, domainRadius * 0.7, 56);
+                spawnShockwaveRing(serverLevel, tickCenter, domainRadius * 0.4, 40);
             }
 
             if (tick % 6 == 0) {
@@ -281,9 +282,9 @@ public class NationOfTheDeadAbility extends Ability {
                     double angle = rng.nextDouble() * 2 * Math.PI;
                     double dist = rng.nextDouble() * domainRadius;
                     serverLevel.sendParticles(ParticleTypes.ASH,
-                            center.x + dist * Math.cos(angle),
-                            center.y + rng.nextDouble() * 3.0,
-                            center.z + dist * Math.sin(angle),
+                            tickCenter.x + dist * Math.cos(angle),
+                            tickCenter.y + rng.nextDouble() * 3.0,
+                            tickCenter.z + dist * Math.sin(angle),
                             1, 0.5, 0.1, 0.5, 0.01);
                 }
             }
@@ -298,7 +299,7 @@ public class NationOfTheDeadAbility extends Ability {
                         SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD.value(), SoundSource.PLAYERS, 1.2f, 0.8f);
             }
 
-            AbilityUtil.getNearbyEntities(entity, serverLevel, center, (int) domainRadius).forEach(target -> {
+            AbilityUtil.getNearbyEntities(entity, serverLevel, tickCenter, (int) domainRadius).forEach(target -> {
                 if (AllyUtil.areAllies(entity, target)) return;
                 if (subordinateMobs.contains(target.getUUID())) return;
 
@@ -326,6 +327,7 @@ public class NationOfTheDeadAbility extends Ability {
                 if (damagePercent <= 0) return;
 
                 float damage = target.getMaxHealth() * damagePercent;
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), 0.01f);
                 ModDamageTypes.trueDamage(target, damage, serverLevel, entity);
 
                 Vec3 targetPos = target.position();
@@ -357,16 +359,12 @@ public class NationOfTheDeadAbility extends Ability {
             if (dying.getUUID().equals(domain.casterUUID)) continue;
             if (domain.subordinateMobs.contains(dying.getUUID())) continue;
 
-            double dist = deathPos.distanceTo(domain.center);
+            Vec3 domainCenter = domain.currentCenter();
+            double dist = deathPos.distanceTo(domainCenter);
             double domainRadius = 35.0; // base radius (multiplier not accessible statically)
             if (dist > domainRadius) continue;
 
-            LivingEntity caster = serverLevel.getEntitiesOfClass(LivingEntity.class,
-                            new net.minecraft.world.phys.AABB(
-                                    domain.center.subtract(1, 1, 1),
-                                    domain.center.add(1, 1, 1)))
-                    .stream().filter(e -> e.getUUID().equals(domain.casterUUID))
-                    .findFirst().orElse((LivingEntity) serverLevel.getEntity(domain.casterUUID));
+            LivingEntity caster = (LivingEntity) serverLevel.getEntity(domain.casterUUID);
 
             spawnDomainSkeleton(serverLevel, deathPos, caster, domain);
 
@@ -427,7 +425,7 @@ public class NationOfTheDeadAbility extends Ability {
 
     private static class ActiveDomain {
         final UUID casterUUID;
-        final Vec3 center;
+        Vec3 center;
         final ServerLevel level;
         final List<UUID> subordinateMobs;
 
@@ -436,6 +434,14 @@ public class NationOfTheDeadAbility extends Ability {
             this.center = center;
             this.level = level;
             this.subordinateMobs = subordinateMobs;
+        }
+
+        Vec3 currentCenter() {
+            LivingEntity caster = (LivingEntity) level.getEntity(casterUUID);
+            if (caster != null && caster.isAlive()) {
+                center = caster.position();
+            }
+            return center;
         }
     }
 }

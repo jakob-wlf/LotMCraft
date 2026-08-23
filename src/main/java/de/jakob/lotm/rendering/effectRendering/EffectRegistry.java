@@ -97,5 +97,6 @@ public class EffectRegistry {
         register(EffectIds.FEAR_AURA, FearAuraEffect::new, 40, true);
         register(EffectIds.BEAMS_OF_LIGHT, BeamsOfLightEffect::new, 40, false);
         register(EffectIds.SPACE_TEAR, SpaceTearEffect::new, 40, true);
+        register(EffectIds.DEATH_DECREE_RING, DeathDecreeRingEffect::new, 20, true);
     }
 }

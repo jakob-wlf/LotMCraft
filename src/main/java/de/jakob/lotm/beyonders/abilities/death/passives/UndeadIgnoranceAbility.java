@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.death.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
-import net.minecraft.tags.EntityTypeTags;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -40,7 +40,7 @@ public class UndeadIgnoranceAbility extends PassiveAbilityItem {
         if (!ignoredByUndead.contains(target)) return;
 
         LivingEntity attacker = event.getEntity();
-        if (attacker.getType().is(EntityTypeTags.UNDEAD)) {
+        if (AbilityUtil.isUndead(attacker)) {
             event.setCanceled(true);
         }
     }

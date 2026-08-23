@@ -319,11 +319,15 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return;
         }
 
-        // Drop characteristic
-        BeyonderCharacteristicItem characteristicItem =
-                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(_pathway, _sequence);
-        if (characteristicItem != null) {
-            this.spawnAtLocation(characteristicItem);
+        boolean isGhostBeyonder = this.getPersistentData().getBoolean("lotm_ghost_beyonder");
+
+        // Drop characteristic (ghost beyonders never drop one, since capturing them already consumes it)
+        if (!isGhostBeyonder) {
+            BeyonderCharacteristicItem characteristicItem =
+                    BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(_pathway, _sequence);
+            if (characteristicItem != null) {
+                this.spawnAtLocation(characteristicItem);
+            }
         }
 
         // Drop recipe with chance

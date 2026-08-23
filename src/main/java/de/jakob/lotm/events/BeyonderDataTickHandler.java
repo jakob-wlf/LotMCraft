@@ -6,11 +6,24 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.death.DeathDecreeAbility;
 import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.effect.FoolingEffect;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
+import de.jakob.lotm.rendering.effectRendering.impl.DeathDecreeRingEffect;
+import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import de.jakob.lotm.item.ModItems;
@@ -27,6 +40,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -44,8 +59,76 @@ public class BeyonderDataTickHandler {
 
     private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new ConcurrentHashMap<>();
 
+    // Tracks the active Death Decree ring VFX per marked entity, keyed by entity UUID,
+    // storing both the effect id and the stack count it was spawned with — the ring
+    // effect must be re-spawned (not just repositioned) when the stack count changes,
+    // since EffectManager has no "update params" packet, only position updates.
+    private static final Map<UUID, DeathDecreeRingState> deathDecreeRings = new ConcurrentHashMap<>();
+
+    private record DeathDecreeRingState(UUID effectId, int stacks, Set<UUID> viewerIds) {}
+
     public static void invalidateCache(LivingEntity entity) {
         cachedAbilities.remove(entity.getUUID());
+    }
+
+    // Only Death pathway players can see the Death Decree ring — everyone else still
+    // sees the mob effect's other cues (screen darkening for the marked player, etc.)
+    // but not this VFX, so it's sent per-player rather than broadcast to the level.
+    private static boolean canSeeDeathDecreeRing(ServerPlayer player) {
+        return "death".equals(BeyonderData.getPathway(player));
+    }
+
+    private static void updateDeathDecreeRing(LivingEntity entity, ServerLevel level, int stacks) {
+        DeathDecreeRingState state = deathDecreeRings.get(entity.getUUID());
+        List<ServerPlayer> viewers = level.players().stream()
+                .filter(BeyonderDataTickHandler::canSeeDeathDecreeRing)
+                .toList();
+        Set<UUID> viewerIds = viewers.stream().map(ServerPlayer::getUUID).collect(Collectors.toSet());
+
+        if (state != null && state.stacks() == stacks) {
+            // Re-sync per-player subscriptions: spawn for newly-qualifying viewers,
+            // cancel for ones who left/switched pathway, update the rest in place.
+            for (ServerPlayer viewer : viewers) {
+                if (state.viewerIds().contains(viewer.getUUID())) {
+                    EffectManager.updateEffectPosition(state.effectId(), entity.getX(), entity.getY(), entity.getZ(), viewer);
+                } else {
+                    float[] arr = EffectParams.defaultParamsArray();
+                    arr[DeathDecreeRingEffect.STACKS_PARAM] = stacks;
+                    EffectManager.playMovableEffectWithId(state.effectId(), EffectIds.DEATH_DECREE_RING, viewer, entity, new EffectParams(20, true, arr));
+                }
+            }
+            deathDecreeRings.put(entity.getUUID(), new DeathDecreeRingState(state.effectId(), stacks, viewerIds));
+            return;
+        }
+
+        if (state != null) {
+            for (ServerPlayer viewer : level.players()) {
+                if (state.viewerIds().contains(viewer.getUUID())) {
+                    EffectManager.cancelEffect(state.effectId(), viewer);
+                }
+            }
+        }
+
+        float[] arr = EffectParams.defaultParamsArray();
+        arr[DeathDecreeRingEffect.STACKS_PARAM] = stacks;
+        EffectParams params = new EffectParams(20, true, arr);
+
+        UUID effectId = UUID.randomUUID();
+        for (ServerPlayer viewer : viewers) {
+            EffectManager.playMovableEffectWithId(effectId, EffectIds.DEATH_DECREE_RING, viewer, entity, params);
+        }
+        deathDecreeRings.put(entity.getUUID(), new DeathDecreeRingState(effectId, stacks, viewerIds));
+    }
+
+    private static void cancelDeathDecreeRing(LivingEntity entity, ServerLevel level) {
+        DeathDecreeRingState state = deathDecreeRings.remove(entity.getUUID());
+        if (state != null) {
+            for (ServerPlayer viewer : level.players()) {
+                if (state.viewerIds().contains(viewer.getUUID())) {
+                    EffectManager.cancelEffect(state.effectId(), viewer);
+                }
+            }
+        }
     }
 
     private static final Object INIT_LOCK = new Object();
@@ -113,6 +196,52 @@ public class BeyonderDataTickHandler {
             } else if (livingEntity.hasEffect(ModEffects.FOOLING)) {
                 livingEntity.removeEffect(ModEffects.FOOLING);
             }
+
+            EndpointComponent endpointComponent = livingEntity.getData(ModAttachments.ENDPOINT_COMPONENT);
+            if (endpointComponent.isActive()) {
+                if (livingEntity.level() instanceof ServerLevel serverLevel &&
+                        InteractionHandler.isInteractionPossibleStrictlyHigher(
+                                new Location(livingEntity.position(), serverLevel), "purification", endpointComponent.getCasterSequence(), -1)) {
+                    endpointComponent.clear();
+                    livingEntity.removeEffect(ModEffects.ENDPOINT);
+
+                    serverLevel.playSound(null, livingEntity.blockPosition(),
+                            SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.5f, 1.2f);
+                    serverLevel.sendParticles(ParticleTypes.END_ROD,
+                            livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(), 30, 0.4, 0.6, 0.4, 0.05);
+                } else {
+                    livingEntity.addEffect(new MobEffectInstance(ModEffects.ENDPOINT, 25, 0, false, true, true));
+                }
+            } else if (livingEntity.hasEffect(ModEffects.ENDPOINT)) {
+                livingEntity.removeEffect(ModEffects.ENDPOINT);
+            }
+
+            DeathDecreeMarkComponent deathDecreeMark = livingEntity.getData(ModAttachments.DEATH_DECREE_MARK);
+            if (deathDecreeMark.getStacks() > 0) {
+                if (livingEntity.level() instanceof ServerLevel serverLevel &&
+                        InteractionHandler.isInteractionPossibleStrictlyHigher(
+                                new Location(livingEntity.position(), serverLevel), "purification", deathDecreeMark.getCasterSequence(), -1)) {
+                    deathDecreeMark.clear();
+                    livingEntity.removeEffect(ModEffects.DEATH_DECREE_MARK);
+                    cancelDeathDecreeRing(livingEntity, serverLevel);
+
+                    serverLevel.playSound(null, livingEntity.blockPosition(),
+                            SoundEvents.BEACON_DEACTIVATE, SoundSource.PLAYERS, 1.5f, 1.2f);
+                    serverLevel.sendParticles(ParticleTypes.END_ROD,
+                            livingEntity.getX(), livingEntity.getY() + 1, livingEntity.getZ(), 30, 0.4, 0.6, 0.4, 0.05);
+                } else {
+                    livingEntity.addEffect(new MobEffectInstance(ModEffects.DEATH_DECREE_MARK, 25, deathDecreeMark.getStacks() - 1, false, true, true));
+
+                    if (livingEntity.level() instanceof ServerLevel serverLevel) {
+                        updateDeathDecreeRing(livingEntity, serverLevel, deathDecreeMark.getStacks());
+                    }
+                }
+            } else if (livingEntity.hasEffect(ModEffects.DEATH_DECREE_MARK)) {
+                livingEntity.removeEffect(ModEffects.DEATH_DECREE_MARK);
+                if (livingEntity.level() instanceof ServerLevel serverLevel) {
+                    cancelDeathDecreeRing(livingEntity, serverLevel);
+                }
+            }
         }
 
         if(BeyonderData.isBeyonder(livingEntity)) {
@@ -159,6 +288,28 @@ public class BeyonderDataTickHandler {
                 PacketHandler.sendToTrackingAndSelf(livingEntity, new SyncToggleAbilityPacket(livingEntity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()));
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void onEndpointHeal(LivingHealEvent event) {
+        EndpointComponent endpointComponent = event.getEntity().getData(ModAttachments.ENDPOINT_COMPONENT);
+        if (endpointComponent.isActive()) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (entity.level() instanceof ServerLevel serverLevel) {
+            cancelDeathDecreeRing(entity, serverLevel);
+        }
+
+        // Clear the mark itself, not just its VFX — otherwise the next tick (or a
+        // respawn that retains this attachment) re-reads stacks > 0 and immediately
+        // re-spawns both the mob effect and the ring.
+        entity.getData(ModAttachments.DEATH_DECREE_MARK).clear();
+        entity.removeEffect(ModEffects.DEATH_DECREE_MARK);
     }
 
     @SubscribeEvent

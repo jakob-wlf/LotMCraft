@@ -208,6 +208,11 @@ public class AbilityUtil {
             return false;
         }
 
+        // Enslaved entities cannot damage their master or their master's allies
+        if (!de.jakob.lotm.beyonders.abilities.death.EnslavementAbility.mayEnslavedDamage(source, target)) {
+            return false;
+        }
+
         // Avatar cannot damage original owner
         if (source instanceof AvatarEntity avatar && target.getUUID() == avatar.getOriginalOwner()) {
             return false;
@@ -1233,6 +1238,9 @@ public class AbilityUtil {
     }
 
     public static boolean isUndead(LivingEntity entity) {
+        if (de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.isUnderworldSoul(entity)) {
+            return true;
+        }
         return switch (BeyonderData.getPathway(entity)) {
             case "death", "abyss", "chained", "hanged_man" -> true;
             default -> entity.getType().is(EntityTypeTags.UNDEAD);

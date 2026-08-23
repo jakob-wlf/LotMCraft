@@ -902,6 +902,7 @@ public class ActingTaskRegistry {
         register("death", 3, new EventActingTask("swim_underwater", 0.04f, 20 * 15));
         register("death", 3, new EventActingTask("catch_fish", 0.05f, 20 * 10));
         register("death", 3, new EventActingTask("use_lead", 0.05f, 20 * 10));
+        register("death", 3, new EventActingTask("use_hand_of_death_ability", 0.3f, 20 * 20));
 
         register("death", 2, new EventActingTask("place_mob_head", 0.1f, 20 * 10));
         register("death", 2, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
@@ -911,7 +912,7 @@ public class ActingTaskRegistry {
 
         register("death", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
         register("death", 1, new EventActingTask("kill_while_low_health", 0.1f, 20 * 2));
-        register("death", 1, new EventActingTask("use_hand_of_death_ability", 0.3f, 20 * 20));
+        register("death", 1, new EventActingTask("use_hand_of_life_ability", 0.3f, 20 * 20));
         register("death", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
         register("death", 1, new EventActingTask("kill_undead", 0.1f, 20 * 5));
         register("death", 1, new EventActingTask("place_mob_head", 0.08f, 20 * 10));

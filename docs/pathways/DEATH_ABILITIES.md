@@ -23,6 +23,61 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 
 ---
 
+### Endpoint
+**Sequence Requirement:** 0  
+**Spirituality Cost:** 40,000  
+**Cooldown:** 4 minutes  
+*(Cannot be copied, replicated, or stolen)*
+
+- **Targeting Range:** 5 blocks (single target)
+
+Blocked entirely if `purification` is active nearby (caster must be same sequence or up to 1 sequence weaker than any purifier present, or the cast fails).
+
+On hit, applies the **Endpoint** marker to the target permanently (does not expire on its own):
+- **All healing is blocked** while the marker is active — this includes natural regeneration, potions, totems, and any ability or effect that directly sets the target's health, not just standard heal events.
+- The marker is checked continuously; if `purification` of sufficient strength (same sequence or up to 1 sequence weaker than the caster who applied it) comes within range of the marked target, the marker is cured and removed.
+- Otherwise, the only way to remove it is the target's death.
+
+---
+
+### Instant Death
+**Sequence Requirement:** 1  
+**Spirituality Cost:** 30,000  
+**Cooldown:** 5 minutes  
+*(Cannot be copied, replicated, or stolen)*
+
+- **Targeting Range:** 3 blocks (single target)
+
+Blocked entirely if `purification` is active nearby (same sequence-weakness rule as Endpoint).
+
+On hit:
+- If the target is **not** Sequence 0: instant kill.
+- If the target **is** Sequence 0: instead deals true damage equal to **50%** of their max HP (a small `hurt()` call is fired alongside the true damage so it still counts as combat and suppresses the target's regeneration).
+
+---
+
+### Soul Control
+**Sequence Requirement:** 1  
+**Spirituality Cost:** 25,000  
+**Cooldown:** 45 seconds  
+*(Cannot be copied, replicated, or stolen; not usable in artifacts)*
+
+- **Targeting Range:** 20 blocks (line-of-sight)
+
+Blocked entirely if `purification` is active nearby (same sequence-weakness rule as Endpoint). Fails outright (no effect) if the target is a **stronger** sequence than the caster.
+
+**Instant Kill:**
+- Target is **2+ sequences weaker** than the caster: always instant kill.
+- Target is **1 sequence weaker**: **50%** instant kill chance.
+- Target is the **same sequence**: **25%** instant kill chance.
+  - Exception: caster and target both at **Sequence 0** — always fails (0% chance), forcing the drain outcome below.
+
+**On Failed Kill (or the guaranteed-fail Sequence 0 vs Sequence 0 case):**
+- True damage equal to **20%** of the target's max HP.
+- Sanity drained by a flat **40%** of the target's max sanity/Acting cap.
+
+---
+
 ### Divine Kingdom
 **Sequence Requirement:** 1  
 **Spirituality Cost:** 30, 000
@@ -96,6 +151,36 @@ Spirituality regenerates at **0.06% of max per tick** (1.2% per second) passivel
 - When any non-allied, non-subordinate entity dies inside the domain, an iron-armoured skeleton subordinate spawns at the death location.
 - The skeleton has **6× base attack damage** and **6× base max HP**.
 - Particle and sound burst plays at the death position.
+
+---
+
+### Enslavement
+**Sequence Requirement:** 2  
+**Spirituality Cost:** 6,000  
+**Cooldown:** 30 seconds  
+*(Cannot be copied, replicated, or stolen; not usable in artifacts)*
+
+- **Targeting Range:** 20 blocks (line-of-sight)
+
+Four selectable modes:
+
+**Enslave**
+- The caster may only have **one enslaved target at a time** — the cast fails if they already have one (release or kill the current slave first).
+- At Sequence 2, the target must be a Beyonder on the **Death** pathway. At Sequence 1, the pathway restriction is lifted — any target (any pathway, or a non-Beyonder) is valid.
+- The target must be **weaker** (higher sequence) than the caster, or the cast fails.
+- Marks the target as enslaved to the caster. A target can only be enslaved by one master at a time.
+
+**Seal Abilities** *(target must already be enslaved by the caster)*
+- Disables all Beyonder ability usage for the enslaved target indefinitely, until released.
+
+**Kill**
+- Instantly kills the enslaved target (true damage equal to their max HP) and clears the enslavement.
+
+**Release**
+- Removes the enslavement mark (and lifts the ability seal if it was applied), restoring the target's free will.
+
+**Passive restriction:**
+- While enslaved, the target cannot deal damage to their master or to anyone on their master's ally list — all such damage is blocked outright, regardless of the method used.
 
 ---
 

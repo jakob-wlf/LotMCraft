@@ -345,9 +345,14 @@ public class AbilityHandler {
         abilities.add(new SpiritWorldTraversalAbility("spirit_world_traversal_ability"));
         abilities.add(new DeathSpellsAbility("death_spells_ability"));
         abilities.add(new PaleEyeAbility("pale_eye_ability"));
+        abilities.add(new HandOfLifeAbility("hand_of_life_ability"));
         abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+        abilities.add(new EnslavementAbility("enslavement_ability"));
+        abilities.add(new DeathDecreeAbility("death_decree_ability"));
+        abilities.add(new SoulControlAbility("soul_control_ability"));
+        abilities.add(new EndpointAbility("endpoint_ability"));
 
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }

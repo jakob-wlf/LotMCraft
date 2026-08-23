@@ -294,6 +294,27 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<EndpointComponent>> ENDPOINT_COMPONENT =
+            ATTACHMENT_TYPES.register("endpoint_component", () ->
+                    AttachmentType.builder(EndpointComponent::new)
+                            .serialize(EndpointComponent.SERIALIZER)
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<EnslavementComponent>> ENSLAVEMENT_COMPONENT =
+            ATTACHMENT_TYPES.register("enslavement_component", () ->
+                    AttachmentType.builder(EnslavementComponent::new)
+                            .serialize(EnslavementComponent.SERIALIZER)
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<DeathDecreeMarkComponent>> DEATH_DECREE_MARK =
+            ATTACHMENT_TYPES.register("death_decree_mark", () ->
+                    AttachmentType.builder(DeathDecreeMarkComponent::new)
+                            .serialize(DeathDecreeMarkComponent.SERIALIZER)
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<MentalPlagueComponent>> MENTAL_PLAGUE =
             ATTACHMENT_TYPES.register("mental_plague", () ->
                     AttachmentType.builder(MentalPlagueComponent::new)

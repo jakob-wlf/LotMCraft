@@ -80,6 +80,17 @@ public class EffectManager {
         return id;
     }
 
+    /**
+     * Same as playMovableEffect(effectId, player, followEntity, params), but lets the
+     * caller supply the effect UUID so multiple per-player sends (one per viewer) can
+     * share one id and later be updated/cancelled together with a single loop.
+     */
+    public static void playMovableEffectWithId(UUID id, int effectId, ServerPlayer player,
+                                                LivingEntity followEntity, EffectParams params) {
+        Vec3 pos = followEntity.position();
+        PacketHandler.sendToPlayer(player, toPacket(id, effectId, pos.x, pos.y, pos.z, followEntity, true, params));
+    }
+
     public static UUID playDirectionalEffect(int effectId,
                                              double startX, double startY, double startZ,
                                              double endX, double endY, double endZ,

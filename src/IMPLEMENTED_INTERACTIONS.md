@@ -95,6 +95,8 @@ Some abilities use `postsUsedAbilityEventManually = true` in their constructor w
 |---------|-------|
 | Divine Kingdom | `death` |
 | Nation of the Dead | `death` |
+| Instant Death | `death` |
+| Endpoint | `death` |
 
 ### Tyrant Pathway
 

@@ -2,7 +2,11 @@ package de.jakob.lotm.beyonders.abilities.death;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
+import de.jakob.lotm.events.AdvancementsEventHandler;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -18,6 +22,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
@@ -46,9 +51,15 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
     private static final String STORED_SOULS_TAG = "InternalUnderworldSouls";
     private static final String CAPTURE_MODE_TAG = "InternalUnderworldCaptureMode";
+    private static final String UNDERWORLD_SOUL_TAG = "InternalUnderworldSoul";
 
     private record ActiveSoul(LivingEntity entity, CompoundTag soulData) {}
     private static final Map<UUID, List<ActiveSoul>> activeSouls = new ConcurrentHashMap<>();
+
+    /** Whether this entity was summoned from someone's Internal Underworld (should always count as undead). */
+    public static boolean isUnderworldSoul(LivingEntity entity) {
+        return entity.getPersistentData().getBoolean(UNDERWORLD_SOUL_TAG);
+    }
 
     private static boolean isCapturableEntity(LivingEntity entity) {
         if (    entity instanceof Zombie
@@ -70,7 +81,22 @@ public class InternalUnderworldAbility extends SelectableAbility {
         ) {
             return true;
         }
-        return false;
+        return entity instanceof BeyonderNPCEntity && AdvancementsEventHandler.isGhostBeyonder(entity);
+    }
+
+    /** Ghost beyonders can only be captured if the player holds the matching characteristic; capturing consumes it. */
+    private static boolean consumeMatchingCharacteristic(ServerPlayer player, LivingEntity target) {
+        if (!(target instanceof BeyonderNPCEntity ghost)) return true;
+
+        BeyonderCharacteristicItem characteristic =
+                BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(ghost.getPathway(), ghost.get_sequence());
+        if (characteristic == null) return false;
+
+        int slot = player.getInventory().findSlotMatchingItem(new ItemStack(characteristic));
+        if (slot < 0) return false;
+
+        player.getInventory().removeItem(slot, 1);
+        return true;
     }
 
     private static int getMaxSouls(int sequence) {
@@ -156,6 +182,12 @@ public class InternalUnderworldAbility extends SelectableAbility {
             return;
         }
 
+        if (target instanceof BeyonderNPCEntity && !consumeMatchingCharacteristic(player, target)) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.missing_characteristic")
+                    .withStyle(ChatFormatting.RED));
+            return;
+        }
+
         spawnCaptureAttemptParticles(serverLevel, target);
 
         float captureChance = 0.55f + (playerSeq * 0.05f);
@@ -164,6 +196,16 @@ public class InternalUnderworldAbility extends SelectableAbility {
             serverLevel.playSound(null, target.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.8f, 1.8f);
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.escaped")
                     .withStyle(ChatFormatting.GRAY));
+
+            if (target instanceof BeyonderNPCEntity ghost) {
+                BeyonderCharacteristicItem characteristic = BeyonderCharacteristicItemHandler
+                        .selectCharacteristicOfPathwayAndSequence(ghost.getPathway(), ghost.get_sequence());
+                if (characteristic != null) {
+                    player.getInventory().add(new ItemStack(characteristic));
+                }
+                // A ghost soul only gets one shot at capture — a failed attempt disperses it instead of letting it flee.
+                target.discard();
+            }
             return;
         }
 
@@ -338,10 +380,13 @@ public class InternalUnderworldAbility extends SelectableAbility {
             entity.moveTo(pos.x, pos.y, pos.z, player.getYRot(), 0);
             entity.setUUID(UUID.randomUUID());
             entity.getPersistentData().putBoolean("VoidSummoned", true);
+            entity.getPersistentData().putBoolean(UNDERWORLD_SOUL_TAG, true);
 
             boolean spawned = level.addFreshEntity(entity);
 
             if (spawned && entity instanceof LivingEntity livingEntity) {
+                livingEntity.removeEffect(MobEffects.INVISIBILITY);
+
                 SubordinateUtils.turnEntityIntoSubordinate(livingEntity, player, false);
 
                 List<ActiveSoul> existing = activeSouls.computeIfAbsent(player.getUUID(), k -> new ArrayList<>());

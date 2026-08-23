@@ -55,4 +55,5 @@ public final class EffectIds {
     public static final int FEAR_AURA = 49;
     public static final int BEAMS_OF_LIGHT = 50;
     public static final int SPACE_TEAR = 51;
+    public static final int DEATH_DECREE_RING = 52;
 }

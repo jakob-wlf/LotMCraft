@@ -5,7 +5,8 @@
   "mixins": [
     "EntityAccessor",
     "ServerGamePacketListenerImplMixin",
-    "MixinIngredient"
+    "MixinIngredient",
+    "LivingEntitySetHealthMixin"
   ],
   "injectors": {
     "defaultRequire": 1
