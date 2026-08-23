@@ -1,0 +1,25 @@
+{
+  "id": "lotm:travelers_key",
+  "discovered_from": "lotm:travelers_almanac",
+  "candle": "minecraft:light_blue_candle",
+  "sacrifices": [
+    { "item": "minecraft:ender_eye", "count": 1 },
+    { "item": "minecraft:ender_pearl", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "Great traveler of the Stars,",
+      "You are the Door of all Doors with the Key to the universe",
+      "Grant me passage to a realm beyond my own"
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.1, "g": 0.4, "b": 0.8 },
+  "duration_ticks": 300,
+  "result": {
+    "type": "open_portal",
+    "params": {
+      "destination": "lotmcraft:spirit_world"
+    }
+  }
+}

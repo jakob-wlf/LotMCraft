@@ -4,6 +4,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.logging.LogUtils;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.rendering.effectRendering.EffectParams;
@@ -38,6 +39,8 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
             .create();
 
     private static Map<ResourceLocation, RitualRecipe> rituals = new HashMap<>();
+
+    private static final String FAILURE_RITUAL_ID = "nature_of_degeneracy";
 
     public RitualManager() {
         super(GSON, "rituals");
@@ -100,7 +103,10 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
 
     public static void performRitual(@Nullable RitualRecipe ritual, ServerPlayer player, BlockPos tablePos) {
         if (ritual == null) {
-            return;
+            ritual = rituals.get(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, FAILURE_RITUAL_ID));
+            if(ritual == null) {
+                return;
+            }
         }
         RitualRecipe.Result result = ritual.result();
 
@@ -146,7 +152,7 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
                 )
         );
 
-        handler.perform(result.params(), player);
+        handler.perform(result.params(), player, tablePos);
     }
 
     public static Map<ResourceLocation, RitualRecipe> getRituals() {

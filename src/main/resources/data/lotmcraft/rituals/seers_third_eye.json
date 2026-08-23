@@ -13,7 +13,7 @@
       "Open the veil before me, that hidden things stand revealed."
     ]
   },
-  "conditions": { "min_sequence": 8 },
+  "conditions": { "min_sequence": 10 },
   "particle_color": { "r": 1.0, "g": 0.6, "b": 0.0 },
   "duration_ticks": 200,
   "result": {

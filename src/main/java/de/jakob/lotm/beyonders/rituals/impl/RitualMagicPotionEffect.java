@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class RitualMagicPotionEffect implements RitualResultHandler {
 
     @Override
-    public void perform(Map<String, Object> params, ServerPlayer player) {
+    public void perform(Map<String, Object> params, ServerPlayer player, BlockPos ritualCenter) {
         PotionEffectResult result = deserializeParams(params, PotionEffectResult.class);
 
         for (PotionEffectResult.EffectEntry effect : result.effects()) {

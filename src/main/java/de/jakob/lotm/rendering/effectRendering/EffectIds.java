@@ -56,4 +56,5 @@ public final class EffectIds {
     public static final int BEAMS_OF_LIGHT = 50;
     public static final int SPACE_TEAR = 51;
     public static final int RITUAL = 52;
+    public static final int RING_PULSE = 53;
 }

@@ -2,10 +2,9 @@ package de.jakob.lotm.beyonders.rituals.impl;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
-import de.jakob.lotm.rendering.effectRendering.EffectIds;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -15,17 +14,20 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
 import java.util.Map;
 
-public class RitualMagicAreEffect implements RitualResultHandler {
+public class RitualMagicAreaEffect implements RitualResultHandler {
 
     @Override
-    public void perform(Map<String, Object> params, ServerPlayer player) {
+    public void perform(Map<String, Object> params, ServerPlayer player, BlockPos ritualCenter) {
         AreaEffectResult result = deserializeParams(params, AreaEffectResult.class);
         if (result == null) return;
 
@@ -131,6 +133,42 @@ public class RitualMagicAreEffect implements RitualResultHandler {
                 target.setRemainingFireTicks(0);
                 target.setAirSupply(target.getMaxAirSupply());
                 target.setAbsorptionAmount(target.getMaxAbsorption());
+            }
+            case "illuminate" -> {
+                List<BlockPos> blocks = AbilityUtil.getBlocksInEllipsoid(
+                        source.serverLevel(),
+                        source.position(),
+                        7 * power,
+                        2 * power,
+                        true,
+                        true,
+                        true
+                ).stream().map(BlockPos::above).toList();
+
+                for (BlockPos blockPos : blocks) {
+                    if(source.level().isEmptyBlock(blockPos)) {
+                        source.level().setBlockAndUpdate(blockPos, Blocks.LIGHT.defaultBlockState());
+                    }
+                }
+            }
+            case "make_lucky" -> {
+                target.getData(ModAttachments.LUCK_COMPONENT).addLuck(20 * power * power);
+            }
+            case "restore_sanity" -> {
+                target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSyncIgnoreSequence(0.1f * power, target);
+            }
+            case "degeneracy" -> {
+                target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSyncIgnoreSequence(-0.1f * power, target);
+                target.hurt(target.damageSources().wither(), target.getHealth() - 1);
+                target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 3, 2, false, false, false));
+                ParticleUtil.spawnSphereParticles(
+                        source.serverLevel(),
+                        ParticleTypes.SMOKE,
+                        target.position(),
+                        0.5,
+                        40,
+                        0.05
+                );
             }
         }
     }

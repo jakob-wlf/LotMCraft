@@ -1,0 +1,32 @@
+{
+  "id": "lotm:nature_of_degeneracy",
+  "discovered_from": "lotm:revelations_of_the_degenerate",
+  "candle": "minecraft:black_candle",
+  "sacrifices": [
+    { "item": "minecraft:rotten_flesh", "count": 1 },
+    { "item": "minecraft:spider_eye", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "You are the degenerate nature of all beings",
+      "The shadow that lurks in the hearts of men",
+      "Defile and corrupt me so that I may get closer to you"
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.0, "g": 0.0, "b": 0.0 },
+  "duration_ticks": 300,
+  "result": {
+    "type": "area_effect",
+    "params": {
+      "effects": [
+        {
+          "effect": "degeneracy",
+          "target": "self",
+          "max_distance": -1,
+          "power": 6
+        }
+      ]
+    }
+  }
+}

@@ -124,13 +124,6 @@ public class ModAttachments {
                             .build()
             );
 
-    public static final Supplier<AttachmentType<MirrorWorldTraversalComponent>> MIRROR_WORLD_COMPONENT =
-            ATTACHMENT_TYPES.register("mirror_world_component", () ->
-                    AttachmentType.builder(MirrorWorldTraversalComponent::new)
-                            .serialize(MirrorWorldTraversalComponent.SERIALIZER)
-                            .build()
-            );
-
     public static final Supplier<AttachmentType<TransformationComponent>> TRANSFORMATION_COMPONENT =
             ATTACHMENT_TYPES.register("transformation_component", () ->
                     AttachmentType.builder(TransformationComponent::new)

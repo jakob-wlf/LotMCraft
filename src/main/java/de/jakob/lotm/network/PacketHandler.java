@@ -220,12 +220,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncMirrorWorldPacket.TYPE,
-                SyncMirrorWorldPacket.STREAM_CODEC,
-                SyncMirrorWorldPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncTransformationPacket.TYPE,
                 SyncTransformationPacket.STREAM_CODEC,
                 SyncTransformationPacket::handle

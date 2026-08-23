@@ -29,6 +29,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {
@@ -108,6 +109,10 @@ public class ModEntities {
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));
+
+    public static final Supplier<EntityType<PortalEntity>> PORTAL =
+            ENTITY_TYPES.register("portal", () -> EntityType.Builder.<PortalEntity>of(PortalEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f).noSummon().build("portal"));
 
     public static final Supplier<EntityType<TravelersDoorEntity>> TRAVELERS_DOOR =
             ENTITY_TYPES.register("travelers_door", () -> EntityType.Builder.<TravelersDoorEntity>of(TravelersDoorEntity::new, MobCategory.MISC)

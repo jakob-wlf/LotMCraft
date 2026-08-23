@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.rituals;
 
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface RitualResultHandler {
-    void perform(Map<String, Object> params, ServerPlayer player);
+    void perform(Map<String, Object> params, ServerPlayer player, BlockPos ritualCenter);
 
     default List<LivingEntity> getTargetEntity(String target, ServerPlayer player, int maxDistance) {
         return switch (target) {

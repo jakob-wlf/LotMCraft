@@ -225,14 +225,6 @@ public class ClientHandler {
         }
     }
 
-    public static void handleMirrorWorldPacket(SyncMirrorWorldPacket packet) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get())
-                    .setInMirrorWorld(packet.inMirrorWorld());
-        }
-    }
-
     public static void handleTransformationPacket(SyncTransformationPacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
