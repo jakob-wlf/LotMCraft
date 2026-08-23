@@ -33,7 +33,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
@@ -128,7 +127,7 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     private void jump(Level level, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
@@ -180,7 +179,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
@@ -208,10 +207,6 @@ public class DreamTraversalAbility extends SelectableAbility {
         comp.setParasiting(true);
         comp.setParasitingUUID(target.getUUID());
 
-        player.setBoundingBox(new AABB(
-                player.getX(), player.getY(), player.getZ(),
-                player.getX(), player.getY(), player.getZ()
-        ));
         player.onUpdateAbilities();
         player.hurtMarked = true;
 
@@ -220,7 +215,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             scaleAttribute.addTransientModifier(new AttributeModifier
                     (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
                             "dream_hide"),
-                            -1.0,
+                            -0.6,
                             AttributeModifier.Operation.ADD_VALUE));
         }
 
@@ -259,6 +254,7 @@ public class DreamTraversalAbility extends SelectableAbility {
         }
 
         PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
+        entity.stopRiding();
     }
 
     public static int getRangeBySeq(int seq) {
@@ -329,17 +325,6 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     @SubscribeEvent
-    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
-
-        LivingEntity entity = event.getEntity();
-
-        if (hideMap.containsKey(entity.getUUID())) {
-            DreamTraversalAbility.cancelHide(level, entity);
-        }
-    }
-
-    @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer entity)) return;
         if (entity.level().isClientSide) return;
@@ -350,9 +335,11 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         // Use the sequence stored at cast time (ie the artifact if used)
         boolean seqUnlocked = hideSeqMap.getOrDefault(entity.getUUID(), 9) <= 3;
+        var idealism = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
 
         if (hostEntity == null || hostEntity.isRemoved() || !(hostEntity instanceof LivingEntity host)
-                || !host.isAlive() || (!seqUnlocked && !host.hasEffect(ModEffects.ASLEEP))) {
+                || !host.isAlive() || (!seqUnlocked && !host.hasEffect(ModEffects.ASLEEP))
+                || idealism.isDiscerning()) {
 
             cancelHide(serverLevel, entity);
             return;
@@ -365,18 +352,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             cancelHide(serverLevel, entity);
         }
 
-        Vec3 hostPos = host.position();
-        Vec3 floatPos = hostPos.add(0, host.getBbHeight() + 0.3, 0);
-        entity.teleportTo(floatPos.x, floatPos.y, floatPos.z);
-        entity.setDeltaMovement(Vec3.ZERO);
-
-        if (entity instanceof Player player) {
-            player.setBoundingBox(new AABB(
-                    player.getX(), player.getY(), player.getZ(),
-                    player.getX(), player.getY(), player.getZ()
-            ));
-            player.hurtMarked = true;
-        }
+        entity.startRiding(host, true);
 
         if (host instanceof Mob mob) {
             if (mob.getTarget() != null && mob.getTarget().equals(entity)) {

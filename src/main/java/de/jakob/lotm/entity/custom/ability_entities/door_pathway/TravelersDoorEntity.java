@@ -125,7 +125,8 @@ public class TravelersDoorEntity extends Entity {
             ServerLevel spiritWorldLevel = serverLevel.getServer().getLevel(spiritWorld);
             if (spiritWorldLevel == null) return;
 
-            var factions = BeyonderData.factionStorage.getPartOfFaction(owner.getName().getString());
+            String name = owner == null ? null : owner.getName().getString();
+            var factions = BeyonderData.factionStorage.getPartOfFaction(name);
 
             FactionCore nation = null;
             FactionCore church = null;
@@ -171,7 +172,7 @@ public class TravelersDoorEntity extends Entity {
                                     allGood = false;
 
                                 if (allGood)
-                                    allGood = AllyUtil.areAllies(target, owner);
+                                    allGood = !AllyUtil.areAllies(target, owner);
 
                                 if (allGood && BeyonderData.getSequence(target) <= 4) {
                                     owner.getData(ModAttachments.RITUALS.get()).setStage(1);

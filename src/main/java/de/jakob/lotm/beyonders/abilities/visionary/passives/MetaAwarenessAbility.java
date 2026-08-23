@@ -148,7 +148,11 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
     }
 
     private static boolean hasMetaAwareness(ServerPlayer player) {
-        var data = BeyonderData.playerMap.get(player.getUUID()).get();
+        var dataOp = BeyonderData.playerMap.get(player.getUUID());
+        if(dataOp.isEmpty()) return false;
+
+        var data = dataOp.get();
+
         return data.sequence() <= 1 && data.pathway().equals("visionary");
     }
 }

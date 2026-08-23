@@ -281,7 +281,7 @@ public class ParasitationAbility extends SelectableAbility {
             scaleAttribute.addTransientModifier(new AttributeModifier
                     (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
                             "parasite"),
-                            -1.0,
+                            -0.6,
                             AttributeModifier.Operation.ADD_VALUE));
         }
 
@@ -334,16 +334,18 @@ public class ParasitationAbility extends SelectableAbility {
             return;
         }
 
-        Vec3 hostPos = host.position();
-        Vec3 floatPos = hostPos.add(0, host.getBbHeight() + 0.3, 0);
-        serverTarget.teleportTo(floatPos.x, floatPos.y, floatPos.z);
-        serverTarget.setDeltaMovement(Vec3.ZERO);
+        serverTarget.startRiding(host, true);
 
-        serverTarget.setBoundingBox(new AABB(
-                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ(),
-                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ()
-        ));
-        serverTarget.hurtMarked = true;
+//        Vec3 hostPos = host.position();
+//        Vec3 floatPos = hostPos.add(0, host.getBbHeight() + 0.3, 0);
+//        serverTarget.teleportTo(floatPos.x, floatPos.y, floatPos.z);
+//        serverTarget.setDeltaMovement(Vec3.ZERO);
+
+//        serverTarget.setBoundingBox(new AABB(
+//                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ(),
+//                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ()
+//        ));
+       // serverTarget.hurtMarked = true;
 
         if (host instanceof Mob mob) {
             if (mob.getTarget() != null && mob.getTarget().equals(serverTarget)) {
@@ -365,46 +367,36 @@ public class ParasitationAbility extends SelectableAbility {
         }
     }
 
-    @SubscribeEvent
-    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
-        if (!(event.getLevel() instanceof ServerLevel level)) return;
-        if(!(event.getEntity() instanceof ServerPlayer entity)) return;
-
-        if (isConcealed(entity.getUUID())) {
-            cancelConcealed(level, entity);
-        }
-    }
-
-    @SubscribeEvent
-    public static void onEntityTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-
-        if (serverPlayer.level().isClientSide) return;
-        if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
-
-
-        ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
-        if (!data.isControlling()) {
-            // Ended externally — clean up without calling reset again
-            controllingMap.remove(serverPlayer.getUUID());
-            controllingTimer.remove(serverPlayer.getUUID());
-            controllingLowerSeq.remove(serverPlayer.getUUID());
-            return;
-        }
-
-        // Tick down timer for same/higher seq
-        boolean lowerSeq = controllingLowerSeq.getOrDefault(serverPlayer.getUUID(), false);
-        if (!lowerSeq) {
-            int ticks = controllingTimer.getOrDefault(serverPlayer.getUUID(), 0) - 1;
-            if (ticks <= 0) {
-                serverLevel.getServer().execute(() -> exitControl(serverLevel, serverPlayer));
-                return;
-            }
-            controllingTimer.put(serverPlayer.getUUID(), ticks);
-        }
-    }
+//    @SubscribeEvent
+//    public static void onEntityTick(PlayerTickEvent.Post event) {
+//        Player player = event.getEntity();
+//
+//        if (!(player instanceof ServerPlayer serverPlayer)) return;
+//
+//        if (serverPlayer.level().isClientSide) return;
+//        if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
+//
+//
+//        ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
+//        if (!data.isControlling()) {
+//            // Ended externally — clean up without calling reset again
+//            controllingMap.remove(serverPlayer.getUUID());
+//            controllingTimer.remove(serverPlayer.getUUID());
+//            controllingLowerSeq.remove(serverPlayer.getUUID());
+//            return;
+//        }
+//
+//        // Tick down timer for same/higher seq
+//        boolean lowerSeq = controllingLowerSeq.getOrDefault(serverPlayer.getUUID(), false);
+//        if (!lowerSeq) {
+//            int ticks = controllingTimer.getOrDefault(serverPlayer.getUUID(), 0) - 1;
+//            if (ticks <= 0) {
+//                serverLevel.getServer().execute(() -> exitControl(serverLevel, serverPlayer));
+//                return;
+//            }
+//            controllingTimer.put(serverPlayer.getUUID(), ticks);
+//        }
+//    }
 
     private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {
         if (uuid == null) return null;

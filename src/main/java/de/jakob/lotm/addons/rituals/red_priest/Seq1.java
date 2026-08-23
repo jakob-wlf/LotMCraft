@@ -34,6 +34,8 @@ public class Seq1 {
         if(faction == null || !faction.getLeader().equals(name)) return;
 
         var defeated = faction.getDefeatedLevels();
+        if(defeated.isEmpty()) return;
+
         if(defeated.getLast() >= faction.getLevel() + 2) {
             if (!previous.containsKey(faction.getId())){
                 component.setCompleted(true);

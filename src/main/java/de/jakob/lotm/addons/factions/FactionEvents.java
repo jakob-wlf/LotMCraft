@@ -6,11 +6,15 @@ import de.jakob.lotm.command.FactionAdminCommand;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityMobGriefingEvent;
@@ -112,6 +116,7 @@ public class FactionEvents {
 
         var pos = player.level().getChunkAt(event.getPos()).getPos();
 
+        if (!shouldFail(player, pos)) return;
 
         var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
         if (comp.isParasiting()) {
@@ -120,6 +125,7 @@ public class FactionEvents {
 
             if (target instanceof ServerPlayer targetPlayer) {
                 if (!shouldFail(targetPlayer, pos)) {
+
                     if (BeyonderData.getPathway(player).equals("error") &&
                             BeyonderData.getSequence(player) == 4) {
                         var ritual = player.getData(ModAttachments.RITUALS.get());
@@ -130,9 +136,6 @@ public class FactionEvents {
                 }
             }
         }
-
-
-        if (!shouldFail(player, pos)) return;
 
         event.setCanceled(true);
     }
@@ -236,7 +239,7 @@ public class FactionEvents {
 
                     if (claimedAmount == 8) break;
 
-                    if (ticks % (20 * 10) * BeyonderData.factionStorage.getClaimLevel(entry.getKey(), type) == 0) {
+                    if (ticks % (20 * 10 * BeyonderData.factionStorage.getClaimLevel(entry.getKey(), type)) == 0) {
                         Tuple<Integer, Integer> pair;
 
                         if (warProgress.containsKey(entry.getKey())) {
@@ -267,7 +270,7 @@ public class FactionEvents {
                             }
                         }
 
-                        if (factionObj.getCore().equals(entry.getKey())) {
+                        if (factionObj.getCore().equals(entry.getKey()) && pair.getB() == 100) {
                             BeyonderData.factionStorage.winWar(factionObj.getAllAtWar(), faction, event.getServer().overworld());
                         }
                     }
@@ -333,30 +336,25 @@ public class FactionEvents {
         playerToPosMap.put(id, pos);
     }
 
-    @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!(player.level() instanceof ServerLevel level)) return;
-
-        var list = BeyonderData.factionStorage.getPartOfFaction(player.getName().getString());
-        for (var obj : list) {
-            BeyonderData.factionStorage.updateLastOnline(obj.getId(), level);
-        }
-
-    }
-
-    @SubscribeEvent
-    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!(player.level() instanceof ServerLevel level)) return;
-
-        var list = BeyonderData.factionStorage.getPartOfFaction(player.getName().getString());
-        for (var obj : list) {
-            BeyonderData.factionStorage.updateLastOnline(obj.getId(), level);
-        }
-
-    }
-
+//    @SubscribeEvent
+//    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+//        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+//        if (!(player.level() instanceof ServerLevel level)) return;
+//
+//        var list = BeyonderData.factionStorage.get
+//    }
+//
+//    @SubscribeEvent
+//    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+//        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+//        if (!(player.level() instanceof ServerLevel level)) return;
+//
+//        var list = BeyonderData.factionStorage.getPartOfFaction(player.getName().getString());
+//        for (var obj : list) {
+//            BeyonderData.factionStorage.updateLastOnline(obj.getId(), level);
+//        }
+//
+//    }
 
     private static void messageAll(List<ServerPlayer> list, Component msg) {
         for (var obj : list) {

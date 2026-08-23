@@ -52,8 +52,6 @@ public class AnchoringEvents {
         float anchors = (float) BeyonderData.anchoringStorage.getAnchoring(name)
                 .getAnchoring() / 100;
 
-
-
         drain -= anchors;
         if(drain <= 0.0f) {
             return;

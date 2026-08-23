@@ -32,7 +32,7 @@ public class Seq5 {
         if(component.isCompleted()) return;
 
         component.setStage(0);
-        var nearby = AbilityUtil.getNearbyEntities(player, level, player.position(), 60);
+        var nearby = AbilityUtil.getNearbyEntities(player, level, player.position(), 100);
         for(var obj : nearby){
             if(!(obj instanceof ServerPlayer target)) continue;
 

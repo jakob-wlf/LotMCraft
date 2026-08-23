@@ -7,6 +7,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -136,7 +137,7 @@ public class VisionaryHandler {
 
 
     public static boolean isInvisible(LivingEntity target){
-        if(target.level() instanceof ServerLevel)
+        if(!target.level().isClientSide)
             return PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(target.getUUID());
 
         return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID());
@@ -144,7 +145,10 @@ public class VisionaryHandler {
 
     public static boolean shouldStayInvisible(int seq, LivingEntity target){
         if(isInvisible(target)){
-            return seq >= PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            if(target.level().isClientSide)
+                return seq >= PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            else
+                return seq >= PsychologicalInvisibilityAbility.invisiblePlayers.get(target.getUUID());
         }
 
         return false;

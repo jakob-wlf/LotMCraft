@@ -147,8 +147,9 @@ public class FactionStorage extends SavedData {
         return false;
     }
 
-    public List<FactionCore> getPartOfFaction(String name) {
+    public List<FactionCore> getPartOfFaction(@Nullable String name) {
         List<FactionCore> result = new LinkedList<>();
+        if(name == null) return result;
 
         for (var obj : factions.values()) {
             if (obj.isPartOfFaction(name))
@@ -487,6 +488,12 @@ public class FactionStorage extends SavedData {
 
                 if(winner.isAggressor(looserId))
                     winner.setTotalWinsAggressor(winner.getTotalWinsAggressor() + 1);
+
+                int pounds = looser.getPound();
+                int soli = looser.getSoli();
+
+                winner.setPound(winner.getPound() + pounds);
+                winner.setSoli(winner.getSoli() + soli);
             }
             winner.addDefeatedLevel(looserLevel);
 
@@ -497,6 +504,7 @@ public class FactionStorage extends SavedData {
             messageEveryoneInFaction(level, winnerId, Component.literal("Your faction has won the war against \"" + factions.get(looserId).getName() + "\"").withStyle(ChatFormatting.GREEN));
         }
 
+        messageEveryoneInFaction(level, looserId, Component.literal("Your faction has loose the war!").withStyle(ChatFormatting.RED));
         factions.remove(looserId);
 
         setDirty();

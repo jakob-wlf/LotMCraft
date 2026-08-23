@@ -34,7 +34,7 @@ public class CalamityAttractionAbility extends SelectableAbility {
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(4, 5, 6, 7, 8, 9, 10));
 
-        baseDamage = 6f;
+        baseDamage = 3.5f;
     }
 
     @Override

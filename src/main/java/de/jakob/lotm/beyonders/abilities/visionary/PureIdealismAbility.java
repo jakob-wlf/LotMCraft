@@ -75,7 +75,7 @@ public class PureIdealismAbility extends SelectableAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("visionary", 0));
+        return new HashMap<>(Map.of("visionary", 2));
     }
 
     @Override

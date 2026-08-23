@@ -81,7 +81,7 @@ public class RitualDescriptionHelper {
 
         Map<Integer, String> error = new HashMap<>();
         error.put(5, "Examine dreams of many players");
-        error.put(4, "Convince" + de.jakob.lotm.addons.rituals.error.Seq4.AMOUNT
+        error.put(4, "Convince " + de.jakob.lotm.addons.rituals.error.Seq4.AMOUNT
                 + " targets to willingly offer all they possess to sustain you");
         error.put(3, "Without violence, find and exploit loopholes in rules");
         error.put(2, "Replace high-tier target in it's own social circle");

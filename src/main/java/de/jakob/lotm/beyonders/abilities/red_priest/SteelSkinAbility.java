@@ -46,7 +46,7 @@ public class SteelSkinAbility extends ToggleAbility {
         shouldBeHidden = true;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(150f, 85f, 55f, 35f));
+        dynamicSpirituality = new LinkedList<>(List.of(150f, 85f, 55f, 35f, 20f));
     }
 
     @Override

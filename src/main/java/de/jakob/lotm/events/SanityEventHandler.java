@@ -150,7 +150,10 @@ public class SanityEventHandler {
             }
 
             if(entity instanceof Player player && random.nextInt(10) == 0) {
-                ClientHandler.applyCameraShakeToPlayer(1, 20, player);
+                if(player.level().isClientSide) {
+                    ClientHandler.applyCameraShakeToPlayer(1, 20, player);
+                    return;
+                }
             }
 
             if(random.nextInt(100) >= 80) {

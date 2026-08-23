@@ -869,6 +869,12 @@ public class FactionCommand {
                                 return 0;
                             }
 
+                            var citizens = faction.getAllCitizens();
+                            if (citizens.size() + 1 > FactionCore.getCitizensAmountPerLevel(faction.getLevel())) {
+                                source.sendFailure(Component.literal("Faction is out of slots"));
+                                return 0;
+                            }
+
                             var allPlayers = faction.getAllPlayers();
 
                             BeyonderData.factionStorage.addCitizen(faction.getId(), name);
@@ -934,6 +940,8 @@ public class FactionCommand {
 
                                     if (faction.getLeader().equals(name)) {
                                         BeyonderData.factionStorage.disband(faction.getId());
+                                        source.sendSystemMessage(Component.literal("Successfully disbanded \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                        return 0;
                                     }
 
                                     BeyonderData.factionStorage.leave(faction.getId(), name);
@@ -962,8 +970,9 @@ public class FactionCommand {
 
                                     if (faction.getLeader().equals(name)) {
                                         BeyonderData.factionStorage.disband(faction.getId());
+                                        source.sendSystemMessage(Component.literal("Successfully disbanded \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
+                                        return 0;
                                     }
-
                                     BeyonderData.factionStorage.leave(faction.getId(), name);
 
                                     source.sendSystemMessage(Component.literal("Successfully left \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.GREEN));
@@ -1143,7 +1152,7 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if (target.equals(player)) {
+                                                    if (target.getUUID().equals(player.getUUID())) {
                                                         source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
                                                         return 0;
                                                     }
@@ -1175,7 +1184,7 @@ public class FactionCommand {
                                                 }
                                         )))
                 )
-                .then(Commands.literal("nation")
+                .then(Commands.literal("church")
                         .then(Commands.argument("target", EntityArgument.entity())
                                 .then(Commands.argument("level", IntegerArgumentType.integer(1, 8))
                                         .executes(context -> {
@@ -1208,7 +1217,7 @@ public class FactionCommand {
                                                         return 0;
                                                     }
 
-                                                    if (target.equals(player)) {
+                                                    if (target.getUUID().equals(player.getUUID())) {
                                                         source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
                                                         return 0;
                                                     }
@@ -1317,7 +1326,7 @@ public class FactionCommand {
                                         }
                                 ))
                 )
-                .then(Commands.literal("nation")
+                .then(Commands.literal("church")
                         .then(Commands.argument("target", EntityArgument.entity())
                                 .executes(context -> {
                                             CommandSourceStack source = context.getSource();
@@ -1394,17 +1403,24 @@ public class FactionCommand {
                                                                 return 0;
                                                             }
 
-                                                            int removedSoli = player.getInventory().clearOrCountMatchingItems(
-                                                                    stack -> stack.is(ModItems.ONE_SOLI),
-                                                                    soli,
-                                                                    player.inventoryMenu.getCraftSlots()
-                                                            );
+                                                            int removedSoli = 0;
+                                                            int removedPound = 0;
 
-                                                            int removedPound = player.getInventory().clearOrCountMatchingItems(
-                                                                    stack -> stack.is(ModItems.ONE_POUND),
-                                                                    pounds,
-                                                                    player.inventoryMenu.getCraftSlots()
-                                                            );
+                                                            if (soli > 0) {
+                                                                removedSoli = player.getInventory().clearOrCountMatchingItems(
+                                                                        stack -> stack.is(ModItems.ONE_SOLI),
+                                                                        soli,
+                                                                        player.inventoryMenu.getCraftSlots()
+                                                                );
+                                                            }
+
+                                                            if (pounds > 0) {
+                                                                removedPound = player.getInventory().clearOrCountMatchingItems(
+                                                                        stack -> stack.is(ModItems.ONE_POUND),
+                                                                        pounds,
+                                                                        player.inventoryMenu.getCraftSlots()
+                                                                );
+                                                            }
 
                                                             player.containerMenu.broadcastChanges();
 
@@ -1500,17 +1516,24 @@ public class FactionCommand {
                                                                 return 0;
                                                             }
 
-                                                            int removedSoli = player.getInventory().clearOrCountMatchingItems(
-                                                                    stack -> stack.is(ModItems.ONE_SOLI),
-                                                                    soli,
-                                                                    player.inventoryMenu.getCraftSlots()
-                                                            );
+                                                            int removedSoli = 0;
+                                                            int removedPound = 0;
 
-                                                            int removedPound = player.getInventory().clearOrCountMatchingItems(
-                                                                    stack -> stack.is(ModItems.ONE_POUND),
-                                                                    pounds,
-                                                                    player.inventoryMenu.getCraftSlots()
-                                                            );
+                                                            if (soli > 0) {
+                                                                removedSoli = player.getInventory().clearOrCountMatchingItems(
+                                                                        stack -> stack.is(ModItems.ONE_SOLI),
+                                                                        soli,
+                                                                        player.inventoryMenu.getCraftSlots()
+                                                                );
+                                                            }
+
+                                                            if (pounds > 0) {
+                                                                removedPound = player.getInventory().clearOrCountMatchingItems(
+                                                                        stack -> stack.is(ModItems.ONE_POUND),
+                                                                        pounds,
+                                                                        player.inventoryMenu.getCraftSlots()
+                                                                );
+                                                            }
 
                                                             player.containerMenu.broadcastChanges();
 

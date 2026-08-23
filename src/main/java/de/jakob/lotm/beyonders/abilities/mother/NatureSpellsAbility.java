@@ -57,7 +57,10 @@ public class NatureSpellsAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.nature_spells.swamp", "ability.lotmcraft.nature_spells.child_of_oak", "ability.lotmcraft.nature_spells.natures_wrath"};
+        return new String[]{
+                "ability.lotmcraft.nature_spells.swamp",
+                "ability.lotmcraft.nature_spells.child_of_oak",
+                "ability.lotmcraft.nature_spells.natures_wrath"};
     }
 
     @Override

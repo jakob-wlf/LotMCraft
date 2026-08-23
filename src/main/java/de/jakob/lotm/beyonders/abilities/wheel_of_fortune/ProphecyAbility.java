@@ -91,7 +91,7 @@ public class ProphecyAbility extends SelectableAbility {
                         targetLoc = targetLoc.subtract(0, 1, 0);
                 }
 
-                float damage = baseDamage * 15;
+                float damage = baseDamage * 10;
 
                 GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 0, 200, 0x6522a8);
                 level.addFreshEntity(lightning);
@@ -99,7 +99,7 @@ public class ProphecyAbility extends SelectableAbility {
             case 2 -> {
                 LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
 
-                float damage = baseDamage * 3;
+                float damage = baseDamage;
                 Vec3 pos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
                 TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, damage, entity)

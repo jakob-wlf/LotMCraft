@@ -9,8 +9,11 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.sniffer.Sniffer;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.checkerframework.checker.units.qual.A;
 
@@ -23,6 +26,7 @@ import java.util.UUID;
 )
 public class Seq2 {
     private static final int AMOUNT = 125;
+    private static int actualAmount = 0;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -33,13 +37,7 @@ public class Seq2 {
 
         var component = player.getData(ModAttachments.RITUALS.get());
 
-        int count = level.getServer().overworld().getEntitiesOfClass(
-                Sniffer.class,
-                level.getServer().overworld().getWorldBorder().getCollisionShape().bounds(),
-                entity -> true).size();
-
-
-        if(count >= AMOUNT){
+        if(actualAmount >= AMOUNT){
             component.setCompleted(true);
         }
         else{
@@ -49,5 +47,20 @@ public class Seq2 {
         }
     }
 
+    @SubscribeEvent
+    public static void onEntityJoin(EntityJoinLevelEvent event) {
+        if (event.getEntity() instanceof Sniffer obj){
+            if(!(obj.level() instanceof ServerLevel level)) return;
+            if(level.dimension() == Level.OVERWORLD)
+                actualAmount++;
+        }
 
+    }
+
+    private static void onDeath(LivingDeathEvent event){
+        if(!(event.getEntity() instanceof Sniffer)) return;
+        if(!(event.getEntity().level() instanceof ServerLevel level)) return;
+
+        actualAmount--;
+    }
 }

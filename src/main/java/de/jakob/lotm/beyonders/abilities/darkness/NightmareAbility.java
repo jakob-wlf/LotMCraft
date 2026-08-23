@@ -81,7 +81,7 @@ public class NightmareAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.nightmare.nightmare",
-                "ability.lotmcraft.nightmare.reshape",
+                //"ability.lotmcraft.nightmare.reshape",
                 "ability.lotmcraft.nightmare.restrict",
                 "ability.lotmcraft.nightmare.attack",
                 "ability.lotmcraft.nightmare.teleport"};
@@ -91,13 +91,13 @@ public class NightmareAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> nightmare(level, entity);
-            case 1 -> reshape(level, entity);
-            case 2 -> restrict(level, entity);
-            case 3 -> attack(level, entity);
-            case 4 -> teleport(level, entity);
+            //case 1 -> reshape(level, entity);
+            case 1 -> restrict(level, entity);
+            case 2 -> attack(level, entity);
+            case 3 -> teleport(level, entity);
         }
 
-        if(abilityIndex != 3){
+        if(abilityIndex != 2){
             clearArtifactScaling(entity);
         }
     }

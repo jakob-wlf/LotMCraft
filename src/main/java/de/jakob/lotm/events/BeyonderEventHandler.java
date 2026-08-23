@@ -463,9 +463,9 @@ public class BeyonderEventHandler {
             event.setCanceled(true);
         }
         else if (target == Level.END){
-            if(path.equals("door") && seq > 3)
+            if(path.equals("door") && seq > 4)
                 event.setCanceled(true);
-            else if(seq > 2)
+            else if(seq > 3)
                 event.setCanceled(true);
         }
     }

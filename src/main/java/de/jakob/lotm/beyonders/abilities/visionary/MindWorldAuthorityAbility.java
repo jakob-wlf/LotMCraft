@@ -394,20 +394,14 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
             var component = player.getData(ModAttachments.ENVISION_SPLIT.get());
             if(component.isEnvisioned()) return;
 
-            LOTMCraft.LOGGER.info("in event");
-
             if(!component.avatars.isEmpty()) {
                 var id = component.avatars.removeFirst();
                 var target = serverLevel.getEntity(id);
-
-                LOTMCraft.LOGGER.info("in event, id:{}", id);
 
                 while (target == null && !component.avatars.isEmpty()) {
                     id = component.avatars.removeFirst();
                     target = serverLevel.getEntity(id);
                 }
-
-                LOTMCraft.LOGGER.info("after loop");
 
                 if (target == null && component.avatars.isEmpty()) return;
 

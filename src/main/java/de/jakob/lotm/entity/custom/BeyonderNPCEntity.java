@@ -178,8 +178,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return false;
         }
 
-        if(pos.getY() >= 100)
-            return false;
+//        if(pos.getY() >= 100)
+//            return false;
 
         int nearby = level.getEntitiesOfClass(
                 BeyonderNPCEntity.class,

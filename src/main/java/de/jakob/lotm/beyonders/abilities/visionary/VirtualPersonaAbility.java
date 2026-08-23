@@ -94,13 +94,6 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     private void clearAll(Level level, LivingEntity entity){
-        if (level instanceof ClientLevel clientLevel){
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
-            return;
-        }
-
         if(!(level instanceof ServerLevel serverLevel)) return;
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -266,13 +259,6 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     private void virtualSelf(Level level, LivingEntity entity) {
-        if (level instanceof ClientLevel clientLevel){
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
-            return;
-        }
-
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         int seq = BeyonderData.getSequence(entity);
 

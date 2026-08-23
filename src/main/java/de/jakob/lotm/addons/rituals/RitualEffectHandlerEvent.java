@@ -29,6 +29,14 @@ public class RitualEffectHandlerEvent {
 
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()){
+            var controlling = player.getData(ModAttachments.CONTROLLING_DATA.get());
+            var idealism = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+
+            if(controlling.isControlling() || idealism.isDiscerning()){
+                component.setCompleted(false);
+                component.setStage(0);
+            }
+
             if(!timestamp.containsKey(player.getUUID())){
                 timestamp.put(player.getUUID(), System.currentTimeMillis());
 
