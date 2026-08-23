@@ -4,11 +4,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -21,21 +20,48 @@ import static de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil.getEntityTypeSt
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ShapeShiftingEntityTracker {
     private static final Map<UUID, Map<String, Integer>> trackingData = new HashMap<>();
-    private static int CHECK_INTERVAL = 20, REQUIRED_TIME = 400;
-    private static float RADIUS = 5.0f;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() instanceof ServerPlayer player) {
-            if (player.tickCount % CHECK_INTERVAL == 0){
-                int sequence = BeyonderData.getSequence(player);
-                if (sequence <= 9){
-                    if (BeyonderData.getPathway(player).equals("fool")){
-                        RADIUS = 5.0f + (10 - (float) sequence);
-                        REQUIRED_TIME = 400 - ((10 - sequence) * 20);
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            // run every 20 ticks
+            if (serverPlayer.tickCount % 20 == 0){
+                if (BeyonderData.isBeyonder(serverPlayer)){
+                    int radius = 5;
+                    int requiredTime = 800;
+                    if (BeyonderData.getPathway(serverPlayer).equals("fool")) {
+                        int sequence = BeyonderData.getSequence(serverPlayer);
+                        radius = 5 + (10 - sequence);
+                        requiredTime = 800 - ((10 - sequence) * 20);
                     }
-                    MemorisedEntities memorisedEntities = player.getData(ModAttachments.MEMORISED_ENTITIES.get());
-                    updateTracking(player, memorisedEntities);
+
+
+                    LivingEntity lookedAtEntity = AbilityUtil.getTargetEntity(serverPlayer, radius, 2);
+                    if (lookedAtEntity == null) return;
+
+                    String entityType = getEntityTypeString(lookedAtEntity);
+
+                    // to exclude any other entities in the future
+                    switch (entityType) {
+                        case "minecraft:ender_dragon" : return;
+                        case "minecraft:wither" : return;
+                    }
+
+                    MemorisedEntities memorisedEntities = serverPlayer.getData(ModAttachments.MEMORISED_ENTITIES.get());
+                    if (memorisedEntities.getMemorisedEntityTypes().contains(entityType)) return;
+
+                    UUID playerId = serverPlayer.getUUID();
+                    trackingData.putIfAbsent(playerId, new HashMap<>());
+                    Map<String, Integer> playerTracking = trackingData.get(playerId);
+
+                    int currentTime = playerTracking.getOrDefault(entityType, 0) + 20; // add 20 for every second the player is looking at the target
+                    playerTracking.put(entityType, currentTime);
+
+                    if (currentTime >= requiredTime) {
+                        memorisedEntities.addMemorisedEntity(entityType);
+                        sendSuccessMessage(serverPlayer, entityType);
+                        playerTracking.remove(entityType);
+                    }
                 }
             }
         }
@@ -46,47 +72,6 @@ public class ShapeShiftingEntityTracker {
         if (event.getEntity() instanceof ServerPlayer player) {
             trackingData.remove(player.getUUID());
         }
-    }
-
-    private static void updateTracking(ServerPlayer player, MemorisedEntities memorisedEntities) {
-        UUID playerId = player.getUUID();
-        trackingData.putIfAbsent(playerId, new HashMap<>());
-        Map<String, Integer> playerTracking = trackingData.get(playerId);
-
-        List<Entity> nearbyEntities = player.level().getEntities(player,
-                player.getBoundingBox().inflate(RADIUS),
-                e -> e != player && e.isAlive() && (e instanceof Mob || e instanceof ServerPlayer));
-
-        Set<String> currentlyNearby = new HashSet<>();
-
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof Player targetPlayer) {
-                if (targetPlayer.isCreative() || targetPlayer.isSpectator()) continue;
-            }
-
-            String entityType = getEntityTypeString(entity);
-            currentlyNearby.add(entityType);
-
-            // to exclude any other entities in the future
-            switch (entityType) {
-                case "minecraft:ender_dragon" : continue;
-                case "minecraft:wither" : continue;
-            }
-
-            if (memorisedEntities.getMemorisedEntityTypes().contains(entityType)) continue;
-
-            int currentTime = playerTracking.getOrDefault(entityType, 0) + CHECK_INTERVAL;
-            playerTracking.put(entityType, currentTime);
-
-            if (currentTime >= REQUIRED_TIME) {
-                memorisedEntities.addMemorisedEntity(entityType);
-                sendSuccessMessage(player, entityType);
-                playerTracking.remove(entityType);
-            }
-        }
-
-        playerTracking.keySet().removeIf(type -> !currentlyNearby.contains(type));
-        if (playerTracking.isEmpty()) trackingData.remove(playerId);
     }
 
     private static void sendSuccessMessage(ServerPlayer player, String entityName) {

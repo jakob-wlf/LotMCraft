@@ -17,7 +17,9 @@ import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
 import de.jakob.lotm.gui.custom.SelectionGui.*;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.network.packets.toServer.ShapeShiftingPlayerModelPacket;
 import de.jakob.lotm.quest.Quest;
 import de.jakob.lotm.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
@@ -30,13 +32,18 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -647,6 +654,36 @@ public class ClientHandler {
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
         }
+    }
+
+    public static void syncDangerArrowsOverlay(syncDangerArrowsOverlayPacket packet) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        DangerArrowsOverlay.show(packet.direction(), packet.duration());
+    }
+
+    public static void isPlayerModel(String entityType, boolean sequenceRestrict) {
+        boolean isPlayerModel = false;
+
+        Level level = Minecraft.getInstance().level;
+        if (level != null) {
+            String cleanEntityType = entityType;
+            if (entityType.indexOf(':') != entityType.lastIndexOf(':')) {
+                cleanEntityType = entityType.substring(0, entityType.lastIndexOf(':'));
+            }
+            EntityType<?> shapeEntity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(cleanEntityType));
+            Entity dummyEntity = shapeEntity.create(level);
+
+            if (dummyEntity instanceof LivingEntity livingEntity) {
+                var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity);
+
+                if (renderer instanceof LivingEntityRenderer livingRenderer) {
+                    isPlayerModel = livingRenderer.getModel() instanceof PlayerModel;
+                }
+            }
+        }
+        PacketHandler.sendToServer(new ShapeShiftingPlayerModelPacket(entityType, isPlayerModel, sequenceRestrict));
     }
 
     public static void handleActingCapPacket(SyncActingCapPacket packet) {

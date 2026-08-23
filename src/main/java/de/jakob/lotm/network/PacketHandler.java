@@ -561,6 +561,18 @@ public class PacketHandler {
                 SyncEnvisioningPacket.STREAM_CODEC,
                 SyncEnvisioningPacket::handle
         );
+
+        registrar.playToClient(
+                syncDangerArrowsOverlayPacket.TYPE,
+                syncDangerArrowsOverlayPacket.STREAM_CODEC,
+                syncDangerArrowsOverlayPacket::handle
+        );
+
+        registrar.playToClient(
+                IsPlayerModelPacket.TYPE,
+                IsPlayerModelPacket.STREAM_CODEC,
+                IsPlayerModelPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -835,6 +847,12 @@ public class PacketHandler {
                 StopDiscernmentPacket.TYPE,
                 StopDiscernmentPacket.STREAM_CODEC,
                 StopDiscernmentPacket::handle
+        );
+
+        registrar.playToServer(
+                ShapeShiftingPlayerModelPacket.TYPE,
+                ShapeShiftingPlayerModelPacket.STREAM_CODEC,
+                ShapeShiftingPlayerModelPacket::handle
         );
     }
 

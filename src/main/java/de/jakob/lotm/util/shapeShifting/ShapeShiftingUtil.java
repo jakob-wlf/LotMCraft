@@ -4,12 +4,15 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ShapeShiftComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.IsPlayerModelPacket;
 import de.jakob.lotm.network.packets.toClient.ShapeShiftingSyncPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,21 +34,46 @@ public class ShapeShiftingUtil {
     }
 
     public static void shapeShift(ServerPlayer player, String entityType, boolean sequenceRestrict) {
+        if (!sequenceRestrict || entityType.startsWith("player:") || entityType.startsWith("minecraft:villager")) {
+            performShapeShifting(player, entityType, false, false);
+            return;
+        }
+        PacketHandler.sendToPlayer(player, new IsPlayerModelPacket(entityType, sequenceRestrict));
+    }
+
+    public static void performShapeShifting(ServerPlayer player, String entityType, boolean isPlayerModel, boolean sequenceRestrict) {
+        int sequence = BeyonderData.getSequence(player);
+        if (sequenceRestrict){
+            String cleanEntityType = entityType;
+            if (entityType.indexOf(':') != entityType.lastIndexOf(':')) {
+                cleanEntityType = entityType.substring(0, entityType.lastIndexOf(':'));
+            }
+            EntityType<?> shapeEntity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(cleanEntityType));
+            EntityDimensions dimensions = shapeEntity.getDimensions();
+
+            float playerHeight = player.getBbHeight();
+            float playerWidth = player.getBbWidth();
+            float entityHeight = dimensions.height();
+            float entityWidth = dimensions.width();
+
+            float heightDifference = Math.abs(entityHeight - playerHeight) / playerHeight;
+            float widthDifference = Math.abs(entityWidth - playerWidth) / playerWidth;
+
+            if (sequence >= 5 && (!isPlayerModel)) {
+                return;
+            } else if (sequence >= 4) {
+                if (heightDifference > 0.25 || widthDifference > 0.25) return;
+            } else if (sequence >= 3) {
+                if (heightDifference > 0.9 || widthDifference > 0.9) return;
+            }
+        }
+
         if (!player.isCreative() && !player.isSpectator()) {
             player.getAbilities().mayfly = false;
             player.getAbilities().flying = false;
             player.onUpdateAbilities();
         }
 
-        if (sequenceRestrict) {
-            String entityName = entityType;
-            entityName = entityName.contains(":") ? entityName.split(":")[1] : entityName;
-            if (List.of("bat", "phantom", "blaze", "allay", "bee", "ghast", "parrot", "vex").contains(entityName)) {
-                if (BeyonderData.getSequence(player) > 4) {
-                    return;
-                }
-            }
-        }
         ShapeShiftComponent data = player.getData(ModAttachments.SHAPE_SHIFT);
         data.setShape(entityType);
         data.setSkinOnly(false);
