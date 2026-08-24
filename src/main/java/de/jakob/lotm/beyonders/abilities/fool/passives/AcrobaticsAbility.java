@@ -2,8 +2,7 @@ package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
-import net.minecraft.world.damagesource.DamageType;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -17,10 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class AcrobaticsAbility extends PassiveAbilityItem {
+public class AcrobaticsAbility extends PassiveAbility {
 
-    public AcrobaticsAbility(Properties properties) {
-        super(properties);
+    public AcrobaticsAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -37,7 +36,7 @@ public class AcrobaticsAbility extends PassiveAbilityItem {
 
     @SubscribeEvent
     public static void onJump(LivingEvent.LivingJumpEvent event) {
-        if(!(event.getEntity() instanceof Player player) || !((AcrobaticsAbility) PassiveAbilityHandler.ACROBATICS.get()).shouldApplyTo(player))
+        if(!(event.getEntity() instanceof Player player) || !((AcrobaticsAbility) PassiveAbilityHandler.getById("acrobatics_ability")).shouldApplyTo(player))
             return;
 
         if(!player.isShiftKeyDown())
@@ -50,7 +49,7 @@ public class AcrobaticsAbility extends PassiveAbilityItem {
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
-        if(!((AcrobaticsAbility) PassiveAbilityHandler.ACROBATICS.get()).shouldApplyTo(entity))
+        if(!((AcrobaticsAbility) PassiveAbilityHandler.getById("acrobatics_ability")).shouldApplyTo(entity))
             return;
 
         if(!event.getSource().is(DamageTypes.FALL)) return;

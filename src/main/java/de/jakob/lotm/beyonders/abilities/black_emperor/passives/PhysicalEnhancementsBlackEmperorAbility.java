@@ -13,8 +13,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsBlackEmperorAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsBlackEmperorAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsBlackEmperorAbility(String id) {
+        super(id);
     }
 
     @Override

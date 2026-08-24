@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsVisionaryAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsVisionaryAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsVisionaryAbility(String id) {
+        super(id);
     }
 
     @Override

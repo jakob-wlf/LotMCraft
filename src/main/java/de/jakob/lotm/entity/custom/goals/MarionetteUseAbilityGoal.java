@@ -37,7 +37,7 @@ public class MarionetteUseAbilityGoal extends TargetGoal {
 
         if(!component.shouldAttack()) return false;
 
-        if(!((PuppeteeringEnhancementsAbility) PassiveAbilityHandler.PUPPETEERING_ENHANCEMENTS.get()).shouldApplyTo(controller)) return false;
+        if(!((PuppeteeringEnhancementsAbility) PassiveAbilityHandler.getById("puppeteering_enhancements_ability")).shouldApplyTo(controller)) return false;
 
         return true;
     }

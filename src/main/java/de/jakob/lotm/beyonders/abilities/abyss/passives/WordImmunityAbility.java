@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.abyss.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -15,12 +15,12 @@ import java.util.HashSet;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class WordImmunityAbility extends PassiveAbilityItem {
+public class WordImmunityAbility extends PassiveAbility {
 
     public static final HashSet<LivingEntity> IMMUNE_ENTITIES = new HashSet<>();
 
-    public WordImmunityAbility(Properties properties) {
-        super(properties);
+    public WordImmunityAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class WordImmunityAbility extends PassiveAbilityItem {
             return;
         }
 
-        WordImmunityAbility ability = (WordImmunityAbility) PassiveAbilityHandler.WORD_IMMUNITY_ABYSS.get();
+        WordImmunityAbility ability = (WordImmunityAbility) PassiveAbilityHandler.getById("word_immunity_ability");
         if (!ability.shouldApplyTo(event.getEntity())) {
             IMMUNE_ENTITIES.remove(event.getEntity());
             return;

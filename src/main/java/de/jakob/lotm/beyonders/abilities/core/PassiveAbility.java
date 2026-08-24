@@ -1,9 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -18,14 +21,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public abstract class PassiveAbilityItem extends Item {
+public abstract class PassiveAbility {
 
     protected final Random random = new Random();
+    private final String id;
 
     private static final Map<Player, Integer> cooldowns = new HashMap<>();
 
-    public PassiveAbilityItem(Properties properties) {
-        super(properties);
+    public PassiveAbility(String id) {
+        this.id = id;
     }
 
     public abstract Map<String, Integer> getRequirements();
@@ -78,6 +82,14 @@ public abstract class PassiveAbilityItem extends Item {
         }
     }
 
+    public ResourceLocation getTexture() {
+        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/abilities/passive/" + id + ".png");
+    }
+
+    public String getId() {
+        return id;
+    }
+
     protected void applyRegenReduce(ArrayList<MobEffectInstance> effects, Entity entity, HashMap<UUID, Long> reducedRegen) {
         if(!(entity instanceof Player)) {
             return;
@@ -120,26 +132,6 @@ public abstract class PassiveAbilityItem extends Item {
             }
         }
     }
-
-    @Override
-    public void appendHoverText(@NotNull ItemStack stack,
-                                @NotNull TooltipContext context,
-                                @NotNull List<Component> tooltipComponents,
-                                @NotNull TooltipFlag tooltipFlag) {
-        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-
-        if(Component.translatable(this.getDescriptionId(stack) + ".description").getString().equals(this.getDescriptionId(stack) + ".description"))
-            return;
-
-        tooltipComponents.add(Component.translatable("lotm.description").append(":").withStyle(ChatFormatting.GRAY));
-        tooltipComponents.add(Component.translatable(this.getDescriptionId(stack) + ".description").withStyle(ChatFormatting.DARK_GRAY));
-    }
-
-    @Override
-    public @NotNull Component getName(ItemStack stack) {
-        return Component.translatable(this.getDescriptionId(stack)).append(Component.literal(" (")).append(Component.translatable("lotm.passive")).append(Component.literal(")"));
-    }
-
     /**
      * Gets called every 5 ticks from BeyonderDataTickHandler
      */
@@ -154,6 +146,14 @@ public abstract class PassiveAbilityItem extends Item {
 
     protected static int getColorForPathway(String pathway) {
         return BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
+    }
+
+    public MutableComponent getName() {
+        return Component.translatable("ability.lotmcraft." + id).withStyle(ChatFormatting.BOLD);
+    }
+
+    public MutableComponent getDescription() {
+        return Component.translatable("ability.lotmcraft." + id + ".description");
     }
 
     protected void applyPotionEffects(LivingEntity entity, List<MobEffectInstance> effects) {

@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.justiciar.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -14,10 +14,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EnhancedMentalAttributesAbility extends PassiveAbilityItem {
+public class EnhancedMentalAttributesAbility extends PassiveAbility {
 
-    public EnhancedMentalAttributesAbility(Item.Properties properties) {
-        super(properties);
+    public EnhancedMentalAttributesAbility(String id) {
+        super(id);
     }
 
     @Override

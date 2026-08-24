@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsMotherAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsMotherAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsMotherAbility(String id) {
+        super(id);
     }
 
     @Override

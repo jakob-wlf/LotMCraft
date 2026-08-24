@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsRedPriestAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsRedPriestAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsRedPriestAbility(String id) {
+        super(id);
     }
 
     @Override

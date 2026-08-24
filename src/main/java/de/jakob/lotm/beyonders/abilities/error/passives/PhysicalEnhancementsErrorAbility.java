@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsErrorAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsErrorAbility(String id) {
+        super(id);
     }
 
     @Override

@@ -29,7 +29,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
+public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
 
     private static final String BASE_MODIFIER_ID = "lotm_physical_enhancement";
 
@@ -55,8 +55,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
 
     private static final Map<UUID, Integer> lastKnownSequence = new ConcurrentHashMap<>();
 
-    public PhysicalEnhancementsAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsAbility(String id) {
+        super(id);
     }
 
     public abstract List<PhysicalEnhancement> getEnhancements();

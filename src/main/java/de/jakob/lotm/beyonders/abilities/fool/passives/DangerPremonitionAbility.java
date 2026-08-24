@@ -1,14 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -16,13 +13,12 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber
-public class DangerPremonitionAbility extends PassiveAbilityItem {
-    public DangerPremonitionAbility(Properties properties) {
-        super(properties);
+public class DangerPremonitionAbility extends PassiveAbility {
+    public DangerPremonitionAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -40,7 +36,7 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
-        if(!((DangerPremonitionAbility) PassiveAbilityHandler.DANGER_PREMONITION.get()).shouldApplyTo(entity))
+        if(!((DangerPremonitionAbility) PassiveAbilityHandler.getById("danger_premonition_ability")).shouldApplyTo(entity))
             return;
 
         Entity damager = event.getSource().getEntity();

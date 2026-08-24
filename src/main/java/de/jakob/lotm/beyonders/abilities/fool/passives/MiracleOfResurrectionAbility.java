@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
@@ -25,10 +25,10 @@ import java.util.Map;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
+public class MiracleOfResurrectionAbility extends PassiveAbility {
 
-    public MiracleOfResurrectionAbility(Properties properties) {
-        super(properties);
+    public MiracleOfResurrectionAbility(String id) {
+        super(id);
     }
 
     @Override

@@ -42,7 +42,7 @@ public class SpaceTimeLabyrinthEffect {
 
         if (entity.tickCount % DAMAGE_INTERVAL_TICKS != 0) return;
 
-        if (((VoidImmunityAbility) PassiveAbilityHandler.VOID_IMMUNITY.get()).shouldApplyTo(entity)) return;
+        if (((VoidImmunityAbility) PassiveAbilityHandler.getById("void_immunity_ability")).shouldApplyTo(entity)) return;
 
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE);
         entity.hurt(source, DAMAGE_PER_PULSE);

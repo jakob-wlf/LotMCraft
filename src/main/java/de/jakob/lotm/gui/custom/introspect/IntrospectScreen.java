@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.beyonders.acting.ActingTask;
@@ -15,10 +16,7 @@ import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientSacrificeCache;
-import de.jakob.lotm.util.data.ClientQuestData;
-import de.jakob.lotm.util.data.ClientUniquenessCache;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.*;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -67,6 +65,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private EditBox allyNameInput;
 
+    private final List<PassiveAbility> passiveAbilities = new ArrayList<>();
     private final List<Ability> availableAbilities = new ArrayList<>();
     private final List<SubAbilityEntry> subAbilityEntries = new ArrayList<>();
     private final List<Ability> abilityWheelSlots = new ArrayList<>();
@@ -172,6 +171,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private void initializeAbilities() {
         availableAbilities.clear();
         subAbilityEntries.clear();
+        passiveAbilities.clear();
         abilitiesScrollOffset = 0;
 
         if (showAllAbilities) {
@@ -237,6 +237,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         // Also recompute copied scroll
         updateCopiedScroll();
+
+        passiveAbilities.addAll(LOTMCraft.passiveAbilityHandler.getPassiveAbilitiesForEntity(minecraft.player));
     }
 
     private boolean isCopiedTab(Tab tab) {
@@ -722,6 +724,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
+        renderPassiveAbilities(guiGraphics, mouseX, mouseY);
+
         if (showQuests) {
             renderQuestPanel(guiGraphics);
         }
@@ -754,6 +758,16 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         if (showMissedActing) {
             renderMissedActingPanel(guiGraphics);
+        }
+    }
+
+    private void renderPassiveAbilities(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        int passivesY = 195;
+        int passivesX = this.leftPos + 7;
+
+        for(int i = 0; i < Math.min(passiveAbilities.size(), 9); i++) {
+            PassiveAbility passiveAbility = passiveAbilities.get(i);
+            renderPassiveAbilityIcon(guiGraphics, passiveAbility, passivesX + i * (ABILITY_ICON_SIZE + 2), passivesY, mouseX, mouseY);
         }
     }
 
@@ -1651,6 +1665,35 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             int by = y + ABILITY_ICON_SIZE - font.lineHeight + 1;
             guiGraphics.fill(bx - 1, by - 1, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0x99000000);
             guiGraphics.drawString(font, badge, bx, by, 0xFFFFFF, false);
+        }
+    }
+
+    private void renderPassiveAbilityIcon(GuiGraphics guiGraphics, PassiveAbility ability, int x, int y, int mouseX, int mouseY) {
+        if (ability.getTexture() != null) {
+            guiGraphics.blit(ability.getTexture(), x, y, 0, 0, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE);
+            // Check if hovered by mouse and render tooltip
+            if (mouseX >= x && mouseX <= x + ABILITY_ICON_SIZE
+                    && mouseY >= y && mouseY <= y + ABILITY_ICON_SIZE) {
+
+                MutableComponent name = ability.getName();
+                MutableComponent description = ability.getDescription();
+                int color = BeyonderData.pathwayInfos.containsKey(menu.getPathway()) ? BeyonderData.pathwayInfos.get(menu.getPathway()).color() : 0xFFFFFF;
+
+                List<Component> tooltipLines = new ArrayList<>();
+                tooltipLines.add(name.withStyle(ChatFormatting.BOLD).withColor(color));
+                if (description != null && !description.getString().startsWith("ability.")) {
+                    String descText = description.getString();
+                    List<String> wrappedLines = wrapText(descText, 100);
+                    for (String line : wrappedLines) {
+                        tooltipLines.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
+                    }
+                }
+
+                guiGraphics.renderTooltip(this.font, tooltipLines, java.util.Optional.empty(), mouseX, mouseY);
+            }
+        } else {
+            guiGraphics.fill(x, y, x + ABILITY_ICON_SIZE, y + ABILITY_ICON_SIZE, 0xFFFFFFFF);
+            guiGraphics.renderOutline(x, y, ABILITY_ICON_SIZE, ABILITY_ICON_SIZE, 0xFF000000);
         }
     }
 

@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.death.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -14,12 +14,12 @@ import java.util.HashSet;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class UndeadIgnoranceAbility extends PassiveAbilityItem {
+public class UndeadIgnoranceAbility extends PassiveAbility {
 
     public static final HashSet<LivingEntity> ignoredByUndead = new HashSet<>();
 
-    public UndeadIgnoranceAbility(Properties properties) {
-        super(properties);
+    public UndeadIgnoranceAbility(String id) {
+        super(id);
     }
 
     @Override

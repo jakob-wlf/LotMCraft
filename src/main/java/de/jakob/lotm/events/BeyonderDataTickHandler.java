@@ -2,7 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
@@ -24,7 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -39,10 +38,10 @@ import java.util.stream.Collectors;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
 
-    private static final Set<PassiveAbilityItem> passiveAbilities = ConcurrentHashMap.newKeySet();
+    private static final Set<PassiveAbility> passiveAbilities = ConcurrentHashMap.newKeySet();
 
 
-    private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new ConcurrentHashMap<>();
+    private static final Map<UUID, Set<PassiveAbility>> cachedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {
         cachedAbilities.remove(entity.getUUID());
@@ -50,16 +49,12 @@ public class BeyonderDataTickHandler {
 
     private static final Object INIT_LOCK = new Object();
 
-    private static Set<PassiveAbilityItem> getApplicableAbilities(LivingEntity entity) {
+    private static Set<PassiveAbility> getApplicableAbilities(LivingEntity entity) {
         if (passiveAbilities.isEmpty()) {
             synchronized (INIT_LOCK) {
                 if (passiveAbilities.isEmpty()) {
-                    List<PassiveAbilityItem> items = PassiveAbilityHandler.ITEMS
-                            .getEntries()
-                            .stream()
-                            .map(entry -> (PassiveAbilityItem) entry.get())
-                            .toList();
-                    passiveAbilities.addAll(items);
+                    List<PassiveAbility> abilities = PassiveAbilityHandler.passiveAbilities.stream().toList();
+                    passiveAbilities.addAll(abilities);
                 }
             }
         }

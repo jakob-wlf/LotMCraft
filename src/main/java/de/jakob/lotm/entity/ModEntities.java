@@ -6,6 +6,7 @@ import de.jakob.lotm.entity.custom.ability_entities.*;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
+import de.jakob.lotm.entity.custom.ability_entities.demoness_pathway.ChaosVortexEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
@@ -91,6 +92,10 @@ public class ModEntities {
     public static final Supplier<EntityType<WindBladeEntity>> WIND_BLADE =
             ENTITY_TYPES.register("wind_blade", () -> EntityType.Builder.<WindBladeEntity>of(WindBladeEntity::new, MobCategory.MISC)
                     .sized(.75f, 2f).noSave().build("wind_blade"));
+
+    public static final Supplier<EntityType<ChaosVortexEntity>> CHAOS_VORTEX =
+            ENTITY_TYPES.register("chaos_vortex", () -> EntityType.Builder.<ChaosVortexEntity>of(ChaosVortexEntity::new, MobCategory.MISC)
+                    .sized(5f, 5f).noSave().build("chaos_vortex"));
 
     // Ability Entities - Death Pathway
 
@@ -304,6 +309,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(1)
                     .fireImmune()
+                    .noSave()
                     .build("black_hole"));
 
     // Lightning

@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsFoolAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsFoolAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsFoolAbility(String id) {
+        super(id);
     }
 
     @Override

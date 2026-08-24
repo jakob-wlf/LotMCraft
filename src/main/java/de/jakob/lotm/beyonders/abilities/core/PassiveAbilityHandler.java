@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
@@ -42,77 +41,105 @@ import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveCalami
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PhysicalEnhancementsWheelOfFortuneAbility;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Rarity;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredItem;
-import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.world.entity.LivingEntity;
+
+import java.util.HashSet;
+import java.util.List;
 
 public class PassiveAbilityHandler {
 
-    public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
+    public static HashSet<PassiveAbility> passiveAbilities = new HashSet<>();
 
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_RED_PRIEST = ITEMS.registerItem("physical_enhancements_red_priest_ability", PhysicalEnhancementsRedPriestAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_SUN = ITEMS.registerItem("physical_enhancements_sun_ability", PhysicalEnhancementsSunAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_TYRANT = ITEMS.registerItem("physical_enhancements_tyrant_ability", PhysicalEnhancementsTyrantAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DEMONESS = ITEMS.registerItem("physical_enhancements_demoness_ability", PhysicalEnhancementsDemonessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_ABYSS = ITEMS.registerItem("physical_enhancements_abyss_ability", PhysicalEnhancementsAbyssAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_FOOL = ITEMS.registerItem("physical_enhancements_fool_ability", PhysicalEnhancementsFoolAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_ERROR = ITEMS.registerItem("physical_enhancements_error_ability", PhysicalEnhancementsErrorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DARKNESS = ITEMS.registerItem("physical_enhancements_darkness_ability", PhysicalEnhancementsDarknessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DOOR = ITEMS.registerItem("physical_enhancements_door_ability", PhysicalEnhancementsDoorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_MOTHER = ITEMS.registerItem("physical_enhancements_mother_ability", PhysicalEnhancementsMotherAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_VISIONARY = ITEMS.registerItem("physical_enhancements_visionary_ability", PhysicalEnhancementsVisionaryAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_WHEEL_OF_FORTUNE = ITEMS.registerItem("physical_enhancements_wheel_of_fortune_ability", PhysicalEnhancementsWheelOfFortuneAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_JUSTICIAR = ITEMS.registerItem("physical_enhancements_justiciar_ability", PhysicalEnhancementsJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public PassiveAbilityHandler() {
+        registerPassiveAbility();
+    }
 
-    public static final DeferredItem<Item> ORDER_JUSTICIAR = ITEMS.registerItem("order_justiciar_ability", OrderJusticiarAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> ENHANCED_MENTAL_ATTRIBUTES_JUSTICIAR = ITEMS.registerItem("enhanced_mental_attributes_justiciar_ability", EnhancedMentalAttributesAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> CHAOS_HUNTING_JUSTICIAR = ITEMS.registerItem("chaos_hunting_justiciar_ability", ChaosHuntingAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+    public static void registerPassiveAbility() {
+        // Physical enhancements
+        passiveAbilities.add(new PhysicalEnhancementsRedPriestAbility("physical_enhancements_red_priest_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsSunAbility("physical_enhancements_sun_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsTyrantAbility("physical_enhancements_tyrant_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsDemonessAbility("physical_enhancements_demoness_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsAbyssAbility("physical_enhancements_abyss_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsFoolAbility("physical_enhancements_fool_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsErrorAbility("physical_enhancements_error_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsDarknessAbility("physical_enhancements_darkness_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsDoorAbility("physical_enhancements_door_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsMotherAbility("physical_enhancements_mother_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsVisionaryAbility("physical_enhancements_visionary_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsWheelOfFortuneAbility("physical_enhancements_wheel_of_fortune_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsJusticiarAbility("physical_enhancements_justiciar_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsBlackEmperorAbility("physical_enhancements_black_emperor_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsDeathAbility("physical_enhancements_death_ability"));
 
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_BLACK_EMPEROR = ITEMS.registerItem("physical_enhancements_black_emperor_ability", PhysicalEnhancementsBlackEmperorAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Justiciar
+        passiveAbilities.add(new OrderJusticiarAbility("order_justiciar_ability"));
+        passiveAbilities.add(new EnhancedMentalAttributesAbility("enhanced_mental_attributes_justiciar_ability"));
+        passiveAbilities.add(new ChaosHuntingAbility("chaos_hunting_justiciar_ability"));
 
-    public static final DeferredItem<Item> FLAMING_HIT = ITEMS.registerItem("flaming_hit_ability", FlamingHitAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> FIRE_RESISTANCE = ITEMS.registerItem("fire_resistance_ability", FireResistanceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Red priest
+        passiveAbilities.add(new FlamingHitAbility("flaming_hit_ability"));
+        passiveAbilities.add(new FireResistanceAbility("fire_resistance_ability"));
 
-    public static final DeferredItem<Item> CRIMINAL_PROFICIENCY = ITEMS.registerItem("criminal_proficiency_ability", CriminalProficiencyAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> FIRE_RESISTANCE_ABYSS = ITEMS.registerItem("fire_resistance_abyss_ability", FireResistanceAbyssAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> WORD_IMMUNITY_ABYSS = ITEMS.registerItem("word_immunity_abyss_ability", WordImmunityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Abyss
+        passiveAbilities.add(new CriminalProficiencyAbility("criminal_proficiency_ability"));
+        passiveAbilities.add(new FireResistanceAbyssAbility("fire_resistance_abyss_ability"));
+        passiveAbilities.add(new WordImmunityAbility("word_immunity_abyss_ability"));
 
-    public static final DeferredItem<Item> SPIRIT_WORLD_AWARENESS = ITEMS.registerItem("spirit_world_awareness_ability", SpiritWorldAwarenessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> VOID_IMMUNITY = ITEMS.registerItem("void_immunity_ability", VoidImmunityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Door
+        passiveAbilities.add(new SpiritWorldAwarenessAbility("spirit_world_awareness_ability"));
+        passiveAbilities.add(new VoidImmunityAbility("void_immunity_ability"));
 
-    public static final DeferredItem<Item> PASSIVE_LUCK = ITEMS.registerItem("passive_luck_ability", PassiveLuckAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> CALAMITY_ATTRACTION = ITEMS.registerItem("passive_calamity_attraction_ability", PassiveCalamityAttraction::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PASSIVE_LUCK_ACCUMULATION = ITEMS.registerItem("passive_luck_accumulation_ability", PassiveLuckAccumulationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Wheel of fortune
+        passiveAbilities.add(new PassiveLuckAbility("passive_luck_ability"));
+        passiveAbilities.add(new PassiveCalamityAttraction("passive_calamity_attraction_ability"));
+        passiveAbilities.add(new PassiveLuckAccumulationAbility("passive_luck_accumulation_ability"));
 
-    public static final DeferredItem<Item> PAPER_DAGGERS = ITEMS.registerItem("paper_dagger_ability", PaperDaggersAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> ACROBATICS = ITEMS.registerItem("acrobatics_ability", AcrobaticsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> DANGER_PREMONITION = ITEMS.registerItem("danger_premonition_ability", DangerPremonitionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PUPPETEERING_ENHANCEMENTS = ITEMS.registerItem("puppeteering_enhancements_ability", PuppeteeringEnhancementsAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> MIRACLE_OF_RESURRECTION = ITEMS.registerItem("miracle_of_resurrection_ability", MiracleOfResurrectionAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Fool
+        passiveAbilities.add(new PaperDaggersAbility("paper_dagger_ability"));
+        passiveAbilities.add(new AcrobaticsAbility("acrobatics_ability"));
+        passiveAbilities.add(new DangerPremonitionAbility("danger_premonition_ability"));
+        passiveAbilities.add(new PuppeteeringEnhancementsAbility("puppeteering_enhancements_ability"));
+        passiveAbilities.add(new MiracleOfResurrectionAbility("miracle_of_resurrection_ability"));
 
-    public static final DeferredItem<Item> NOCTURNALITY = ITEMS.registerItem("nocturnality_ability", NocturnalityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> DARKNESS_REVIVAL = ITEMS.registerItem("darkness_revival_ability", DarknessRevivalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    
-    public static final DeferredItem<Item> PASSIVE_THEFT = ITEMS.registerItem("passive_theft_ability", PassiveTheftAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Darkness
+        passiveAbilities.add(new NocturnalityAbility("nocturnality_ability"));
+        passiveAbilities.add(new DarknessRevivalAbility("darkness_revival_ability"));
 
-    public static final DeferredItem<Item> FEATHER_FALL = ITEMS.registerItem("feather_fall_ability", FeatherFallAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> BLOOD_LOSS = ITEMS.registerItem("blood_loss_ability", BloodLossAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> MIRROR_REVIVAL = ITEMS.registerItem("mirror_revival_ability", MirrorRevivalAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Error
+        passiveAbilities.add(new PassiveTheftAbility("passive_theft_ability"));
 
-    public static final DeferredItem<Item> LIGHTNING_ARROW = ITEMS.registerItem("lightning_arrow_ability", LightningArrowAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> RIPTIDE = ITEMS.registerItem("riptide_ability", RiptideAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Demoness
+        passiveAbilities.add(new FeatherFallAbility("feather_fall_ability"));
+        passiveAbilities.add(new BloodLossAbility("blood_loss_ability"));
+        passiveAbilities.add(new MirrorRevivalAbility("mirror_revival_ability"));
 
-    public static final DeferredItem<Item> PHYSICAL_ENHANCEMENTS_DEATH = ITEMS.registerItem("physical_enhancements_death_ability", PhysicalEnhancementsDeathAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> UNDEAD_IGNORANCE = ITEMS.registerItem("undead_ignorance_ability", UndeadIgnoranceAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> SOLAR_SENSITIVITY = ITEMS.registerItem("solar_sensitivity_ability", SolarSensitivityAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> REINCARNATION = ITEMS.registerItem("reincarnation_ability", ReincarnationAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Tyrant
+        passiveAbilities.add(new LightningArrowAbility("lightning_arrow_ability"));
+        passiveAbilities.add(new RiptideAbility("riptide_ability"));
 
-    public static final DeferredItem<Item> META_AWARENESS = ITEMS.registerItem("meta_awareness_ability", MetaAwarenessAbility::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
-    public static final DeferredItem<Item> PURE_IDEALISM = ITEMS.registerItem("pure_idealism_ability", PureIdealism::new, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
+        // Death
+        passiveAbilities.add(new UndeadIgnoranceAbility("undead_ignorance_ability"));
+        passiveAbilities.add(new SolarSensitivityAbility("solar_sensitivity_ability"));
+        passiveAbilities.add(new ReincarnationAbility("reincarnation_ability"));
 
-    public static void registerAbilities(IEventBus eventBus) {
-        ITEMS.register(eventBus);
+        // Visionary
+        passiveAbilities.add(new MetaAwarenessAbility("meta_awareness_ability"));
+        passiveAbilities.add(new PureIdealism("pure_idealism_ability"));
+    }
+
+    public static PassiveAbility getById(String id) {
+        for (PassiveAbility ability : passiveAbilities) {
+            if (ability.getId().equals(id)) {
+                return ability;
+            }
+        }
+        return null;
+    }
+
+    public List<PassiveAbility> getPassiveAbilitiesForEntity(LivingEntity entity) {
+        return passiveAbilities.stream()
+                .filter(ability -> ability.shouldApplyTo(entity))
+                .toList();
     }
 }

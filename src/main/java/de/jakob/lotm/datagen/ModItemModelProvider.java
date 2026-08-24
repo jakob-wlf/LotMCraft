@@ -85,10 +85,6 @@ public class ModItemModelProvider extends ItemModelProvider {
             basicItem(i.get());
         });
 
-        PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {
-            itemWithCustomDisplay(i.get());
-        });
-
         itemWithCustomDisplay(ModItems.FOOL_Card.get());
         basicItem(ModItems.MOD_ICON.get());
     }

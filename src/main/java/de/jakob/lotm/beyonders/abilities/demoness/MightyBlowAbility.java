@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -46,6 +48,8 @@ public class MightyBlowAbility extends Ability {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION, pos, 1, 0, 0.115);
 
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, DamageLookup.lookupDamage(9, 1.5) * multiplier(entity), pos, true, false, true, 0);
+
+        EffectManager.playEffect(EffectIds.CHAOS_VORTEX, entity.getX(), entity.getY(), entity.getZ(), (ServerLevel) level);
 
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
     }
