@@ -129,7 +129,6 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
 
         int distance = (int) Math.sqrt(dx * dx + dz * dz);
 
-            // distance still isn't balanced
             int maxDistance = switch (playerSequence) {
                 case 9, 8, 7, 6, 5 -> 200 * (10 - playerSequence);
                 case 4             -> 2500;

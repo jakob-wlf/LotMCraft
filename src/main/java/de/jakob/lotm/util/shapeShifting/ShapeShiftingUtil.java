@@ -59,11 +59,11 @@ public class ShapeShiftingUtil {
             float heightDifference = Math.abs(entityHeight - playerHeight) / playerHeight;
             float widthDifference = Math.abs(entityWidth - playerWidth) / playerWidth;
 
-            if (sequence >= 5 && (!isPlayerModel)) {
+            if (sequence >= 6 && (!isPlayerModel)) {
                 return;
-            } else if (sequence >= 4) {
+            } else if (sequence >= 5) {
                 if (heightDifference > 0.25 || widthDifference > 0.25) return;
-            } else if (sequence >= 3) {
+            } else if (sequence >= 4) {
                 if (heightDifference > 0.9 || widthDifference > 0.9) return;
             }
         }

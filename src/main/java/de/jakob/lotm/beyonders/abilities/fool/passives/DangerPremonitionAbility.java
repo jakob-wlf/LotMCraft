@@ -2,9 +2,9 @@ package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.core.*;
+import de.jakob.lotm.events.AbilityWheelEvents;
+import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.syncDangerArrowsOverlayPacket;
@@ -56,7 +56,7 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
         List<LivingEntity> possibleThreats = AbilityUtil.getNearbyEntities(serverPlayer, serverLevel, serverPlayer.position(), radius);
         for (LivingEntity threat : possibleThreats) {
 
-            AllyComponent allyComponent = serverLevel.getData(ModAttachments.ALLY_COMPONENT);
+            AllyComponent allyComponent = entity.getData(ModAttachments.ALLY_COMPONENT);
             if (allyComponent.isAlly(threat.getUUID())) continue;
 
             if (ToggleAbility.getActiveAbilitiesForEntity(threat).contains(
@@ -186,12 +186,72 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
         return false;
     }
 
-    public static void onAbilityWheelOpen() {
+    @SubscribeEvent
+    public static void onAbilityWheelOpen(AbilityWheelOpenEvent event) {
+        List<LivingEntity> entities = AbilityUtil.getNearbyEntities(event.getEntity(), event.getLevel(), event.getEntity().position(), 33, true);
+        for (LivingEntity entity : entities) {
 
+            if (!(entity instanceof ServerPlayer serverPlayer)) continue;
+
+            if (!BeyonderData.isBeyonder(entity)
+                    && BeyonderData.getSequence(entity) > 8
+                    && (!BeyonderData.getPathway(entity).equals("fool"))
+            ) continue;
+
+            int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
+            if (event.getEntity().distanceTo(serverPlayer) > radius) continue;
+
+            if (ToggleAbility.getActiveAbilitiesForEntity(event.getEntity()).contains(
+                    LOTMCraft.abilityHandler.getById("psychological_invisibility_ability"))) continue;
+
+            AllyComponent allyComponent = event.getEntity().getData(ModAttachments.ALLY_COMPONENT);
+            if (allyComponent.isAlly(entity.getUUID())) continue;
+
+            if (event.getEntity() instanceof ServerPlayer threatServer) {
+                if (DivinationUtil.getConcealmentPower(threatServer) > DivinationUtil.getDivinationPower(serverPlayer) + 4) continue;
+            }
+
+            double dx = event.getEntity().getX() - serverPlayer.getX();
+            double dz = event.getEntity().getZ() - serverPlayer.getZ();
+            PacketHandler.sendToPlayer(serverPlayer, new syncDangerArrowsOverlayPacket(
+                    getDirection(dx, dz, serverPlayer.getYRot()),
+                    80
+            ));
+        }
     }
 
-    public static void onAbilityTrigger() {
+    @SubscribeEvent
+    public static void onAbilityTrigger(AbilityUsedEvent event) {
+        List<LivingEntity> entities = AbilityUtil.getNearbyEntities(event.getEntity(), event.getLevel(), event.getEntity().position(), 33, true);
+        for (LivingEntity entity : entities) {
 
+            if (!(entity instanceof ServerPlayer serverPlayer)) continue;
+
+            if (!BeyonderData.isBeyonder(entity)
+                    && BeyonderData.getSequence(entity) > 8
+                    && (!BeyonderData.getPathway(entity).equals("fool"))
+            ) continue;
+
+            int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
+            if (event.getEntity().distanceTo(serverPlayer) > radius) continue;
+
+            if (ToggleAbility.getActiveAbilitiesForEntity(event.getEntity()).contains(
+                    LOTMCraft.abilityHandler.getById("psychological_invisibility_ability"))) continue;
+
+            AllyComponent allyComponent = event.getEntity().getData(ModAttachments.ALLY_COMPONENT);
+            if (allyComponent.isAlly(entity.getUUID())) continue;
+
+            if (event.getEntity() instanceof ServerPlayer threatServer) {
+                if (DivinationUtil.getConcealmentPower(threatServer) > DivinationUtil.getDivinationPower(serverPlayer) + 4) continue;
+            }
+
+            double dx = event.getEntity().getX() - serverPlayer.getX();
+            double dz = event.getEntity().getZ() - serverPlayer.getZ();
+            PacketHandler.sendToPlayer(serverPlayer, new syncDangerArrowsOverlayPacket(
+                    getDirection(dx, dz, serverPlayer.getYRot()),
+                    80
+            ));
+        }
     }
 
     private static String getDirection(double dx, double dz, float playerYaw) {
