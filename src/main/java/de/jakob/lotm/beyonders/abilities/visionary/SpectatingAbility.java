@@ -75,6 +75,9 @@ public class SpectatingAbility extends ToggleAbility {
             else if(AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(lookedAt))){
                 return;
             }
+            else if (BeyonderData.getPathway(lookedAt).equals("fool") && (seq - BeyonderData.getSequence(lookedAt)) >= 1) {
+                return;
+            }
         }
 
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
