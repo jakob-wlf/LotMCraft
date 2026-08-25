@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
@@ -11,7 +12,6 @@ import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -47,11 +47,12 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
 
     @SubscribeEvent
     public static void beforePlayerDies(LivingIncomingDamageEvent event) {
-        Entity entity = event.getEntity();
+        LivingEntity entity = event.getEntity();
         Level level = entity.level();
 
-        if(level.isClientSide)
-            return;
+        if(level.isClientSide) return;
+
+        if(!((MiracleOfResurrectionAbility) PassiveAbilityHandler.MIRACLE_OF_RESURRECTION.get()).shouldApplyTo(entity)) return;
 
         if (entity instanceof ServerPlayer serverPlayer) {
 
@@ -61,8 +62,8 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
             MiracleOfResurrectionComponent data = serverPlayer.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             if (data.getResurrectionAttempts() > 0) {
                 data.setResurrectionAttempts(data.getResurrectionAttempts() - 1);
-                // cancel the death
 
+                // cancel the death
                 event.setCanceled(true);
 
                 // drop the inventory

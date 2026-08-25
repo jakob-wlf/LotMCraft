@@ -8,7 +8,9 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -16,6 +18,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -89,6 +92,10 @@ public class PaperFigurineSubstituteAbility extends Ability {
         if(num <= 0)
             return;
 
+        // skip damage canceling if the damage was lower than 10% of the player's max health, or it the attack was not fatal
+        if (!(event.getOriginalDamage() / entity.getMaxHealth() >= 0.1)
+                && !(entity.getHealth() - event.getOriginalDamage() <= 0)) return;
+
         figurineNumbers.put(event.getEntity().getUUID(), num - 1);
         event.setNewDamage(0);
 
@@ -115,6 +122,18 @@ public class PaperFigurineSubstituteAbility extends Ability {
             if(index != -1)
                 player.getInventory().removeItem(index, 1);
         }
+        
+        ServerLevel serverLevel = (ServerLevel) level;
+        ServerScheduler.scheduleForDuration(0, 1, 20, () ->
+        serverLevel.sendParticles(
+                new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.PAPER)),
+                pos.x, pos.y + 0.9, pos.z,
+                50,
+                0.2, 0.8, 0.2,
+                0.15
+        )
+        );
+
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ARMOR_STAND_HIT, SoundSource.BLOCKS, 3, 1);
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .6f, 1);
 

@@ -193,10 +193,8 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
 
             if (!(entity instanceof ServerPlayer serverPlayer)) continue;
 
-            if (!BeyonderData.isBeyonder(entity)
-                    && BeyonderData.getSequence(entity) > 8
-                    && (!BeyonderData.getPathway(entity).equals("fool"))
-            ) continue;
+            if(!((DangerPremonitionAbility) PassiveAbilityHandler.DANGER_PREMONITION.get()).shouldApplyTo(entity))
+                continue;
 
             int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
             if (event.getEntity().distanceTo(serverPlayer) > radius) continue;
@@ -227,10 +225,8 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
 
             if (!(entity instanceof ServerPlayer serverPlayer)) continue;
 
-            if (!BeyonderData.isBeyonder(entity)
-                    && BeyonderData.getSequence(entity) > 8
-                    && (!BeyonderData.getPathway(entity).equals("fool"))
-            ) continue;
+            if(!((DangerPremonitionAbility) PassiveAbilityHandler.DANGER_PREMONITION.get()).shouldApplyTo(entity))
+                continue;
 
             int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
             if (event.getEntity().distanceTo(serverPlayer) > radius) continue;
