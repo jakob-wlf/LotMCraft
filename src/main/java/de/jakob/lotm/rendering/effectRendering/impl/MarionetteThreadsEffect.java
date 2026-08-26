@@ -23,10 +23,28 @@ public class MarionetteThreadsEffect extends ActiveEffect {
         super(location, duration, infinite);
     }
 
+    private boolean colorInitialized = false;
+    private void initializeColor() {
+        if (colorInitialized) {
+            return;
+        }
+
+        colorInitialized = true;
+
+        if(getParams()[6] < 0 || getParams()[7] < 0 || getParams()[8] < 0) {
+            return;
+        }
+        THREAD_COLOR[0] = getParams()[6];
+        THREAD_COLOR[1] = getParams()[7];
+        THREAD_COLOR[2] = getParams()[8];
+    }
+
     @Override
     protected void render(PoseStack poseStack, float tick) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+
+        initializeColor();
 
         float progress = tick / maxDuration;
         float fadeIn  = Mth.clamp(progress / 0.1f, 0f, 1f);

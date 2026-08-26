@@ -8,6 +8,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -210,10 +211,10 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
 
-            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .2, .6, -.5);
+            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
             Vec3 end = target.getEyePosition();
             if(entity instanceof ServerPlayer serverPlayer)
-                EffectManager.playDirectionalEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 2, serverPlayer);
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 0.5f, 0.1f, 0.7f));
 
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
@@ -225,11 +226,14 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+            if(entity instanceof ServerPlayer player)
+                EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level, player, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
             if(entity instanceof Player player && !component.isMarionette()) {
                 turnIntoMarionette(target, player);
             }
-            else
-                target.setHealth(0);
+            else {
+                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+            }
         }, (ServerLevel) level);
     }
 
@@ -268,7 +272,7 @@ public class PuppeteeringAbility extends Ability {
         if(entitiesBeingManipulated.containsKey(entity.getUUID())) return;
 
         for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35)) {
-            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .2, .6, -.5);
+            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
             Vec3 end = target.getEyePosition();
             EffectManager.playDirectionalEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 2, serverPlayer);
         }

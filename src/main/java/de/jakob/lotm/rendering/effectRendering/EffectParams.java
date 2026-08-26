@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public record EffectParams(Integer duration, Boolean infinite, float[] params) {
 
-    public static final int PARAM_COUNT = 8;
+    public static final int PARAM_COUNT = 9;
     public static final float UNUSED = -1f;
 
     public static final int START_X = 0, START_Y = 1, START_Z = 2;
@@ -46,6 +46,21 @@ public record EffectParams(Integer duration, Boolean infinite, float[] params) {
         float[] arr = defaultParamsArray();
         arr[START_X] = (float) startX; arr[START_Y] = (float) startY; arr[START_Z] = (float) startZ;
         arr[END_X] = (float) endX;     arr[END_Y] = (float) endY;     arr[END_Z] = (float) endZ;
+        return new EffectParams(duration, null, arr);
+    }
+
+    public static EffectParams directionWithParams(Integer duration,
+                                         double startX, double startY, double startZ,
+                                         double endX, double endY, double endZ, float... params) {
+        float[] arr = defaultParamsArray();
+        arr[START_X] = (float) startX; arr[START_Y] = (float) startY; arr[START_Z] = (float) startZ;
+        arr[END_X] = (float) endX;     arr[END_Y] = (float) endY;     arr[END_Z] = (float) endZ;
+        if (params != null) {
+            for (int i = 0; i < Math.min(params.length, PARAM_COUNT); i++) {
+                if(arr.length <= i + 6 || i + 6 >= PARAM_COUNT) break;
+                arr[i + 6] = params[i];
+            }
+        }
         return new EffectParams(duration, null, arr);
     }
 

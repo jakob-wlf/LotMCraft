@@ -58,8 +58,10 @@ public class MirrorWorldTraversalAbility extends SelectableAbility {
             return;
         }
 
-        if(entity instanceof ServerPlayer player) player.sendSystemMessage(Component.translatable("ability.lotmcraft.mirror_world_traversal.scanning").withColor(getColorForPathway("demoness")));
-        EffectManager.playEffect(EffectIds.RING_PULSE, entity.getX(), entity.getY() + 1, entity.getZ(), serverLevel, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
+        if(entity instanceof ServerPlayer player) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.mirror_world_traversal.scanning").withColor(getColorForPathway("demoness")));
+            EffectManager.playEffect(EffectIds.RING_PULSE, entity.getX(), entity.getY() + 1, entity.getZ(), serverLevel, player, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
+        }
 
         ServerScheduler.scheduleDelayed(1, () -> {
             Vec3 searchCenter = MirrorGateManager.getCoordinatesInOverworld(entity.blockPosition(), serverLevel).getCenter();
