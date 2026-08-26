@@ -37,7 +37,8 @@ public class ChaosVortexEffect extends ActiveEffect {
                     .setShaderState(RenderStateShard.POSITION_COLOR_SHADER)
                     .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
                     .setCullState(RenderStateShard.NO_CULL)
-                    .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                    .setDepthTestState(RenderStateShard.LEQUAL_DEPTH_TEST)
+                    .setWriteMaskState(RenderStateShard.COLOR_DEPTH_WRITE)
                     .createCompositeState(false)
     );
 
@@ -47,10 +48,10 @@ public class ChaosVortexEffect extends ActiveEffect {
     private static final int RING_SEGMENTS = 56;
     private static final int FRAGMENT_COUNT = 90;
 
-    private static final float COLOR_SATURATION = 0.85f;
-    private static final float COLOR_BRIGHTNESS = 0.42f;
+    private static final float COLOR_SATURATION = 0.75f;
+    private static final float COLOR_BRIGHTNESS = 0.28f;   // darker, less neon
+    private static final float FLICKER_BRIGHTNESS = 0.85f;
     private static final float FLICKER_THRESHOLD = 0.975f;
-    private static final float FLICKER_BRIGHTNESS = 1.0f;
 
     private static final float DREAD_AURA_RADIUS_MULT = 1.8f;
 
@@ -137,48 +138,10 @@ public class ChaosVortexEffect extends ActiveEffect {
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        renderDreadAura(poseStack, bufferSource, sizeFactor, tick, alpha);
         renderFunnel(poseStack, bufferSource, sizeFactor, rotation, tick, alpha);
-        renderVoidCore(poseStack, bufferSource, sizeFactor, tick, alpha);
         renderFragments(poseStack, bufferSource, progress, sizeFactor, rotation, tick, alpha);
 
         poseStack.popPose();
-    }
-
-    private void renderDreadAura(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource,
-                                 float sizeFactor, float tick, float alpha) {
-        if (alpha <= 0f || sizeFactor <= 0f) return;
-
-        VertexConsumer consumer = bufferSource.getBuffer(CHAOS_VORTEX_BODY);
-        Matrix4f matrix = poseStack.last().pose();
-
-        float innerR = MAX_RADIUS * sizeFactor;
-        float outerR = MAX_RADIUS * sizeFactor * DREAD_AURA_RADIUS_MULT;
-        int segments = 48;
-        float auraAlpha = alpha * 0.12f;
-
-        for (int i = 0; i < segments; i++) {
-            float a1 = (float) (i * Math.PI * 2 / segments);
-            float a2 = (float) ((i + 1) * Math.PI * 2 / segments);
-
-            float wobble1 = turbulence(a1, tick * 0.3f, tick) * 1.5f;
-            float wobble2 = turbulence(a2, tick * 0.3f, tick) * 1.5f;
-
-            float xi1 = Mth.cos(a1) * innerR;
-            float zi1 = Mth.sin(a1) * innerR;
-            float xi2 = Mth.cos(a2) * innerR;
-            float zi2 = Mth.sin(a2) * innerR;
-
-            float xo1 = Mth.cos(a1) * (outerR + wobble1);
-            float zo1 = Mth.sin(a1) * (outerR + wobble1);
-            float xo2 = Mth.cos(a2) * (outerR + wobble2);
-            float zo2 = Mth.sin(a2) * (outerR + wobble2);
-
-            addVertex(consumer, matrix, xi1, 0.02f, zi1, 0.02f, 0.0f, 0.03f, auraAlpha);
-            addVertex(consumer, matrix, xi2, 0.02f, zi2, 0.02f, 0.0f, 0.03f, auraAlpha);
-            addVertex(consumer, matrix, xo2, 0.02f, zo2, 0.0f, 0.0f, 0.0f, 0f);
-            addVertex(consumer, matrix, xo1, 0.02f, zo1, 0.0f, 0.0f, 0.0f, 0f);
-        }
     }
 
     private void renderFunnel(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource,
@@ -203,7 +166,7 @@ public class ChaosVortexEffect extends ActiveEffect {
             float twist1 = rotation * (1f + t1 * 1.5f);
             float twist2 = rotation * (1f + t2 * 1.5f);
 
-            float layerAlpha = alpha * (0.4f + 0.6f * (1f - t1));
+            float layerAlpha = alpha * (0.6f + 0.4f * (1f - t1));
 
             for (int i = 0; i < RING_SEGMENTS; i++) {
                 float a1 = (float) (i * Math.PI * 2 / RING_SEGMENTS);
@@ -232,36 +195,6 @@ public class ChaosVortexEffect extends ActiveEffect {
                 addVertex(consumer, matrix, x2b, y2, z2b, colB[0], colB[1], colB[2], layerAlpha);
                 addVertex(consumer, matrix, x2a, y2, z2a, colA[0], colA[1], colA[2], layerAlpha);
             }
-        }
-    }
-
-    private void renderVoidCore(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource,
-                                float sizeFactor, float tick, float alpha) {
-        if (alpha <= 0f || sizeFactor <= 0f) return;
-
-        VertexConsumer consumer = bufferSource.getBuffer(CHAOS_VORTEX_BODY);
-        Matrix4f matrix = poseStack.last().pose();
-
-        float breathe = 1f + Mth.sin(tick * 0.2f) * 0.08f;
-        float coreRadius = MAX_RADIUS * sizeFactor * 0.16f * breathe;
-        float coreY = -FUNNEL_HEIGHT * sizeFactor;
-        int segments = 24;
-
-        for (int i = 0; i < segments; i++) {
-            float a1 = (float) (i * Math.PI * 2 / segments);
-            float a2 = (float) ((i + 1) * Math.PI * 2 / segments);
-
-            float[] rimA = flickerHueColor(a1, tick, -1, i);
-            float[] rimB = flickerHueColor(a2, tick, -1, i + 1);
-
-            rimA[0] *= 0.5f; rimA[1] *= 0.3f; rimA[2] *= 0.3f;
-            rimB[0] *= 0.5f; rimB[1] *= 0.3f; rimB[2] *= 0.3f;
-
-            addVertex(consumer, matrix, 0, coreY, 0, 0f, 0f, 0f, alpha);
-            addVertex(consumer, matrix, Mth.cos(a1) * coreRadius, coreY, Mth.sin(a1) * coreRadius,
-                    rimA[0], rimA[1], rimA[2], alpha * 0.85f);
-            addVertex(consumer, matrix, Mth.cos(a2) * coreRadius, coreY, Mth.sin(a2) * coreRadius,
-                    rimB[0], rimB[1], rimB[2], alpha * 0.85f);
         }
     }
 
@@ -305,7 +238,7 @@ public class ChaosVortexEffect extends ActiveEffect {
         float saturation = COLOR_SATURATION;
         if (flicker > FLICKER_THRESHOLD) {
             brightness = FLICKER_BRIGHTNESS;
-            saturation = Math.min(1f, COLOR_SATURATION + 0.1f);
+            saturation = Math.min(1f, COLOR_SATURATION + 0.15f);
         }
 
         int rgb = Color.HSBtoRGB(hue, saturation, brightness);
@@ -335,6 +268,7 @@ public class ChaosVortexEffect extends ActiveEffect {
                                      float x, float y, float z, float size,
                                      float r, float g, float b, float a) {
         Minecraft mc = Minecraft.getInstance();
+
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vector3f worldOffset = new Vector3f(x, y, z);

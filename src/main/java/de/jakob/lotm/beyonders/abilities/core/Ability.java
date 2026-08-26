@@ -62,6 +62,7 @@ public abstract class Ability {
     // Misc
     public boolean doesNotIncreaseDigestion = false;
     protected boolean shouldBeHidden = false;
+    public int onHoldTickInverval = 5;
 
     // Utility
     protected final Random random = new Random();
@@ -218,7 +219,6 @@ public abstract class Ability {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
-        // Creative + OP players can use any ability up to their sequence
         if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
@@ -267,8 +267,7 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) return false;
+        if(BeyonderData.getSpirituality(entity) < getSpiritualityCost()) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 

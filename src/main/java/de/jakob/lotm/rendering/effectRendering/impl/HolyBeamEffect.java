@@ -23,14 +23,11 @@ public class HolyBeamEffect extends ActiveEffect {
     private final float[] cosTable = new float[RING_SIDES];
     private final float[] sinTable = new float[RING_SIDES];
 
-    private final Vec3 perp1;
-    private final Vec3 perp2;
+    private Vec3 perp1;
+    private Vec3 perp2;
 
     public HolyBeamEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
-
-        perp1 = new Vec3(-getDirection().z, 0, getDirection().x).normalize();
-        perp2 = getDirection().cross(perp1).normalize();
 
         for (int i = 0; i < RING_SIDES; i++) {
             float angle = (float) (i * Math.PI * 2 / RING_SIDES);
@@ -39,10 +36,25 @@ public class HolyBeamEffect extends ActiveEffect {
         }
     }
 
+    private void ensurePerpVectors() {
+        if (perp1 != null) return;
+
+        Vec3 direction = getDirection();
+
+        Vec3 base = (Math.abs(direction.x) < 1e-6 && Math.abs(direction.z) < 1e-6)
+                ? new Vec3(1, 0, 0)
+                : direction;
+
+        perp1 = new Vec3(-base.z, 0, base.x).normalize();
+        perp2 = direction.cross(perp1).normalize();
+    }
+
     @Override
     protected void render(PoseStack poseStack, float tick) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+
+        ensurePerpVectors();
 
         float progress = tick / maxDuration;
         float fadeIn  = Mth.clamp(progress / 0.1f, 0f, 1f);

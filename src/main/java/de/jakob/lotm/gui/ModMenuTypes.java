@@ -6,6 +6,7 @@ import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.introspect.IntrospectMenu;
+import de.jakob.lotm.gui.custom.marionettes.MarionetteMenu;
 import de.jakob.lotm.gui.custom.recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import de.jakob.lotm.gui.custom.trades.BeyonderTradeMenu;
@@ -25,6 +26,10 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<IntrospectMenu>> INTROSPECT_MENU =
             MENU_TYPES.register("introspect_menu", () ->
                     IMenuTypeExtension.create(IntrospectMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<MarionetteMenu>> MARIONETTE_MENU =
+            MENU_TYPES.register("marionette_menu", () ->
+                    IMenuTypeExtension.create(MarionetteMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<BeyonderTradeMenu>> BEYONDER_TRADE_MENU = MENU_TYPES.register(
             "beyonder_trade_menu",

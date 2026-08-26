@@ -20,7 +20,7 @@ import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -480,6 +480,10 @@ public class BeyonderData {
         if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
+    }
+
+    public static float getMaxSpirituality(Player player) {
+        return getMaxSpirituality(getPathway(player), getSequence(player), player);
     }
 
     // for getting the spirituality of the main body instead, works on both client and server side

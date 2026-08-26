@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.quest.impl;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.goals.KillOutsideRadiusGoal;
+import de.jakob.lotm.entity.goals.KillOutsideRadiusGoal;
 import de.jakob.lotm.beyonders.quest.Quest;
 import de.jakob.lotm.beyonders.quest.QuestManager;
 import de.jakob.lotm.util.BeyonderData;

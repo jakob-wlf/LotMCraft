@@ -1,7 +1,8 @@
-package de.jakob.lotm.entity.custom.goals;
+package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -10,15 +11,12 @@ import net.minecraft.world.entity.player.Player;
 import java.util.EnumSet;
 import java.util.UUID;
 
-public class MarionetteLifelinkGoal extends Goal {
+public class MarionetteMaxDistanceGoal extends Goal {
     private final Mob marionette;
-    private int separationTimer = 0;
-    private int checkInterval = 0;
 
-    public MarionetteLifelinkGoal(Mob marionette) {
+    public MarionetteMaxDistanceGoal(Mob marionette) {
         this.marionette = marionette;
-        // This goal doesn't interfere with other behaviors
-        this.setFlags(EnumSet.noneOf(Goal.Flag.class));
+        this.setFlags(EnumSet.noneOf(Flag.class));
     }
 
     @Override
@@ -34,25 +32,45 @@ public class MarionetteLifelinkGoal extends Goal {
 
     @Override
     public void tick() {
-        // Only check every 20 ticks (1 second) to avoid performance issues
-        checkInterval++;
-        if (checkInterval < 20) return;
-        checkInterval = 0;
-
         MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if (!component.isMarionette()) return;
 
         String controllerUUID = component.getControllerUUID();
         if (controllerUUID.isEmpty()) {
             killMarionette();
+            return;
         }
+
+        Player controller = findPlayerAcrossAllLevels(controllerUUID);
+        if (controller == null) {
+            return;
+        }
+
+        if(!marionette.level().equals(controller.level())) {
+            return;
+        }
+
+        double sqrdDistance = marionette.distanceToSqr(controller);
+        if(sqrdDistance > getMaxDistanceSqrd(controller)) {
+            killMarionette();
+        }
+    }
+
+    public double getMaxDistanceSqrd(Player player) {
+        return switch (BeyonderData.getSequence(player)) {
+            default -> 10000;
+            case 4 -> 1000000;
+            case 3 -> 2250000;
+            case 2 -> 9000000;
+            case 1 -> 25000000;
+            case 0 -> 100000000;
+        };
     }
 
     private Player findPlayerAcrossAllLevels(String uuidString) {
         try {
             UUID uuid = UUID.fromString(uuidString);
-            
-            // Check all levels on the server
+
             if (marionette.getServer() != null) {
                 for (ServerLevel level : marionette.getServer().getAllLevels()) {
                     Player player = level.getPlayerByUUID(uuid);
@@ -62,17 +80,14 @@ public class MarionetteLifelinkGoal extends Goal {
                 }
             }
         } catch (IllegalArgumentException e) {
-            // Invalid UUID
         }
-        
+
         return null;
     }
 
     private void killMarionette() {
-        // Optional: Add death effects
         marionette.level().broadcastEntityEvent(marionette, (byte) 3); // Death particles
         
-        // Kill the marionette
         marionette.hurt(marionette.damageSources().generic(), Float.MAX_VALUE);
     }
 }

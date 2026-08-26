@@ -1,4 +1,4 @@
-package de.jakob.lotm.entity.custom.goals.avatar;
+package de.jakob.lotm.entity.goals.avatar;
 
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import net.minecraft.world.entity.LivingEntity;

@@ -1,7 +1,7 @@
-package de.jakob.lotm.entity.custom.goals;
+package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -18,7 +18,6 @@ public class MarionetteTargetGoal extends TargetGoal {
     public MarionetteTargetGoal(Mob marionette) {
         super(marionette, false);
         this.marionette = marionette;
-        // Only control targeting
         this.setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
@@ -28,19 +27,15 @@ public class MarionetteTargetGoal extends TargetGoal {
 
         MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
 
-        // Only target when in follow mode AND don't have a target yet
-        if (!component.isFollowMode() || marionette.getTarget() != null) return false;
+        if (!component.getCurrentMode().shouldAttack) return false;
 
         if(!component.shouldAttack()) return false;
 
-        // Check if there's someone to target
         return findValidTarget() != null;
     }
 
     @Override
     public boolean canContinueToUse() {
-        // This goal stops immediately after setting a target
-        // Let attack goals take over
         return false;
     }
 
@@ -54,16 +49,14 @@ public class MarionetteTargetGoal extends TargetGoal {
 
     @Override
     public void tick() {
-        // Clear invalid targets (including controller!)
         LivingEntity currentTarget = marionette.getTarget();
         if (currentTarget != null &&
                 (!currentTarget.isAlive() || currentTarget.isRemoved() ||
                         currentTarget == controller || currentTarget == marionette)) {
             marionette.setTarget(null);
-            marionette.setLastHurtByMob(null); // Clear last hurt by reference
+            marionette.setLastHurtByMob(null);
         }
 
-        // Extra safety: if somehow targeting controller, clear immediately
         if (marionette.getTarget() == controller) {
             marionette.setTarget(null);
             marionette.setLastHurtByMob(null);
@@ -73,14 +66,12 @@ public class MarionetteTargetGoal extends TargetGoal {
     private LivingEntity findValidTarget() {
         if (controller == null) return null;
 
-        // Defend controller if attacked (higher priority)
         LivingEntity controllerAttacker = controller.getLastHurtByMob();
         if (controllerAttacker != null && controllerAttacker.isAlive() &&
                 controllerAttacker != marionette && controllerAttacker != controller) {
             return controllerAttacker;
         }
 
-        // Fight what the controller fights
         LivingEntity controllerTarget = controller.getLastHurtMob();
         if (controllerTarget != null && controllerTarget.isAlive() &&
                 controllerTarget != marionette && controllerTarget != controller) {

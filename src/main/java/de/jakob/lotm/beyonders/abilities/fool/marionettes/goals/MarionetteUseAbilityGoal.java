@@ -1,11 +1,12 @@
-package de.jakob.lotm.entity.custom.goals;
+package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.fool.passives.PuppeteeringEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -33,13 +34,7 @@ public class MarionetteUseAbilityGoal extends TargetGoal {
 
         MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
 
-        if (!component.isFollowMode() || marionette.getTarget() == null) return false;
-
-        if(!component.shouldAttack()) return false;
-
-        if(!((PuppeteeringEnhancementsAbility) PassiveAbilityHandler.getById("puppeteering_enhancements_ability")).shouldApplyTo(controller)) return false;
-
-        return true;
+        return component.isMarionette() && marionette.getTarget() != null && component.hasWorm() && !BeyonderData.isBeyonder(marionette);
     }
 
     private List<Ability> usableAbilities() {
@@ -53,9 +48,9 @@ public class MarionetteUseAbilityGoal extends TargetGoal {
         if(marionette.level().isClientSide) {
             return;
         }
+
         if(random.nextInt(100) >= 40) {
             List<Ability> abilityItems = usableAbilities();
-            // simple check because it was crashing
             if (!abilityItems.isEmpty()) {
                 abilityItems.get(random.nextInt(abilityItems.size())).useAbility((ServerLevel) marionette.level(), marionette);
             }

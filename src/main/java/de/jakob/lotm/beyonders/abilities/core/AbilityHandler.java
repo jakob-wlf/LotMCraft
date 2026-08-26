@@ -15,8 +15,6 @@ import de.jakob.lotm.beyonders.abilities.sun.*;
 import de.jakob.lotm.beyonders.abilities.tyrant.*;
 import de.jakob.lotm.beyonders.abilities.visionary.*;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.*;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.entity.LivingEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -184,7 +182,7 @@ public class AbilityHandler {
         abilities.add(new DisasterManifestationAbility("disaster_manifestation_ability"));
         abilities.add(new StructuralCollapseAbility("structural_collapse_ability"));
         abilities.add(new ApocalypseAbility("apocalypse_ability"));
-        abilities.add(new ChaosAuthority("chaos_authority_ability"));
+        abilities.add(new ChaosAuthorityAbility("chaos_authority_ability"));
 
         // MOTHER PATHWAY
         abilities.add(new PlantNurturingAbility("plant_nurturing_ability"));

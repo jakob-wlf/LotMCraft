@@ -532,6 +532,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncMarionettesToClient.TYPE,
+                SyncMarionettesToClient.STREAM_CODEC,
+                SyncMarionettesToClient::handle
+        );
+
+        registrar.playToClient(
                 OpenWanderingSelectionScreenPacket.TYPE,
                 OpenWanderingSelectionScreenPacket.STREAM_CODEC,
                 OpenWanderingSelectionScreenPacket::handle
@@ -549,6 +555,24 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestMarionetteSyncPacket.TYPE,
+                RequestMarionetteSyncPacket.STREAM_CODEC,
+                RequestMarionetteSyncPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncMarionetteToServerPacket.TYPE,
+                SyncMarionetteToServerPacket.STREAM_CODEC,
+                SyncMarionetteToServerPacket::handle
+        );
+
+        registrar.playToServer(
+                ReleaseMarionettePacket.TYPE,
+                ReleaseMarionettePacket.STREAM_CODEC,
+                ReleaseMarionettePacket::handle
         );
 
         registrar.playToServer(
@@ -816,6 +840,11 @@ public class PacketHandler {
                 OpenArtifactWheelPacket.TYPE,
                 OpenArtifactWheelPacket.STREAM_CODEC,
                 OpenArtifactWheelPacket::handle);
+
+        registrar.playToServer(
+                RequestOpenMarionetteMenuPacket.TYPE,
+                RequestOpenMarionetteMenuPacket.STREAM_CODEC,
+                RequestOpenMarionetteMenuPacket::handle);
 
         registrar.playToServer(
                 SyncArtifactAbilityWheel.TYPE,

@@ -7,7 +7,6 @@ import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -158,84 +157,5 @@ public class ManipulationAbility extends SelectableAbility {
             Ability chosen = abilities.get(random.nextInt(abilities.size()));
             chosen.useAbility(level, player);
         }, level);
-    }
-
-    // control indivudlal
-
-    private void control(Level level, LivingEntity entity) {
-        if (level.isClientSide) return;
-        if (!(level instanceof ServerLevel serverLevel)) return;
-        if (!(entity instanceof Player player)) return;
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
-        if (target == null) {
-            AbilityUtil.sendActionBar(entity,
-                    Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
-            return;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
-        if(BeyonderData.getPathway(target).equals("visionary") && targetSeq < entitySeq){
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed").withColor(0xFFff124d));
-
-            if(targetSeq <= 1 && target instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer entityPlayer){
-                MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
-            }
-
-            return;
-        }
-
-        int casterSeq = AbilityUtil.getSeqWithArt(entity, this);  
-        if (BeyonderData.isBeyonder(target) && BeyonderData.getSequence(target) <= casterSeq) {
-            AbilityUtil.sendActionBar(entity,
-                    Component.translatable("ability.lotmcraft.manipulation.control.too_strong").withColor(0xFFff124d));
-            return;
-        }
-
-        // Mark the target as a marionette (movement only)
-        var marionetteComponent = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        marionetteComponent.setMarionette(true);
-        marionetteComponent.setControllerUUID(player.getUUID().toString());
-
-        // Give the player a movement-only controller item
-        ItemStack controllerStack = new ItemStack(ModItems.MARIONETTE_CONTROLLER.get());
-
-        CompoundTag tag = new CompoundTag();
-        tag.putString("MarionetteUUID", target.getUUID().toString());
-        tag.putString("MarionetteType", target.getName().getString());
-        tag.putBoolean("MovementOnly", true); // flag to strip non-movement functionality
-        controllerStack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
-
-        // Single use — item is consumed when the 7s expires
-        player.addItem(controllerStack);
-
-        AbilityUtil.sendActionBar(entity,
-                Component.translatable("ability.lotmcraft.manipulation.control.success").withColor(0xFFe3ffff));
-
-        // After 7s, release the marionette and remove the controller item
-        ServerScheduler.scheduleDelayed(20 * 7, () -> {
-            if (!target.isRemoved()) {
-                marionetteComponent.setMarionette(false);
-                marionetteComponent.setControllerUUID(null);
-            }
-            // Remove the controller item from player inventory
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack stack = player.getInventory().getItem(i);
-                if (!stack.isEmpty() && stack.getItem() instanceof MarionetteControllerItem) {
-                    CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-                    if (data != null) {
-                        String uuid = data.copyTag().getString("MarionetteUUID");
-                        if (uuid.equals(target.getUUID().toString())) {
-                            player.getInventory().removeItem(i, 1);
-                            break;
-                        }
-                    }
-                }
-            }
-        });
-
-        // If the controller is used to point at another mob, make target aggressive toward that mob
-        // This is handled in MarionetteControllerItem via  MovementOnly
     }
 }

@@ -1,4 +1,4 @@
-package de.jakob.lotm.util.helper;
+package de.jakob.lotm.beyonders.abilities.fool.marionettes;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
@@ -11,7 +11,6 @@ import de.jakob.lotm.network.packets.toClient.SyncOriginalBodyOwnerPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -247,20 +246,6 @@ public class ControllingUtil {
                             player.setHealth(health);
                         }, level);
                     }
-                }
-            }
-        }
-        // Update the marionette controller item lore to reflect any sequence changes (must be after body restore)
-        if (restoredTarget != null) {
-            String targetUUIDStr = restoredTarget.getStringUUID();
-            for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
-                ItemStack stack = player.getInventory().getItem(i);
-                if (stack.isEmpty()) continue;
-                CustomData customData = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-                if (customData == null) continue;
-                if (targetUUIDStr.equals(customData.copyTag().getString("MarionetteUUID"))) {
-                    player.getInventory().setItem(i, MarionetteUtils.createMarionetteController(restoredTarget));
-                    break;
                 }
             }
         }

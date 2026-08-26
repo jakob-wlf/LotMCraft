@@ -1,4 +1,4 @@
-package de.jakob.lotm.entity.custom.goals;
+package de.jakob.lotm.entity.goals;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
@@ -9,15 +9,15 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SubordinateLoadChunksGoal extends Goal {
+public class EntityLoadChunksGoal extends Goal {
 
-    private final Mob subordinate;
+    private final Mob marionette;
     private static final int RADIUS = 1;
     private final Set<ChunkPos> currentlyForced = new HashSet<>();
 
-    public SubordinateLoadChunksGoal(Mob marionette) {
-        this.subordinate = marionette;
-        this.setFlags(EnumSet.noneOf(Flag.class)); //Doesn't block any other goals
+    public EntityLoadChunksGoal(Mob marionette) {
+        this.marionette = marionette;
+        this.setFlags(EnumSet.noneOf(Flag.class));
     }
 
     @Override
@@ -32,12 +32,11 @@ public class SubordinateLoadChunksGoal extends Goal {
 
     @Override
     public void tick() {
-        if (!(subordinate.level() instanceof ServerLevel level)) return;
+        if (!(marionette.level() instanceof ServerLevel level)) return;
 
-        ChunkPos center = new ChunkPos(subordinate.blockPosition());
+        ChunkPos center = new ChunkPos(marionette.blockPosition());
         Set<ChunkPos> shouldBeForced = new HashSet<>();
 
-        // Determine which chunks *should* be forced
         for (int dx = -RADIUS; dx <= RADIUS; dx++) {
             for (int dz = -RADIUS; dz <= RADIUS; dz++) {
                 ChunkPos pos = new ChunkPos(center.x + dx, center.z + dz);
@@ -45,29 +44,25 @@ public class SubordinateLoadChunksGoal extends Goal {
             }
         }
 
-        // Unforce chunks no longer needed
         for (ChunkPos oldPos : currentlyForced) {
             if (!shouldBeForced.contains(oldPos)) {
                 level.setChunkForced(oldPos.x, oldPos.z, false);
             }
         }
 
-        // Force any new chunks not already loaded
         for (ChunkPos newPos : shouldBeForced) {
             if (!currentlyForced.contains(newPos)) {
                 level.setChunkForced(newPos.x, newPos.z, true);
             }
         }
 
-        // Update the record
         currentlyForced.clear();
         currentlyForced.addAll(shouldBeForced);
     }
 
     @Override
     public void stop() {
-        // Cleanup
-        if (!(subordinate.level() instanceof ServerLevel level)) return;
+        if (!(marionette.level() instanceof ServerLevel level)) return;
 
         for (ChunkPos pos : currentlyForced) {
             level.setChunkForced(pos.x, pos.z, false);

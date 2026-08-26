@@ -57,6 +57,7 @@
   "key.beyonders.use_shared_ability": "Use Shared Ability",
   "key.beyonders.next_shared_ability": "Next Shared Sub-Ability",
   "key.beyonders.previous_shared_ability": "Previous Shared Sub-Ability",
+  "key.beyonders.open_marionette_menu": "Open Marionette Menu",
 
 
   "_comment001": "Abilities------------------------------------------------------------------------------------",
@@ -467,6 +468,9 @@
   "ability.lotmcraft.marionette_controlling.control": "Control",
   "ability.lotmcraft.marionette_controlling.auto_swap": "Auto Swap",
   "ability.lotmcraft.marionette_controlling.get_item": "Get marionette Item",
+  "ability.lotmcraft.marionette_controlling.add_worm": "Add/Remove Worm",
+  "ability.lotmcraft.marionette_controlling.removed_worm": "Removed Worm",
+  "ability.lotmcraft.marionette_controlling.added_worm": "Added Worm",
   "lotmcraft.historical_void_summon_self_ability": "Historical Void Summon Self",
   "lotmcraft.historical_void_summon_self_ability.description": "Summon yourself from the Historical Void and control it while your body is in the Historical Void. Shift-left click to return to your body.",
   "ability.lotmcraft.historical_void_summon_self.cannot_use_in_historical_void": "You cannot use this ability while in the Historical Void.",
@@ -640,6 +644,9 @@
   "lotmcraft.structural_collapse_ability.description": "Collapse any building, cave, mountain, ocean and any structure, burying everything",
   "lotmcraft.apocalypse_ability": "Apocalypse",
   "lotmcraft.apocalypse_ability.description": "Bring an End in area, dooming everything around you and transforming blocks into obsidian",
+  "lotmcraft.chaos_authority_ability": "Chaos Authority",
+  "lotmcraft.chaos_authority_ability.description": "Gain control of Chaos, allowing you to create a Vortex made up of all colors to bring everything into Chaos",
+  "ability.lotmcraft.chaos_authority.chaos_vortex": "Chaos Vortex",
 
   "lotmcraft.plant_nurturing_ability": "Plant Nurturing",
   "lotmcraft.plant_nurturing_ability.description": "Plants will grow rapidly",
@@ -981,7 +988,7 @@
   "lotmcraft.decryption_ability.description": "Gain insight into you enemies and what items they posses",
   "lotmcraft.gift_ability": "Gift",
   "lotmcraft.gift_ability.description": "Gift the item in your offhand to your target. Some items may have different effects, like tnt or anvils",
-  "lotmcraft.ability.lotmcraft.gift.no_item": "You need to hold an item in your offhand to gift it",
+  "ability.lotmcraft.gift.no_item": "You need to hold an item in your offhand to gift it",
   "ability.lotmcraft.gift.no_target": "No Target found",
   "ability.lotmcraft.gift.failed": "Failed to gift",
   "ability.lotmcraft.gift_ability.item": "Gift Item",
@@ -2277,5 +2284,11 @@
   "lotmcraft.honorific_praying_not_met_req_desc": "You have not met requirements to use this option",
   "lotmcraft.honorific_praying_use_skill_button": "[ USE SKILL ]",
   "lotmcraft.honorific_praying_use_skill_desc": "Will use one of your abilities for/against the prayer",
-  "lotm.ally.request.received": "Received an Ally request from %s"
+  "lotm.ally.request.received": "Received an Ally request from %s",
+
+  "gui.lotm.marionette_control.none": "No marionettes",
+  "gui.lotm.marionette_control.close": "Close",
+  "gui.lotm.marionette_control.title": "Marionettes (Same Dimension only)",
+  "gui.lotm.marionette.release": "Release",
+  "gui.lotm.marionette.attack": "Attack"
 }

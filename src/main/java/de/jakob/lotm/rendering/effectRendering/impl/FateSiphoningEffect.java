@@ -30,17 +30,18 @@ public class FateSiphoningEffect extends ActiveEffect {
 
     public FateSiphoningEffect(Location location, int duration, boolean infinite) {
         super(location, duration, infinite);
+    }
 
+    private boolean initialized = false;
 
+    private void initializeLazily() {
         for (int i = 0; i < 8; i++) {
             fateThreads.add(new FateThread(i));
         }
 
-
         for (int i = 0; i < 150; i++) {
             fateParticles.add(new FateParticle());
         }
-
 
         for (int i = 0; i < 12; i++) {
             siphonOrbs.add(new SiphonOrb(i));
@@ -51,6 +52,11 @@ public class FateSiphoningEffect extends ActiveEffect {
     protected void render(PoseStack poseStack, float tick) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
+
+        if(!initialized) {
+            initializeLazily();
+            initialized = true;
+        }
 
         float progress = tick / maxDuration;
         intensity = Mth.clamp(1f - (float) Math.pow(progress, 0.5), 0f, 1f);

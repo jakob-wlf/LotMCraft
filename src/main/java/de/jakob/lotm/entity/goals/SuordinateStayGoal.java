@@ -1,4 +1,4 @@
-package de.jakob.lotm.entity.custom.goals;
+package de.jakob.lotm.entity.goals;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;

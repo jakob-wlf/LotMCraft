@@ -19,7 +19,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.*;
@@ -30,6 +29,17 @@ public class MarionetteOverlayRenderer {
     public static HashMap<UUID, MarionetteInfos> currentMarionette = new HashMap<>();
     private static final Map<UUID, MarionetteInfos> cachedMarionette = new HashMap<>();
     private static final Map<UUID, Long> nullSinceTime = new HashMap<>();
+    private static final Map<UUID, Double> smoothedHealth = new HashMap<>();
+
+    private static final int PANEL_BG_TOP = 0x99120018;
+    private static final int PANEL_BG_BOTTOM = 0x99000000;
+    private static final int BORDER_A = 0xFFa742f5;
+    private static final int BORDER_B = 0xFFe43fa3;
+    private static final int ACCENT = 0xFFffffff;
+    private static final int BAR_BG = 0xAA1a0a1f;
+
+    private static final ResourceLocation wormOfSpiritTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/misc/worm_of_spirit.png");
+    private static final int wormIconSize = 16;
 
     @SubscribeEvent
     public static void onRegisterGuiLayers(RegisterGuiLayersEvent event) {
@@ -44,6 +54,7 @@ public class MarionetteOverlayRenderer {
         currentMarionette.remove(uuid);
         cachedMarionette.remove(uuid);
         nullSinceTime.remove(uuid);
+        smoothedHealth.remove(uuid);
     }
 
     private static void renderOverlay(GuiGraphics guiGraphics) {
@@ -62,20 +73,21 @@ public class MarionetteOverlayRenderer {
                 nullSinceTime.putIfAbsent(playerUUID, System.currentTimeMillis());
             }
         } else if (cachedMarionette.containsKey(playerUUID)) {
-            // Key removed entirely — still need to start the null timer
             nullSinceTime.putIfAbsent(playerUUID, System.currentTimeMillis());
         }
 
-        // Decide which infos to render
         MarionetteInfos infos = currentMarionette.getOrDefault(playerUUID, null);
         if (infos == null) {
             long nullSince = nullSinceTime.getOrDefault(playerUUID, System.currentTimeMillis());
             if (System.currentTimeMillis() - nullSince < 500) {
-                infos = cachedMarionette.get(playerUUID); // use cached during grace period
+                infos = cachedMarionette.get(playerUUID);
             }
         }
 
-        if (infos == null) return;
+        if (infos == null) {
+            smoothedHealth.remove(playerUUID);
+            return;
+        }
 
         int width = (screenWidth / 3);
         int height = 45;
@@ -86,127 +98,115 @@ public class MarionetteOverlayRenderer {
         int x = screenWidth - barWidth - 40;
         int y = 15;
 
+        guiGraphics.fill(x + 2, y + 3, x + width + 2, y + height + 3, 0x66000000);
+
         renderOutLine(guiGraphics, x, y, width, height);
 
-        //Marionette Label
         String label = Component.translatable("lotm.marionette").getString() + ":";
         int labelY = y + 5;
         int labelX = x + (width / 2);
-        guiGraphics.drawCenteredString(mc.font, label, labelX, labelY, 0xFFFFFFFF);
+        guiGraphics.drawCenteredString(mc.font, label, labelX, labelY, 0xFFe0c8ff);
 
-        //Entity name
         String name = infos.name();
         int nameY = y + 5 + mc.font.lineHeight;
         int nameX = x + (width / 2);
         guiGraphics.drawCenteredString(mc.font, name, nameX, nameY, 0xFFFFFFFF);
 
-        //Health Bar
+        if (infos.hasWorm()) {
+            int nameWidth = mc.font.width(name);
+            int wormX = nameX + (nameWidth / 2) + 6;
+            int wormY = nameY + (mc.font.lineHeight / 2) - (wormIconSize / 2);
+            guiGraphics.blit(wormOfSpiritTexture, wormX, wormY, 0, 0, wormIconSize, wormIconSize, wormIconSize, wormIconSize);
+        }
+
         int barY = y + height - barHeight - 5;
         int barX = x + (width / 2) - (barWidth / 2);
 
-        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x88000000);
+        double current = smoothedHealth.getOrDefault(playerUUID, infos.health());
+        double target = infos.health();
+        double next = current + (target - current) * 0.18;
+        if (Math.abs(next - target) < 0.05) next = target;
+        smoothedHealth.put(playerUUID, next);
 
-        double fillPercentage = infos.health() / infos.maxHealth();
+        drawHealthBar(guiGraphics, barX, barY, barWidth, barHeight, next, infos.maxHealth());
+
+        String healthText = Math.round(infos.health()) + " ❤";
+        guiGraphics.drawCenteredString(mc.font, healthText, barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
+    }
+
+    private static void drawHealthBar(GuiGraphics guiGraphics, int barX, int barY, int barWidth, int barHeight,
+                                      double health, double maxHealth) {
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, BAR_BG);
+
+        double fillPercentage = maxHealth > 0 ? Math.max(0, Math.min(1, health / maxHealth)) : 0;
         int filledBarWidth = (int) (barWidth * fillPercentage);
 
-        if (filledBarWidth > 0)
-            drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, 0xFFFF0000, 0xFFe43fa3);
+        if (filledBarWidth > 0) {
+            int[] colors = healthGradient(fillPercentage);
+            drawHorizontalGradient(guiGraphics, barX, barY, filledBarWidth, barHeight, colors[0], colors[1]);
 
-        //Health String
-        guiGraphics.drawCenteredString(mc.font, infos.health() + " ❤", barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
+            guiGraphics.fill(barX, barY, barX + filledBarWidth, barY + Math.max(1, barHeight / 4), 0x33FFFFFF);
+
+            if (fillPercentage < 0.25) {
+                float pulse = (float) (0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 150.0));
+                int flashAlpha = (int) (90 * pulse);
+                guiGraphics.fill(barX, barY, barX + filledBarWidth, barY + barHeight, (flashAlpha << 24) | 0xFF3030);
+            }
+        }
+
+        for (int i = 1; i < 4; i++) {
+            int tickX = barX + (barWidth * i / 4);
+            guiGraphics.fill(tickX, barY, tickX + 1, barY + barHeight, 0x55000000);
+        }
+
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + 1, 0x66FFFFFF);
+        guiGraphics.fill(barX, barY + barHeight - 1, barX + barWidth, barY + barHeight, 0x66000000);
+    }
+
+    private static int[] healthGradient(double fillPercentage) {
+        if (fillPercentage > 0.6) {
+            return new int[]{0xFF3ddc84, 0xFFa8f7c0};
+        } else if (fillPercentage > 0.3) {
+            return new int[]{0xFFf5a623, 0xFFffe066};
+        } else {
+            return new int[]{0xFFb3001b, 0xFFff5f5f};
+        }
     }
 
     private static void renderOutLine(GuiGraphics guiGraphics, int x, int y, int width, int height) {
-        guiGraphics.fill(x, y, x + width, y + height, 0x77000000);
-        guiGraphics.fill(x, y, x + width, y + 1, 0xFFa742f5);
-        guiGraphics.fill(x, y + height - 1, x + width, y + height, 0xFFa742f5);
-        guiGraphics.fill(x, y + 1, x + 1, y + height - 1, 0xFFa742f5);
-        guiGraphics.fill(x + width - 1, y + 1, x + width, y + height - 1, 0xFFa742f5);
+        drawVerticalGradient(guiGraphics, x, y, width, height, PANEL_BG_TOP, PANEL_BG_BOTTOM);
+
+        float t = (float) (0.5 + 0.5 * Math.sin(System.currentTimeMillis() / 600.0));
+        int glowColor = interpolateColor(BORDER_A, BORDER_B, t);
+
+        guiGraphics.fill(x, y, x + width, y + 1, glowColor);
+        guiGraphics.fill(x, y + height - 1, x + width, y + height, glowColor);
+        guiGraphics.fill(x, y + 1, x + 1, y + height - 1, glowColor);
+        guiGraphics.fill(x + width - 1, y + 1, x + width, y + height - 1, glowColor);
+
+        int cornerSize = 4;
+        drawCorner(guiGraphics, x, y, cornerSize, true, true);
+        drawCorner(guiGraphics, x + width, y, cornerSize, false, true);
+        drawCorner(guiGraphics, x, y + height, cornerSize, true, false);
+        drawCorner(guiGraphics, x + width, y + height, cornerSize, false, false);
+    }
+
+    private static void drawCorner(GuiGraphics guiGraphics, int cx, int cy, int size, boolean right, boolean down) {
+        int x0 = right ? cx : cx - size;
+        int x1 = right ? cx + size : cx;
+        int y0 = down ? cy : cy - size;
+        int y1 = down ? cy + size : cy;
+
+        guiGraphics.fill(x0, right ? cy : cy - 1, x1, (right ? cy : cy - 1) + 1, ACCENT);
+        guiGraphics.fill(down ? cx : cx - 1, y0, (down ? cx : cx - 1) + 1, y1, ACCENT);
     }
 
     private static final Attribute[] attributesThatShouldGetDisplayed = new Attribute[]{
             Attributes.MOVEMENT_SPEED.value(), Attributes.ATTACK_DAMAGE.value(), Attributes.JUMP_STRENGTH.value(), Attributes.ARMOR.value()
     };
 
-    private static void displayStats(GuiGraphics guiGraphics, LivingEntity entity, int screenWidth) {
-        // Collect all attributes the entity supports by probing the registry
-        Collection<AttributeInstance> attributes = BuiltInRegistries.ATTRIBUTE.holders()
-                .map(entity::getAttribute)
-                .filter(Objects::nonNull)
-                .filter(a -> {
-                    for(Attribute at : attributesThatShouldGetDisplayed) {
-                        if(at == a.getAttribute().value())
-                            return true;
-                    }
-                    return false;
-                })
-                .toList();
-
-        int startingX = screenWidth - 10 - attributes.stream()
-                .map(a -> Minecraft.getInstance().font.width(
-                        getAttributeName(a.getAttribute()) + ": " + formatValue(a.getValue())))
-                .max(Comparator.naturalOrder())
-                .orElse(0);
-
-        if (startingX == 0)
-            return;
-
-        Font font = Minecraft.getInstance().font;
-        int y = 15 + (font.lineHeight / 2);
-
-
-
-        int outlineX = startingX - 10;
-        int outlineY = 15;
-        int outlineWidth = screenWidth - outlineX;
-        int parameterCount = attributes.size();
-        if(ClientBeyonderCache.isBeyonder(entity.getUUID()))
-            parameterCount += 3;
-
-        guiGraphics.fill(startingX - 10, 15,
-                screenWidth,
-                15 + (parameterCount * 2 * font.lineHeight),
-                0x77000000);
-
-        int outlineHeight = 15 + (parameterCount * 2 * font.lineHeight) - outlineY;
-
-        renderOutLine(guiGraphics, outlineX, outlineY, outlineWidth, outlineHeight);
-
-        for (AttributeInstance attribute : attributes) {
-            guiGraphics.drawString(font,
-                    getAttributeName(attribute.getAttribute()) + ": " + formatValue(attribute.getValue()),
-                    startingX, y, 0xFFFFFFFF);
-            y += font.lineHeight * 2;
-        }
-
-        if(ClientBeyonderCache.isBeyonder(entity.getUUID())) {
-            String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
-            String pathwayName = BeyonderData.pathwayInfos.get(pathway).getName();
-            int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
-            float spirituality = ClientBeyonderCache.getSpirituality(entity.getUUID());
-
-            guiGraphics.drawString(font,
-                    Component.translatable("lotm.pathway").getString() + ": " + pathwayName,
-                    startingX, y, 0xFFFFFFFF);
-            y += font.lineHeight * 2;
-
-            guiGraphics.drawString(font,
-                    Component.translatable("lotm.sequence").getString() + ": " + sequence,
-                    startingX, y, 0xFFFFFFFF);
-            y += font.lineHeight * 2;
-
-            guiGraphics.drawString(font,
-                    Component.translatable("lotm.spirituality").getString() + ": " + formatValue(spirituality),
-                    startingX, y, 0xFFFFFFFF);
-        }
-    }
-
-    private static double formatValue(double value) {
-        return Math.round(value * 100000d) / 100000d;
-    }
-
     private static void drawHorizontalGradient(GuiGraphics guiGraphics, int x, int y, int width, int height,
-                                             int startColor, int endColor) {
+                                               int startColor, int endColor) {
         for (int i = 0; i < width; i++) {
             float ratio = (float) i / width;
             int color = interpolateColor(startColor, endColor, ratio);
@@ -214,22 +214,13 @@ public class MarionetteOverlayRenderer {
         }
     }
 
-    private static String getAttributeName(Holder<Attribute> attribute) {
-        if (attribute == null) {
-            return "Unknown Attribute";
+    private static void drawVerticalGradient(GuiGraphics guiGraphics, int x, int y, int width, int height,
+                                             int startColor, int endColor) {
+        for (int i = 0; i < height; i++) {
+            float ratio = (float) i / height;
+            int color = interpolateColor(startColor, endColor, ratio);
+            guiGraphics.fill(x, y + i, x + width, y + i + 1, color);
         }
-
-        // Registered name looks like: "minecraft:generic.movement_speed"
-        String regName = attribute.getRegisteredName();
-
-        // Extract the path (after the colon), e.g. "generic.movement_speed"
-        String path = regName.contains(":") ? regName.substring(regName.indexOf(":") + 1) : regName;
-
-        // Build translation key: "attribute.name.generic.movement_speed"
-        String translationKey = "attribute.name." + path;
-
-        // Return the localized string
-        return Component.translatable(translationKey).getString();
     }
 
     private static int interpolateColor(int color1, int color2, float ratio) {
@@ -251,14 +242,13 @@ public class MarionetteOverlayRenderer {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    public record MarionetteInfos(String name, double health, double maxHealth) {
-
+    public record MarionetteInfos(String name, double health, double maxHealth, boolean hasWorm) {
     }
 
     public static void clearCache() {
         currentMarionette.clear();
         cachedMarionette.clear();
         nullSinceTime.clear();
+        smoothedHealth.clear();
     }
 }
-

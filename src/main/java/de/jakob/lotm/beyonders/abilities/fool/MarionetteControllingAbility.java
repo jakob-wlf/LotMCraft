@@ -8,12 +8,13 @@ import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.ControllingUtil;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
@@ -57,7 +58,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.marionette_controlling.swap", "ability.lotmcraft.marionette_controlling.damage_auto_swap", "ability.lotmcraft.marionette_controlling.control", "ability.lotmcraft.marionette_controlling.get_item"};
+        return new String[]{"ability.lotmcraft.marionette_controlling.swap", "ability.lotmcraft.marionette_controlling.damage_auto_swap", "ability.lotmcraft.marionette_controlling.control", "ability.lotmcraft.marionette_controlling.add_worm"};
     }
 
     @Override
@@ -69,20 +70,25 @@ public class MarionetteControllingAbility extends SelectableAbility {
             case 0 -> activateSwap((ServerLevel) level, player);
             case 1 -> toggleAutoSwap(player);
             case 2 -> control(level, player);
-            case 3  -> getItem(player);
+            case 3 -> addWormToSelectedMarionette(player);
         }
 
     }
 
-    private void getItem(ServerPlayer player) {
+    private void addWormToSelectedMarionette(ServerPlayer player) {
         LivingEntity marionette = getSelectedMarionette(player);
+
         if(marionette == null) {
             return;
         }
 
-        ItemStack controller = MarionetteUtils.createMarionetteController(marionette);
-        if(!player.getInventory().add(controller)) {
-            player.drop(controller, false);
+        MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(component.hasWorm()) {
+            component.setHasWorm(false);
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.removed_worm").withColor(getColorForPathway("fool")));
+        } else {
+            component.setHasWorm(true);
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.added_worm").withColor(getColorForPathway("fool")));
         }
     }
 
@@ -227,7 +233,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         String name = marionette.getDisplayName() == null ? marionette.getName().getString(): marionette.getDisplayName().getString();
 
-        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, name, marionette.getHealth(), marionette.getMaxHealth());
+        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, name, marionette.getHealth(), marionette.getMaxHealth(), marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get()).hasWorm());
         PacketHandler.sendToPlayer(player, packet);
 
         return marionette;
@@ -244,7 +250,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         //If no marionette is selected make sure no overlay gets rendered
         if(marionette == null) {
-            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, "", 0, 0);
+            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, "", 0, 0, false);
             PacketHandler.sendToPlayer(player, packet);
             return;
         }
@@ -252,7 +258,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         //Make sure the overlay goes away when the player stops holding the item
         ServerScheduler.scheduleDelayed(10, () -> {
             if(!player.getItemInHand(entity.getUsedItemHand()).getItem().equals(this)) {
-                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, "", 0, 0);
+                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, "", 0, 0, false);
                 PacketHandler.sendToPlayer(player, packet1);
             }
         });

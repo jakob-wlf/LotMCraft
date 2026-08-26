@@ -1,4 +1,4 @@
-package de.jakob.lotm.util.helper.marionettes;
+package de.jakob.lotm.attachments;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -8,8 +8,9 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 public class MarionetteComponent {
     private boolean isMarionette = false;
     private String controllerUUID = "";
-    private boolean followMode = true;
+    private MarionetteMode currentMode = MarionetteMode.FOLLOW;
     private boolean shouldAttack = true;
+    private boolean hasWorm = false;
 
     public MarionetteComponent() {}
     
@@ -23,10 +24,12 @@ public class MarionetteComponent {
     public void setMarionette(boolean marionette) { this.isMarionette = marionette; }
     public String getControllerUUID() { return controllerUUID; }
     public void setControllerUUID(String controllerUUID) { this.controllerUUID = controllerUUID; }
-    public boolean isFollowMode() { return followMode; }
-    public void setFollowMode(boolean followMode) { this.followMode = followMode; }
+    public MarionetteMode getCurrentMode() { return currentMode; }
+    public void setCurrentMode(MarionetteMode currentMode) { this.currentMode = currentMode; }
     public boolean shouldAttack() { return shouldAttack; }
     public void setShouldAttack(boolean shouldAttack) { this.shouldAttack = shouldAttack; }
+    public boolean hasWorm() { return hasWorm; }
+    public void setHasWorm(boolean hasWorm) { this.hasWorm = hasWorm; }
     
     public static final IAttachmentSerializer<CompoundTag, MarionetteComponent> SERIALIZER =
             new IAttachmentSerializer<>() {
@@ -35,8 +38,15 @@ public class MarionetteComponent {
                     MarionetteComponent component = new MarionetteComponent();
                     component.isMarionette = tag.getBoolean("isMarionette");
                     component.controllerUUID = tag.getString("controllerUUID");
-                    component.followMode = tag.getBoolean("followMode");
+                    MarionetteMode mode;
+                    try {
+                        mode = MarionetteMode.valueOf(tag.getString("currentMode"));
+                    } catch (IllegalArgumentException e) {
+                        mode = MarionetteMode.FOLLOW; // safe fallback for old/renamed/corrupt data
+                    }
+                    component.currentMode = mode;
                     component.shouldAttack = tag.getBoolean("shouldAttack");
+                    component.hasWorm = tag.getBoolean("hasWorm");
                     return component;
                 }
 
@@ -45,9 +55,22 @@ public class MarionetteComponent {
                     CompoundTag tag = new CompoundTag();
                     tag.putBoolean("isMarionette", component.isMarionette);
                     tag.putString("controllerUUID", component.controllerUUID);
-                    tag.putBoolean("followMode", component.followMode);
+                    tag.putString("currentMode", component.currentMode.name());
                     tag.putBoolean("shouldAttack", component.shouldAttack);
+                    tag.putBoolean("hasWorm", component.hasWorm);
                     return tag;
                 }
             };
+
+    public enum MarionetteMode {
+        FOLLOW(true),
+        STAY(false),
+        WANDER(true);
+
+        MarionetteMode(boolean shouldAttack) {
+            this.shouldAttack = shouldAttack;
+        }
+
+        public final boolean shouldAttack;
+    }
 }

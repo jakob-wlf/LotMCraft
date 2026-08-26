@@ -86,6 +86,7 @@ import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
+import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
 import de.jakob.lotm.gui.custom.recipe.RecipeScreen;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualScreen;
 import de.jakob.lotm.gui.custom.trades.BeyonderTradeScreen;
@@ -159,6 +160,7 @@ public class LOTMCraft
     public static KeyMapping useSharedAbilityKey;
     public static KeyMapping nextSharedAbilityKey;
     public static KeyMapping previousSharedAbilityKey;
+    public static KeyMapping openMarionetteMenuKey;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
@@ -379,6 +381,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
             event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
+            event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
         }
 
         @SubscribeEvent

@@ -216,7 +216,8 @@ public class ClientHandler {
                     new MarionetteOverlayRenderer.MarionetteInfos(
                             packet.name(),
                             packet.health(),
-                            packet.maxHealth()
+                            packet.maxHealth(),
+                            packet.hasWorm()
                     )
             );
         }

@@ -49,8 +49,6 @@ public class MightyBlowAbility extends Ability {
 
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, DamageLookup.lookupDamage(9, 1.5) * multiplier(entity), pos, true, false, true, 0);
 
-        EffectManager.playEffect(EffectIds.CHAOS_VORTEX, entity.getX(), entity.getY(), entity.getZ(), (ServerLevel) level);
-
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
     }
 

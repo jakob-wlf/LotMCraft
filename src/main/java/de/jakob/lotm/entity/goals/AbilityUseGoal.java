@@ -1,10 +1,10 @@
-package de.jakob.lotm.entity.custom.goals;
+package de.jakob.lotm.entity.goals;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -198,9 +198,9 @@ public class AbilityUseGoal extends Goal {
                 .forEach(usableAbilities::add);
 
         MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-        if (component.isMarionette()) {
+        if (component.isMarionette() && component.hasWorm()) {
             Player controller = getController(entity);
-            if (controller != null && BeyonderData.isBeyonder(controller) && BeyonderData.getSequence(controller) <= 4) {
+            if (controller != null && BeyonderData.isBeyonder(controller)) {
                 String controllerPathway = BeyonderData.getPathway(controller);
                 int controllerSequence = BeyonderData.getSequence(controller);
                 LOTMCraft.abilityHandler.getByPathwayAndSequence(controllerPathway, controllerSequence).stream()
