@@ -8,13 +8,14 @@
   ],
   "honorific": {
     "lines": [
-      "Ringmaster whose smile hides a thousand writhing faces,",
-      "Clown who laughs loudest when the world begins to unravel,",
+      "Ringmaster whose smile hides a thousand writhing faces",
+      "Clown who laughs loudest when the world begins to unravel",
       "Send your carnival to dance around me."
     ]
   },
   "conditions": { "min_sequence": 10 },
   "particle_color": { "r": 0.1, "g": 0.1, "b": 0.1 },
+  "book_color": "DARK_PURPLE",
   "duration_ticks": 300,
   "result": {
     "type": "summon_entity",

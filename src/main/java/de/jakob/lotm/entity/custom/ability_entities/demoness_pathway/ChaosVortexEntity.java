@@ -1,5 +1,8 @@
 package de.jakob.lotm.entity.custom.ability_entities.demoness_pathway;
 
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
@@ -11,6 +14,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
@@ -53,18 +57,36 @@ public class ChaosVortexEntity extends Entity {
         this.source = source;
         this.damage = damage;
         setPos(pos);
+
+        if(direction != null) {
+            double dx = direction.x;
+            double dy = direction.y;
+            double dz = direction.z;
+
+            double horizontalDist = Math.sqrt(dx * dx + dz * dz);
+
+            float yaw = (float) (Math.toDegrees(Math.atan2(-dx, dz)));
+            float pitch = (float) (Math.toDegrees(-Math.atan2(dy, horizontalDist)));
+
+            setYRot(yaw);
+            setXRot(pitch);
+        }
     }
 
     @Override
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
-        if(!(level() instanceof ServerLevel serverLevel)) return;
+        if(!(level() instanceof ServerLevel)) return;
 
-        Vec3 dir = direction != null ? direction : getLookAngle();
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
+        FX fx = FXHelper.getFX(id);
 
-        EffectManager.playEffect(EffectIds.CHAOS_VORTEX, getX(), getY(), getZ(), serverLevel,
-                EffectParams.of(lifetime, (float) dir.x, (float) dir.y, (float) dir.z));
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
+        executor.setScale(4, 4, 4);
+        executor.setRotation(getX(), getY(), 90);
+        executor.setOffset(0, -6, 0);
+        executor.start();
 
         if (source != null) {
             activeVortices.put(source, this);

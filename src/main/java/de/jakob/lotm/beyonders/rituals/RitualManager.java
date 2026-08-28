@@ -11,16 +11,24 @@ import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.BookItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
@@ -28,6 +36,7 @@ import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +87,73 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
         return null;
     }
 
+    private static ItemStack createBookItemStack(RitualRecipe ritual) {
+        String bookTitle = Component.translatable("ritual.lotmcraft." + ritual.discoveredFrom().split(":")[1]).getString();
+        String candleName = BuiltInRegistries.ITEM.get(ResourceLocation.parse(ritual.candle())).getDescription().getString();
+        List<String> sacrificeNames = ritual.sacrifices().stream()
+                .map(sacrifice -> {
+                    return BuiltInRegistries.ITEM.get(ResourceLocation.parse(sacrifice.item())).getDescription().getString() + " x" + sacrifice.count();
+                })
+                .toList();
+        List<String> honorificLines = ritual.honorific().lines();
+
+        Component generalDescription = Component.translatable("ritual.lotmcraft.general_description")
+                .withStyle(ChatFormatting.ITALIC, ChatFormatting.valueOf(ritual.bookColor()));
+
+        Component candles = Component.literal("")
+                .append(Component.translatable("ritual.lotmcraft.candles")
+                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                .append(Component.literal(candleName));
+
+        Component sacrifices = Component.literal("")
+                .append(Component.translatable("ritual.lotmcraft.sacrifices")
+                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                .append(Component.literal(String.join(", ", sacrificeNames)));
+
+        Component honorifics = Component.literal("")
+                .append(Component.translatable("ritual.lotmcraft.honorifics")
+                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                .append(Component.literal("\n"))
+                .append(Component.literal(String.join("\n", honorificLines.stream().map(s -> " - " + s).toList())));
+
+        Component minSequence = Component.literal("")
+                .append(Component.translatable("ritual.lotmcraft.min_sequence")
+                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                .append(Component.literal(String.valueOf(ritual.conditions().minSequence() > 9 ? "none" : ritual.conditions().minSequence())));
+
+        Component pageOne = Component.literal("")
+                .append(generalDescription).append(Component.literal("\n\n"))
+                .append(candles).append(Component.literal("\n\n"))
+                .append(sacrifices).append(Component.literal("\n\n"))
+                .append(minSequence);
+
+        Component pageTwo = honorifics;
+
+        List<Filterable<Component>> pages = List.of(Filterable.passThrough(pageOne), Filterable.passThrough(pageTwo));
+
+        WrittenBookContent bookContentObj = new WrittenBookContent(
+                Filterable.passThrough(bookTitle),
+                "Unknown",
+                0,
+                pages,
+                false
+        );
+
+        ItemStack bookStack = new ItemStack(Items.WRITTEN_BOOK);
+        bookStack.set(DataComponents.WRITTEN_BOOK_CONTENT, bookContentObj);
+        return bookStack;
+    }
+
+    public static ItemStack getRandomRitualBook() {
+        if (rituals.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        RitualRecipe randomRitual = rituals.values().stream().skip((int) (rituals.size() * Math.random())).findFirst().orElse(null);
+        if (randomRitual == null) {
+            return ItemStack.EMPTY;
+        }
+        return createBookItemStack(randomRitual);
+    }
 
     private static Vec3 rotateForFacing(Direction facing, Vec3 local) {
         double dx = local.x - 0.5;
@@ -114,6 +190,8 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
         if (handler == null) {
             return;
         }
+
+        player.addItem(createBookItemStack(ritual));
 
         ServerLevel level = player.serverLevel();
         BlockState state = level.getBlockState(tablePos);

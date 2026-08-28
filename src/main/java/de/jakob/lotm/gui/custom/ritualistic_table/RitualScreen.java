@@ -3,6 +3,7 @@ package de.jakob.lotm.gui.custom.ritualistic_table;
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RitualSaveLinesPacket;
 import de.jakob.lotm.network.packets.toServer.RitualStartPacket;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -52,6 +53,12 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
         field3.setHint(Component.literal("..."));
         this.addRenderableWidget(field3);
 
+        if (menu.blockEntity != null) {
+            field1.setValue(menu.blockEntity.getHonorificLine1());
+            field2.setValue(menu.blockEntity.getHonorificLine2());
+            field3.setValue(menu.blockEntity.getHonorificLine3());
+        }
+
         this.addRenderableWidget(Button.builder(Component.literal("Start Ritual"), button -> {
                     if(menu.blockEntity == null) return;
                     PacketHandler.sendToServer(new RitualStartPacket(
@@ -79,6 +86,19 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
         int y = (height - imageHeight) / 2;
 
         guiGraphics.blit(GUI_TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
+    }
+
+    @Override
+    public void onClose() {
+        if (menu.blockEntity != null) {
+            PacketHandler.sendToServer(new RitualSaveLinesPacket(
+                    menu.blockEntity.getBlockPos(),
+                    field1.getValue(),
+                    field2.getValue(),
+                    field3.getValue()
+            ));
+        }
+        super.onClose();
     }
 
     @Override

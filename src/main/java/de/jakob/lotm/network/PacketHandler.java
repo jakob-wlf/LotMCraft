@@ -558,6 +558,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                RitualSaveLinesPacket.TYPE,
+                RitualSaveLinesPacket.STREAM_CODEC,
+                RitualSaveLinesPacket::handle
+        );
+
+        registrar.playToServer(
                 RequestMarionetteSyncPacket.TYPE,
                 RequestMarionetteSyncPacket.STREAM_CODEC,
                 RequestMarionetteSyncPacket::handle

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public record RitualRecipe(
+public record  RitualRecipe(
         String id,
         String discoveredFrom,
         String candle,
@@ -15,6 +15,7 @@ public record RitualRecipe(
         Honorific honorific,
         Conditions conditions,
         ParticleColor particleColor,
+        String bookColor,
         int durationTicks,
         Result result
 ) {

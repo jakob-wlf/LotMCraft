@@ -2290,5 +2290,22 @@
   "gui.lotm.marionette_control.close": "Close",
   "gui.lotm.marionette_control.title": "Marionettes (Same Dimension only)",
   "gui.lotm.marionette.release": "Release",
-  "gui.lotm.marionette.attack": "Attack"
+  "gui.lotm.marionette.attack": "Attack",
+
+  "ritual.lotmcraft.carnival_playbill": "Carnival Playbill",
+  "ritual.lotmcraft.trackers_field_journal": "Tracker's Field Journal",
+  "ritual.lotmcraft.revelations_of_the_degenerate": "Revelations of the Degenerate",
+  "ritual.lotmcraft.cathedral_scripture": "Cathedral Scripture",
+  "ritual.lotmcraft.fortune_tellers_ledger": "Fortune Teller's Ledger",
+  "ritual.lotmcraft.travelers_almanac": "Traveler's Almanac",
+  "ritual.lotmcraft.druids_hymnal": "Druid's Hymnal",
+  "ritual.lotmcraft.gladiators_creed": "Gladiator's Creed",
+  "ritual.lotmcraft.stormcallers_almanac": "Stormcaller's Almanac",
+
+
+  "ritual.lotmcraft.candles": "Candle: ",
+  "ritual.lotmcraft.sacrifices": "Sacrifices: ",
+  "ritual.lotmcraft.honorifics": "Honorific: ",
+  "ritual.lotmcraft.min_sequence": "Min. Sequence: ",
+  "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity"
 }

@@ -22,6 +22,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class RitualisticTableBlockEntity extends BlockEntity implements MenuProvider {
 
+    private String honorificLine1 = "";
+    private String honorificLine2 = "";
+    private String honorificLine3 = "";
+
     private static final int SLOT_COUNT = 4;
 
     public final ItemStackHandler itemHandler = new ItemStackHandler(SLOT_COUNT) {
@@ -62,9 +66,26 @@ public class RitualisticTableBlockEntity extends BlockEntity implements MenuProv
         Containers.dropContents(this.level, this.worldPosition, inventory);
     }
 
+    public String getHonorificLine1() { return honorificLine1; }
+    public String getHonorificLine2() { return honorificLine2; }
+    public String getHonorificLine3() { return honorificLine3; }
+
+    public void setHonorificLines(String line1, String line2, String line3) {
+        this.honorificLine1 = line1 == null ? "" : line1;
+        this.honorificLine2 = line2 == null ? "" : line2;
+        this.honorificLine3 = line3 == null ? "" : line3;
+        setChanged();
+        if (level != null && !level.isClientSide()) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+        }
+    }
+
     @Override
     protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         pTag.put("inventory", itemHandler.serializeNBT(pRegistries));
+        pTag.putString("honorific1", honorificLine1);
+        pTag.putString("honorific2", honorificLine2);
+        pTag.putString("honorific3", honorificLine3);
         super.saveAdditional(pTag, pRegistries);
     }
 
@@ -76,6 +97,10 @@ public class RitualisticTableBlockEntity extends BlockEntity implements MenuProv
         if (inv.contains("Size") && inv.getInt("Size") == itemHandler.getSlots()) {
             itemHandler.deserializeNBT(pRegistries, inv);
         }
+
+        honorificLine1 = pTag.getString("honorific1");
+        honorificLine2 = pTag.getString("honorific2");
+        honorificLine3 = pTag.getString("honorific3");
     }
 
     @Override

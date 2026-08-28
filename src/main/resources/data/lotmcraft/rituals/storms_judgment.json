@@ -9,13 +9,14 @@
   ],
   "honorific": {
     "lines": [
-      "Ancient one who slumbers beneath a ceiling of endless waves,",
-      "Lord of drowned fleets and the graveyards of sailors,",
+      "Ancient one who slumbers beneath a ceiling of endless waves",
+      "Lord of drowned fleets and the graveyards of sailors",
       "Loose your storm's fury upon those who stand against me."
     ]
   },
   "conditions": { "min_sequence": 10 },
   "particle_color": { "r": 0.0, "g": 0.6, "b": 1.0 },
+  "book_color": "AQUA",
   "duration_ticks": 300,
   "result": {
     "type": "area_effect",

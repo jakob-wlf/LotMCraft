@@ -48,7 +48,7 @@ public class WordImmunityAbility extends PassiveAbility {
             return;
         }
 
-        WordImmunityAbility ability = (WordImmunityAbility) PassiveAbilityHandler.getById("word_immunity_ability");
+        WordImmunityAbility ability = (WordImmunityAbility) PassiveAbilityHandler.getById("word_immunity_abyss_ability");
         if (!ability.shouldApplyTo(event.getEntity())) {
             IMMUNE_ENTITIES.remove(event.getEntity());
             return;
