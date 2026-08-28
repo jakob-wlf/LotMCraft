@@ -51,6 +51,8 @@ public class AbilityUtil {
     //if bool is true - it will not clear the map after skill usage
     public static Map<UUID, Boolean> ignoreAllies = new ConcurrentHashMap<UUID, Boolean>();
 
+    //invul for skills
+    public static Map<UUID, Integer> invul = new ConcurrentHashMap<>();
 
     // ==================== SEQUENCE UTILITY METHODS ====================
 
@@ -204,6 +206,9 @@ public class AbilityUtil {
         if (source == target) return false;
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
+
+        if(invul.containsKey(target.getUUID()))
+            return false;
 
         // Check ally relationship - allies cannot damage each other
         if (AllyUtil.areAllies(source, target)) {

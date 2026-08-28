@@ -31,14 +31,16 @@ public class LoginChecker {
 
         String ip = server.ip.toLowerCase(Locale.ROOT);
 
-        boolean allowed = ip.startsWith("167.235.88.206:2403")
-                || ip.startsWith("167.235.88.206:2309")
-                || ip.startsWith("167.235.88.206:2308")
-                || ip.startsWith("167.235.88.206:2307");
+        boolean allowed = ip.equals("167.235.88.206:2403")
+                || ip.equals("167.235.88.206:2309")
+                || ip.equals("167.235.88.206:2308")
+                || ip.equals("167.235.88.206:2307");
 
         if (!allowed) {
             disconnect(mc, "This mod only works on the official server");
         }
+
+        mc.reloadResourcePacks();
     }
 
     private static void disconnect(Minecraft mc, String reason) {

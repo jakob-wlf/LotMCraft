@@ -89,25 +89,25 @@ public class FlameMasteryAbility extends SelectableAbility {
         AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.SOUL_FIRE,damage/2, targetPos, true, false, true, 0);
         AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.FIRE,damage/2, targetPos, true, false, true, 0);
 
-        for(int i = 0; i < 25; i++) {
-            FallingBlockEntity falling = FallingBlockEntity.fall(
-                    level,
-                    BlockPos.containing(targetPos.x, targetPos.y, targetPos.z).offset(random.nextInt(-1, 1), 2, random.nextInt(-1, 1)),
-                    i % 2 == 0 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState()
-            );
-
-            double xVel = random.nextDouble(-3, 3);
-            double yVel = random.nextDouble(3.5, 5);
-            double zVel = random.nextDouble(-3, 3);
-            Vec3 motion = new Vec3(xVel, yVel, zVel).normalize().scale(1.4);
-            falling.setDeltaMovement(motion);
-            ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                falling.hurtMarked = true;
-            });
-            if(!griefing)
-                falling.disableDrop();
-        }
+//        for(int i = 0; i < 25; i++) {
+//            FallingBlockEntity falling = FallingBlockEntity.fall(
+//                    level,
+//                    BlockPos.containing(targetPos.x, targetPos.y, targetPos.z).offset(random.nextInt(-1, 1), 2, random.nextInt(-1, 1)),
+//                    i % 2 == 0 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState()
+//            );
+//
+//            double xVel = random.nextDouble(-3, 3);
+//            double yVel = random.nextDouble(3.5, 5);
+//            double zVel = random.nextDouble(-3, 3);
+//            Vec3 motion = new Vec3(xVel, yVel, zVel).normalize().scale(1.4);
+//            falling.setDeltaMovement(motion);
+//            ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
+//                falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
+//                falling.hurtMarked = true;
+//            });
+//            if(!griefing)
+//                falling.disableDrop();
+//        }
     }
 
     private void fireballBarrage(ServerLevel level, LivingEntity entity) {

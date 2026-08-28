@@ -5,8 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "FactionMixin",
-    "CreateBigCannonsFactionMixin",
-    "FlowingFluidMixin"
+    "CreateBigCannonsFactionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

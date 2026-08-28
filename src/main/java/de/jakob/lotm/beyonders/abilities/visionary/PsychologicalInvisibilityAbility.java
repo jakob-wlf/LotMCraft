@@ -104,7 +104,13 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
         if (entity instanceof ServerPlayer) {
             if (!invisiblePlayers.containsKey(entity.getUUID())) {
-                add(entity, AbilityUtil.getSeqWithArt(entity, this));
+                int seq = AbilityUtil.getSeqWithArt(entity, this);
+                String path = BeyonderData.getPathway(entity);
+                if(!path.equals("visionary")){
+                    seq -= 1;
+                }
+
+                add(entity, seq);
             }
         }
     }

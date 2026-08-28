@@ -152,6 +152,17 @@ public class FactionEvents {
     }
 
     @SubscribeEvent
+    public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        var pos = player.level().getChunkAt(event.getPos()).getPos();
+
+        if (!shouldFail(player, pos)) return;
+
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
     public static void onExplosion(ExplosionEvent.Detonate event) {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
 

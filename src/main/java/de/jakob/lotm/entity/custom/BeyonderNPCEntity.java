@@ -297,6 +297,25 @@ public class BeyonderNPCEntity extends PathfinderMob {
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 255, false, true, true));
         }
 
+        if(this.isInWall()){
+            BlockPos headPos = BlockPos.containing(
+                    this.getX(),
+                    this.getEyeY(),
+                    this.getZ()
+            );
+
+            if(!this.level().isClientSide)
+                this.level().destroyBlock(headPos, true);
+        }
+
+        if(this.isOnFire()){
+            this.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 15 * 60, 255, false, false, false));
+        }
+
+        if(this.getAirSupply() == 0){
+            this.setAirSupply(20);
+        }
+
         tickCounter++;
     }
 
@@ -414,7 +433,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
 
     private TradeEntry generateRandomTrade(RandomSource random) {
-        int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 1, 9);
+        int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 3, 9);
         
         float randomFloat = random.nextFloat();
         Item item = randomFloat < .4f ? PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, itemSequence) :

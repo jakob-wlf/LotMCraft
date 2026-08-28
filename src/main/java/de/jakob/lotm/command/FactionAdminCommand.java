@@ -25,6 +25,7 @@ public class FactionAdminCommand {
                 .then(get())
                 .then(level())
                 .then(delete())
+                .then(op())
         );
     }
 

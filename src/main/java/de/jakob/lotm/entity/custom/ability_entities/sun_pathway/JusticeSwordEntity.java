@@ -151,8 +151,8 @@ public class JusticeSwordEntity extends Entity {
         }
         else {
             RingEffectManager.createRingForAll(position(), 8, 35, 252 / 255f, 177 / 255f, 3 / 255f, .75f, 1f, 4f, (ServerLevel) level());
-            AbilityUtil.getBlocksInCircleOutline((ServerLevel) level(), position().subtract(0, 1, 0), 5).forEach(b -> spawnFallingBlocks(level(), position(), b, false));
-            AbilityUtil.getBlocksInCircleOutline((ServerLevel) level(), position().subtract(0, 1, 0), 3).forEach(b -> spawnFallingBlocks(level(), position(), b, false));
+//            AbilityUtil.getBlocksInCircleOutline((ServerLevel) level(), position().subtract(0, 1, 0), 5).forEach(b -> spawnFallingBlocks(level(), position(), b, false));
+//            AbilityUtil.getBlocksInCircleOutline((ServerLevel) level(), position().subtract(0, 1, 0), 3).forEach(b -> spawnFallingBlocks(level(), position(), b, false));
         }
     }
 

@@ -133,9 +133,9 @@ public class JudgmentSwordEntity extends Entity {
                 RingEffectManager.createRingForAll(position(), 6, 30,
                         1.0f, 0.96f, 0.72f, 0.85f, 1f, 3.5f, serverLevel);
 
-                // Scatter surface blocks outward
-                AbilityUtil.getBlocksInCircleOutline(serverLevel, position().subtract(0, 1, 0), 4)
-                        .forEach(b -> spawnFallingBlocks(serverLevel, position(), b));
+//                // Scatter surface blocks outward
+//                AbilityUtil.getBlocksInCircleOutline(serverLevel, position().subtract(0, 1, 0), 4)
+//                        .forEach(b -> spawnFallingBlocks(serverLevel, position(), b));
 
                 if (ability != null) {
                     LivingEntity owner = getOwner(serverLevel);

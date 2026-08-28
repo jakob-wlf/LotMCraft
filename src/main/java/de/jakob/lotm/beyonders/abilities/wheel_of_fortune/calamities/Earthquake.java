@@ -89,46 +89,46 @@ public class Earthquake extends Calamity {
                     ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, new Vec3(b.getCenter().x, b.getCenter().y + .85, b.getCenter().z), 1, .2, 0);
             }
 
-            for (int i = 0; i < 80; i++) {
-                BlockPos pos = validBlocks.get(random.nextInt(validBlocks.size()));
-                BlockState state = level.getBlockState(pos);
-
-                if (!state.isAir()) {
-                    double y = pos.getY() + 1;
-                    for (int j = 0; j < 10; j++) {
-                        if (!level.getBlockState(BlockPos.containing(pos.getX(), y, pos.getZ())).isAir())
-                            y++;
-                        else {
-                            break;
-                        }
-                    }
-
-                    if(i % 10 == 0) {
-                        FallingBlockEntity falling = FallingBlockEntity.fall(
-                                level,
-                                BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
-                                state
-                        );
-
-                        double xVel = (random.nextDouble() - 0.5) * 0.15;
-                        double yVel = 0.5 + random.nextDouble() * .6;
-                        double zVel = (random.nextDouble() - 0.5) * 0.15;
-                        falling.setDeltaMovement(xVel, yVel, zVel);
-
-                        ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                            falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                            falling.hurtMarked = true;
-                        });
-
-                        falling.dropItem = false;
-                        if (!griefing)
-                            falling.disableDrop();
-
-
-                        level.addFreshEntity(falling);
-                    }
-                }
-            }
+//            for (int i = 0; i < 80; i++) {
+//                BlockPos pos = validBlocks.get(random.nextInt(validBlocks.size()));
+//                BlockState state = level.getBlockState(pos);
+//
+//                if (!state.isAir()) {
+//                    double y = pos.getY() + 1;
+//                    for (int j = 0; j < 10; j++) {
+//                        if (!level.getBlockState(BlockPos.containing(pos.getX(), y, pos.getZ())).isAir())
+//                            y++;
+//                        else {
+//                            break;
+//                        }
+//                    }
+//
+//                    if(i % 10 == 0) {
+//                        FallingBlockEntity falling = FallingBlockEntity.fall(
+//                                level,
+//                                BlockPos.containing(pos.getCenter().x, y, pos.getCenter().z),
+//                                state
+//                        );
+//
+//                        double xVel = (random.nextDouble() - 0.5) * 0.15;
+//                        double yVel = 0.5 + random.nextDouble() * .6;
+//                        double zVel = (random.nextDouble() - 0.5) * 0.15;
+//                        falling.setDeltaMovement(xVel, yVel, zVel);
+//
+//                        ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
+//                            falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
+//                            falling.hurtMarked = true;
+//                        });
+//
+//                        falling.dropItem = false;
+//                        if (!griefing)
+//                            falling.disableDrop();
+//
+//
+//                        level.addFreshEntity(falling);
+//                    }
+//                }
+//            }
         }, level);
     }
 }

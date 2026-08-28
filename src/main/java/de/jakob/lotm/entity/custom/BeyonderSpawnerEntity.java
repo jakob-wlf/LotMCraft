@@ -55,6 +55,7 @@ public class BeyonderSpawnerEntity extends Entity {
 
     private int checkCooldown = 0;
     private static final int CHECK_INTERVAL = 20;
+    private static final int TRIGGER_COOLDOWN = 20 * 60 * 60 * 12;
 
     public BeyonderSpawnerEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -80,7 +81,16 @@ public class BeyonderSpawnerEntity extends Entity {
     public void tick() {
         super.tick();
 
-        if (triggered || level().isClientSide()) return;
+        if (level().isClientSide()) return;
+
+        if(triggered){
+            if(--checkCooldown <= 0){
+                triggered = false;
+                checkCooldown = CHECK_INTERVAL;
+            }
+
+            return;
+        }
 
         if (--checkCooldown > 0) return;
         checkCooldown = CHECK_INTERVAL;
@@ -103,6 +113,7 @@ public class BeyonderSpawnerEntity extends Entity {
 
         triggered = true;
         performSpawn(serverLevel, triggeringPlayer.get());
+        checkCooldown = TRIGGER_COOLDOWN;
     }
 
     private void performSpawn(ServerLevel level, Player triggeringPlayer) {
@@ -149,8 +160,6 @@ public class BeyonderSpawnerEntity extends Entity {
         } else {
             spawnBeyonderNPC(level, spawnX, spawnY, spawnZ, finalPathway, finalSequence, triggeringPlayer.getUUID());
         }
-
-        this.discard();
     }
 
     private void spawnBeyonderNPC(ServerLevel level,

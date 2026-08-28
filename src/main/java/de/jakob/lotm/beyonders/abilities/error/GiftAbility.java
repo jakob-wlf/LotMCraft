@@ -363,7 +363,7 @@ public class GiftAbility extends SelectableAbility {
             for(int i = 0; i < offHandItem.getCount(); i++) {
                 FallingBlockEntity anvil = FallingBlockEntity.fall(level, BlockPos.containing(target.getX(), target.getY() + 10 + i, target.getZ()), Blocks.ANVIL.defaultBlockState());
                 anvil.disableDrop();
-                anvil.setHurtsEntities(6, 50);
+                anvil.setHurtsEntities(3, 20);
             }
         }
         else if(offHandItem.is(Items.ENDER_PEARL)) {

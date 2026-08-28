@@ -75,13 +75,13 @@ public class RoarOfTheThunderGodAbility extends Ability {
 
         EffectManager.playEffect(EffectManager.Effect.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
 
-        for(int y = 0; y < 3; y++) {
-            for (int i = 3; i < 27; i+=2) {
-                AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1 - y, 0), i).forEach(b -> {
-                    spawnFallingBlocks(level, startPos, b, griefing);
-                });
-            }
-        }
+//        for(int y = 0; y < 3; y++) {
+//            for (int i = 3; i < 27; i+=2) {
+//                AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1 - y, 0), i).forEach(b -> {
+//                    spawnFallingBlocks(level, startPos, b, griefing);
+//                });
+//            }
+//        }
     }
 
     private void spawnFallingBlocks(Level level, Vec3 startPos, BlockPos b, boolean griefing) {
@@ -93,13 +93,13 @@ public class RoarOfTheThunderGodAbility extends Ability {
         Vec3 vectorFromCenter = new Vec3(b.getX() + 0.5 - startPos.x, 0, b.getZ() + 0.5 - startPos.z).normalize();
         Vec3 movement = (new Vec3(vectorFromCenter.x, 1, vectorFromCenter.z)).normalize().scale(.75);
 
-        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
-        block.setDeltaMovement(movement);
-        if(!griefing || state.getDestroySpeed(level, b) < 0)
-            block.disableDrop();
-        else {
-            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-        }
-        block.hurtMarked = true;
+//        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
+//        block.setDeltaMovement(movement);
+//        if(!griefing || state.getDestroySpeed(level, b) < 0)
+//            block.disableDrop();
+//        else {
+//            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
+//        }
+//        block.hurtMarked = true;
     }
 }

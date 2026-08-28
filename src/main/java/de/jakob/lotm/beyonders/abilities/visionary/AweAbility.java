@@ -76,7 +76,7 @@ public class AweAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), Math.max(baseDistance, 75)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), Math.min(baseDistance, 75)).forEach(e -> {
             VisionaryHandler.shouldTrigger(entitySeq, entity, e, this);
 
             if (BeyonderData.isBeyonder(e)) {

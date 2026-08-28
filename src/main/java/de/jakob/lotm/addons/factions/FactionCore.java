@@ -128,18 +128,18 @@ public class FactionCore {
 
     public static int getLevelUpPounds(int level){
         return switch (level){
-          case 0 -> 250;
-          case 1 -> 10000;
-          case 2 -> 25000;
+          case 0 -> 50;
+          case 1 -> 575;
+          case 2 -> 1350;
           default -> 0;
         };
     }
 
     public static int getLevelUpSoli(int level){
         return switch (level){
-          case 0 -> 100;
-          case 1 -> 5000;
-          case 2 -> 15000;
+          case 0 -> 64;
+          case 1 -> 725;
+          case 2 -> 1580;
           default -> 0;
         };
     }

@@ -21,6 +21,7 @@ import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.AllyComponent;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -45,6 +46,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
@@ -93,6 +95,8 @@ public class PlayerEvents {
             }
 
             PacketHandler.sendToPlayer(player, new ResetClientEffectsPacket());
+
+            AbilityUtil.invul.remove(player.getUUID());
         }
     }
 
@@ -146,6 +150,12 @@ public class PlayerEvents {
                     }
                 }
             }
+
+            if(!AbilityUtil.invul.containsKey(player.getUUID())){
+                AbilityUtil.invul.put(player.getUUID(), 20 * 10);
+            }
+
+
         }
     }
 
@@ -208,15 +218,32 @@ public class PlayerEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            ExplodingFallingBlockHelper.tickExplodingBlocks(level);
-        }
-    }
+//    @SubscribeEvent
+//    public static void onServerTick(ServerTickEvent.Post event) {
+//        for (ServerLevel level : event.getServer().getAllLevels()) {
+//            ExplodingFallingBlockHelper.tickExplodingBlocks(level);
+//        }
+//    }
 
     private static void sendActionBar(ServerPlayer player, Component message) {
         ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
         player.connection.send(packet);
+    }
+
+    @SubscribeEvent
+    private static void playerInvulTick(PlayerTickEvent.Post event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        if(AbilityUtil.invul.containsKey(player.getUUID())){
+            var value = AbilityUtil.invul.get(player.getUUID());
+            value -= 1;
+
+            if(value <= 0){
+                AbilityUtil.invul.remove(player.getUUID());
+            }
+            else{
+                AbilityUtil.invul.put(player.getUUID(), value);
+            }
+        }
     }
 }

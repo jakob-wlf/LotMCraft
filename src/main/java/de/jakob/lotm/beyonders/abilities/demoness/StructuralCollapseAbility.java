@@ -52,10 +52,10 @@ public class StructuralCollapseAbility extends Ability {
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 3);
 
         // Collapse the area
-        boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        if(griefing) {
-            collapseArea(serverLevel, targetLoc);
-        }
+//        boolean griefing = BeyonderData.isGriefingEnabled(entity);
+//        if(griefing) {
+//            collapseArea(serverLevel, targetLoc);
+//        }
 
         // Damage entities
         AbilityUtil.damageNearbyEntities(serverLevel, entity, 35,

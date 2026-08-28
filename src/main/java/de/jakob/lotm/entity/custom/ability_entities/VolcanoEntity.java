@@ -125,39 +125,39 @@ public class VolcanoEntity extends Entity {
             LivingEntity ownerEntity = getOwner((ServerLevel) level());
             boolean griefing = BeyonderData.isGriefingEnabled(ownerEntity);
             AbilityUtil.damageNearbyEntities((ServerLevel) level(), ownerEntity, griefing ? 16.5f : 34, getDamage() / 4, position(), true, false, 20 * 10);
-            for(int i = 0; i < 3; i++) {
-                spawnFallingBlocks(level(), position().add(0, 20.5, 0), griefing, ownerEntity);
-            }
+//            for(int i = 0; i < 3; i++) {
+//                //spawnFallingBlocks(level(), position().add(0, 20.5, 0), griefing, ownerEntity);
+//            }
             if(ownerEntity != null && lifeTime % 20 == 0) {
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), position(), ownerEntity, null, new String[]{"burning", "explosion"}, griefing ? 16.5 : 34, 25));
             }
         }
     }
 
-    private void spawnFallingBlocks(Level level, Vec3 startPos, boolean griefing, LivingEntity owner) {
-        BlockPos blockPos = BlockPos.containing(startPos);
-        BlockState state = switch (random.nextInt(5)) {
-            default -> Blocks.MAGMA_BLOCK.defaultBlockState();
-            case 1 -> griefing ? Blocks.LAVA.defaultBlockState() : Blocks.MAGMA_BLOCK.defaultBlockState();
-            case 2 -> Blocks.OBSIDIAN.defaultBlockState();
-        };
-
-        Vec3 velocity = new Vec3(
-                (random.nextDouble() - 0.5) * 1.5,
-                random.nextDouble() * 0.4 + 0.6,
-                (random.nextDouble() - 0.5) * 1.5
-        ).scale(1.5);
-
-        ExplodingFallingBlockHelper.spawnExplodingFallingBlock(
-                level,
-                startPos,
-                state,
-                velocity,
-                griefing,
-                5.0F,
-                getDamage(),
-                false,
-                owner
-        );
-    }
+//    private void spawnFallingBlocks(Level level, Vec3 startPos, boolean griefing, LivingEntity owner) {
+//        BlockPos blockPos = BlockPos.containing(startPos);
+//        BlockState state = switch (random.nextInt(5)) {
+//            default -> Blocks.MAGMA_BLOCK.defaultBlockState();
+//            case 1 -> griefing ? Blocks.LAVA.defaultBlockState() : Blocks.MAGMA_BLOCK.defaultBlockState();
+//            case 2 -> Blocks.OBSIDIAN.defaultBlockState();
+//        };
+//
+//        Vec3 velocity = new Vec3(
+//                (random.nextDouble() - 0.5) * 1.5,
+//                random.nextDouble() * 0.4 + 0.6,
+//                (random.nextDouble() - 0.5) * 1.5
+//        ).scale(1.5);
+//
+//        ExplodingFallingBlockHelper.spawnExplodingFallingBlock(
+//                level,
+//                startPos,
+//                state,
+//                velocity,
+//                griefing,
+//                5.0F,
+//                getDamage(),
+//                false,
+//                owner
+//        );
+//    }
 }

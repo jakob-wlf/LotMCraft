@@ -388,7 +388,7 @@ public class PotionRecipes {
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.MANIPULATOR_POTION.get(),
                 new ItemStack(Items.GHAST_TEAR, 1),
-                new ItemStack(Items.DRAGON_BREATH, 1),
+                new ItemStack(Items.DIRT, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("visionary", 4)))
         ));
         RECIPES.add(new PotionRecipe(

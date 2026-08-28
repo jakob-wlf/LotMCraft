@@ -46,9 +46,12 @@ public class VisionaryHandler {
         if(caster.equals(target)) return;
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return;
@@ -75,9 +78,12 @@ public class VisionaryHandler {
         if(caster.equals(target)) return false;
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return false;
@@ -121,9 +127,12 @@ public class VisionaryHandler {
         String pathTarget = BeyonderData.getPathway(target);
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return false;
