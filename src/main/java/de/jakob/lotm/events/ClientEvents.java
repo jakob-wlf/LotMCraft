@@ -13,11 +13,21 @@ import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
@@ -50,6 +60,7 @@ public class ClientEvents {
         LOTMCraft.useSharedAbilityKey = new KeyMapping("key.beyonders.use_shared_ability", GLFW.GLFW_KEY_N, "key.categories.beyonders");
         LOTMCraft.nextSharedAbilityKey = new KeyMapping("key.beyonders.next_shared_ability", GLFW.GLFW_KEY_PERIOD, "key.categories.beyonders");
         LOTMCraft.previousSharedAbilityKey = new KeyMapping("key.beyonders.previous_shared_ability", GLFW.GLFW_KEY_COMMA, "key.categories.beyonders");
+        LOTMCraft.openMarionetteMenuKey = new KeyMapping("key.beyonders.open_marionette_menu", GLFW.GLFW_KEY_B, "key.categories.beyonders");
 
 
         event.register(LOTMCraft.pathwayInfosKey);
@@ -77,6 +88,7 @@ public class ClientEvents {
         event.register(LOTMCraft.useSharedAbilityKey);
         event.register(LOTMCraft.nextSharedAbilityKey);
         event.register(LOTMCraft.previousSharedAbilityKey);
+        event.register(LOTMCraft.openMarionetteMenuKey);
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package de.jakob.lotm.util.helper;
 
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtil;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import net.minecraft.core.BlockPos;

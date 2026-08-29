@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsDarknessAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDarknessAbility(String id) {
+        super(id);
     }
 
     @Override

@@ -13,6 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
     public int summonedCount = 0;
     public int historicalBorrowingCount = 0;
+    public boolean hasSummonedSelf = false;
+    public long summonedSelfMillis = 0;
     public final Map<Long, SummonInfo> activeSummonTimes = new ConcurrentHashMap<>();
 
     public record SummonInfo(

@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -17,8 +18,8 @@ public class AncientCourtEffect extends ActiveEffect {
     private static final float GOLD_R = 1.0f, GOLD_G = 0.80f, GOLD_B = 0.10f;
     private static final float WHITE_R = 1.0f, WHITE_G = 1.0f, WHITE_B = 0.85f;
 
-    public AncientCourtEffect(double x, double y, double z) {
-        super(x, y, z, 120); // 6 seconds — entity re-fires every 5s for overlap
+    public AncientCourtEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
     }
 
     @Override
@@ -26,7 +27,6 @@ public class AncientCourtEffect extends ActiveEffect {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        // Fade in (0-10t), hold (10-100t), fade out (100-120t)
         float alpha;
         if (tick < 10f) {
             alpha = tick / 10f;
@@ -39,7 +39,7 @@ public class AncientCourtEffect extends ActiveEffect {
         if (alpha < 0.01f) return;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
         VertexConsumer consumer = buf.getBuffer(RenderType.lightning());
@@ -54,7 +54,6 @@ public class AncientCourtEffect extends ActiveEffect {
         poseStack.popPose();
     }
 
-    // ── Outer boundary ring ───────────────────────────────────────────────────
 
     private void renderOuterRing(VertexConsumer consumer, Matrix4f matrix, float alpha) {
         int segments = 64;
@@ -74,7 +73,6 @@ public class AncientCourtEffect extends ActiveEffect {
         }
     }
 
-    // ── 8 evenly spaced pillars ───────────────────────────────────────────────
 
     private void renderPillars(VertexConsumer consumer, Matrix4f matrix, float alpha) {
         int pillarCount = 8;
@@ -84,17 +82,16 @@ public class AncientCourtEffect extends ActiveEffect {
             float cx = Mth.cos(angle) * RING_RADIUS;
             float cz = Mth.sin(angle) * RING_RADIUS;
 
-            // Perpendicular offset for pillar face width
+
             float px = -Mth.sin(angle) * pillarHalfWidth;
             float pz = Mth.cos(angle) * pillarHalfWidth;
 
-            // Main pillar quad (facing tangentially along ring)
+
             addVertex(consumer, matrix, cx - px, 0f, cz - pz, GOLD_R, GOLD_G, GOLD_B, alpha);
             addVertex(consumer, matrix, cx + px, 0f, cz + pz, GOLD_R, GOLD_G, GOLD_B, alpha);
             addVertex(consumer, matrix, cx + px, PILLAR_HEIGHT, cz + pz, GOLD_R, GOLD_G, GOLD_B, 0f);
             addVertex(consumer, matrix, cx - px, PILLAR_HEIGHT, cz - pz, GOLD_R, GOLD_G, GOLD_B, 0f);
 
-            // Ornamental horizontal rings on each pillar
             renderSmallRing(consumer, matrix, cx, PILLAR_HEIGHT * 0.25f, cz, 1.2f, alpha * 0.85f);
             renderSmallRing(consumer, matrix, cx, PILLAR_HEIGHT * 0.55f, cz, 1.2f, alpha * 0.65f);
             renderSmallRing(consumer, matrix, cx, PILLAR_HEIGHT * 0.85f, cz, 1.0f, alpha * 0.45f);
@@ -119,7 +116,6 @@ public class AncientCourtEffect extends ActiveEffect {
         }
     }
 
-    // ── 8 compass lines from center to ring ──────────────────────────────────
 
     private void renderCompassLines(VertexConsumer consumer, Matrix4f matrix, float alpha) {
         int lineCount = 8;
@@ -138,7 +134,6 @@ public class AncientCourtEffect extends ActiveEffect {
         }
     }
 
-    // ── Central beacon column ─────────────────────────────────────────────────
 
     private void renderCentralColumn(VertexConsumer consumer, Matrix4f matrix, float alpha) {
         float w = 0.18f;
@@ -154,11 +149,11 @@ public class AncientCourtEffect extends ActiveEffect {
             addVertex(consumer, matrix, x2, h, z2, WHITE_R, WHITE_G, WHITE_B, 0f);
             addVertex(consumer, matrix, x1, h, z1, WHITE_R, WHITE_G, WHITE_B, 0f);
         }
-        // Base ring
+
         renderSmallRing(consumer, matrix, 0f, 0.1f, 0f, 1.5f, alpha * 0.7f);
     }
 
-    // ── Rotating runes orbiting the perimeter ────────────────────────────────
+
 
     private void renderRotatingRunes(VertexConsumer consumer, Matrix4f matrix, float tick, float alpha) {
         int count = 24;
@@ -171,7 +166,7 @@ public class AncientCourtEffect extends ActiveEffect {
             float ry = 1.5f + Mth.sin(angle * 4f + tick * 0.025f) * 2.0f;
             float runeAlpha = alpha * (0.4f + 0.6f * Mth.sin(i * 1.3f + tick * 0.04f) * 0.5f + 0.5f);
 
-            // Face runes toward center
+
             float facingX = -Mth.cos(angle) * size;
             float facingZ = -Mth.sin(angle) * size;
             float perpX = -Mth.sin(angle) * size;
@@ -184,7 +179,7 @@ public class AncientCourtEffect extends ActiveEffect {
         }
     }
 
-    // ── Utility ───────────────────────────────────────────────────────────────
+
 
     private void addVertex(VertexConsumer consumer, Matrix4f matrix,
                            float x, float y, float z, float r, float g, float b, float a) {

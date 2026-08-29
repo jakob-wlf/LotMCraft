@@ -38,6 +38,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncHistoricalVoidSummoningCountPacket.TYPE,
+                SyncHistoricalVoidSummoningCountPacket.STREAM_CODEC,
+                SyncHistoricalVoidSummoningCountPacket::handle
+        );
+
+        registrar.playToClient(
                 OpenWaypointSelectionScreenPacket.TYPE,
                 OpenWaypointSelectionScreenPacket.STREAM_CODEC,
                 OpenWaypointSelectionScreenPacket::handle
@@ -184,12 +190,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                AddDirectionalEffectPacket.TYPE,
-                AddDirectionalEffectPacket.STREAM_CODEC,
-                AddDirectionalEffectPacket::handle
-        );
-
-        registrar.playToClient(
                 OpenCoordinateScreenPacket.TYPE,
                 OpenCoordinateScreenPacket.CODEC,
                 OpenCoordinateScreenPacket::handle
@@ -217,12 +217,6 @@ public class PacketHandler {
                 DisplaySpaceConcealmentParticlesPacket.TYPE,
                 DisplaySpaceConcealmentParticlesPacket.STREAM_CODEC,
                 DisplaySpaceConcealmentParticlesPacket::handle
-        );
-
-        registrar.playToClient(
-                SyncMirrorWorldPacket.TYPE,
-                SyncMirrorWorldPacket.STREAM_CODEC,
-                SyncMirrorWorldPacket::handle
         );
 
         registrar.playToClient(
@@ -357,12 +351,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                PendingAllyRequestPacket.TYPE,
-                PendingAllyRequestPacket.STREAM_CODEC,
-                PendingAllyRequestPacket::handle
-        );
-
-        registrar.playToClient(
                 PendingTeamInvitePacket.TYPE,
                 PendingTeamInvitePacket.STREAM_CODEC,
                 PendingTeamInvitePacket::handle
@@ -388,9 +376,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                RemoveMovableEffectPacket.TYPE,
-                RemoveMovableEffectPacket.STREAM_CODEC,
-                RemoveMovableEffectPacket::handle
+                CancelEffectPacket.TYPE,
+                CancelEffectPacket.STREAM_CODEC,
+                CancelEffectPacket::handle
         );
 
         registrar.playToClient(
@@ -400,9 +388,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                UpdateMovableEffectPositionPacket.TYPE,
-                UpdateMovableEffectPositionPacket.STREAM_CODEC,
-                UpdateMovableEffectPositionPacket::handle
+                UpdateEffectPositionPacket.TYPE,
+                UpdateEffectPositionPacket.STREAM_CODEC,
+                UpdateEffectPositionPacket::handle
         );
 
         registrar.playToClient(
@@ -415,13 +403,6 @@ public class PacketHandler {
                 HotGroundEffectPacket.TYPE,
                 HotGroundEffectPacket.STREAM_CODEC,
                 HotGroundEffectPacket::handle
-        );
-
-
-        registrar.playToClient(
-                AddMovableEffectPacket.TYPE,
-                AddMovableEffectPacket.STREAM_CODEC,
-                AddMovableEffectPacket::handle
         );
 
         registrar.playToClient(
@@ -551,6 +532,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncMarionettesToClient.TYPE,
+                SyncMarionettesToClient.STREAM_CODEC,
+                SyncMarionettesToClient::handle
+        );
+
+        registrar.playToClient(
                 OpenWanderingSelectionScreenPacket.TYPE,
                 OpenWanderingSelectionScreenPacket.STREAM_CODEC,
                 OpenWanderingSelectionScreenPacket::handle
@@ -580,6 +567,60 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                RitualSaveLinesPacket.TYPE,
+                RitualSaveLinesPacket.STREAM_CODEC,
+                RitualSaveLinesPacket::handle
+        );
+
+        registrar.playToServer(
+                RequestMarionetteSyncPacket.TYPE,
+                RequestMarionetteSyncPacket.STREAM_CODEC,
+                RequestMarionetteSyncPacket::handle
+        );
+
+        registrar.playToServer(
+                SyncMarionetteToServerPacket.TYPE,
+                SyncMarionetteToServerPacket.STREAM_CODEC,
+                SyncMarionetteToServerPacket::handle
+        );
+
+        registrar.playToServer(
+                ReleaseMarionettePacket.TYPE,
+                ReleaseMarionettePacket.STREAM_CODEC,
+                ReleaseMarionettePacket::handle
+        );
+
+        registrar.playToServer(
+                RemoveAllyPacket.TYPE,
+                RemoveAllyPacket.STREAM_CODEC,
+                RemoveAllyPacket::handle
+        );
+
+        registrar.playToServer(
+                HandleAllyRequestPacket.TYPE,
+                HandleAllyRequestPacket.STREAM_CODEC,
+                HandleAllyRequestPacket::handle
+        );
+
+        registrar.playToServer(
+                SendAllyRequestPacket.TYPE,
+                SendAllyRequestPacket.STREAM_CODEC,
+                SendAllyRequestPacket::handle
+        );
+
+        registrar.playToServer(
+                RitualStartPacket.TYPE,
+                RitualStartPacket.STREAM_CODEC,
+                RitualStartPacket::handle
+        );
+
+        registrar.playToServer(
+                PlayerLeftClickWhileSummonSelfPacket.TYPE,
+                PlayerLeftClickWhileSummonSelfPacket.STREAM_CODEC,
+                PlayerLeftClickWhileSummonSelfPacket::handle
         );
 
         registrar.playToServer(
@@ -703,13 +744,6 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                AllyRequestResponsePacket.TYPE,
-                AllyRequestResponsePacket.STREAM_CODEC,
-                AllyRequestResponsePacket::handle
-        );
-
-
-        registrar.playToServer(
                 OpenIntrospectMenuPacket.TYPE,
                 OpenIntrospectMenuPacket.STREAM_CODEC,
                 OpenIntrospectMenuPacket::handle
@@ -824,6 +858,11 @@ public class PacketHandler {
                 OpenArtifactWheelPacket.TYPE,
                 OpenArtifactWheelPacket.STREAM_CODEC,
                 OpenArtifactWheelPacket::handle);
+
+        registrar.playToServer(
+                RequestOpenMarionetteMenuPacket.TYPE,
+                RequestOpenMarionetteMenuPacket.STREAM_CODEC,
+                RequestOpenMarionetteMenuPacket::handle);
 
         registrar.playToServer(
                 SyncArtifactAbilityWheel.TYPE,

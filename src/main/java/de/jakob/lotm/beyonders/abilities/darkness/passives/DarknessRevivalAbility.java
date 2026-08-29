@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.darkness.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
@@ -21,12 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class DarknessRevivalAbility extends PassiveAbilityItem {
+public class DarknessRevivalAbility extends PassiveAbility {
     private static final int MAX_LIGHT_LEVEL = 7;
     private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(20 / 255f, 0 / 255f, 40 / 255f), 2f);
 
-    public DarknessRevivalAbility(Properties properties) {
-        super(properties);
+    public DarknessRevivalAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DarknessRevivalAbility extends PassiveAbilityItem {
 
         if (!(entity.level() instanceof ServerLevel serverLevel)) return;
 
-        if (!((DarknessRevivalAbility) PassiveAbilityHandler.DARKNESS_REVIVAL.get()).shouldApplyTo(entity)) return;
+        if (!PassiveAbilityHandler.getById("darkness_revival_ability").shouldApplyTo(entity)) return;
 
         if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
 

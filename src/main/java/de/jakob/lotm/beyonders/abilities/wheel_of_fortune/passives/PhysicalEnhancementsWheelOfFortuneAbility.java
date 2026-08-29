@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsWheelOfFortuneAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsWheelOfFortuneAbility(String id) {
+        super(id);
     }
 
     @Override

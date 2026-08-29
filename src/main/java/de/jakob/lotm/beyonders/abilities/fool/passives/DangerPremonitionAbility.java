@@ -1,9 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.*;
-import de.jakob.lotm.events.AbilityWheelEvents;
 import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
@@ -30,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber
-public class DangerPremonitionAbility extends PassiveAbilityItem {
-    public DangerPremonitionAbility(Properties properties) {
-        super(properties);
+public class DangerPremonitionAbility extends PassiveAbility {
+    public DangerPremonitionAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -94,7 +95,7 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
-        if(!((DangerPremonitionAbility) PassiveAbilityHandler.DANGER_PREMONITION.get()).shouldApplyTo(entity))
+        if(!((DangerPremonitionAbility) PassiveAbilityHandler.getById("danger_premonition_ability")).shouldApplyTo(entity))
             return;
 
         Entity damager = event.getSource().getEntity();
@@ -193,7 +194,7 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
 
             if (!(entity instanceof ServerPlayer serverPlayer)) continue;
 
-            if(!((DangerPremonitionAbility) PassiveAbilityHandler.DANGER_PREMONITION.get()).shouldApplyTo(entity))
+            if(!((DangerPremonitionAbility) PassiveAbilityHandler.getById("danger_premonition_ability")).shouldApplyTo(entity))
                 continue;
 
             int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
@@ -225,7 +226,7 @@ public class DangerPremonitionAbility extends PassiveAbilityItem {
 
             if (!(entity instanceof ServerPlayer serverPlayer)) continue;
 
-            if(!((DangerPremonitionAbility) PassiveAbilityHandler.DANGER_PREMONITION.get()).shouldApplyTo(entity))
+            if(!((DangerPremonitionAbility) PassiveAbilityHandler.getById("danger_premonition_ability")).shouldApplyTo(entity))
                 continue;
 
             int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));

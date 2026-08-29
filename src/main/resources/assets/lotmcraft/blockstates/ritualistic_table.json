@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "lotmcraft:block/ritualistic_table" },
+    "facing=east":  { "model": "lotmcraft:block/ritualistic_table", "y": 90 },
+    "facing=south": { "model": "lotmcraft:block/ritualistic_table", "y": 180 },
+    "facing=west":  { "model": "lotmcraft:block/ritualistic_table", "y": 270 }
+  }
+}

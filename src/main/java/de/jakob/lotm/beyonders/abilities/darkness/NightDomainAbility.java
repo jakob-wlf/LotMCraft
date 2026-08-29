@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -53,7 +54,7 @@ public class NightDomainAbility extends Ability {
 
         Vec3 startPos = entity.position();
 
-        EffectManager.playEffect(EffectManager.Effect.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel, entity);
+        EffectManager.playEffect(EffectIds.NIGHT_DOMAIN, entity.position().x, entity.position().y, entity.position().z, serverLevel, entity);
         float multiplier = multiplier(entity);
         final UUID[] taskIdHolder = new UUID[1];
         taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {

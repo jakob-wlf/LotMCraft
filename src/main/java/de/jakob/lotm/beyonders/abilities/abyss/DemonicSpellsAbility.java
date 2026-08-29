@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -100,7 +101,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
                     });
         }, null, level, () -> AbilityUtil.getTimeInArea(entity, new Location(swampCenter, level)));
 
-        EffectManager.playEffect(EffectManager.Effect.ACID_SWAMP, swampCenter.x, swampCenter.y, swampCenter.z, level);
+        EffectManager.playEffect(EffectIds.ACID_SWAMP, swampCenter.x, swampCenter.y, swampCenter.z, level);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(level, swampCenter, entity, this, new String[]{"poison"}, swampRadius, 20 * 8));
     }
 

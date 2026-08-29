@@ -2,7 +2,9 @@ package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -49,7 +51,7 @@ public class LifeAuraAbility extends ToggleAbility {
             return;
         }
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.LIFE_AURA, loc, 80, true, serverLevel);
+        UUID effectID = EffectManager.playMovableEffect(EffectIds.LIFE_AURA, serverLevel, entity, EffectParams.infiniteWithLoop(80));
         entityEffectMap.put(entity.getUUID(), effectID);
     }
 
@@ -65,7 +67,7 @@ public class LifeAuraAbility extends ToggleAbility {
         }
 
         Location loc = new Location(entity.position(), serverLevel);
-        MovableEffectManager.updateEffectPosition(entityEffectMap.get(entity.getUUID()), loc, serverLevel);
+        EffectManager.updateEffectPosition(entityEffectMap.get(entity.getUUID()), loc.getX(), loc.getY(), loc.getZ(), serverLevel);
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(InteractionHandler.isInteractionPossible(loc, "corruption", seq)) {
@@ -130,7 +132,7 @@ public class LifeAuraAbility extends ToggleAbility {
 
         UUID effectID = entityEffectMap.remove(entity.getUUID());
         if(effectID != null) {
-            MovableEffectManager.removeEffect(effectID, serverLevel);
+            EffectManager.cancelEffect(effectID, serverLevel);
         }
     }
 }

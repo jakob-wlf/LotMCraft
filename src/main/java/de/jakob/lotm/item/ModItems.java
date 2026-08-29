@@ -58,8 +58,6 @@ public class ModItems {
     public static final DeferredItem<Item> PAPER_AXE = ITEMS.registerItem("paper_axe", props -> new AxeItem(PAPER_TOOL_TIER, props.attributes(AxeItem.createAttributes(PAPER_TOOL_TIER, 6, -3.1f))), new Item.Properties().durability(15));
     public static final DeferredItem<Item> PAPER_SHOVEL = ITEMS.registerItem("paper_shovel", props -> new ShovelItem(PAPER_TOOL_TIER, props.attributes(ShovelItem.createAttributes(PAPER_TOOL_TIER, 1.5f, -3))), new Item.Properties().durability(15));
 
-    public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
-            () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
 
     public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",
             () -> new SubordinateControllerItem(new Item.Properties().stacksTo(1)));

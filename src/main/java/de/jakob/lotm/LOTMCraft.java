@@ -9,6 +9,7 @@ import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
@@ -18,6 +19,7 @@ import de.jakob.lotm.entity.client.ability_entities.big_sun.BigSunRenderer;
 import de.jakob.lotm.entity.client.ability_entities.darkness_pathway.concealed_domain.ConcealedDomainRenderer;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.divine_kingdom_death.DeathDivineKingdomEntityRenderer;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateRenderer;
+import de.jakob.lotm.entity.client.ability_entities.demoness_pathway.chaos_vortex.ChaosVortextRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.apprentice_door.ApprenticeDoorRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.black_hole.BlackHoleRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.blink_afterimage.BlinkAfterimageRenderer;
@@ -30,6 +32,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.original_body.OriginalBodyRenderer;
+import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileRenderer;
@@ -78,13 +81,16 @@ import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
-import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
-import de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronScreen;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
-import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesScreen;
-import de.jakob.lotm.gui.custom.Recipe.RecipeScreen;
-import de.jakob.lotm.gui.custom.Trades.BeyonderTradeScreen;
+import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
+import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
+import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
+import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
+import de.jakob.lotm.gui.custom.recipe.RecipeScreen;
+import de.jakob.lotm.gui.custom.ritualistic_table.RitualScreen;
+import de.jakob.lotm.gui.custom.trades.BeyonderTradeScreen;
+import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidScreen;
 import de.jakob.lotm.item.ModCreativeModTabs;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
@@ -95,8 +101,9 @@ import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipes;
-import de.jakob.lotm.quest.QuestRegistry;
+import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
+import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
@@ -117,9 +124,11 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -151,6 +160,7 @@ public class LOTMCraft
     public static KeyMapping useSharedAbilityKey;
     public static KeyMapping nextSharedAbilityKey;
     public static KeyMapping previousSharedAbilityKey;
+    public static KeyMapping openMarionetteMenuKey;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
@@ -164,6 +174,7 @@ public class LOTMCraft
     public static KeyMapping useAbilityBarAbility0;
 
     public static AbilityHandler abilityHandler;
+    public static PassiveAbilityHandler passiveAbilityHandler;
 
     public static final ResourceLocation ANIMATION_LAYER_ID = ResourceLocation.fromNamespaceAndPath(MOD_ID, "lotmcraft_animations");
 
@@ -204,7 +215,6 @@ public class LOTMCraft
         ModDimensions.register(modEventBus);
         ModGameRules.register();
 
-        PassiveAbilityHandler.registerAbilities(modEventBus);
         PotionItemHandler.registerPotions(modEventBus);
 
         QuestRegistry.init();
@@ -212,6 +222,7 @@ public class LOTMCraft
         ActingTaskRegistry.init();
 
         abilityHandler = new AbilityHandler();
+        passiveAbilityHandler = new PassiveAbilityHandler();
 
         modEventBus.addListener(this::addCreative);
         modEventBus.addListener(PacketHandler::register);
@@ -229,6 +240,11 @@ public class LOTMCraft
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
+    }
+
+    @SubscribeEvent
+    public void onAddReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(new RitualManager());
     }
 
     @SubscribeEvent
@@ -294,11 +310,13 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
             EntityRenderers.register(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerRenderer::new);
             EntityRenderers.register(ModEntities.TIME_CHANGE.get(), TimeChangeRenderer::new);
+            EntityRenderers.register(ModEntities.PORTAL.get(), PortalRenderer::new);
             EntityRenderers.register(ModEntities.SPIRIT_BALL.get(), SpiritBallRenderer::new);
             EntityRenderers.register(ModEntities.SPIRIT_BLOCK_PROJECTILE.get(), SpiritBlockProjectileRenderer::new);
             EntityRenderers.register(ModEntities.CONCEALED_DOMAIN.get(), ConcealedDomainRenderer::new);
             EntityRenderers.register(ModEntities.UNDERWORLD_GATE.get(), UnderworldGateRenderer::new);
             EntityRenderers.register(ModEntities.PLANET.get(), PlanetRenderer::new);
+            EntityRenderers.register(ModEntities.CHAOS_VORTEX.get(), ChaosVortextRenderer::new);
 
             // Spirits
             EntityRenderers.register(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishRenderer::new);
@@ -359,8 +377,16 @@ public class LOTMCraft
             event.register(ModMenuTypes.HONORIFIC_NAMES_MENU.get(), HonorificNamesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
+            event.register(ModMenuTypes.RITUAL_MENU.get(), RitualScreen::new);
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
+            event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
+            event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
+        }
+
+        @SubscribeEvent
+        public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerBlockEntityRenderer(ModBlockEntities.RITUALISTIC_TABLE_BE.get(), RitualisticTableBlockEntityRenderer::new);
         }
     }
 

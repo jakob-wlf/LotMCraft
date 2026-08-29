@@ -5,6 +5,7 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -95,7 +96,7 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONQUERING, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.CONQUERING, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), serverLevel);
         if(owner != null)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), owner, null, new String[]{"burning", "explosion"}, 9, 15));
     }
@@ -108,7 +109,7 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.CONQUERING, result.getLocation().x, result.getLocation().y, result.getLocation().z, serverLevel);
+        EffectManager.playEffect(EffectIds.CONQUERING, result.getLocation().x, result.getLocation().y, result.getLocation().z, serverLevel);
 
         serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
         serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);

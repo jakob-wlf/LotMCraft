@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -20,13 +21,13 @@ public class HolyLightSmallEffect extends ActiveEffect {
     private static final float MAX_CIRCLE_RADIUS = 30f;
     private static final float BEAM_HEIGHT_ABOVE = 60f;
 
-    // Deeper, more saturated gold - less white, more amber
-    private static final float GOLD_R = 1.0f;
-    private static final float GOLD_G = 0.6f;  // Reduced from 0.75
-    private static final float GOLD_B = 0.05f; // Reduced from 0.15
 
-    public HolyLightSmallEffect(double x, double y, double z) {
-        super(x, y, z, 70); // 6 seconds
+    private static final float GOLD_R = 1.0f;
+    private static final float GOLD_G = 0.6f;
+    private static final float GOLD_B = 0.05f;
+
+    public HolyLightSmallEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         this.currentTick = 0;
         this.beamProgress = 0f;
         this.expansionProgress = 0f;
@@ -40,26 +41,26 @@ public class HolyLightSmallEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Beam descends (0.0 → 0.2)
+
         beamProgress = Mth.clamp(progress / 0.2f, 0f, 1f);
 
-        // Expansion starts after beam hits (≥ 0.2)
+
         if (progress > 0.2f) {
             expansionProgress = Mth.clamp((progress - 0.2f) / 0.8f, 0f, 1f);
         } else {
             expansionProgress = 0f;
         }
 
-        // Pulsing intensity
+
         intensity = 1f - (float) Math.pow(progress, 1.5);
         intensity *= (1f + 0.1f * Mth.sin(tick * 0.25f));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render beam (visible until 0.35 progress)
+
         if (progress <= 0.35f) {
             float beamFade = 1f;
             if (progress > 0.2f) {
@@ -69,7 +70,7 @@ public class HolyLightSmallEffect extends ActiveEffect {
             renderBeam(poseStack, bufferSource, beamProgress, intensity * beamFade);
         }
 
-        // Render expanding circles
+
         if (expansionProgress > 0f) {
             renderExpandingCircles(poseStack, bufferSource, expansionProgress, intensity);
         }
@@ -82,14 +83,14 @@ public class HolyLightSmallEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Beam starts from high above and descends to the target point (0, 0, 0 in local space)
+
         float beamLength = BEAM_HEIGHT_ABOVE * progress;
         float topY = BEAM_HEIGHT_ABOVE;
         float bottomY = BEAM_HEIGHT_ABOVE - beamLength;
 
         int segments = 32;
 
-        // Main beam cylinder - with deeper gold
+
         for (int i = 0; i < segments; i++) {
             float angle1 = (float) (i * Math.PI * 2 / segments);
             float angle2 = (float) ((i + 1) * Math.PI * 2 / segments);
@@ -99,14 +100,14 @@ public class HolyLightSmallEffect extends ActiveEffect {
             float x2 = Mth.cos(angle2) * BEAM_RADIUS;
             float z2 = Mth.sin(angle2) * BEAM_RADIUS;
 
-            // Beam faces - rich gold core
+
             addVertex(consumer, matrix, x1, topY, z1, GOLD_R, GOLD_G, GOLD_B, intensity * 0.95f);
             addVertex(consumer, matrix, x2, topY, z2, GOLD_R, GOLD_G, GOLD_B, intensity * 0.95f);
             addVertex(consumer, matrix, x2, bottomY, z2, GOLD_R, GOLD_G, GOLD_B, intensity);
             addVertex(consumer, matrix, x1, bottomY, z1, GOLD_R, GOLD_G, GOLD_B, intensity);
         }
 
-        // Glow layers - warmer tones
+
         for (int layer = 1; layer <= 2; layer++) {
             float glowRadius = BEAM_RADIUS + layer * 0.5f;
             float alpha = intensity * (0.6f - layer * 0.2f);
@@ -146,7 +147,7 @@ public class HolyLightSmallEffect extends ActiveEffect {
             float yOffset = 0.05f + c * 0.02f;
             float alpha = intensity * (0.8f - c * 0.15f) * (1f - circleProgress * 0.4f);
 
-            // Render filled circle - richer gold center
+
             for (int i = 0; i < segments; i++) {
                 float angle1 = (float) (i * Math.PI * 2 / segments);
                 float angle2 = (float) ((i + 1) * Math.PI * 2 / segments);
@@ -156,14 +157,14 @@ public class HolyLightSmallEffect extends ActiveEffect {
                 float x2 = Mth.cos(angle2) * radius;
                 float z2 = Mth.sin(angle2) * radius;
 
-                // Triangle from center to edge - deeper gold
+
                 addVertex(consumer, matrix, 0, yOffset, 0, GOLD_R, GOLD_G, GOLD_B, alpha);
                 addVertex(consumer, matrix, x1, yOffset, z1, GOLD_R, GOLD_G * 0.75f, GOLD_B * 0.3f, alpha * 0.9f);
                 addVertex(consumer, matrix, x2, yOffset, z2, GOLD_R, GOLD_G * 0.75f, GOLD_B * 0.3f, alpha * 0.9f);
                 addVertex(consumer, matrix, 0, yOffset, 0, GOLD_R, GOLD_G, GOLD_B, alpha);
             }
 
-            // Outer glow ring - warm amber fade
+
             float outerRadius = radius * 1.15f;
             for (int i = 0; i < segments; i++) {
                 float angle1 = (float) (i * Math.PI * 2 / segments);

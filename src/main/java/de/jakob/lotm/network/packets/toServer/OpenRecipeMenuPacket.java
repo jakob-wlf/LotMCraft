@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.Recipe.RecipeMenuProvider;
+import de.jakob.lotm.gui.custom.recipe.RecipeMenuProvider;
 import de.jakob.lotm.beyonders.potions.PotionRecipe;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;

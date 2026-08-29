@@ -13,17 +13,18 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
-import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
-import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
-import de.jakob.lotm.gui.custom.SelectionGui.*;
+import de.jakob.lotm.gui.custom.coordinate_input.CoordinateInputScreen;
+import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.selection_gui.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.ShapeShiftingPlayerModelPacket;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestRegistry;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
-import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
+import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.data.ClientSpiritCache;
@@ -86,6 +87,14 @@ public class ClientHandler {
                     0
             );
         }
+    }
+
+    public static void closeGUI() {
+        Minecraft.getInstance().setScreen(null);
+    }
+
+    public static Minecraft getMinecraftInstance() {
+        return Minecraft.getInstance();
     }
 
     public static void handleSyncPlayerData(SyncPlayerActingDataPayload payload, IPayloadContext context) {
@@ -214,20 +223,13 @@ public class ClientHandler {
                     new MarionetteOverlayRenderer.MarionetteInfos(
                             packet.name(),
                             packet.health(),
-                            packet.maxHealth()
+                            packet.maxHealth(),
+                            packet.hasWorm()
                     )
             );
         }
         else {
             MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
-        }
-    }
-
-    public static void handleMirrorWorldPacket(SyncMirrorWorldPacket packet) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get())
-                    .setInMirrorWorld(packet.inMirrorWorld());
         }
     }
 
@@ -284,42 +286,27 @@ public class ClientHandler {
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
     }
 
-    public static void addEffect(int index, double x, double y, double z, int entityId) {
-        if (entityId == AddEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveEffect(index, x, y, z);
-        } else {
-            VFXRenderer.addActiveEffect(index, x, y, z, entityId);
+    public static void addEffect(AddEffectPacket packet) {
+        LivingEntity entity = null;
+        if (packet.entityId() != AddEffectPacket.NO_ENTITY && Minecraft.getInstance().level != null) {
+            var raw = Minecraft.getInstance().level.getEntity(packet.entityId());
+            if (raw instanceof LivingEntity le) entity = le;
         }
+
+        Integer duration = packet.duration() == AddEffectPacket.NO_DURATION_OVERRIDE ? null : packet.duration();
+        Boolean infinite = packet.infiniteOverridden() ? packet.infinite() : null;
+        EffectParams overrides = new EffectParams(duration, infinite, packet.params());
+
+        VFXRenderer.addActiveEffect(packet.effectId(), packet.index(),
+                packet.x(), packet.y(), packet.z(), entity, packet.followEntity(), overrides);
     }
 
-    public static void addDirectionalEffect(int index,
-                                            double startX, double startY, double startZ,
-                                            double endX, double endY, double endZ,
-                                            int duration, int entityId) {
-        if (entityId == AddDirectionalEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
-        } else {
-            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration, entityId);
-        }
+    public static void updateEffectPosition(UUID effectId, double x, double y, double z) {
+        VFXRenderer.updateEffectPosition(effectId, x, y, z);
     }
 
-    public static void addMovableEffect(UUID effectId, int index,
-                                        double x, double y, double z,
-                                        int duration, boolean infinite,
-                                        int entityId) {
-        if (entityId == AddMovableEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
-        } else {
-            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite, entityId);
-        }
-    }
-
-    public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
-        VFXRenderer.updateMovableEffectPosition(effectId, x, y, z);
-    }
-
-    public static void removeMovableEffect(UUID effectId) {
-        VFXRenderer.removeMovableEffect(effectId);
+    public static void cancelEffect(UUID effectId) {
+        VFXRenderer.cancelEffect(effectId);
     }
 
     public static void cancelEffectsNear(double x, double y, double z, double radius) {
@@ -379,7 +366,7 @@ public class ClientHandler {
 
     public static void handleAllyPacket(SyncAllyDataPacket packet) {
         if (Minecraft.getInstance().player != null) {
-            AllyComponent newComponent = new AllyComponent(packet.allies());
+            AllyComponent newComponent = new AllyComponent(packet.allies(), packet.requests());
             Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
         }
     }
@@ -723,5 +710,9 @@ public class ClientHandler {
         var player = Minecraft.getInstance().player;
         if (player == null) return;
         selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
+    }
+
+    public static void handleSyncHistoricalVoidSummoningCountPacket(SyncHistoricalVoidSummoningCountPacket packet) {
+        getPlayer().getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedCount = packet.amount();
     }
 }

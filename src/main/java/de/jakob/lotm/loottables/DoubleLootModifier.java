@@ -86,7 +86,7 @@ public class DoubleLootModifier extends LootModifier {
             int sequence = ChestLootModifier.getWeightedHighSequence();
 
             if(sequence >= 7)
-                generatedLoot.add(new ItemStack(ChestLootModifier.getRandomLoot(pathway, sequence)));
+                generatedLoot.add(ChestLootModifier.getRandomLoot(pathway, sequence));
         }
 
         return generatedLoot;

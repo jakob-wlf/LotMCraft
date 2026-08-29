@@ -9,7 +9,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public record SyncSelectedMarionettePacket(boolean active, String name, double health, double maxHealth) implements CustomPacketPayload {
+public record SyncSelectedMarionettePacket(boolean active, String name, double health, double maxHealth, boolean hasWorm) implements CustomPacketPayload {
 
 
     public static final Type<SyncSelectedMarionettePacket> TYPE =
@@ -21,6 +21,7 @@ public record SyncSelectedMarionettePacket(boolean active, String name, double h
                     ByteBufCodecs.STRING_UTF8, SyncSelectedMarionettePacket::name,
                     ByteBufCodecs.DOUBLE, SyncSelectedMarionettePacket::health,
                     ByteBufCodecs.DOUBLE, SyncSelectedMarionettePacket::maxHealth,
+                    ByteBufCodecs.BOOL, SyncSelectedMarionettePacket::hasWorm,
                     SyncSelectedMarionettePacket::new
             );
 

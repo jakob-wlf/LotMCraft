@@ -23,6 +23,7 @@ repositories {
     maven { url = 'https://maven.neoforged.net/releases/' }
     maven { url = 'https://libraries.minecraft.net' }
     maven { url = 'https://jitpack.io' }
+    maven { url = "https://maven.firstdark.dev/snapshots" }
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
@@ -57,8 +58,7 @@ neoForge {
         minecraftVersion = project.parchment_minecraft_version
     }
 
-    // This line is optional. Access Transformers are automatically detected
-    accessTransformers = project.files('src/main/templates/META-INF/accesstransformer.cfg')
+    accessTransformers.from('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -162,7 +162,18 @@ dependencies {
 
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
 
-    // Use jarJar for bundling PlayerAnimationLibNeo
+    // LDLib2
+    implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
+    jarJar("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
+
+    // Photon
+    implementation("com.lowdragmc.photon:photon-neoforge-${minecraft_version}:${photon_version}") {
+        transitive = false
+    }
+    jarJar("com.lowdragmc.photon:photon-neoforge-${minecraft_version}:${photon_version}") {
+        transitive = false
+    }
+
     jarJar("com.zigythebird.playeranim:PlayerAnimationLibNeo:1.1.3+mc.1.21.1") {
         exclude group: 'com.google.code.gson'
         exclude group: 'org.slf4j'
@@ -170,7 +181,6 @@ dependencies {
         exclude group: 'it.unimi.dsi'
     }
 
-    // Also add as implementation for compile-time
     implementation("com.zigythebird.playeranim:PlayerAnimationLibNeo:1.1.3+mc.1.21.1") {
         exclude group: 'com.google.code.gson'
         exclude group: 'org.slf4j'

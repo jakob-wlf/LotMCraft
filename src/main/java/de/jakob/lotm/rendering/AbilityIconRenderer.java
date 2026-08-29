@@ -38,8 +38,8 @@ public class AbilityIconRenderer {
     private final static int ICON_WIDTH = 18;
     private final static int ICON_HEIGHT = 18;
 
-    private final static ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_frame.png");
-    private final static ResourceLocation foregroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/ability_frame_foreground.png");
+    private final static ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/abilities/ability_frame.png");
+    private final static ResourceLocation foregroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/abilities/ability_frame_foreground.png");
 
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();

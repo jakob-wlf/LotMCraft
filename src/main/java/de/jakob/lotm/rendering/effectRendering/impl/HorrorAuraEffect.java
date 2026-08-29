@@ -2,7 +2,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,7 +15,7 @@ import org.joml.Matrix4f;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HorrorAuraEffect extends ActiveMovableEffect {
+public class HorrorAuraEffect extends ActiveEffect {
 
     private final RandomSource random = RandomSource.create();
     private final List<DarknessLayer> layers = new ArrayList<>();
@@ -33,27 +33,27 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
     public HorrorAuraEffect(Location location, int maxDuration, boolean infinite) {
         super(location, maxDuration, infinite);
 
-        // Multiple layers of solid darkness
+
         for (int i = 0; i < 8; i++) {
             layers.add(new DarknessLayer(i));
         }
 
-        // Massive void particles
+
         for (int i = 0; i < 200; i++) {
             voidParticles.add(new VoidParticle());
         }
 
-        // Large imposing spikes
+
         for (int i = 0; i < 24; i++) {
             spikes.add(new DarknessSpike(i));
         }
 
-        // Writhing tentacles
+
         for (int i = 0; i < 12; i++) {
             tentacles.add(new DarknessTentacle(i));
         }
 
-        // Glowing void orbs
+
         for (int i = 0; i < 16; i++) {
             voidOrbs.add(new VoidOrb());
         }
@@ -78,11 +78,11 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
             }
         }
 
-        // Powerful breathing motion
+
         breathePhase = Mth.sin(tick * 0.03f);
         expansionRadius = MIN_RADIUS + (MAX_RADIUS - MIN_RADIUS) * (0.5f + 0.5f * breathePhase);
 
-        // Dramatic pulse
+
         float pulse = 1f + 0.3f * Mth.sin(tick * 0.08f);
         intensity *= pulse;
 
@@ -91,32 +91,32 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Use lightning render type for all rendering - it supports colors properly
+
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Render massive darkness sphere at center
+
         renderCoreDarknessSphere(consumer, matrix, tick);
 
-        // Render thick layers of darkness
+
         for (DarknessLayer layer : layers) {
             layer.update(tick, intensity, expansionRadius);
             renderDarknessLayer(consumer, matrix, layer);
         }
 
-        // Render writhing tentacles
+
         for (DarknessTentacle tentacle : tentacles) {
             tentacle.update(tick, intensity, expansionRadius);
             renderTentacle(consumer, matrix, tentacle);
         }
 
-        // Render imposing spikes
+
         for (DarknessSpike spike : spikes) {
             spike.update(tick, intensity, expansionRadius);
             renderDarknessSpike(consumer, matrix, spike);
         }
 
-        // Render void orbs with glow
+
         for (VoidOrb orb : voidOrbs) {
             orb.update(tick, intensity, expansionRadius);
             if (orb.alpha > 0.01f) {
@@ -124,7 +124,7 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
             }
         }
 
-        // Render massive void particles
+
         for (VoidParticle particle : voidParticles) {
             particle.update(tick, intensity, expansionRadius);
             if (particle.alpha > 0.01f) {
@@ -133,14 +133,14 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
             }
         }
 
-        // Render outer darkness wall
+
         renderDarknessWall(consumer, matrix, tick);
 
         poseStack.popPose();
     }
 
     private void renderCoreDarknessSphere(VertexConsumer consumer, Matrix4f matrix, float tick) {
-        // Massive rotating dark sphere at center
+
         int segments = 32;
         int rings = 16;
         float coreRadius = 1.2f + 0.3f * Mth.sin(tick * 0.1f);
@@ -170,7 +170,7 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
                 float y4 = Mth.cos(theta2) * coreRadius;
                 float z4 = Mth.sin(theta2) * Mth.sin(phi1) * coreRadius;
 
-                // Pure black core with slight blue tint
+
                 float r = 0.0f;
                 float g = 0.0f;
                 float b = 0.05f;
@@ -198,7 +198,7 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
                 float angle1 = (float) (i * Math.PI * 2 / segments) + layer.rotation;
                 float angle2 = (float) ((i + 1) * Math.PI * 2 / segments) + layer.rotation;
 
-                // Chaotic distortion
+
                 float noise1 = Mth.sin(angle1 * 4f + layer.noiseOffset + h * 0.5f) * 0.4f;
                 float noise2 = Mth.sin(angle2 * 4f + layer.noiseOffset + h * 0.5f) * 0.4f;
 
@@ -210,7 +210,7 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
                 float x2 = Mth.cos(angle2) * r2;
                 float z2 = Mth.sin(angle2) * r2;
 
-                // Deep black with blue highlights
+
                 float heightFactor = h / 8f;
                 float r = 0.0f;
                 float g = 0.01f * heightFactor;
@@ -241,7 +241,7 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
             Vec3 perp1 = new Vec3(-dir.z, 0, dir.x).normalize().scale(width);
             Vec3 perp2 = new Vec3(0, 1, 0).cross(dir).normalize().scale(width);
 
-            // Render tentacle as thick quad strips
+
             Vec3[] corners1 = {
                     new Vec3(pos1.x - perp1.x, pos1.y - perp2.y, pos1.z - perp1.z),
                     new Vec3(pos1.x + perp1.x, pos1.y - perp2.y, pos1.z + perp1.z),
@@ -320,10 +320,10 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
     }
 
     private void renderVoidOrb(VertexConsumer consumer, Matrix4f matrix, VoidOrb orb) {
-        // Large glowing orbs
+
         float size = orb.size;
 
-        // Multiple layers for glow effect
+
         for (int layer = 0; layer < 3; layer++) {
             float layerSize = size * (1f + layer * 0.5f);
             float layerAlpha = orb.alpha / (1f + layer * 0.8f);
@@ -334,7 +334,7 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
     }
 
     private void renderDarknessWall(VertexConsumer consumer, Matrix4f matrix, float tick) {
-        // Massive wall of darkness at the perimeter
+
         int segments = 64;
         float wallRadius = expansionRadius * 1.1f;
         float wallHeight = 4f;
@@ -420,13 +420,13 @@ public class HorrorAuraEffect extends ActiveMovableEffect {
         }
 
         void update(float tick, float intensity, float expansionRadius) {
-            // Use continuous sine wave instead of modulo for smooth cycling
+
             float cycle = 0.5f + 0.5f * Mth.sin((tick * 0.03f + phaseOffset) * Mth.TWO_PI);
             this.radius = expansionRadius * (0.5f + cycle * 0.5f);
             this.rotation = tick * 0.02f * (phaseOffset > 0.5f ? 1 : -1);
             this.noiseOffset = tick * 0.15f;
 
-            // Smooth fade in/out based on the cycle
+
             float fadeAmount = Mth.sin(cycle * Mth.PI);
             this.alpha = intensity * 0.85f * (0.3f + 0.7f * fadeAmount);
         }

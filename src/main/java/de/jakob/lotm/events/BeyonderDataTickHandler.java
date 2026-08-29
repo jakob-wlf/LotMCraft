@@ -2,7 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
@@ -14,7 +14,6 @@ import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.item.custom.MarionetteControllerItem;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
@@ -38,10 +37,10 @@ import java.util.stream.Collectors;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
 
-    private static final Set<PassiveAbilityItem> passiveAbilities = ConcurrentHashMap.newKeySet();
+    private static final Set<PassiveAbility> passiveAbilities = ConcurrentHashMap.newKeySet();
 
 
-    private static final Map<UUID, Set<PassiveAbilityItem>> cachedAbilities = new ConcurrentHashMap<>();
+    private static final Map<UUID, Set<PassiveAbility>> cachedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {
         cachedAbilities.remove(entity.getUUID());
@@ -49,16 +48,12 @@ public class BeyonderDataTickHandler {
 
     private static final Object INIT_LOCK = new Object();
 
-    private static Set<PassiveAbilityItem> getApplicableAbilities(LivingEntity entity) {
+    private static Set<PassiveAbility> getApplicableAbilities(LivingEntity entity) {
         if (passiveAbilities.isEmpty()) {
             synchronized (INIT_LOCK) {
                 if (passiveAbilities.isEmpty()) {
-                    List<PassiveAbilityItem> items = PassiveAbilityHandler.ITEMS
-                            .getEntries()
-                            .stream()
-                            .map(entry -> (PassiveAbilityItem) entry.get())
-                            .toList();
-                    passiveAbilities.addAll(items);
+                    List<PassiveAbility> abilities = PassiveAbilityHandler.passiveAbilities.stream().toList();
+                    passiveAbilities.addAll(abilities);
                 }
             }
         }
@@ -135,7 +130,7 @@ public class BeyonderDataTickHandler {
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
             if(entity.tickCount % 5 == 0) {
-                tickAbilities(livingEntity);
+                tickPassiveAbilities(livingEntity);
 
                 // Remove Unluck gradually
                 LuckComponent luckComponent = livingEntity.getData(ModAttachments.LUCK_COMPONENT);
@@ -148,6 +143,8 @@ public class BeyonderDataTickHandler {
                     luckComponent.addLuckWithMin(-1, PassiveLuckAbility.getNormalLuckForEntity(livingEntity));
                 }
             }
+
+            tickOnHold(livingEntity, entity.tickCount);
 
             // Tick Toggle Abilities
             ToggleAbility.getActiveAbilitiesForEntity(livingEntity).forEach(toggleAbility -> {
@@ -185,10 +182,6 @@ public class BeyonderDataTickHandler {
 
         // Tick special items
         if(player.tickCount % 5 == 0) {
-            if(player.getMainHandItem().is(ModItems.MARIONETTE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof MarionetteControllerItem) {
-                MarionetteControllerItem.onHold(player, player.getMainHandItem());
-            }
-
             if(player.getMainHandItem().is(ModItems.SUBORDINATE_CONTROLLER.get()) && player.getMainHandItem().getItem() instanceof SubordinateControllerItem) {
                 SubordinateControllerItem.onHold(player, player.getMainHandItem());
             }
@@ -201,22 +194,24 @@ public class BeyonderDataTickHandler {
         invalidateCache(event.getEntity());
     }
 
-    private static void tickAbilities(LivingEntity entity) {
+    private static void tickPassiveAbilities(LivingEntity entity) {
         if(entity.level().isClientSide) return;
 
         getApplicableAbilities(entity).forEach(abilityItem -> {
             abilityItem.tick(entity.level(), entity);
         });
+    }
 
+    private static void tickOnHold(LivingEntity entity, int tick) {
         if(entity instanceof ServerPlayer player) {
             AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
             if(component.getSelectedAbility() < 0 || component.getSelectedAbility() >= component.getAbilities().size()) {
                 return;
             }
 
-            String abilityId = component.getAbilities().get(component.getSelectedAbility());
+            String abilityId = component.getAbilities().get(component.getSelectedAbility()).split(":")[0];
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
-            if(ability != null) {
+            if(ability != null && tick % ability.onHoldTickInverval == 0) {
                 ability.onHold(player.serverLevel(), player);
                 PacketHandler.sendToTrackingAndSelf(player, new SyncOnHoldAbilityPacket(player.getId(), abilityId));
             }

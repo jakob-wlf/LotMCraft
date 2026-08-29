@@ -2,7 +2,7 @@ package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelMenu;
+import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -39,5 +39,4 @@ public record OpenAbilityWheelPacket() implements CustomPacketPayload {
             }
         });
     }
-
 }

@@ -85,7 +85,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
                 }
             });
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), radius.get(), (float) DamageLookup.lookupDamage(2, .6) * multiplier(entity), startPos, true, false, false, 20, ModDamageTypes.source(serverLevel, ModDamageTypes.DEMONESS_GENERIC, entity));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get() - 2, radius.get() + 2, (float) DamageLookup.lookupDamage(2, .6) * multiplier(entity), startPos, true, false, false, 20, ModDamageTypes.source(serverLevel, ModDamageTypes.DEMONESS_GENERIC, entity));
 
             // Particles and shader
             for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, radius.get(), true)

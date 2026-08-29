@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsDemonessAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDemonessAbility(String id) {
+        super(id);
     }
 
     @Override

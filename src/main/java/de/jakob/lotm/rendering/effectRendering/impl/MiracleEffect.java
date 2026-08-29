@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -24,7 +25,7 @@ public class MiracleEffect extends ActiveEffect {
     private static final float MIRACLE_RADIUS = 5f;
     private static final float BEAM_HEIGHT = 12f;
     
-    // Color scheme: Purple, Golden, White
+
     private static final float PURPLE_R = 147f / 255f;
     private static final float PURPLE_G = 112f / 255f;
     private static final float PURPLE_B = 219f / 255f;
@@ -39,20 +40,20 @@ public class MiracleEffect extends ActiveEffect {
     
     private float intensity = 0f;
 
-    public MiracleEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 2); // 2 seconds duration
+    public MiracleEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Initialize ascending holy particles
+
         for (int i = 0; i < 150; i++) {
             holyParticles.add(new HolyParticle());
         }
 
-        // Initialize divine light beams
+
         for (int i = 0; i < 8; i++) {
             lightBeams.add(new LightBeam(i));
         }
 
-        // Initialize divine stars
+
         for (int i = 0; i < 12; i++) {
             divineStars.add(new DivineStar());
         }
@@ -65,7 +66,7 @@ public class MiracleEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Intensity: quick rise, sustain, gentle fade
+
         if (progress < 0.2f) {
             intensity = progress / 0.2f;
         } else if (progress > 0.8f) {
@@ -75,11 +76,11 @@ public class MiracleEffect extends ActiveEffect {
         }
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render in layers
+
         renderGroundCircles(poseStack, bufferSource, progress);
         renderLightPillar(poseStack, bufferSource, progress);
         renderLightBeams(poseStack, bufferSource, progress);
@@ -99,7 +100,7 @@ public class MiracleEffect extends ActiveEffect {
         int segments = 48;
         float yOffset = 0.01f;
 
-        // Main holy circle with rotating pattern
+
         for (int ring = 0; ring < 4; ring++) {
             float innerRadius = baseRadius * (ring / 4f) * 0.8f;
             float outerRadius = baseRadius * ((ring + 1) / 4f) * 0.8f;
@@ -118,7 +119,7 @@ public class MiracleEffect extends ActiveEffect {
                 float x2Outer = Mth.cos(angle2) * outerRadius;
                 float z2Outer = Mth.sin(angle2) * outerRadius;
 
-                // Rotating color pattern
+
                 float colorPhase = angle1 + currentTick * 0.05f;
                 float colorMix = Mth.sin(colorPhase * 3f) * 0.5f + 0.5f;
                 
@@ -150,7 +151,7 @@ public class MiracleEffect extends ActiveEffect {
             }
         }
 
-        // Glowing holy symbols at cardinal directions
+
         for (int dir = 0; dir < 4; dir++) {
             float angle = dir * Mth.HALF_PI;
             float symbolDist = baseRadius * 0.6f;
@@ -161,7 +162,7 @@ public class MiracleEffect extends ActiveEffect {
             float symbolPulse = Mth.sin(currentTick * 0.15f + dir) * 0.5f + 0.5f;
             float alpha = 0.7f * intensity * symbolPulse;
 
-            // Draw cross symbol
+
             addVertex(consumer, matrix, x - symbolSize, yOffset + 0.02f, z - 0.1f, GOLD_R, GOLD_G, GOLD_B, alpha);
             addVertex(consumer, matrix, x + symbolSize, yOffset + 0.02f, z - 0.1f, GOLD_R, GOLD_G, GOLD_B, alpha);
             addVertex(consumer, matrix, x + symbolSize, yOffset + 0.02f, z + 0.1f, GOLD_R, GOLD_G, GOLD_B, alpha);
@@ -178,7 +179,7 @@ public class MiracleEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Central divine light pillar
+
         float pillarRadius = 0.8f * intensity;
         float height = BEAM_HEIGHT * intensity;
         int segments = 32;
@@ -187,7 +188,7 @@ public class MiracleEffect extends ActiveEffect {
             float angle1 = (float) (i * Math.PI * 2 / segments);
             float angle2 = (float) ((i + 1) * Math.PI * 2 / segments);
 
-            // Swirling effect
+
             float twist = currentTick * 0.08f;
             float x1Bottom = Mth.cos(angle1 + twist) * pillarRadius;
             float z1Bottom = Mth.sin(angle1 + twist) * pillarRadius;
@@ -199,7 +200,7 @@ public class MiracleEffect extends ActiveEffect {
             float x2Top = Mth.cos(angle2 + twist + 1.5f) * pillarRadius * 0.5f;
             float z2Top = Mth.sin(angle2 + twist + 1.5f) * pillarRadius * 0.5f;
 
-            // Color gradient from gold at bottom to white at top
+
             float alpha = 0.6f * intensity;
 
             addVertex(consumer, matrix, x1Bottom, 0f, z1Bottom, GOLD_R, GOLD_G, GOLD_B, alpha);
@@ -238,7 +239,7 @@ public class MiracleEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multiple expanding holy rings
+
         int ringCount = 3;
         for (int r = 0; r < ringCount; r++) {
             float ringDelay = r * 0.15f;
@@ -282,7 +283,7 @@ public class MiracleEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Pulsing glow at center
+
         float glowRadius = 1.5f * intensity;
         float glowPulse = Mth.sin(currentTick * 0.12f) * 0.3f + 0.7f;
         float glowAlpha = 0.4f * intensity * glowPulse;
@@ -326,7 +327,7 @@ public class MiracleEffect extends ActiveEffect {
 
             if (star.alpha <= 0f) continue;
 
-            // Draw star with rotating points
+
             float rotation = currentTick * star.rotSpeed;
             int points = 5;
             
@@ -344,7 +345,7 @@ public class MiracleEffect extends ActiveEffect {
                     star.size * 0.2f, star.r, star.g, star.b, star.alpha * intensity);
             }
             
-            // Center glow
+
             renderBillboardQuad(consumer, matrix, star.x, star.y, star.z,
                 star.size * 0.5f, WHITE_R, WHITE_G, WHITE_B, star.alpha * intensity * 0.8f);
         }
@@ -363,9 +364,9 @@ public class MiracleEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-            cameraPos.x - (this.x + x),
-            cameraPos.y - (this.y + y),
-            cameraPos.z - (this.z + z)
+            cameraPos.x - (this.getX() + x),
+            cameraPos.y - (this.getY() + y),
+            cameraPos.z - (this.getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);

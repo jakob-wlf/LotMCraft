@@ -5,7 +5,9 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -50,14 +52,18 @@ public class FearAuraAbility extends Ability {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.FEAR_AURA, loc, (int) (20 * 25*multiplier(entity)), false, serverLevel);
+        UUID effectID = EffectManager.playMovableEffect(EffectIds.FEAR_AURA, serverLevel, entity, EffectParams.ofDuration(20 * 16));
 
         AtomicInteger ticks = new AtomicInteger(0);
 
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 15*(int) multiplier(entity), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, 20 * 16, () -> {
             loc.setPosition(entity.position());
             loc.setLevel(serverLevel);
-            MovableEffectManager.updateEffectPosition(effectID, loc, serverLevel);
+            if(entity.level() != serverLevel) {
+                EffectManager.cancelEffect(effectID, serverLevel);
+                return;
+            }
+            EffectManager.updateEffectPosition(effectID, loc.getX(), loc.getY(), loc.getZ(), serverLevel);
 
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, entity.position(), entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
 

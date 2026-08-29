@@ -1,14 +1,14 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,15 +20,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
+public class MiracleOfResurrectionAbility extends PassiveAbility {
 
-    public MiracleOfResurrectionAbility(Properties properties) {
-        super(properties);
+    public MiracleOfResurrectionAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
 
         if(level.isClientSide) return;
 
-        if(!((MiracleOfResurrectionAbility) PassiveAbilityHandler.MIRACLE_OF_RESURRECTION.get()).shouldApplyTo(entity)) return;
+        if(!((MiracleOfResurrectionAbility) PassiveAbilityHandler.getById("miracle_of_resurrection_ability")).shouldApplyTo(entity)) return;
 
         if (entity instanceof ServerPlayer serverPlayer) {
 
@@ -63,13 +62,10 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
             if (data.getResurrectionAttempts() > 0) {
                 data.setResurrectionAttempts(data.getResurrectionAttempts() - 1);
 
-                // cancel the death
                 event.setCanceled(true);
 
-                // drop the inventory
                 serverPlayer.getInventory().dropAll();
 
-                // teleport the player to a random place in 50x50 aria and hide him in history
                 if (level instanceof ServerLevel serverLevel) {
                     double x = serverPlayer.getX() + (random.nextDouble() * 100 - 50);
                     double z = serverPlayer.getZ() + (random.nextDouble() * 100 - 50);
@@ -87,27 +83,20 @@ public class MiracleOfResurrectionAbility extends PassiveAbilityItem {
                         serverPlayer.teleportTo(serverLevel, 0.5, 0.0, 0.5, serverPlayer.getYRot(), serverPlayer.getXRot());
                     }
 
-                    // reset fall distance to prevent death on arrival
                     serverPlayer.fallDistance = 0;
 
-                    ToggleAbility.setActiveAbilities(serverPlayer, new HashSet<>());
-
-                    // put the player in historical hiding state
-                    HistoricalVoidHidingAbility ability = new HistoricalVoidHidingAbility("historical_void_hiding_ability");
-                    ability.useAbility(serverLevel, serverPlayer);
+                    ToggleAbility.cleanUp(serverLevel, serverPlayer);
+                    BeyonderData.setSpirituality(serverPlayer, BeyonderData.getMaxSpirituality(serverPlayer));
+                    LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").onAbilityUse(serverLevel, serverPlayer);
                 }
 
-                // reset all of his effects and abilities and state
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());
 
                 serverPlayer.removeAllEffects();
 
-                // disable all abilities for 10 mins
                 DisabledAbilitiesComponent disabledComponent = serverPlayer.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
                 disabledComponent.disableAbilityUsageForTime("miracle_of_resurrection_" + entity.getUUID(), 10 * 60 * 20, serverPlayer);
             }
         }
-
-
     }
 }

@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ServerLocation;
@@ -95,7 +96,7 @@ public class SefirahHandler {
                 sefirotData.setLastReturnLocation(player);
 
                 if(playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
                 }
 
                 return;
@@ -106,7 +107,7 @@ public class SefirahHandler {
             sefirotData.setIsInSefirot(player.getUUID(), false);
 
             if(playTeleportEffect) {
-                EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+                EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
             }
 
             return;
@@ -135,7 +136,7 @@ public class SefirahHandler {
                         0);
 
                 if(playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
                 }
             }
         }

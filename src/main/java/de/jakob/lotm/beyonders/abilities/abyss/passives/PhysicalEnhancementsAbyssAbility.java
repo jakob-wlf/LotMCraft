@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsAbyssAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsAbyssAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsAbyssAbility(String id) {
+        super(id);
     }
 
     @Override

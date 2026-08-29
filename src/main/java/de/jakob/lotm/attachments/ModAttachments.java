@@ -1,9 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.bus.api.IEventBus;
@@ -23,6 +21,14 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("marionette_component", () ->
                     AttachmentType.builder(MarionetteComponent::new)
                             .serialize(MarionetteComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<MarionetteOwnerComponent>> MARIONETTE_OWNER_COMPONENT =
+            ATTACHMENT_TYPES.register("marionette_owner_component", () ->
+                    AttachmentType.builder(MarionetteOwnerComponent::new)
+                            .serialize(MarionetteOwnerComponent.SERIALIZER)
                             .copyOnDeath()
                             .build()
             );
@@ -121,13 +127,6 @@ public class ModAttachments {
                     AttachmentType.builder(LuckAccumulationComponent::new)
                             .serialize(LuckAccumulationComponent.SERIALIZER)
                             .copyOnDeath()
-                            .build()
-            );
-
-    public static final Supplier<AttachmentType<MirrorWorldTraversalComponent>> MIRROR_WORLD_COMPONENT =
-            ATTACHMENT_TYPES.register("mirror_world_component", () ->
-                    AttachmentType.builder(MirrorWorldTraversalComponent::new)
-                            .serialize(MirrorWorldTraversalComponent.SERIALIZER)
                             .build()
             );
 

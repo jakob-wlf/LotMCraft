@@ -33,7 +33,7 @@ public class WormOverlayRenderer {
 
     private static void renderText(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return;
+        if (mc.player == null || mc.level == null || mc.options.hideGui) return;
 
         if(!ClientBeyonderCache.isBeyonder(mc.player.getUUID())) return;
         if(!Arrays.asList(cowardly_pathways).contains(ClientBeyonderCache.getPathway(mc.player.getUUID()))) return;

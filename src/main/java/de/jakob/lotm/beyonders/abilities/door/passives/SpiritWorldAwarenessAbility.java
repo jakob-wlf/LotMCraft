@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.door.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,9 +17,9 @@ import net.minecraft.world.phys.Vec3;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SpiritWorldAwarenessAbility extends PassiveAbilityItem {
-    public SpiritWorldAwarenessAbility(Properties properties) {
-        super(properties);
+public class SpiritWorldAwarenessAbility extends PassiveAbility {
+    public SpiritWorldAwarenessAbility(String id) {
+        super(id);
     }
 
     @Override

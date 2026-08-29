@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.death.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -16,12 +16,12 @@ import java.util.HashSet;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class SolarSensitivityAbility extends PassiveAbilityItem {
+public class SolarSensitivityAbility extends PassiveAbility {
 
     public static final HashSet<LivingEntity> affectedEntities = new HashSet<>();
 
-    public SolarSensitivityAbility(Properties properties) {
-        super(properties);
+    public SolarSensitivityAbility(String id) {
+        super(id);
     }
 
     @Override

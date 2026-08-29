@@ -1,18 +1,17 @@
 package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.block.custom.BrewingCauldronBlock;
-import de.jakob.lotm.block.custom.MysticalRingBlock;
-import de.jakob.lotm.block.custom.RealityPortalBlock;
-import de.jakob.lotm.block.custom.VoidBlock;
+import de.jakob.lotm.block.custom.*;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -28,6 +27,21 @@ public class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.METAL)
             ));
+
+    public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
+            () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
+                    .strength(3.0f)
+                    .noOcclusion()
+                    .lightLevel(state -> 12)
+                    .sound(SoundType.WOOD)
+            ));
+
+    public static final DeferredHolder<Block, RitualisticTablePartBlock> RITUALISTIC_TABLE_PART =
+            BLOCKS.register("ritualistic_table_part", () ->
+                    new RitualisticTablePartBlock(BlockBehaviour.Properties.of()
+                            .noOcclusion()
+                            .strength(-1.0F, 3600000.0F)
+                            .noLootTable()));
 
     public static final DeferredBlock<Block> VOID = registerBlock("void_block",
             () -> new VoidBlock(BlockBehaviour.Properties.of()

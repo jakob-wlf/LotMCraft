@@ -6,14 +6,15 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
@@ -26,10 +27,8 @@ import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,6 +40,7 @@ public class PuppeteeringAbility extends Ability {
     public PuppeteeringAbility(String id) {
         super(id, 1);
 
+        onHoldTickInverval = 1;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PuppeteeringAbility extends Ability {
         }
 
         switch (targetSequence){
-            case 9,8,7,6,5 -> targetPower = (10 - targetSequence); // should be 1, 2, 3, 4, 5
+            case 9,8,7,6,5 -> targetPower = (10 - targetSequence);
             case 4 -> targetPower = 7;
             case 3 -> targetPower = 9;
             case 2 -> targetPower = 12;
@@ -90,34 +90,35 @@ public class PuppeteeringAbility extends Ability {
 
         int manipulationTime ;
 
-        // same sequence, time depends on what sequence
         if (difference == 0) {
             if (targetSequence == 0) {
-                manipulationTime = 20 * 100; // ~100s for seq 0
+                manipulationTime = 20 * 100;
             }
             else if (targetSequence <= 2) {
-                manipulationTime = 20 * 80; // ~80s for seq 1, 2
+                manipulationTime = 20 * 80;
             }
             else if (targetSequence <= 4) {
-                manipulationTime = 20 * 60; // ~60s for seq 3, 4
+                manipulationTime = 20 * 60;
             }
             else {
-                manipulationTime = 20 * 30; // ~30s for seq 5+
+                manipulationTime = 20 * 30;
             }
         }
-        // if the target sequence is higher than the player
         else if (difference < 0) {
             if (difference >= -2) {
-                // this works when (seq6 vs target seq5, seq5 (5 power) vs target seq4 (7 power) or seq4 (7 power) vs seq3 (9 power), but doesnt work for others)
                 manipulationTime = 20 * 180 * (difference * -1); // around 3 mins
             } else {
                 manipulationTime = -1; // pass -1 for the impossible puppeteering
             }
         }
-        // last case, when player sequence is higher than the target
         else {
             if (targetSequence >= 10) {
-                manipulationTime = 20 * 2;
+                return switch (sequence) {
+                    case 4 -> 20 * 4;
+                    case 3 -> 20 * 2;
+                    case 2, 1, 0 -> 20;
+                    default -> 20 * 20;
+                };
             } else if (targetSequence >= 5) {
                 manipulationTime = 20 * (120 / (2 * difference));
             } else {
@@ -129,7 +130,6 @@ public class PuppeteeringAbility extends Ability {
     }
 
 
-    private final DustParticleOptions particleOptions = new DustParticleOptions(new Vector3f(.4f, .4f, .4f), 1.35f);
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
@@ -147,7 +147,6 @@ public class PuppeteeringAbility extends Ability {
             return;
 
 
-
         LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
         if(target == null || target == entity || target instanceof Phantom) {
             if(entity instanceof ServerPlayer player) {
@@ -160,7 +159,6 @@ public class PuppeteeringAbility extends Ability {
         int time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence);
 
         if(BeyonderData.isBeyonder(target)) {
-            // if time < 0 means the control is impossible
             if (time < 0) {
                 entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 5, false, false, false));
                 return;
@@ -171,13 +169,6 @@ public class PuppeteeringAbility extends Ability {
 
         AtomicBoolean stopped = new AtomicBoolean(false);
 
-        Vec3 startTemp = entity.getEyePosition().add(entity.getLookAngle().normalize());
-        Vec3 endTemp = target.getEyePosition();
-
-        final Vec3 perp1 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
-        final Vec3 perp2 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
-        final Vec3 perp3 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
-
         if(target instanceof Mob mob) {
             mob.setTarget(entity);
         }
@@ -185,7 +176,7 @@ public class PuppeteeringAbility extends Ability {
         AtomicDouble health = new AtomicDouble(target.getHealth());
         AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
 
-        ServerScheduler.scheduleForDuration(0, 2, time, () -> {
+        ServerScheduler.scheduleForDuration(0, 1, time, () -> {
             if(stopped.get()) {
                 return;
             }
@@ -220,25 +211,10 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
 
+            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
             Vec3 end = target.getEyePosition();
-
-            for(int i = 0; i < 3; i++) {
-                double right = i == 0 ? -2 : (i == 1 ? 1.4 : 2.2);
-                double up = i == 2 ? -.2 : (i == 1 ? 0 : 1.2);
-                Vec3 perp = i == 0 ? perp1 : (i == 1 ? perp2 : perp3);
-                Vec3 startLoc = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, right, up);
-
-                float distance = (float) end.distanceTo(startLoc);
-                float bezierSteps = .025f;
-
-                int maxPoints = Math.max(2, Math.min(10, (int) Math.ceil(distance * 1.5)));
-
-                List<Vec3> points = VectorUtil.createBezierCurve(startLoc, end, perp, bezierSteps, random.nextInt(1, maxPoints + 1));
-
-                for(Vec3 point : points) {
-                    ParticleUtil.spawnParticles((ServerLevel) level, particleOptions, point, 1, 0, 0, 0, 0);
-                }
-            }
+            if(entity instanceof ServerPlayer serverPlayer)
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 0.5f, 0.1f, 0.7f));
 
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
@@ -250,11 +226,14 @@ public class PuppeteeringAbility extends Ability {
                 return;
             }
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+            if(entity instanceof ServerPlayer player)
+                EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level, player, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
             if(entity instanceof Player player && !component.isMarionette()) {
                 turnIntoMarionette(target, player);
             }
-            else
-                target.setHealth(0);
+            else {
+                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+            }
         }, (ServerLevel) level);
     }
 
@@ -284,6 +263,18 @@ public class PuppeteeringAbility extends Ability {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));
         } else {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
+        }
+    }
+
+    @Override
+    public void onHold(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer serverPlayer)) return;
+        if(entitiesBeingManipulated.containsKey(entity.getUUID())) return;
+
+        for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35)) {
+            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
+            Vec3 end = target.getEyePosition();
+            EffectManager.playDirectionalEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 2, serverPlayer);
         }
     }
 }

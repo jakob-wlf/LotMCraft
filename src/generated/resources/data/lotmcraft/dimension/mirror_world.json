@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:mirror_world",
+  "generator": {
+    "type": "lotmcraft:mirror_world",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:mirror_world_biome"
+    }
+  }
+}

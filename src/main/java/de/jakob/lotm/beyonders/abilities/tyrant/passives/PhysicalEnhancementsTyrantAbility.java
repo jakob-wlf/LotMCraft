@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsTyrantAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsTyrantAbility(String id) {
+        super(id);
     }
 
     @Override

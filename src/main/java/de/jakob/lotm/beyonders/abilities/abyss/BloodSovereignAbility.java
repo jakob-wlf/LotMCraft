@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -125,7 +126,7 @@ public class BloodSovereignAbility extends SelectableAbility {
             }, level);
         }
 
-        EffectManager.playEffect(EffectManager.Effect.BLOOD_SURGE, center.x, center.y, center.z, level);
+        EffectManager.playEffect(EffectIds.BLOOD_SURGE, center.x, center.y, center.z, level);
 
         ServerScheduler.scheduleDelayed(12, () -> {
             AbilityUtil.getNearbyEntities(entity, level, entity.position(), range)

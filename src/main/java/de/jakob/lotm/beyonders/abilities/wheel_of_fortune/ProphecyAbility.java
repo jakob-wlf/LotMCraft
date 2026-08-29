@@ -8,6 +8,7 @@ import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightnin
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.TsunamiEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -134,7 +135,7 @@ public class ProphecyAbility extends SelectableAbility {
                 LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
                 int amplifier = (int) Math.min(Math.round(BeyonderData.getMultiplier(entity) * 6.25f) * 100, 6500);
                 component.addLuckWithMin(-amplifier, (int) (-amplifier * 1.5));
-                EffectManager.playEffect(EffectManager.Effect.MISFORTUNE_CURSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level);
+                EffectManager.playEffect(EffectIds.MISFORTUNE_CURSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level);
             }
             case 2 -> {
                 double xOffset = (random.nextDouble() - 0.5) * 30;
@@ -156,7 +157,7 @@ public class ProphecyAbility extends SelectableAbility {
     private void giveLuckEffect(Level level, LivingEntity entity) {
         LuckComponent component = entity.getData(ModAttachments.LUCK_COMPONENT.get());
         component.addLuckWithMax(3000, 3000);
-        EffectManager.playEffect(EffectManager.Effect.BLESSING, entity.getX(), entity.getY() + 1, entity.getZ(), (ServerLevel) level);
+        EffectManager.playEffect(EffectIds.BLESSING, entity.getX(), entity.getY() + 1, entity.getZ(), (ServerLevel) level);
     }
 
     private void rainGoodItems(Level level, LivingEntity entity) {

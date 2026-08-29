@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.LuckAccumulationComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
@@ -10,11 +10,11 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PassiveLuckAccumulationAbility extends PassiveAbilityItem {
+public class PassiveLuckAccumulationAbility extends PassiveAbility {
 
 
-    public PassiveLuckAccumulationAbility(Properties properties) {
-        super(properties);
+    public PassiveLuckAccumulationAbility(String id) {
+        super(id);
     }
 
     @Override

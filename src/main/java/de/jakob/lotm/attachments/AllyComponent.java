@@ -7,98 +7,101 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * Component that stores ally relationships for an entity.
- * Allies cannot target or damage each other.
- */
-public record AllyComponent(Set<String> allies) {
+
+public record AllyComponent(Set<AllyInfo> allies, Set<AllyInfo> requests) {
+
+    public AllyComponent() {
+        this(new HashSet<>(), new HashSet<>());
+    }
+
+    public AllyComponent addAlly(UUID allyUUID, String playerName, boolean isPlayer) {
+        Set<AllyInfo> newAllies = new HashSet<>(this.allies);
+        newAllies.add(new AllyInfo(allyUUID, playerName, isPlayer));
+        return new AllyComponent(newAllies, this.requests);
+    }
+
+    public AllyComponent removeAlly(UUID allyUUID) {
+        Set<AllyInfo> newAllies = new HashSet<>(this.allies);
+        newAllies.removeIf(info -> info.uuid().equals(allyUUID));
+        return new AllyComponent(newAllies, this.requests);
+    }
+
+    public boolean isAlly(UUID uuid) {
+        return allies.stream().anyMatch(info -> info.uuid().equals(uuid));
+    }
+
+    public boolean hasAllies() {
+        return !allies.isEmpty();
+    }
+
+    public AllyComponent addRequest(UUID allyUUID, String playerName, boolean isPlayer) {
+        Set<AllyInfo> newRequests = new HashSet<>(this.requests);
+        newRequests.add(new AllyInfo(allyUUID, playerName, isPlayer));
+        return new AllyComponent(this.allies, newRequests);
+    }
+
+    public  AllyComponent removeRequest(UUID allyUUID) {
+        Set<AllyInfo> newRequests = new HashSet<>(this.requests);
+        newRequests.removeIf(info -> info.uuid().equals(allyUUID));
+        return new AllyComponent(this.allies, newRequests);
+    }
 
     public static final Codec<AllyComponent> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(
-                    Codec.STRING.listOf().xmap(
-                            list -> new HashSet<>(list),
+                    AllyInfo.CODEC.listOf().<Set<AllyInfo>>xmap(
+                            HashSet::new,
                             set -> set.stream().toList()
-                    ).fieldOf("allies").forGetter(comp -> new HashSet<>(comp.allies()))
+                    ).fieldOf("allies").forGetter(AllyComponent::allies),
+                    AllyInfo.CODEC.listOf().<Set<AllyInfo>>xmap(
+                            HashSet::new,
+                            set -> set.stream().toList()
+                    ).fieldOf("requests").forGetter(AllyComponent::requests)
             ).apply(instance, AllyComponent::new)
     );
 
     public static final StreamCodec<ByteBuf, AllyComponent> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.STRING_UTF8),
+            ByteBufCodecs.collection(HashSet::new, AllyInfo.STREAM_CODEC),
             AllyComponent::allies,
+            ByteBufCodecs.collection(HashSet::new, AllyInfo.STREAM_CODEC),
+            AllyComponent::requests,
             AllyComponent::new
     );
 
-    public AllyComponent() {
-        this(new HashSet<>());
-    }
+    public record AllyInfo(UUID uuid, String playerName, boolean isPlayer) {
 
-    /**
-     * Add an ally by UUID string
-     */
-    public AllyComponent addAlly(String allyUUID) {
-        Set<String> newAllies = new HashSet<>(this.allies);
-        newAllies.add(allyUUID);
-        return new AllyComponent(newAllies);
-    }
+        public static final Codec<AllyInfo> CODEC = RecordCodecBuilder.create(instance ->
+                instance.group(
+                        Codec.STRING.xmap(UUID::fromString, UUID::toString)
+                                .fieldOf("uuid").forGetter(AllyInfo::uuid),
+                        Codec.STRING.fieldOf("playerName").forGetter(AllyInfo::playerName),
+                        Codec.BOOL.fieldOf("isPlayer").forGetter(AllyInfo::isPlayer)
+                ).apply(instance, AllyInfo::new)
+        );
 
-    /**
-     * Add an ally by UUID
-     */
-    public AllyComponent addAlly(UUID allyUUID) {
-        return addAlly(allyUUID.toString());
-    }
+        public static final StreamCodec<ByteBuf, AllyInfo> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8.map(UUID::fromString, UUID::toString),
+                AllyInfo::uuid,
+                ByteBufCodecs.STRING_UTF8,
+                AllyInfo::playerName,
+                ByteBufCodecs.BOOL,
+                AllyInfo::isPlayer,
+                AllyInfo::new
+        );
 
-    /**
-     * Remove an ally by UUID string
-     */
-    public AllyComponent removeAlly(String allyUUID) {
-        Set<String> newAllies = new HashSet<>(this.allies);
-        newAllies.remove(allyUUID);
-        return new AllyComponent(newAllies);
-    }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof AllyInfo other)) return false;
+            return uuid.equals(other.uuid);
+        }
 
-    /**
-     * Remove an ally by UUID
-     */
-    public AllyComponent removeAlly(UUID allyUUID) {
-        return removeAlly(allyUUID.toString());
-    }
-
-    /**
-     * Check if an entity is an ally
-     */
-    public boolean isAlly(String uuid) {
-        return allies.contains(uuid);
-    }
-
-    /**
-     * Check if an entity is an ally
-     */
-    public boolean isAlly(UUID uuid) {
-        return isAlly(uuid.toString());
-    }
-
-    /**
-     * Clear all allies
-     */
-    public AllyComponent clearAllies() {
-        return new AllyComponent(new HashSet<>());
-    }
-
-    /**
-     * Get the number of allies
-     */
-    public int allyCount() {
-        return allies.size();
-    }
-
-    /**
-     * Check if has any allies
-     */
-    public boolean hasAllies() {
-        return !allies.isEmpty();
+        @Override
+        public int hashCode() {
+            return Objects.hash(uuid);
+        }
     }
 }

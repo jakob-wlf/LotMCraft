@@ -6,6 +6,7 @@ import de.jakob.lotm.entity.custom.ability_entities.*;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
+import de.jakob.lotm.entity.custom.ability_entities.demoness_pathway.ChaosVortexEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
@@ -29,6 +30,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {
@@ -91,6 +93,10 @@ public class ModEntities {
             ENTITY_TYPES.register("wind_blade", () -> EntityType.Builder.<WindBladeEntity>of(WindBladeEntity::new, MobCategory.MISC)
                     .sized(.75f, 2f).noSave().build("wind_blade"));
 
+    public static final Supplier<EntityType<ChaosVortexEntity>> CHAOS_VORTEX =
+            ENTITY_TYPES.register("chaos_vortex", () -> EntityType.Builder.<ChaosVortexEntity>of(ChaosVortexEntity::new, MobCategory.MISC)
+                    .sized(5f, 5f).noSave().build("chaos_vortex"));
+
     // Ability Entities - Death Pathway
 
     public static final Supplier<EntityType<DeathDivineKingdomEntity>> DEATH_DIVINE_KINGDOM =
@@ -108,6 +114,10 @@ public class ModEntities {
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));
+
+    public static final Supplier<EntityType<PortalEntity>> PORTAL =
+            ENTITY_TYPES.register("portal", () -> EntityType.Builder.<PortalEntity>of(PortalEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f).noSummon().build("portal"));
 
     public static final Supplier<EntityType<TravelersDoorEntity>> TRAVELERS_DOOR =
             ENTITY_TYPES.register("travelers_door", () -> EntityType.Builder.<TravelersDoorEntity>of(TravelersDoorEntity::new, MobCategory.MISC)
@@ -299,6 +309,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(1)
                     .fireImmune()
+                    .noSave()
                     .build("black_hole"));
 
     // Lightning
