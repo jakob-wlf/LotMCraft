@@ -24,16 +24,10 @@ public record TeleportToSefirotPacket() implements CustomPacketPayload {
     }
 
 
-    // TODO: Claiming here is temporary, add proper ritual for claiming
     public static void handle(TeleportToSefirotPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isServer() && context.player() instanceof ServerPlayer serverPlayer) {
-                if(!SefirahHandler.hasSefirot(serverPlayer)) {
-                    AbilityUtil.sendActionBar(serverPlayer, Component.translatable("lotm.sefirot.no_sefirot").withColor(0x942de3));
-                    return;
-                }
-
-                SefirahHandler.teleportToSefirot(serverPlayer, true);
+                SefirahHandler.handleSefirotKey(serverPlayer);
             }
         });
     }

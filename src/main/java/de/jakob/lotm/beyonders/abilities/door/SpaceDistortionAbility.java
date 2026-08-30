@@ -37,7 +37,7 @@ public class SpaceDistortionAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27*(int) multiplier(entity), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (27*multiplier(entity)), 2);
 
         EffectManager.playEffect(EffectIds.SPACE_DISTORTION, targetLoc.x(), targetLoc.y(), targetLoc.z(), serverLevel);
 

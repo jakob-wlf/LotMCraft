@@ -67,7 +67,7 @@ public class CalamityAction extends ActionBase {
         switch (stream.peek()){
             case "meteor", "meteors" -> spawnMeteorShower(serverLevel,center,multiplier,griefing,entity);
             case "tornado" -> createTornados(serverLevel, entity, multiplier, center);
-            case "earthquake" -> new Earthquake().spawnCalamity(serverLevel, center, multiplier, griefing, 65, (float) DamageLookup.lookupDps(4, .925, 8, 20) * (int) multiplier, entity, true);
+            case "earthquake" -> new Earthquake().spawnCalamity(serverLevel, center, multiplier, griefing, 65, (float) DamageLookup.lookupDps(4, .925, 8, 20) * multiplier, entity, true);
             case "plague" -> createPlague(serverLevel, entity, multiplier);
         }
 
@@ -89,7 +89,7 @@ public class CalamityAction extends ActionBase {
                 double offsetZ = Math.sin(angle) * distance;
                 Vec3 meteorPos = new Vec3(center.x + offsetX, center.y, center.z + offsetZ);
 
-                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, 1)  * (int)multiplier, 3, null, griefing, 13, 12);
+                MeteorEntity meteor = new MeteorEntity(level, 2.5f,  (float) DamageLookup.lookupDamage(2, 1)  * multiplier, 3, null, griefing, 13, 12);
                 meteor.setPosition(meteorPos);
                 level.addFreshEntity(meteor);
             }, level, () -> AbilityUtil.getTimeInArea(null, new Location(center, level)));
@@ -97,7 +97,7 @@ public class CalamityAction extends ActionBase {
     }
 
     private void createTornados(ServerLevel serverLevel, LivingEntity entity, float multiplier, Vec3 pos) {
-        TornadoEntity tornado =  new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * (int)multiplier, null) ;
+        TornadoEntity tornado =  new TornadoEntity(ModEntities.TORNADO.get(), serverLevel, .15f, (float) DamageLookup.lookupDamage(2, .35)  * multiplier, null) ;
         tornado.setPos(pos);
         serverLevel.addFreshEntity(tornado);
 
@@ -125,10 +125,10 @@ public class CalamityAction extends ActionBase {
 
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 50, 0.02);
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), plagueDust, entity.position(), 160, 50, 0.02);
-            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, entity.position(), new MobEffectInstance(MobEffects.WITHER, 20, 3, false, false, false));
-            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
-            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*(int) multiplier, DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, entity.position(), new MobEffectInstance(MobEffects.WITHER, 20, 3, false, false, false));
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
 
             entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, null), (float) (DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult));
         });

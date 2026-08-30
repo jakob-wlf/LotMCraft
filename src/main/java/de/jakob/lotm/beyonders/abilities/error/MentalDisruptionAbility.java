@@ -46,7 +46,7 @@ public class MentalDisruptionAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20*(int) multiplier(entity), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20*multiplier(entity)), 1.5f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));
             return;

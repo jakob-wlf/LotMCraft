@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateModel;
@@ -56,6 +57,7 @@ import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCre
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
@@ -241,6 +243,14 @@ public class ModEvents {
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
+        event.getDispatcher().register(
+                Commands.literal("accept_sefirot_invite")
+                            .executes(ctx -> {
+                                ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                SefirahHandler.acceptInvite(player);
+                                return 1;
+                            })
+        );
     }
 
     @SubscribeEvent

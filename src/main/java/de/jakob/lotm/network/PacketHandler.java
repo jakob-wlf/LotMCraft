@@ -558,6 +558,18 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                AcceptSefirotInvitePacket.TYPE,
+                AcceptSefirotInvitePacket.STREAM_CODEC,
+                AcceptSefirotInvitePacket::handle
+        );
+
+        registrar.playToServer(
+                HandleSefirotGuestPacket.TYPE,
+                HandleSefirotGuestPacket.STREAM_CODEC,
+                HandleSefirotGuestPacket::handle
+        );
+
+        registrar.playToServer(
                 RitualSaveLinesPacket.TYPE,
                 RitualSaveLinesPacket.STREAM_CODEC,
                 RitualSaveLinesPacket::handle

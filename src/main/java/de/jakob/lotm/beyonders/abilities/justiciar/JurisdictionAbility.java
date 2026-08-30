@@ -74,7 +74,7 @@ public class JurisdictionAbility extends Ability {
             return;
         }
 
-        int radius = 200 * (int) multiplier(entity);
+        int radius = (int) (200 * multiplier(entity));
         JurisdictionZone zone = new JurisdictionZone(entity.getUUID(), serverLevel, (int) entity.getX(), (int) entity.getZ(), radius);
         ACTIVE_ZONES.add(zone);
 

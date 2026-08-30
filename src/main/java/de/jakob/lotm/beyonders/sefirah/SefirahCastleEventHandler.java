@@ -29,7 +29,7 @@ public class SefirahCastleEventHandler {
     public static HashMap<UUID, Long> timeoutForRitual = new HashMap<>();
 
 
-    // Check for ritual -------------------------------------------------------------------------------
+
     @SubscribeEvent
     public static void onChatMessageSent(ServerChatEvent event) {
         UUID playerUUID = event.getPlayer().getUUID();
@@ -65,7 +65,7 @@ public class SefirahCastleEventHandler {
             return;
         }
 
-        SefirahHandler.teleportToSefirot(event.getPlayer(), true);
+        SefirahHandler.teleportToOwnSefirot(event.getPlayer(), true);
     }
 
     private static boolean checkIfChantIsCompleted(String rawMessage, UUID playerUUID, Vec3 pos, ServerLevel serverLevel) {

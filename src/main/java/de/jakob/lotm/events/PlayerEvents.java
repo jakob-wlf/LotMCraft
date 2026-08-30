@@ -124,6 +124,10 @@ public class PlayerEvents {
             return;
         }
 
+        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
+        }
+
         ToggleAbility.cleanUp(level, event.getEntity());
 
     }
@@ -167,6 +171,20 @@ public class PlayerEvents {
             if(!level.isClientSide) {
                 ParticleUtil.spawnParticles((ServerLevel) level, dust, event.getEntity().getEyePosition().subtract(0, .4, 0), 40, .4, .8, .4, 0);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerCloned(PlayerEvent.Clone event) {
+        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
         }
     }
 

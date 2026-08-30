@@ -9,6 +9,7 @@ import de.jakob.lotm.gui.custom.introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteMenu;
 import de.jakob.lotm.gui.custom.recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
+import de.jakob.lotm.gui.custom.sefirah.SefirahMenu;
 import de.jakob.lotm.gui.custom.trades.BeyonderTradeMenu;
 import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
 import net.minecraft.core.registries.Registries;
@@ -42,6 +43,10 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<RitualMenu>> RITUAL_MENU =
             MENU_TYPES.register("ritual_menu", () ->
                     IMenuTypeExtension.create(RitualMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<SefirahMenu>> SEFIRAH_MENU =
+            MENU_TYPES.register("sefirah_menu", () ->
+                    IMenuTypeExtension.create(SefirahMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeMenu>> RECIPE_MENU =
             MENU_TYPES.register("recipe_menu", () ->

@@ -191,8 +191,6 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
             return;
         }
 
-        player.addItem(createBookItemStack(ritual));
-
         ServerLevel level = player.serverLevel();
         BlockState state = level.getBlockState(tablePos);
         Direction facing = state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)

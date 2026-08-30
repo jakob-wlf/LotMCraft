@@ -1891,6 +1891,12 @@
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
   "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
+  "lotm.sefirot.not_in_sefirot": "You are not in a Sefirot",
+  "lotm.sefirot.cannot_reach_player": "That player can't be reached",
+  "lotm.sefirot.invited": "You have been invited to the %s. (Click to join)",
+  "lotm.sefirot.target_not_in_sefirot": "That player is not in a Sefirot",
+  "lotm.sefirot.invite_sent": "Invite sent to %s",
+  "lotm.sefirot.sefirah_castle": "Sefirah Castle",
 
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",
@@ -2307,5 +2313,6 @@
   "ritual.lotmcraft.sacrifices": "Sacrifices: ",
   "ritual.lotmcraft.honorifics": "Honorific: ",
   "ritual.lotmcraft.min_sequence": "Min. Sequence: ",
-  "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity"
+  "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity",
+  "block.lotmcraft.sefirah_block": "Sephirot"
 }

@@ -299,7 +299,7 @@ public class NightmareAbility extends SelectableAbility {
             return;
         }
 
-        int radius = 40*(int) multiplier(entity);
+        int radius = (int) (40*multiplier(entity));
         NightmareCenter center = new NightmareCenter(level, entity.position(), radius * radius);
 
         for(NightmareCenter c : activeNightmaresServer.values()) {
