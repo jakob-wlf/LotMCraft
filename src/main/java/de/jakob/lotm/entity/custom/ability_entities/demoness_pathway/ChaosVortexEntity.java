@@ -88,7 +88,14 @@ public class ChaosVortexEntity extends Entity {
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
-        if(!(level() instanceof ServerLevel)) return;
+        if((level() instanceof ServerLevel)) {
+            if (source != null) {
+                activeVortices.put(source, this);
+            }
+
+            affectedBlocks = AbilityUtil.getBlocksInCone(level(), position(), direction.normalize().scale(65), 8, 50, false);
+            return;
+        }
 
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
         FX fx = FXHelper.getFX(id);
@@ -107,12 +114,6 @@ public class ChaosVortexEntity extends Entity {
         }
 
         executor.start();
-
-        if (source != null) {
-            activeVortices.put(source, this);
-        }
-
-        affectedBlocks = AbilityUtil.getBlocksInCone(level(), position(), direction.normalize().scale(65), 8, 50, false);
     }
 
     @Override

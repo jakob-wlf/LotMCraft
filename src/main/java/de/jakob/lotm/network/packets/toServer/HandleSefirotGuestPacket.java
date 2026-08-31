@@ -47,6 +47,7 @@ public record HandleSefirotGuestPacket(UUID allyId, int action) implements Custo
                 case 0 -> {
                     if(BeyonderData.getSequence(player) < BeyonderData.getSequence(target)) {
                         SefirahHandler.teleportToSefirot(target, SefirahHandler.getSefirot(player), true);
+                        return;
                     }
                     SefirahHandler.inviteToSefirot(player, target);
                 }

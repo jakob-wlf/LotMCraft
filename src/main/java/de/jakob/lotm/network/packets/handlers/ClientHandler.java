@@ -1,5 +1,9 @@
 package de.jakob.lotm.network.packets.handlers;
 
+import com.lowdragmc.photon.client.fx.BlockEffectExecutor;
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
@@ -36,6 +40,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,7 +55,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.joml.Quaternionf;
 import org.joml.Random;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -677,5 +684,44 @@ public class ClientHandler {
 
     public static void handleSyncHistoricalVoidSummoningCountPacket(SyncHistoricalVoidSummoningCountPacket packet) {
         getPlayer().getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedCount = packet.amount();
+    }
+
+    public static Entity getById(int entityId) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return null;
+
+        return level.getEntity(entityId);
+    }
+
+    public static void playPhotonBlockEffect(PlayPhotonBlockEffectPacket packet) {
+        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_player"));
+        if (fx != null) {
+            BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
+            fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+            fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            if(packet.rot() != null) {
+                fxExecutor.setRotation(packet.rot());
+            }
+            fxExecutor.setCheckState(packet.checkState());
+            fxExecutor.setAllowMulti(packet.allowMulti());
+            fxExecutor.start();
+        }
+
+    }
+
+    public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
+        FX fx = FXHelper.getFX(id);
+
+        Entity entity = getById(packet.entityId());
+        if(entity == null) return;
+
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+        executor.setScale(packet.scale(), packet.scale(), packet.scale());
+        executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+        if(packet.rot() != null)  executor.setRotation(packet.rot());
+        executor.setAllowMulti(packet.allowMulti());
+
+        executor.start();
     }
 }

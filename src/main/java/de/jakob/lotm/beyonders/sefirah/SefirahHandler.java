@@ -6,6 +6,8 @@ import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -203,7 +205,7 @@ public class SefirahHandler {
 
         // Set return location
         sefirotData.setLastReturnLocation(player);
-        sefirotData.setIsInSefirot(player.getUUID(), true, sefirotData.getClaimedSefirot(player.getUUID()));
+        sefirotData.setIsInSefirot(player.getUUID(), true, sefirot);
 
         // Teleport to Sefirot
         switch (sefirot) {
@@ -217,21 +219,22 @@ public class SefirahHandler {
 
                 boolean isOwner = sefirotData.getClaimedSefirot(player.getUUID()).equals(sefirot);
 
-                int x = isOwner ? 24 : 17;
-                int y = isOwner ? -57 : -58;
-                int z = 0;
+                float x = isOwner ? 24.5f : 17.5f;
+                int y =  -58;
+                float z = 0.5f;
+                int yaw = isOwner ? 90 : -90;
 
                 player.teleportTo(sefirotLevel,
                         x,
                         y,
                         z,
-                        90,
+                        yaw,
                         0);
 
                 sefirotLevel.setBlockAndUpdate(BlockPos.containing(21, -58, 0), ModBlocks.SEFIRAH_BLOCK.get().defaultBlockState());
 
                 if(playTeleportEffect) {
-                    playCorrectEffect(new BlockPos(x, y, z), sefirot, true, sefirotLevel);
+                    playCorrectEffect(BlockPos.containing(x, y, z), sefirot, isOwner, sefirotLevel);
                 }
             }
         }
@@ -256,14 +259,16 @@ public class SefirahHandler {
                     EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
                 }
                 else {
-                    FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_player"));
-                    if (fx != null) {
-                        BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, sefirotLevel, pos);
-                        fxExecutor.setOffset(0, -.5, 0);
-                        fxExecutor.setCheckState(true);
-                        fxExecutor.setAllowMulti(false);
-                        fxExecutor.start();
-                    }
+                    PacketHandler.sendToAllPlayersInSameLevel(new PlayPhotonBlockEffectPacket(
+                            "sefirah_player",
+                            pos,
+                            0, 1, 0,
+                            1.5,
+                            null,
+                            true,
+                            false
+                    ), sefirotLevel);
+
                 }
             }
         }

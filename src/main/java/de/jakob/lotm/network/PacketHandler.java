@@ -548,6 +548,18 @@ public class PacketHandler {
                 SyncEnvisioningPacket.STREAM_CODEC,
                 SyncEnvisioningPacket::handle
         );
+
+        registrar.playToClient(
+                PlayPhotonBlockEffectPacket.TYPE,
+                PlayPhotonBlockEffectPacket.STREAM_CODEC,
+                PlayPhotonBlockEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                PlayPhotonEntityEffectPacket.TYPE,
+                PlayPhotonEntityEffectPacket.STREAM_CODEC,
+                PlayPhotonEntityEffectPacket::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
