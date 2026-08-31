@@ -28,7 +28,7 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
         super(menu, playerInventory, title);
 
         this.imageWidth = 176;
-        this.imageHeight = 260;
+        this.imageHeight = 240;
     }
 
     @Override

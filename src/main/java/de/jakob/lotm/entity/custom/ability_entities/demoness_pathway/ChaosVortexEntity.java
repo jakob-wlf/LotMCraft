@@ -93,7 +93,8 @@ public class ChaosVortexEntity extends Entity {
                 activeVortices.put(source, this);
             }
 
-            affectedBlocks = AbilityUtil.getBlocksInCone(level(), position(), direction.normalize().scale(65), 8, 50, false);
+            Vec3 dir = direction != null ? direction : getViewVector(1.0F);
+            affectedBlocks = AbilityUtil.getBlocksInCone(level(), position(), dir.normalize().scale(65), 8, 50, false);
             return;
         }
 
@@ -103,15 +104,14 @@ public class ChaosVortexEntity extends Entity {
         EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
         executor.setScale(4, 4, 4);
 
-        Vector3f offsetDir = direction == null ? new Vector3f(0, -2, 0) : new Vector3f((float) direction.normalize().scale(-5).x, -2, (float) direction.normalize().scale(-5).z);
+        Vec3 clientDir = getViewVector(1.0F); // always valid, synced via yRot/xRot
 
+        Vector3f offsetDir = new Vector3f((float) clientDir.scale(-5).x, -2, (float) clientDir.scale(-5).z);
         executor.setOffset(offsetDir);
 
-        if (direction != null && direction.lengthSqr() > 1.0E-6) {
-            Vector3f dirVec = new Vector3f((float) direction.x, (float) direction.y, (float) direction.z).normalize();
-            Quaternionf rot = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), dirVec);
-            executor.setRotation(rot);
-        }
+        Vector3f dirVec = new Vector3f((float) clientDir.x, (float) clientDir.y, (float) clientDir.z).normalize();
+        Quaternionf rot = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), dirVec);
+        executor.setRotation(rot);
 
         executor.start();
     }

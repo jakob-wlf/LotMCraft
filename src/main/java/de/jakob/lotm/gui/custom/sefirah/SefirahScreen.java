@@ -33,7 +33,7 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
         super(menu, playerInventory, title);
 
         this.imageWidth = 176;
-        this.imageHeight = 260;
+        this.imageHeight = 240;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
         int listX = x + 8;
         int listY = y + 20;
         int listWidth = imageWidth - 16;
-        int listHeight = imageHeight - 40;
+        int listHeight = imageHeight - 110;
 
         allyList = new AllyList(listX, listY, listWidth, listHeight, this::onInviteClicked, this::onKickClicked);
         allyList.setAllies(allies);
