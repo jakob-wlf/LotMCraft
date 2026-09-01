@@ -4,8 +4,11 @@ import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidSummoningAbility;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +19,7 @@ public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
     public boolean hasSummonedSelf = false;
     public long summonedSelfMillis = 0;
     public final Map<Long, SummonInfo> activeSummonTimes = new ConcurrentHashMap<>();
+    public final List<SavedEffect> savedEffects = new ArrayList<>();
 
     public record SummonInfo(
             long summonTime,
@@ -23,6 +27,20 @@ public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
             UUID entityUUID,
             CompoundTag originalBeforeBorrowing
     ) {}
+
+    public record SavedEffect(
+            ResourceLocation effectId,
+            int amplifier,
+            int duration
+    ) {}
+
+    public List<SavedEffect> getSavedEffects() {
+        return this.savedEffects;
+    }
+
+    public void addSavedEffect(ResourceLocation effectId, int amplifier, int duration) {
+        this.savedEffects.add(new SavedEffect(effectId, amplifier, duration));
+    }
 
     public void reset() {
         this.summonedCount = 0;
@@ -46,6 +64,16 @@ public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
             list.add(anotherTag);
         });
         tag.put("ActiveSummons", list);
+
+        ListTag effectsList = new ListTag();
+        for (SavedEffect effect : savedEffects) {
+            CompoundTag effectTag = new CompoundTag();
+            effectTag.putString("Id", effect.effectId().toString());
+            effectTag.putInt("Amplifier", effect.amplifier());
+            effectTag.putInt("Duration", effect.duration());
+            effectsList.add(effectTag);
+        }
+        tag.put("SavedEffects", effectsList);
         return tag;
     }
 
@@ -66,6 +94,17 @@ public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
                     anotherTag.getCompound("OriginalTag")
             );
             this.activeSummonTimes.put(time, info);
+        }
+
+        this.savedEffects.clear();
+        ListTag effectsList = tag.getList("SavedEffects", 10);
+        for (int i = 0; i < effectsList.size(); i++) {
+            CompoundTag effectTag = effectsList.getCompound(i);
+            this.savedEffects.add(new SavedEffect(
+                    ResourceLocation.parse(effectTag.getString("Id")),
+                    effectTag.getInt("Amplifier"),
+                    effectTag.getInt("Duration")
+            ));
         }
     }
 }

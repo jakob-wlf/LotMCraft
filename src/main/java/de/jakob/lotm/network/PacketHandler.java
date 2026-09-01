@@ -436,12 +436,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                OpenHistoricalVoidBorrowingScreenPacket.TYPE,
-                OpenHistoricalVoidBorrowingScreenPacket.STREAM_CODEC,
-                OpenHistoricalVoidBorrowingScreenPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncPlayerTeleportationPlayerNamesPacket.TYPE,
                 SyncPlayerTeleportationPlayerNamesPacket.STREAM_CODEC,
                 SyncPlayerTeleportationPlayerNamesPacket::handle
@@ -832,11 +826,6 @@ public class PacketHandler {
                 BiomeDivinationSelectedPacket.TYPE,
                 BiomeDivinationSelectedPacket.STREAM_CODEC,
                 BiomeDivinationSelectedPacket::handle);
-
-        registrar.playToServer(
-                HistoricalVoidBorrowingSelectedPacket.TYPE,
-                HistoricalVoidBorrowingSelectedPacket.STREAM_CODEC,
-                HistoricalVoidBorrowingSelectedPacket::handle);
 
         registrar.playToServer(
                 WanderingSelectedPacket.TYPE,

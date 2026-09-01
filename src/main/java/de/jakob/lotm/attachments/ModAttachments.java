@@ -269,6 +269,14 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<HistoricalMarkedComponent>> HISTORICAL_MARKED_ENTITIES_COMPONENT =
+            ATTACHMENT_TYPES.register("historical_marked_entities_component", () ->
+                    AttachmentType.builder(HistoricalMarkedComponent::new)
+                            .serialize(HistoricalMarkedComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static final Supplier<AttachmentType<MiracleOfResurrectionComponent>> MIRACLE_OF_RESURRECTION =
             ATTACHMENT_TYPES.register("miracle_of_resurrection", () ->
                     AttachmentType.builder(MiracleOfResurrectionComponent::new)

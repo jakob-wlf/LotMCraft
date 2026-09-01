@@ -528,10 +528,6 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
 
-    public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
-        Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
-    }
-
     public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
