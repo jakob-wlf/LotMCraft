@@ -85,6 +85,14 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         this.renderTooltip(guiGraphics, mouseX, mouseY);
+
+        guiGraphics.drawString(
+                ClientHandler.getMinecraftInstance().font,
+                Component.literal("Allies"),
+                (width - imageWidth) / 2 + 8,
+                (height - imageHeight) / 2 + 8,
+                0xFFFFFF
+        );
     }
 
     @Override

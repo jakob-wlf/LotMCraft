@@ -10,6 +10,7 @@ import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.helper.AbilityId;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -55,9 +56,10 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         int selectedIndex = ClientData.getSelectedAbility();
         boolean isSelected = index == selectedIndex;
 
-        String baseId = abilityId.split(":")[0];
-        int subIndex = getIndex(abilityId);
-        boolean isCopied = isCopied(abilityId);
+        AbilityId parsed = AbilityId.parse(abilityId);
+        String baseId = parsed.baseId();
+        int subIndex = parsed.subIndex();
+        boolean isCopied = parsed.copied();
 
         int size = isHovered ? SLOT_HOVER_SIZE : SLOT_SIZE;
         int x = pos.x() - size / 2;
@@ -131,22 +133,6 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
                         pos.x() - textWidth / 2, pos.y() - size / 2 - 12, 0xFFFFFF, true);
             }
         }
-    }
-
-    private static int getIndex(String s) {
-        String[] parts = s.split(":");
-        if (parts.length < 2) return -1;
-        try {
-            return Integer.parseInt(parts[1]);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    private static boolean isCopied(String s) {
-        String[] parts = s.split(":");
-        if (parts.length < 3) return false;
-        return parts[2].equals("copied");
     }
 
     @Override

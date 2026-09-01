@@ -8,6 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.attachments.SharedAbilitiesComponent;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -63,7 +64,7 @@ public record UseSelectedAbilityPacket() implements CustomPacketPayload {
 
                     if (ability != null && serverPlayer.level() instanceof ServerLevel serverLevel) {
                         boolean isSharedAbility = isSharedAbility(serverPlayer, abilityId);
-                        boolean isCopied = isCopied(component.getAbilities().get(selectedIndex));
+                        boolean isCopied = isCopied(component.getAbilities().get(selectedIndex)) && CopiedAbilityHelper.hasCopiedAbility(serverPlayer, abilityId);
                         ability.useAbility(serverLevel, serverPlayer, true, !isSharedAbility, true, isCopied);
                     }
                 }

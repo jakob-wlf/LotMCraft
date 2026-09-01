@@ -365,7 +365,7 @@ public class TheftHandler {
         int abilityCount = isLoopHole? 1 : getAbilityCountForSequence(sequence);
 
         //int abilityUses = getAbilityUsesForSequence(sequence);
-        int abilityUses = 1;
+        int abilityUses = getAbilityCountForSequence(sequence);
         int disableTime = getDisablingTimeForSequenceInSeconds(sequence);
 
         for (int i = 0; i < abilityCount; i++) {

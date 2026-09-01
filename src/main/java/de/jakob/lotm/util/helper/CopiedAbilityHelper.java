@@ -58,6 +58,21 @@ public class CopiedAbilityHelper {
         }
     }
 
+    public static int getRemainingUses(LivingEntity entity, String abilityId) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        return component.getAbilities().stream()
+                .filter(data -> data.abilityId().equals(abilityId))
+                .map(CopiedAbilityComponent.CopiedAbilityData::remainingUses)
+                .findFirst()
+                .orElse(-1);
+    }
+
+    public static boolean hasCopiedAbility(LivingEntity entity, String abilityId) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        return component.getAbilities().stream()
+                .anyMatch(data -> data.abilityId().equals(abilityId));
+    }
+
     private static boolean shouldReduceUsesForType(String copyType) {
         return switch (copyType) {
             default -> true;

@@ -694,7 +694,7 @@ public class ClientHandler {
     }
 
     public static void playPhotonBlockEffect(PlayPhotonBlockEffectPacket packet) {
-        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_player"));
+        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath()));
         if (fx != null) {
             BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
             fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());

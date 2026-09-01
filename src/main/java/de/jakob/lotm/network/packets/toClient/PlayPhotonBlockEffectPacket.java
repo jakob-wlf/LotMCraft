@@ -12,7 +12,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Quaternionf;
 
 public record PlayPhotonBlockEffectPacket(String effectPath, BlockPos pos, double xOffset, double yOffset, double zOffset,
-                                          double scale, Quaternionf rot, boolean checkState, boolean allowMulti) implements CustomPacketPayload {
+                                          double scale, Quaternionf rot, int duration, boolean checkState, boolean allowMulti) implements CustomPacketPayload {
 
     public static final Type<PlayPhotonBlockEffectPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "play_photon_block_effect"));
@@ -36,6 +36,7 @@ public record PlayPhotonBlockEffectPacket(String effectPath, BlockPos pos, doubl
                     ByteBufCodecs.FLOAT.encode(buf, -1f);
                     ByteBufCodecs.FLOAT.encode(buf, -1f);
                 }
+                ByteBufCodecs.INT.encode(buf, packet.duration());
                 ByteBufCodecs.BOOL.encode(buf, packet.checkState());
                 ByteBufCodecs.BOOL.encode(buf, packet.allowMulti());
             },
@@ -51,9 +52,10 @@ public record PlayPhotonBlockEffectPacket(String effectPath, BlockPos pos, doubl
                 float z = ByteBufCodecs.FLOAT.decode(buf);
                 float w = ByteBufCodecs.FLOAT.decode(buf);
                 Quaternionf rot = x == -1 && y == -1 && z == -1 && w == -1 ? null : new Quaternionf(x, y, z, w);
+                int duration = ByteBufCodecs.INT.decode(buf);
                 boolean checkState = ByteBufCodecs.BOOL.decode(buf);
                 boolean allowMulti = ByteBufCodecs.BOOL.decode(buf);
-                return new PlayPhotonBlockEffectPacket(effectPath, pos, xOffset, yOffset, zOffset, scale, rot, checkState, allowMulti);
+                return new PlayPhotonBlockEffectPacket(effectPath, pos, xOffset, yOffset, zOffset, scale, rot, duration, checkState, allowMulti);
             }
     );
     @Override

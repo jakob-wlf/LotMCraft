@@ -17,6 +17,7 @@ import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.*;
+import de.jakob.lotm.util.helper.AbilityId;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -125,32 +126,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private record SubAbilityEntry(Ability parent, int subIndex) {}
 
 
-    private record ParsedAbilityId(String baseId, int subIndex, boolean isCopied) {}
-
-
-    private static ParsedAbilityId parseAbilityId(String raw) {
-        if (raw == null || raw.isEmpty()) return new ParsedAbilityId(raw, -1, false);
-
-        boolean isCopied = raw.endsWith(":copied");
-        String withoutCopied = isCopied ? raw.substring(0, raw.length() - ":copied".length()) : raw;
-
-        int lastColon = withoutCopied.lastIndexOf(':');
-        if (lastColon >= 0) {
-            String potentialIndex = withoutCopied.substring(lastColon + 1);
-            try {
-                int subIdx = Integer.parseInt(potentialIndex);
-                return new ParsedAbilityId(withoutCopied.substring(0, lastColon), subIdx, isCopied);
-            } catch (NumberFormatException ignored) {
-                // Not a number — treat the whole thing as the base ID
-            }
-        }
-
-        return new ParsedAbilityId(withoutCopied, -1, isCopied);
-    }
-
-    private String buildEffectiveId(Ability ability, int subIndex, boolean isCopied) {
-        return ability.getId() + ":" + subIndex + (isCopied ? ":copied" : "");
-    }
 
     // -----------------------------------------------------------------------
 
@@ -266,12 +241,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityWheelSubIndexes.clear();
         this.abilityWheelIsCopied.clear();
         for (String id : abilityIds) {
-            ParsedAbilityId parsed = parseAbilityId(id);
+            AbilityId parsed = AbilityId.parse(id);
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
             if (ability != null) {
                 this.abilityWheelSlots.add(ability);
                 this.abilityWheelSubIndexes.add(parsed.subIndex());
-                this.abilityWheelIsCopied.add(parsed.isCopied());
+                this.abilityWheelIsCopied.add(parsed.copied());
             }
         }
     }
@@ -281,12 +256,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityBarSubIndexes.clear();
         this.abilityBarIsCopied.clear();
         for (String id : abilityIds) {
-            ParsedAbilityId parsed = parseAbilityId(id);
+            AbilityId parsed = AbilityId.parse(id);
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
             if (ability != null) {
                 this.abilityBarSlots.add(ability);
                 this.abilityBarSubIndexes.add(parsed.subIndex());
-                this.abilityBarIsCopied.add(parsed.isCopied());
+                this.abilityBarIsCopied.add(parsed.copied());
             }
         }
     }
@@ -294,7 +269,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ArrayList<String> wheelSlotsToIdList() {
         ArrayList<String> ids = new ArrayList<>();
         for (int i = 0; i < abilityWheelSlots.size(); i++) {
-            ids.add(buildEffectiveId(abilityWheelSlots.get(i), abilityWheelSubIndexes.get(i), abilityWheelIsCopied.get(i)));
+            ids.add(AbilityId.of(abilityWheelSlots.get(i), abilityWheelSubIndexes.get(i), abilityWheelIsCopied.get(i)).toString());
         }
         return ids;
     }
@@ -302,7 +277,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ArrayList<String> barSlotsToIdList() {
         ArrayList<String> ids = new ArrayList<>();
         for (int i = 0; i < abilityBarSlots.size(); i++) {
-            ids.add(buildEffectiveId(abilityBarSlots.get(i), abilityBarSubIndexes.get(i), abilityBarIsCopied.get(i)));
+            ids.add(AbilityId.of(abilityBarSlots.get(i), abilityBarSubIndexes.get(i), abilityBarIsCopied.get(i)).toString());
         }
         return ids;
     }
@@ -1195,7 +1170,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             if (copiedIdx >= 0) {
                 List<String> ids = ClientData.getCopiedAbilityIds();
                 if (copiedIdx < ids.size()) {
-                    ParsedAbilityId parsed = parseAbilityId(ids.get(copiedIdx));
+                    AbilityId parsed = AbilityId.parse(ids.get(copiedIdx));
                     hoveredAbility = LOTMCraft.abilityHandler.getById(parsed.baseId());
                     hoveredSubIndex = parsed.subIndex();
                 }
@@ -1378,7 +1353,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             if (iy < clipTop || iy + ABILITY_ICON_SIZE > clipBottom) continue;
             if (draggedFromCopiedIndex == listIdx) continue; // being dragged
 
-            ParsedAbilityId parsed = parseAbilityId(ids.get(listIdx));
+            AbilityId parsed = AbilityId.parse(ids.get(listIdx));
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
             if (ability != null) {
                 int uses = listIdx < remainingUses.size() ? remainingUses.get(listIdx) : -1;
@@ -1790,7 +1765,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 if (copiedListIdx >= 0) {
                     List<String> ids = ClientData.getCopiedAbilityIds();
                     if (copiedListIdx < ids.size()) {
-                        ParsedAbilityId parsed = parseAbilityId(ids.get(copiedListIdx));
+                        AbilityId parsed = AbilityId.parse(ids.get(copiedListIdx));
                         Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
                         if (ability != null) {
                             draggedAbility = ability;
