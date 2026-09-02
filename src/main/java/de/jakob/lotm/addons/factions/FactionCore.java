@@ -91,9 +91,9 @@ public class FactionCore {
     public static int getClaimsPerLevelNation(int level){
         return switch (level){
             case 0 -> 1;
-            case 1 -> 20;
-            case 2 -> 60;
-            case 3 -> 100;
+            case 1 -> 40;
+            case 2 -> 120;
+            case 3 -> 300;
             default -> 0;
         };
     }
@@ -101,9 +101,9 @@ public class FactionCore {
     public static int getClaimsPerLevelChurch(int level){
         return switch (level){
             case 0 -> 1;
-            case 1 -> 15;
-            case 2 -> 40;
-            case 3 -> 80;
+            case 1 -> 30;
+            case 2 -> 100;
+            case 3 -> 200;
             default -> 0;
         };
     }
@@ -128,18 +128,18 @@ public class FactionCore {
 
     public static int getLevelUpPounds(int level){
         return switch (level){
-          case 0 -> 50;
-          case 1 -> 575;
-          case 2 -> 1350;
+          case 0 -> 128;
+          case 1 -> 2575;
+          case 2 -> 4350;
           default -> 0;
         };
     }
 
     public static int getLevelUpSoli(int level){
         return switch (level){
-          case 0 -> 64;
-          case 1 -> 725;
-          case 2 -> 1580;
+          case 0 -> 230;
+          case 1 -> 3725;
+          case 2 -> 6580;
           default -> 0;
         };
     }

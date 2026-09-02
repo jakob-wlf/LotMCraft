@@ -276,14 +276,14 @@ public class ParasitationAbility extends SelectableAbility {
         comp.setParasiting(true);
         comp.setParasitingUUID(host.getUUID());
 
-        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
-        if(scaleAttribute != null) {
-            scaleAttribute.addTransientModifier(new AttributeModifier
-                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-                            "parasite"),
-                            -0.6,
-                            AttributeModifier.Operation.ADD_VALUE));
-        }
+//        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.addTransientModifier(new AttributeModifier
+//                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                            "parasite"),
+//                            -0.6,
+//                            AttributeModifier.Operation.ADD_VALUE));
+//        }
 
         PsychologicalInvisibilityAbility.addInvisFromOtherSkills(serverPlayer, BeyonderData.getSequence(serverPlayer) + 1);
     }
@@ -303,11 +303,11 @@ public class ParasitationAbility extends SelectableAbility {
         comp.setParasiting(false);
         comp.setParasitingUUID(null);
 
-        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
-        if(scaleAttribute != null) {
-            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-                    "parasite"));
-        }
+//        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                    "parasite"));
+//        }
 
         PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(serverPlayer);
     }

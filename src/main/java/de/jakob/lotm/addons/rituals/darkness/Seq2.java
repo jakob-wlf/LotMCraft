@@ -15,10 +15,10 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq2 {
-    private static final int DISTANCE = 150;
+    private static final int DISTANCE = 250;
     private static final int SECONDS_PER_STAGE = 320;
-    private static final int STAGES = 60;
-    private static final int MAX_LEVEL_IN_FACTION = 5;
+    private static final int STAGES = 80;
+    private static final int MAX_LEVEL_IN_FACTION = 3;
 
     @SubscribeEvent
     private static void onFoolTick(PlayerTickEvent.Post event){
@@ -30,6 +30,11 @@ public class Seq2 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
+        if (level.dimension() != ServerLevel.OVERWORLD) {
+            component.setStage(0);
+            return;
+        }
+
         String name = player.getName().getString();
         var factions = BeyonderData.factionStorage.getPartOfFaction(name);
         for(var obj : factions){
@@ -38,11 +43,13 @@ public class Seq2 {
         }
 
         for(var obj : level.getServer().getPlayerList().getPlayers()){
+            if(obj.equals(player)) continue;
+
             if(obj.distanceTo(player) <= DISTANCE)
                 component.setStage(0);
         }
 
-        if(player.tickCount % 20 * SECONDS_PER_STAGE == 0){
+        if(player.tickCount % (20 * SECONDS_PER_STAGE) == 0){
             component.setStage(component.getStage() + 1);
         }
 

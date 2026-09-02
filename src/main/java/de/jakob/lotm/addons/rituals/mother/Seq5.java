@@ -26,7 +26,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq5 {
-    private static final int NEED_AMOUNT = 1000;
+    private static final int NEED_AMOUNT = 2000;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {

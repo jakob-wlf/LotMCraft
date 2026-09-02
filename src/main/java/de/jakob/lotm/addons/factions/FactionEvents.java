@@ -77,10 +77,10 @@ public class FactionEvents {
 
             int playerLevelNation = nation.getPlayerLevel(name);
             int playerLevelChurch = church.getPlayerLevel(name);
-            boolean checkToNation = playerLevelNation >= playerLevelChurch;
+            boolean checkToNation = playerLevelNation > playerLevelChurch;
 
             if (checkToNation) {
-                return !(playerLevelNation != 1 && church.getClaimLevel(pos) - 3 <= playerLevelNation);
+                return !(playerLevelNation > 2 && church.getClaimLevel(pos) - 2 < playerLevelNation);
             } else
                 return !church.canDoAnything(name, pos);
 
@@ -128,6 +128,9 @@ public class FactionEvents {
 
                     if (BeyonderData.getPathway(player).equals("error") &&
                             BeyonderData.getSequence(player) == 4) {
+
+                        if(BeyonderData.getSequence(targetPlayer) > 5) return;
+
                         var ritual = player.getData(ModAttachments.RITUALS.get());
                         ritual.setStage(1);
                     }
@@ -166,26 +169,26 @@ public class FactionEvents {
     public static void onExplosion(ExplosionEvent.Detonate event) {
         if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
 
-        List<BlockPos> buff = new LinkedList<>();
-        for (var block : event.getAffectedBlocks()) {
-            var pos = serverLevel.getChunk(block).getPos();
+//        List<BlockPos> buff = new LinkedList<>();
+//        for (var block : event.getAffectedBlocks()) {
+//            var pos = serverLevel.getChunk(block).getPos();
+//
+//            if (BeyonderData.factionStorage.isClaimed(pos, 1)
+//                    || BeyonderData.factionStorage.isClaimed(pos, 2))
+//                buff.add(block);
+//        }
 
-            if (BeyonderData.factionStorage.isClaimed(pos, 1)
-                    || BeyonderData.factionStorage.isClaimed(pos, 2))
-                buff.add(block);
-        }
-
-        event.getAffectedBlocks().removeAll(buff);
+        event.getAffectedBlocks().removeAll(event.getAffectedBlocks());
     }
 
     @SubscribeEvent
     public static void onMobGrief(EntityMobGriefingEvent event) {
-        var pos = new ChunkPos(event.getEntity().blockPosition());
+//        var pos = new ChunkPos(event.getEntity().blockPosition());
 
-        if (BeyonderData.factionStorage.isClaimed(pos, 1)
-                || BeyonderData.factionStorage.isClaimed(pos, 2)) {
+//        if (BeyonderData.factionStorage.isClaimed(pos, 1)
+//                || BeyonderData.factionStorage.isClaimed(pos, 2)) {
             event.setCanGrief(false);
-        }
+//        }
     }
 
     @SubscribeEvent

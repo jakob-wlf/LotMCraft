@@ -40,7 +40,6 @@ public class Seq3 {
         if(BeyonderData.getPathway(livingEntity).equals("darkness")
                 && BeyonderData.getSequence(livingEntity) <= 2){
 
-
             var nearby = AbilityUtil.getNearbyEntities(livingEntity, level, livingEntity.position(), 80);
             for(var obj : nearby){
                 if(!(obj instanceof ServerPlayer player)) continue;

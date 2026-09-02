@@ -24,9 +24,12 @@ public class Seq3 {
         if(!(player.level() instanceof ServerLevel level)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
+        var sanity = player.getData(ModAttachments.SANITY_COMPONENT.get());
 
-
-        if(player.hasEffect(ModEffects.LOOSING_CONTROL) && player.getHealth() <= player.getMaxHealth() * 0.2f)
+        if(player.hasEffect(ModEffects.LOOSING_CONTROL)
+                && player.getHealth() <= player.getMaxHealth() * 0.2f
+                && sanity.getSanity() <= 0.5f
+        )
             component.setCompleted(true);
         else if(component.isCompleted()){
             RitualEffectHandlerEvent.removeRitualWithMessage(player);

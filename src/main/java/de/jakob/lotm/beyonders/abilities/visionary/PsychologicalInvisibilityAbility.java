@@ -82,6 +82,10 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
             cancel(serverLevel, entity);
         }
 
+        if(entity.getRemainingFireTicks() > 0 && entity.hasEffect(MobEffects.FIRE_RESISTANCE)){
+            entity.setRemainingFireTicks(0);
+        }
+
         if (entity instanceof ServerPlayer) {
             if (!invisiblePlayers.containsKey(entity.getUUID()))
                 cancel(serverLevel, entity);

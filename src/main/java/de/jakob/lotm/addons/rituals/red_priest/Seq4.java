@@ -18,7 +18,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq4 {
-    public static final int MIN_ALLY_AMOUNT = 7;
+    public static final int MIN_ALLY_AMOUNT = 5;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -36,7 +36,7 @@ public class Seq4 {
             var data = BeyonderData.playerMap.get(UUID.fromString(obj));
             if(data.isEmpty()) continue;
 
-            if(data.get().sequence() <= 5){
+            if(data.get().sequence() <= 4){
                 component.setStage(component.getStage() + 1);
             }
         }

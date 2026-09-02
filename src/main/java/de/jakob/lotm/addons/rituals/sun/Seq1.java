@@ -20,9 +20,9 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq1 {
-    private static final Integer AMOUNT = 250;
+    private static final Integer AMOUNT = 300;
     private static final HashMap<UUID, Long> timestamp = new HashMap<>();
-    public static final int FAIL_TIME = 3600;
+    public static final int FAIL_TIME = 2600;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){

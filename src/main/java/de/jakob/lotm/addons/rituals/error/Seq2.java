@@ -15,7 +15,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq2 {
-    private static final int MIN_LEVEL = 2;
+    private static final int MIN_LEVEL = 3;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){

@@ -36,7 +36,7 @@ public class Seq1 {
             }
         }
 
-        if(ritualAmount >= amount * 0.7f){
+        if(ritualAmount >= amount * 0.8f){
             component.setCompleted(true);
         }
     }

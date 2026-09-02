@@ -57,6 +57,7 @@ public class Seq4 {
 
         var target = AbilityUtil.getTargetEntity(player, 8, 0, true, true);
         if(!(target instanceof ServerPlayer targetPlayer)) return;
+        if(BeyonderData.getSequence(target) > 6) return;
 
         if(map.containsKey(player.getUUID())){
             if(map.get(player.getUUID()).contains(targetPlayer.getUUID())) return;

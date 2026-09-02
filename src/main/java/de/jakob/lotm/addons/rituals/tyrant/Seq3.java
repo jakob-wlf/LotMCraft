@@ -27,7 +27,7 @@ import java.util.*;
 public class Seq3 {
     private static final Map<UUID, Vec3> posMap = new HashMap<>();
     public static final String message = "I declare this sea as my property";
-    private static final int NEED_AMOUNT = 1200;
+    private static final int NEED_AMOUNT = 4500;
     private static final int DISTANCE = 500;
 
     @SubscribeEvent

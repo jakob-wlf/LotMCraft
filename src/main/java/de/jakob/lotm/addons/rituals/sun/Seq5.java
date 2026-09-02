@@ -18,14 +18,15 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
 public class Seq5 {
+
+    private static Map<UUID, Integer> timer = new HashMap<>();
+    private static final int TIME_SEC = 20 * 120;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -37,6 +38,10 @@ public class Seq5 {
         var component = player.getData(ModAttachments.RITUALS.get());
 
         BlockPos pos = player.blockPosition();
+
+        if(!timer.containsKey(player.getUUID())){
+            timer.put(player.getUUID(), 0);
+        }
 
         if (level.getMaxLocalRawBrightness(pos) != 0) {
             if(component.isCompleted())
@@ -59,7 +64,12 @@ public class Seq5 {
             }
         }
 
+        timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+        if(timer.get(player.getUUID()) < TIME_SEC) return;
+
         component.setCompleted(true);
+        timer.remove(player.getUUID());
     }
 
 }

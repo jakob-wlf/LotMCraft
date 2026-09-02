@@ -19,7 +19,8 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq5 {
-    private static final int AMOUNT = 10;
+    private static final int AMOUNT = 3;
+    private static final float PERCENT = 0.3f;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -36,15 +37,17 @@ public class Seq5 {
         for(var obj : nearby){
             if(!(obj instanceof ServerPlayer target)) continue;
 
-            if(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping()){
+            if((target.hasEffect(ModEffects.ASLEEP) || target.isSleeping())
+            && BeyonderData.getSequence(target) <= 7){
                 component.setStage(component.getStage() + 1);
             }
         }
 
-        if(component.getStage() >= AMOUNT){
+        int online = level.players().size();
+        if(component.getStage() >= AMOUNT
+        && component.getStage() >= (online * PERCENT)){
             component.setCompleted(true);
         }
     }
-
 
 }

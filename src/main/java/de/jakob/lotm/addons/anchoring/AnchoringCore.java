@@ -17,9 +17,9 @@ public class AnchoringCore {
 
     public static int getNeededAnchoringPerSeq(int seq){
         return switch (seq){
-            case 2 -> 10;
-            case 1 -> 20;
-            case 0 -> 30;
+            case 2 -> 12;
+            case 1 -> 34;
+            case 0 -> 68;
             default -> 0;
         };
     }

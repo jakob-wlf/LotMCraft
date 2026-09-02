@@ -16,10 +16,16 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
 public class Seq2 {
+    private static Map<UUID, Integer> timer = new HashMap<>();
+    private static final int TIME_SEC = 20 * 60 * 10;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -29,6 +35,10 @@ public class Seq2 {
         if(!(player.level() instanceof ServerLevel level)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
+
+        if(!timer.containsKey(player.getUUID())){
+            timer.put(player.getUUID(), 0);
+        }
 
         boolean haveChar = false;
         boolean haveSun = false;
@@ -44,10 +54,15 @@ public class Seq2 {
             }
         }
 
-        if(haveChar || haveSun){
+        timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+        if((haveChar || haveSun)
+        && timer.get(player.getUUID()) >= TIME_SEC){
             if(!component.isCompleted()){
                 component.setCompleted(true);
             }
+
+            timer.remove(player.getUUID());
         }
         else{
             if(component.isCompleted())

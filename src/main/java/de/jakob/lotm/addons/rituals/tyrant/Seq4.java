@@ -26,7 +26,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq4 {
-    private static final int SECONDS_PER_STAGE = 120;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -36,7 +35,7 @@ public class Seq4 {
         if(!(player.level() instanceof ServerLevel level)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
-        //if(component.isCompleted()) return;
+
 
         boolean isInCalamity = level.getEntitiesOfClass(
                 Entity.class,
@@ -47,7 +46,7 @@ public class Seq4 {
                 )
                 .isEmpty();
 
-        if(!isInCalamity){
+        if(!isInCalamity && player.getHealth() <= player.getMaxHealth() * 0.5f){
             component.setCompleted(true);
         }
         else{

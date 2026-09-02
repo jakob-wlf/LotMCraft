@@ -68,10 +68,10 @@ public class Seq0 {
         if(!(sourceEntity instanceof ServerPlayer sourcePlayer)) return;
 
         if(BeyonderData.getPathway(sourcePlayer).equals("darkness") &&
-                BeyonderData.hasUniqueness(sourcePlayer))
-
-        if(player.getHealth() <= player.getMaxHealth() * 0.4f){
-            component.setStage(1);
+                BeyonderData.hasUniqueness(sourcePlayer)) {
+            if (player.getHealth() <= player.getMaxHealth() * 0.4f) {
+                component.setStage(1);
+            }
         }
     }
 

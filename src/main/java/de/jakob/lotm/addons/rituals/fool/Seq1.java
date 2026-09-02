@@ -12,11 +12,18 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
 public class Seq1 {
     private static final int AMOUNT = 24; // dont forget to sync with puppeteering max
+
+    private static Map<UUID, Integer> timer = new HashMap<>();
+    private static final int TIME_SEC = 20 * 60 * 120;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -28,6 +35,10 @@ public class Seq1 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
+        if(!timer.containsKey(player.getUUID())){
+            timer.put(player.getUUID(), 0);
+        }
+
         var marionetteList = player.getData(ModAttachments.MARIONETTE_COMPONENT.get()).marionettes;
         int count = 0;
         var nearby = AbilityUtil.getNearbyEntities(null, level, player.position(), 100);
@@ -37,7 +48,15 @@ public class Seq1 {
         }
 
         if(count >= AMOUNT){
-            component.setCompleted(true);
+            timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+            if(timer.get(player.getUUID()) >= TIME_SEC) {
+                component.setCompleted(true);
+                timer.remove(player.getUUID());
+            }
+        }
+        else{
+            timer.remove(player.getUUID());
         }
     }
 

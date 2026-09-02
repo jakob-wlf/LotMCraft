@@ -86,33 +86,33 @@ public class TravelersDoorEntity extends Entity {
         this.destY = destY;
         this.destZ = destZ;
 
-        while(!level.getBlockState(BlockPos.containing(destX, this.destY, destZ)).getCollisionShape(level, BlockPos.containing(destX, this.destY, destZ)).isEmpty()) {
+        while (!level.getBlockState(BlockPos.containing(destX, this.destY, destZ)).getCollisionShape(level, BlockPos.containing(destX, this.destY, destZ)).isEmpty()) {
             this.destY += 1.0;
         }
     }
 
     private static float yawFromVector(Vec3 dir) {
         if (dir.lengthSqr() < 1.0E-6) return 0.0F;
-        return (float)(Math.toDegrees(Math.atan2(-dir.x, dir.z)));
+        return (float) (Math.toDegrees(Math.atan2(-dir.x, dir.z)));
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if(!(level() instanceof ServerLevel serverLevel)) {
+        if (!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
         serverLevel.setChunkForced(chunkPosition().x, chunkPosition().z, true);
 
 
-        if(tickCount > 20 * 6) {
+        if (tickCount > 20 * 6) {
             this.discard();
             return;
         }
 
-        switch(use) {
+        switch (use) {
             case 0 -> teleportNearbyEntities();
             case 2 -> spiritWorldHandling();
         }
@@ -163,7 +163,7 @@ public class TravelersDoorEntity extends Entity {
                             Set.of(), entity.getYRot(), entity.getXRot());
 
 
-                    if(owner != null) {
+                    if (owner != null) {
                         if (BeyonderData.getPathway(owner).equals("door") && BeyonderData.getSequence(owner) == 5) {
                             if (entity instanceof ServerPlayer target) {
                                 if (nation != null && nation.isPartOfFaction(target.getName().getString()))
@@ -175,7 +175,8 @@ public class TravelersDoorEntity extends Entity {
                                     allGood = !AllyUtil.areAllies(target, owner);
 
                                 if (allGood && BeyonderData.getSequence(target) <= 4) {
-                                    owner.getData(ModAttachments.RITUALS.get()).setStage(1);
+                                    if (target.getHealth() <= (target.getMaxHealth() * 0.5f))
+                                        owner.getData(ModAttachments.RITUALS.get()).setStage(1);
                                 }
                             }
                         }
@@ -216,7 +217,7 @@ public class TravelersDoorEntity extends Entity {
         ServerLevel spiritWorldLevel = level.getServer().getLevel(spiritWorld);
         if (spiritWorldLevel == null) return;
 
-        if(level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
+        if (level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, position().add(0, .5, 0), 35, .4, .1);
             ParticleUtil.spawnParticles(level, new DustParticleOptions(
                     new Vector3f(99 / 255f, 255 / 255f, 250 / 255f),
@@ -234,7 +235,7 @@ public class TravelersDoorEntity extends Entity {
         Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize();
 
         for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
-            if(!(entity instanceof LivingEntity) || casterSeq <= 2) {
+            if (!(entity instanceof LivingEntity) || casterSeq <= 2) {
                 entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
                 continue;
             }
@@ -245,11 +246,11 @@ public class TravelersDoorEntity extends Entity {
             AtomicBoolean stopped = new AtomicBoolean(false);
 
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
-                if(stopped.get()){
+                if (stopped.get()) {
                     return;
                 }
 
-                if(!entity.isAlive()){
+                if (!entity.isAlive()) {
                     stopped.set(true);
                 }
 
@@ -285,7 +286,7 @@ public class TravelersDoorEntity extends Entity {
         if (compoundTag.contains("DestZ")) {
             this.destZ = compoundTag.getDouble("DestZ");
         }
-        if(compoundTag.contains("Use")) {
+        if (compoundTag.contains("Use")) {
             this.use = compoundTag.getInt("Use");
         }
     }

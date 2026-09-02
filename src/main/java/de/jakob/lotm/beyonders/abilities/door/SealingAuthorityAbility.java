@@ -87,7 +87,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
                 "ability.lotmcraft.sealing_authority.seal_target",
                 //"ability.lotmcraft.sealing_authority.make_trap",
                 "ability.lotmcraft.sealing_authority.lock_dimension",
-                "ability.lotmcraft.sealing_authority.seal_area"
+                //"ability.lotmcraft.sealing_authority.seal_area"
         };
     }
 
@@ -104,7 +104,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         switch (selectedAbility) {
             case 0 -> sealTarget(serverLevel, entity);
             //case 1 -> makeTrap(serverLevel, entity);
-            case 2 -> sealArea(serverLevel, entity);
+            //case 2 -> sealArea(serverLevel, entity);
         }
     }
 
@@ -440,50 +440,50 @@ public class SealingAuthorityAbility extends SelectableAbility {
         };
     }
 
-    @SubscribeEvent
-    public static void onGlobalTick(ServerTickEvent.Post event) {
-        if(currentlySealedLocation == null) return;
-
-        ServerLevel level = currentlySealedLocation.loc().getLevel() instanceof ServerLevel serverLevel ? (ServerLevel) serverLevel: null;
-        if(level == null) return;
-
-        currentlySealedLocation = new SealedLocation(
-                currentlySealedLocation.casterUUId,
-                currentlySealedLocation.loc,
-                currentlySealedLocation.radius,
-                currentlySealedLocation.ticksRemaining - 1,
-                currentlySealedLocation.barrierBlocks,
-                currentlySealedLocation.timeChangeEntity
-        );
-        if(currentlySealedLocation.ticksRemaining <= 0) {
-            currentlySealedLocation.removeSeal();
-            currentlySealedLocation = null;
-            return;
-        }
-
-        currentlySealedLocation.barrierBlocks.forEach(b -> {
-            BlockState state = level.getBlockState(b);
-            if(!state.getCollisionShape(level, b).isEmpty()) return;
-
-            level.setBlockAndUpdate(b, Blocks.BARRIER.defaultBlockState());
-        });
-
-        AbilityUtil.getNearbyEntities(null, level, currentlySealedLocation.loc.getPosition(), currentlySealedLocation.radius).forEach(e -> {
-            FogComponent fogComponent = e.getData(ModAttachments.FOG_COMPONENT);
-            fogComponent.setActiveAndSync(true, e);
-            fogComponent.setFogColorAndSync(new Vec3f(110 / 255f, 240 / 255f, 255 / 255f), e);
-            fogComponent.setFogIndex(-1);
-
-            if(currentlySealedLocation.casterUUId != null && e.getUUID().equals(currentlySealedLocation.casterUUId)) return;
-
-            ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), e.getEyePosition().subtract(0, .5, 0), 8, .3, .9, .3, 0.05);
-
-            if(BeyonderData.getSequence(e) < 1) return;
-
-            DisabledAbilitiesComponent comp = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            comp.disableAbilityUsageForTime("sealed_area_sealing_authority", 20, e);
-        });
-    }
+//    @SubscribeEvent
+//    public static void onGlobalTick(ServerTickEvent.Post event) {
+//        if(currentlySealedLocation == null) return;
+//
+//        ServerLevel level = currentlySealedLocation.loc().getLevel() instanceof ServerLevel serverLevel ? (ServerLevel) serverLevel: null;
+//        if(level == null) return;
+//
+//        currentlySealedLocation = new SealedLocation(
+//                currentlySealedLocation.casterUUId,
+//                currentlySealedLocation.loc,
+//                currentlySealedLocation.radius,
+//                currentlySealedLocation.ticksRemaining - 1,
+//                currentlySealedLocation.barrierBlocks,
+//                currentlySealedLocation.timeChangeEntity
+//        );
+//        if(currentlySealedLocation.ticksRemaining <= 0) {
+//            currentlySealedLocation.removeSeal();
+//            currentlySealedLocation = null;
+//            return;
+//        }
+//
+//        currentlySealedLocation.barrierBlocks.forEach(b -> {
+//            BlockState state = level.getBlockState(b);
+//            if(!state.getCollisionShape(level, b).isEmpty()) return;
+//
+//            level.setBlockAndUpdate(b, Blocks.BARRIER.defaultBlockState());
+//        });
+//
+//        AbilityUtil.getNearbyEntities(null, level, currentlySealedLocation.loc.getPosition(), currentlySealedLocation.radius).forEach(e -> {
+//            FogComponent fogComponent = e.getData(ModAttachments.FOG_COMPONENT);
+//            fogComponent.setActiveAndSync(true, e);
+//            fogComponent.setFogColorAndSync(new Vec3f(110 / 255f, 240 / 255f, 255 / 255f), e);
+//            fogComponent.setFogIndex(-1);
+//
+//            if(currentlySealedLocation.casterUUId != null && e.getUUID().equals(currentlySealedLocation.casterUUId)) return;
+//
+//            ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), e.getEyePosition().subtract(0, .5, 0), 8, .3, .9, .3, 0.05);
+//
+//            if(BeyonderData.getSequence(e) < 1) return;
+//
+//            DisabledAbilitiesComponent comp = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+//            comp.disableAbilityUsageForTime("sealed_area_sealing_authority", 20, e);
+//        });
+//    }
 
     private record SealedLocation(UUID casterUUId, Location loc, int radius, int ticksRemaining, List<BlockPos> barrierBlocks, TimeChangeEntity timeChangeEntity) {
         public boolean isEntityInside(LivingEntity entity) {

@@ -2,6 +2,8 @@ package de.jakob.lotm.addons.rituals.wheel_of_fortune;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
@@ -26,7 +28,7 @@ import java.util.UUID;
 )
 public class Seq2 {
     private static HashMap<UUID, String> nameMap = new HashMap<>();
-    public static final int FAIL_TIME = 3600;
+    public static final int FAIL_TIME = 1800;
     private static final HashMap<UUID, Long> timestamp = new HashMap<>();
     private static String victimMsg = "Your fate grows dangerous";
 
@@ -75,8 +77,10 @@ public class Seq2 {
         UUID id = BeyonderData.playerMap.getKeyByName(name);
         if(id == null) return;
 
-        var seq = BeyonderData.playerMap.get(id).get().sequence();
+        var data = BeyonderData.playerMap.get(id);
+        if(data.isEmpty()) return;
 
+        var seq = data.get().sequence();
         if(seq > 2) return;
 
         stream.next();
@@ -95,11 +99,13 @@ public class Seq2 {
 
             nameMap.put(player.getUUID(), name);
             if(player.level() instanceof ServerLevel level) {
-                var victim = level.getPlayerByUUID(id);
+                var victimB = level.getPlayerByUUID(id);
 
-                if(victim == null) return;
+                if(!(victimB instanceof ServerPlayer victim)) return;
 
                 victim.sendSystemMessage(Component.literal(victimMsg).withStyle(ChatFormatting.DARK_RED));
+
+                MetaAwarenessAbility.sendWithMessage(player, victim, "Placed prophecy");
             }
         }
     }

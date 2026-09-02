@@ -13,7 +13,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq5 {
-    private static int NEEDED = 80;
+    private static int NEEDED = 160;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){

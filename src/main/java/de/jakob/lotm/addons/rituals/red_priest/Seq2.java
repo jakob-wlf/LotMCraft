@@ -28,7 +28,7 @@ public class Seq2 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(component.getStage() == 1){
+        if(component.getStage() == 4){
             level.setWeatherParameters(
                     0,
                     20 * 300,

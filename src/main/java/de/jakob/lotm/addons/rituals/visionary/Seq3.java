@@ -19,7 +19,8 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq3 {
-    private static final int AMOUNT = 35;
+    private static final int AMOUNT = 5;
+    private static final float PERCENT = 0.4f;
     private static final Set<UUID> set = new HashSet<>();
 
     @SubscribeEvent
@@ -33,13 +34,16 @@ public class Seq3 {
         if(component.isCompleted()) return;
 
         for(var target : level.getServer().getPlayerList().getPlayers()){
-            if(target.isSleeping() || target.hasEffect(ModEffects.ASLEEP))
+            if((target.isSleeping() || target.hasEffect(ModEffects.ASLEEP))
+            && BeyonderData.getSequence(target) <= 7)
                 set.add(target.getUUID());
             else
                 set.remove(target.getUUID());
         }
 
-        if(set.size() >= AMOUNT){
+        int online = level.players().size();
+
+        if(set.size() >= AMOUNT && set.size() >= (online * PERCENT)){
             component.setCompleted(true);
         }
     }

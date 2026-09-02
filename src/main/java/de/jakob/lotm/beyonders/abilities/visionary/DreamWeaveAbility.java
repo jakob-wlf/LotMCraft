@@ -134,6 +134,9 @@ public class DreamWeaveAbility extends SelectableAbility {
 
         if(entity instanceof ServerPlayer player) {
             if (target instanceof ServerPlayer targetPlayer) {
+
+                if(!(target.hasEffect(ModEffects.ASLEEP))) return;
+
                 if (!Seq2.map.containsKey(player.getUUID())) {
                     Seq2.map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
                 } else {

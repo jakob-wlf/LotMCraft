@@ -36,11 +36,13 @@ public class Seq0 {
         for(var target : playerList){
             if(player.getUUID().equals(target.getUUID())) continue;
 
+            var data = BeyonderData.playerMap.get(target);
+            if(data.isEmpty()) continue;
+
             List<Prophecy> all = new LinkedList<>(
-                    BeyonderData.playerMap.get(target.getUUID()).get().prophecies());
+                    data.get().prophecies());
 
             all = all.stream().filter(obj -> obj.casterId().equals(player.getUUID())).toList();
-
 
             if(all.size() >= AMOUNT)
                 component.setStage(component.getStage() + 1);

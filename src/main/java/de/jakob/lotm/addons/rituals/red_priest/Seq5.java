@@ -29,7 +29,9 @@ public class Seq5 {
 
         if(BeyonderData.getSequence(targetPlayer) > 5) return;
         if(targetPlayer.getHealth() > targetPlayer.getMaxHealth() * 0.1f) return;
-        if(!target.hasEffect(MobEffects.WEAKNESS) || !target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)) return;
+        if(!target.hasEffect(MobEffects.WEAKNESS)
+                || !target.hasEffect(MobEffects.MOVEMENT_SLOWDOWN)
+                || !target.hasEffect(MobEffects.BLINDNESS)) return;
 
         component.setCompleted(true);
 

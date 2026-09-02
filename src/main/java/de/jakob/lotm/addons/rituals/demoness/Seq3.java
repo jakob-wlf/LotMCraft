@@ -22,7 +22,7 @@ import java.util.*;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq3 {
-    private static int NEEDED = 20 * 5; //20 * 15 * 60;
+    private static int NEEDED = 20 * 60 * 60;
     private static Map<UUID, Integer> timer = new HashMap<>();
     private static Map<UUID, UUID> self = new HashMap<>();
 
@@ -55,7 +55,7 @@ public class Seq3 {
             Vec3 behind = player.position().subtract(player.getLookAngle().normalize().scale(3));
 
             var entity = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), level,
-                    true, "demoness", 4);
+                    true, "demoness", 3);
 
             entity.setPos(behind.x, behind.y, behind.z);
             entity.setTarget(player);

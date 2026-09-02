@@ -27,7 +27,7 @@ public class VirtualPersonaComponent {
     private float health = 0;
 
     public boolean outOfSlots(int seq){
-        return affects.size() + ownPersonasOnSelf >= getMaxPerSeq(seq);
+        return affects.size() + ownPersonasOnSelf + avatars.size() >= getMaxPerSeq(seq);
     }
 
     public boolean hasOnSelf(){

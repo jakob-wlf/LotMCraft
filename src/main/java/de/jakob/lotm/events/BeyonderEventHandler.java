@@ -458,7 +458,6 @@ public class BeyonderEventHandler {
         int seq = BeyonderData.getSequence(entity);
         String path =  BeyonderData.getPathway(entity);
 
-
         if (target == Level.NETHER && seq > 7){
             event.setCanceled(true);
         }

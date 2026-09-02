@@ -48,7 +48,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         int seq = BeyonderData.getSequence(entity);
         if(seq > 2){
             var sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get());
-            sanity.setSanityAndSync(Math.max(0.0f, sanity.getSanity() - (seq == 4 ? 0.01f : 0.005f)), entity);
+            sanity.decreaseSanityAndSync(seq == 4 ? 0.01f : 0.005f, entity);
         }
 
         int range = 200;

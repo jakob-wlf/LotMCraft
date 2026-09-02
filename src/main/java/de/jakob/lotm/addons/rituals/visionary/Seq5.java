@@ -20,8 +20,8 @@ import java.util.*;
 )
 public class Seq5 {
     public static Set<UUID> wakeUp = new HashSet<>();
-    private static int MIN_SEC = 30;
-    private static int MAX_SEC = 60;
+    private static int MIN_SEC = 120;
+    private static int MAX_SEC = 150;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -55,6 +55,7 @@ public class Seq5 {
             else{
                 wakeUp.remove(player.getUUID());
                 component.setStage(0);
+                player.kill();
             }
         }
     }

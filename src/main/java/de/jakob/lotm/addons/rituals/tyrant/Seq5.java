@@ -2,6 +2,8 @@ package de.jakob.lotm.addons.rituals.tyrant;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.item.custom.SunItem;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -12,6 +14,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.Guardian;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,7 +26,6 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq5 {
-    private static final int SECONDS_PER_STAGE = 120;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -51,7 +54,7 @@ public class Seq5 {
                 mob -> mob instanceof Guardian && player.equals(mob.getTarget())
         ).isEmpty();
 
-        if(inMonument && targeted){
+        if(inMonument && targeted && player.getMainHandItem().is(Items.HEART_OF_THE_SEA)){
             component.setCompleted(true);
         }
     }

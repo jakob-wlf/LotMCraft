@@ -19,7 +19,8 @@ import java.util.UUID;
 )
 public class Seq1 {
     public static HashMap<UUID, Set<UUID>> map = new HashMap<>();
-    private static int AMOUNT = 15;
+    private static final int AMOUNT = 6;
+    private static final float PERCENT = 0.4f;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -35,7 +36,10 @@ public class Seq1 {
             map.put(player.getUUID(), new HashSet<>());
         }
 
-        if(map.get(player.getUUID()).size() >= AMOUNT){
+        int online = level.players().size();
+        if(map.get(player.getUUID()).size() >= AMOUNT
+                && map.get(player.getUUID()).size() >= (online*PERCENT)
+        ){
             component.setCompleted(true);
             map.remove(player.getUUID());
         }

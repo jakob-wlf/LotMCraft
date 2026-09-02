@@ -26,8 +26,8 @@ public class Seq4 {
         if(component.isCompleted()) return;
 
         var luck = player.getData(ModAttachments.LUCK_COMPONENT.get());
-        if(luck.getLuck() < -4000){
-            var target = AbilityUtil.getTargetEntity(player, 12, 1.0f, true, true);
+        if(luck.getLuck() < -5000){
+            var target = AbilityUtil.getTargetEntity(player, 12, 1.0f, true);
 
             if(target == null) return;
             if(!(target instanceof ServerPlayer targetPlayer)) return;

@@ -29,7 +29,10 @@ public class Seq4 {
         var component = player.getData(ModAttachments.RITUALS.get());
         //if(component.isCompleted()) return;
 
-        if(player.hasEffect(ModEffects.LOOSING_CONTROL))
+        var sanity = player.getData(ModAttachments.SANITY_COMPONENT.get());
+
+        if(player.hasEffect(ModEffects.LOOSING_CONTROL)
+        && sanity.getSanity() <= 0.5f)
             component.setCompleted(true);
         else if(component.isCompleted()){
             RitualEffectHandlerEvent.removeRitualWithMessage(player);

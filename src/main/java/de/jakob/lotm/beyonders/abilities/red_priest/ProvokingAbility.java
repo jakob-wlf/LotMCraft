@@ -1,7 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.quest.impl.HelpBeyonderQuest;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AbilityUtilClient;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -9,6 +13,7 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -59,6 +64,20 @@ public class ProvokingAbility extends Ability {
                 e.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, (int) (20 * 6* multiplier(entity)), 1, false, false, false));
                 e.hurt(ModDamageTypes.source(level, ModDamageTypes.PROVOCATION, entity), baseDamage);
             });
+
+            if(entity instanceof ServerPlayer player){
+                if(BeyonderData.getSequence(player) != 3 ||
+                        !BeyonderData.getPathway(player).equals("red_priest")) return;
+
+                if(player.getMainHandItem().getItem() instanceof BeyonderCharacteristicItem item){
+                    if(item.getPathway().equals("red_priest") && item.getSequence() == 2){
+                        var component = player.getData(ModAttachments.RITUALS.get());
+                        if(component.getStage() != 3){
+                            component.setStage(component.getStage() + 1);
+                        }
+                    }
+                }
+            }
         }
         else {
             entity.playSound(SoundEvents.PILLAGER_AMBIENT, 1.0f, 0.6f + (float) Math.random() * 0.4f);

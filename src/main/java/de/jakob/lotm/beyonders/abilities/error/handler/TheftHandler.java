@@ -408,14 +408,13 @@ public class TheftHandler {
 
     public static int getDisablingTimeForSequenceInSeconds(int sequence) {
         return switch (sequence) {
-            default -> 3;
-            case 5 -> 4;
-            case 4 -> 5;
-            case 3 -> 6;
-            case 2 -> 7;
-            case 1 -> 10;
-            case 0 -> 12;
-
+            default -> 8;
+            case 5 -> 9;
+            case 4 -> 11;
+            case 3 -> 13;
+            case 2 -> 15;
+            case 1 -> 17;
+            case 0 -> 20;
         };
     }
 
@@ -452,7 +451,8 @@ public class TheftHandler {
         } else {
             theftcap = 0.6f;
         }
-        failChance = Math.max(Math.max(failChance, 0.0), theftcap);
+
+        failChance = Math.min(Math.max(failChance, 0.0), theftcap);
         double randomnum =  random.nextDouble();
         return randomnum < failChance;
     }

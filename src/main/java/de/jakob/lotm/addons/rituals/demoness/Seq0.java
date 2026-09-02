@@ -13,10 +13,17 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
 public class Seq0 {
+    private static Map<UUID, Integer> timer = new HashMap<>();
+    private static final int TIME_SEC = 20 * 60 * 60 * 2;
+
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
@@ -25,6 +32,10 @@ public class Seq0 {
         if(!BeyonderData.hasUniqueness(player)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
+
+        if(!timer.containsKey(player.getUUID())){
+            timer.put(player.getUUID(), 0);
+        }
 
         boolean haveSun = false;
         boolean haveVis = false;
@@ -43,9 +54,15 @@ public class Seq0 {
         }
 
         if (haveTyrant && haveSun && haveVis) {
-            component.setCompleted(true);
+            timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+            if(timer.get(player.getUUID()) >= TIME_SEC) {
+                component.setCompleted(true);
+                timer.remove(player.getUUID());
+            }
         } else {
             RitualEffectHandlerEvent.removeRitual(player);
+            timer.remove(player.getUUID());
         }
     }
 }

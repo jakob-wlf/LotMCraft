@@ -135,7 +135,7 @@ public class BeyonderDataTickHandler {
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
-            if(entity.tickCount % 5 == 0) {
+            if(entity.tickCount % 20 == 0) {
                 tickAbilities(livingEntity);
 
                 // Remove Unluck gradually
@@ -168,8 +168,6 @@ public class BeyonderDataTickHandler {
         if (player.level().isClientSide || !(player instanceof ServerPlayer serverPlayer)) {
             return;
         }
-
-
 
         if (BeyonderData.isBeyonder(player)) {
             // Regenerate Spirituality

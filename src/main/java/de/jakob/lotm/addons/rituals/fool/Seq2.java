@@ -25,7 +25,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq2 {
-    private static final int AMOUNT = 125;
+    private static final int AMOUNT = 255;
     private static int actualAmount = 0;
 
     @SubscribeEvent

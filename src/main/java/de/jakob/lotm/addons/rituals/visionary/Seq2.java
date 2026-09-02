@@ -17,7 +17,8 @@ import java.util.*;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq2 {
-    private static final int AMOUNT = 20;
+    private static final int AMOUNT = 5;
+    private static final float PERCENT = 0.4f;
     public static final Map<UUID, List<UUID>> map = new HashMap<>();
 
     @SubscribeEvent

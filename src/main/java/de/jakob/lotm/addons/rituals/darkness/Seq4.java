@@ -17,7 +17,7 @@ import java.util.*;
 )
 public class Seq4 {
     private static Map<UUID, Set<UUID>> map = new HashMap<>();
-    private static int NEEDED = 8;
+    private static int NEEDED = 5;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -45,13 +45,17 @@ public class Seq4 {
                 BeyonderData.getSequence(player) != 5) return;
 
         if(!(event.getEntity() instanceof ServerPlayer target)) return;
+        if(BeyonderData.getSequence(target) > 7) return;
 
         var factions = BeyonderData.factionStorage.getPartOfFaction(target.getName().getString());
         for(var faction : factions){
             var id = BeyonderData.playerMap.getKeyByName(faction.getLeader());
             if(id == null) continue;
 
-            int seq = BeyonderData.playerMap.get(id).get().sequence();
+            var data = BeyonderData.playerMap.get(id);
+            if(data.isEmpty()) continue;
+
+            int seq = data.get().sequence();
             if(seq <= 2){
                 var set = map.get(player.getUUID());
                 set.add(target.getUUID());

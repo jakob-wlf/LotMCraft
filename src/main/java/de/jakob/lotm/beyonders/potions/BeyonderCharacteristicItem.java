@@ -60,9 +60,11 @@ public class BeyonderCharacteristicItem extends Item {
         if(playerPath.equals("red_priest") && path.equals(playerPath)){
             if(playerSeq == 3 && seq <= 2){
                 var component = player.getData(ModAttachments.RITUALS.get());
-                component.setStage(1);
+                if(component.getStage() == 3) {
+                    component.setStage(4);
 
-                return InteractionResultHolder.success(ItemStack.EMPTY);
+                    return InteractionResultHolder.success(ItemStack.EMPTY);
+                }
             }
         }
 

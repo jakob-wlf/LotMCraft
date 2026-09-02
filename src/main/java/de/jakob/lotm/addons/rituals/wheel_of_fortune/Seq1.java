@@ -18,8 +18,6 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq1 {
-    private static final int SECONDS_PER_STAGE = 120;
-
     public static Set<UUID> disabled = new HashSet<>();
     public static Set<UUID> stunned = new HashSet<>();
 

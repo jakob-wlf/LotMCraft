@@ -30,7 +30,8 @@ public class Seq1 {
         if(BeyonderData.getSequence(targetPlayer) > 1) return;
 
         var luck = targetPlayer.getData(ModAttachments.LUCK_COMPONENT.get());
-        if(luck.getLuck() <= -5000){
+        if(luck.getLuck() <= -5000
+                && targetPlayer.getHealth() <= (targetPlayer.getMaxHealth() * 0.5f)){
             component.setCompleted(true);
         }
     }

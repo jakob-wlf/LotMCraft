@@ -2,6 +2,7 @@ package de.jakob.lotm.addons.rituals.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -22,7 +23,8 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq4 {
-    private static final int AMOUNT = 8;
+    private static final int AMOUNT = 3;
+    private static final float PERCENT = 0.4f;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -34,11 +36,15 @@ public class Seq4 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
+        var nearby = AbilityUtil.getNearbyEntities(player, level, player.position(), 120)
+                .stream().filter(obj -> obj instanceof ServerPlayer target
+                        && BeyonderData.getSequence(target) <= 7
+                        && !VisionaryHandler.isInvisible(target))
+                .toList();
 
-        var nearby = AbilityUtil.getNearbyEntities(player, level, player.position(), 100)
-                .stream().filter(obj -> obj instanceof ServerPlayer).toList();
+        int online = level.players().size();
 
-        if(nearby.size() >= AMOUNT){
+        if(nearby.size() >= AMOUNT && nearby.size() >= (online * PERCENT)){
             component.setCompleted(true);
         }
 

@@ -16,18 +16,23 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq4 {
-    private static final int NEEDED_SPECTATORS = 20;
+    private static final int NEEDED_SPECTATORS = 5;
+    private static final float PERCENT = 0.3f;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         if (!BeyonderData.getPathway(player).equals("fool") ||
                 BeyonderData.getSequence(player) != 5) return;
+        if(!(player.level() instanceof ServerLevel level))return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
         if (component.isCompleted()) return;
 
-        if(component.getStage() >= NEEDED_SPECTATORS){
+        int online = level.players().size();
+
+        if(component.getStage() >= NEEDED_SPECTATORS
+        && component.getStage() >= (online*PERCENT)){
             component.setCompleted(true);
             component.setStage(0);
         }
@@ -58,7 +63,8 @@ public class Seq4 {
                     continue;
                 }
 
-                totalValue+=1;
+                if(BeyonderData.getSequence(player) <= 6)
+                    totalValue+=1;
             }
 
             component.setStage(totalValue);

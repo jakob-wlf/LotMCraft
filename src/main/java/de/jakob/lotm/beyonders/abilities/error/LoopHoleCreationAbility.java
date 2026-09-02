@@ -164,6 +164,8 @@ public class LoopHoleCreationAbility extends Ability {
             boolean allGood = true;
             for (var entity : entitiesInRange) {
                 if (entity instanceof ServerPlayer player) {
+                    if(BeyonderData.getSequence(player) > 4) continue;
+
                     if (nation != null && nation.isPartOfFaction(player.getName().getString()))
                         allGood = false;
                     else if(church != null && church.isPartOfFaction(player.getName().getString()))

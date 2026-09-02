@@ -10,10 +10,16 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
 public class Seq2 {
+    private static Map<UUID, Integer> timer = new HashMap<>();
+    private static final int TIME_SEC = 20 * 60 * 5;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -25,17 +31,32 @@ public class Seq2 {
         if(component.isCompleted()) return;
 
        if(player.level().dimension() == ModDimensions.SPIRIT_WORLD_DIMENSION_KEY){
-           component.setStage(1);
+           timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+           if(timer.get(player.getUUID()) >= TIME_SEC) {
+               timer.remove(player.getUUID());
+               component.setStage(1);
+           }
        }
 
        if(component.getStage() == 1 && player.level().dimension()
                == Level.NETHER){
-           component.setStage(2);
+           timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+           if(timer.get(player.getUUID()) >= TIME_SEC) {
+               timer.remove(player.getUUID());
+               component.setStage(2);
+           }
        }
 
         if(component.getStage() == 2 && player.level().dimension()
                 == Level.END){
-            component.setStage(3);
+            timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+
+            if(timer.get(player.getUUID()) >= TIME_SEC) {
+                timer.remove(player.getUUID());
+                component.setStage(3);
+            }
         }
 
         if(component.getStage() == 3 && player.level().dimension()
