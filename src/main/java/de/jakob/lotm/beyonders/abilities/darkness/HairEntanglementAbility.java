@@ -41,7 +41,7 @@ public class HairEntanglementAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(2, 3, 4, 5, 6));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(25000f, 10000f, 6000f, 3750f, 3900f));
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 3000f, 2250f, 1900f));
     }
 
     @Override

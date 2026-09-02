@@ -43,7 +43,7 @@ public class BlinkAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(0, 0, 0, 0, 1, 2));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(6000f, 2400f, 1500f, 1000f, 975f, 815f));
+        dynamicSpirituality = new LinkedList<>(List.of(1000f, 800f, 650f, 300f, 200f, 150f));
 
         baseDamage = 3;
     }

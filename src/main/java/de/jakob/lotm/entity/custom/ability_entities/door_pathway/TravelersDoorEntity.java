@@ -24,6 +24,8 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.parsing.packrat.Atom;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -235,7 +237,7 @@ public class TravelersDoorEntity extends Entity {
         Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize();
 
         for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
-            if (!(entity instanceof LivingEntity) || casterSeq <= 2) {
+            if (!(entity instanceof LivingEntity living) || casterSeq <= 2) {
                 entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
                 continue;
             }
@@ -257,6 +259,11 @@ public class TravelersDoorEntity extends Entity {
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
+
+                entity.fallDistance = 0;
+                entity.setOnGround(true);
+
+                living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 5, 5));
 
                 ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, currentEntityPos[0].add(0, .5, 0), 35, .4, .1);
                 ParticleUtil.spawnParticles(level, ParticleTypes.PORTAL, currentEntityPos[0].add(0, .5, 0), 35, .7, .1);

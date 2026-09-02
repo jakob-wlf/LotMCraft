@@ -63,10 +63,13 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                         int entitySeq = BeyonderData.getSequence(entity);
 
                         if(!VisionaryHandler.isInvisible(entity) && ! entity.hasEffect(MobEffects.INVISIBILITY)) {
-                            e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
-                                    getAmount(entitySeq), e,
-                                    BeyonderData.getSequence(e), entitySeq);
-                            VisionaryLoosingControlHandler.applyEffect(entity, e, this);
+                            if(entitySeq < BeyonderData.getSequence(e)) {
+                                e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
+                                        getAmount(entitySeq), e,
+                                        BeyonderData.getSequence(e), entitySeq);
+
+                                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
+                            }
                         }
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);

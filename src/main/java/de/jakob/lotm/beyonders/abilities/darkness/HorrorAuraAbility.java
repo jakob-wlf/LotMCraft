@@ -39,7 +39,7 @@ public class HorrorAuraAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(10, 13, 15, 20));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+        dynamicSpirituality = new LinkedList<>(List.of(17000f, 7000f, 4000f, 3250f));
 
         baseDamage = 1;
     }

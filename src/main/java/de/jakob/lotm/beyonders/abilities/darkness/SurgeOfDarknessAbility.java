@@ -35,7 +35,7 @@ public class SurgeOfDarknessAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(5, 7, 9, 12));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+        dynamicSpirituality = new LinkedList<>(List.of(18500f, 8000f, 4500f, 3850f));
 
         baseDamage = 6;
     }

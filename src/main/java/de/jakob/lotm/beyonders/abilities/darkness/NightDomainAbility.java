@@ -34,7 +34,8 @@ public class NightDomainAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(10, 13, 15, 20, 25));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f, 5850f));
+        dynamicSpirituality = new LinkedList<>(List.of(15000f, 5500f, 3000f, 2150f, 1800f));
+
 
         baseDamage = 2;
     }

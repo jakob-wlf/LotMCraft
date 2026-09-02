@@ -27,7 +27,7 @@ public class LesserConcealmentAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(2, 3, 4, 6, 7));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 3000f, 1875f, 1680f));
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 6700f, 3750f, 2500f, 2340f));
     }
 
     @Override
@@ -64,7 +64,7 @@ public class LesserConcealmentAbility extends SelectableAbility {
         if(!(entity instanceof ServerPlayer player)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int durationTicks =20*getDuration(entitySeq);
+        int durationTicks = 20*getDuration(entitySeq);
         int totalPower= 10-BeyonderData.getSequence(entity);
 
         if (entity.hasEffect(ModEffects.CONCEALMENT)) {
@@ -112,11 +112,11 @@ public class LesserConcealmentAbility extends SelectableAbility {
 
         private int getDuration(int seq){
         return switch (seq){
-          case 4 -> 20;
-          case 3 -> 30;
-          case 2 -> 50;
-          case 1 -> 60;
-          case 0 -> 80;
+          case 4 -> 60 * 15;
+          case 3 -> 60 * 30;
+          case 2 -> 60 * 60;
+          case 1 -> 60 * 100;
+          case 0 -> 60 * 130;
             default -> 0;
         };
         }

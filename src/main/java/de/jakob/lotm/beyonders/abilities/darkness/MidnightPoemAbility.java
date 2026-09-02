@@ -45,7 +45,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 4, 5, 5, 6, 6));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 7500f, 4200f, 2500f, 2340f, 1425f, 900f, 780f, 300f));
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 5500f, 3200f, 1500f, 1000f, 825f, 700f, 580f, 220f));
 
         baseDamage = 10;
     }

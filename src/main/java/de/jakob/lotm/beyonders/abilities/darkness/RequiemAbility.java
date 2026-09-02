@@ -45,7 +45,7 @@ public class RequiemAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 4, 5, 5));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 7500f, 4200f, 2500f, 2340f, 1425f, 900f));
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3500f, 2000f, 1500f, 1040f, 725f, 400f));
     }
 
     @Override
@@ -111,7 +111,7 @@ public class RequiemAbility extends Ability {
         }else if (entitySeq > targetEntitySeq){
             duration = 20 * 6;
         }else{
-            duration = 20 * 2;
+            duration = 20;
         };
 
         if(!BeyonderData.isBeyonder(targetEntity) || (targetEntitySeq >= entitySeq-1)) {

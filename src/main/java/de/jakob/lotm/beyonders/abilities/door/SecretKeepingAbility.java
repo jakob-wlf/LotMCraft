@@ -41,7 +41,7 @@ public class SecretKeepingAbility extends Ability {
             ParticleUtil.createParticleSpirals((ServerLevel) level, ParticleTypes.ENCHANT, entity.position().add(0, entity.getBbHeight() / 2, 0), .8, .8, entity.getBbHeight(), .25, 5, 35, 8, 1);
             ParticleUtil.createParticleSpirals((ServerLevel) level, ParticleTypes.ENCHANTED_HIT, entity.position().add(0, entity.getBbHeight() / 2, 0), 1.2, 1.2, entity.getBbHeight(), .25, 5, 35, 10, 1);
 
-            entity.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 60, 4));
+            entity.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 20 * 60 * 10, 4));
         }
     }
 

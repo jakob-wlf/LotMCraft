@@ -50,7 +50,7 @@ public class ConcealmentAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(3, 4, 6));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f));
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 10000f, 6500f));
     }
 
     @Override

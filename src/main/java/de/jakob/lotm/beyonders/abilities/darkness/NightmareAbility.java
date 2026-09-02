@@ -62,9 +62,9 @@ public class NightmareAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3, 3));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 7500f, 4200f, 2500f, 2340f, 1425f, 900f, 780f));
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 2400f, 1900f, 900f, 600f, 400f, 250f, 100f));
 
-        baseDamage = 13;
+        baseDamage = 8;
     }
 
     @Override

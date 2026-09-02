@@ -41,7 +41,7 @@ public class SwordOfDarknessAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(3, 5, 6, 8));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+        dynamicSpirituality = new LinkedList<>(List.of(9500f, 6750f, 4400f, 2850f));
 
         baseDamage = 10;
     }
@@ -111,7 +111,7 @@ public class SwordOfDarknessAbility extends Ability {
                             boolean hasMorale = InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", seq, e);
                             int duration = hasMorale? 20 : 20 * 2;
                             BeyonderData.addModifierWithTimeLimit(e, "sword_of_darkness_multiplier_reduction", 0.7, duration);
-                        };
+                        }
                     });
                     if(BeyonderData.isGriefingEnabled(entity)) {
                         if(serverLevel.getBlockState(BlockPos.containing(point)).getDestroySpeed(level, BlockPos.containing(point)) < 0)

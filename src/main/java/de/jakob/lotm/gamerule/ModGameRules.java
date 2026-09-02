@@ -23,6 +23,8 @@ public class ModGameRules {
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
 
+    public static GameRules.Key<GameRules.IntegerValue> MAX_NPC_AMOUNT;
+
     public static GameRules.Key<GameRules.IntegerValue> SEQ_0_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_1_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_2_AMOUNT;
@@ -292,6 +294,17 @@ public class ModGameRules {
                 "applyRituals",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
+        );
+
+        MAX_NPC_AMOUNT = GameRules.register(
+                "maxNpcAmount",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(1000,
+                        (server, value) -> {
+                            if (value.get() < 0) {
+                                value.set(0, server);
+                            }
+                        })
         );
     }
 

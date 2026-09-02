@@ -96,6 +96,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private long tickCounter = 0;
     private boolean shouldDrop = true;
 
+    private boolean shouldIgnoreGamerule = false;
+
     // ========================= Constructors =========================
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         this(entityType, level, false);
@@ -430,7 +432,13 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return result;
     }
 
+    public void setShouldIgnoreGamerule(boolean value){
+        shouldIgnoreGamerule = value;
+    }
 
+    public boolean getShouldIgnoreGamerule(){
+        return shouldIgnoreGamerule;
+    }
 
     private TradeEntry generateRandomTrade(RandomSource random) {
         int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 3, 9);
