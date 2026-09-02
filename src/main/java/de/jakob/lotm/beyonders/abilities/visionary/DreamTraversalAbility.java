@@ -50,6 +50,7 @@ public class DreamTraversalAbility extends SelectableAbility {
         super(id, 1f);
         this.autoClear = false;
         canBeUsedInArtifact = false;
+        canBeShared = false;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3, 4));

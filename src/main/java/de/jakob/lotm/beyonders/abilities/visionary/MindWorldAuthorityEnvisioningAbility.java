@@ -33,6 +33,7 @@ public class MindWorldAuthorityEnvisioningAbility extends ToggleAbility {
         canBeUsedByNPC = false;
         canBeUsedInArtifact = false;
         doesNotIncreaseDigestion = true;
+        canBeShared = false;
 
         this.shouldBeHidden = true;
     }

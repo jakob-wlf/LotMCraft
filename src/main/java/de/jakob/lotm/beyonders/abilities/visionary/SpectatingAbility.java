@@ -36,6 +36,7 @@ public class SpectatingAbility extends ToggleAbility {
 
         canBeUsedByNPC = false;
         autoClear = false;
+        canBeShared = false;
     }
 
     @Override

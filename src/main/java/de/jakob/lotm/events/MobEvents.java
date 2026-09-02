@@ -61,7 +61,7 @@ public class MobEvents {
                     return;
                 }
 
-
+                npcAmount++;
             }
         }
     }

@@ -23,6 +23,7 @@ public class DecryptionAbility extends ToggleAbility {
         canBeUsedByNPC = false;
         autoClear = false;
         doesNotIncreaseDigestion = true;
+        canBeShared = false;
     }
 
     @Override

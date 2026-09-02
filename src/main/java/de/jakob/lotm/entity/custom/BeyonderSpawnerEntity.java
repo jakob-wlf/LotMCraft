@@ -178,6 +178,7 @@ public class BeyonderSpawnerEntity extends Entity {
         );
         beyonder.getPersistentData().putUUID("lotm_beyonder_summoner", summoner);
         beyonder.setPos(x, y, z);
+        beyonder.setShouldIgnoreGamerule(true);
         level.addFreshEntity(beyonder);
     }
 

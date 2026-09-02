@@ -26,6 +26,8 @@ public class CullAbility extends ToggleAbility {
     public CullAbility(String id) {
         super(id);
 
+        canBeShared = false;
+
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(90f, 40f, 30f, 25f, 20f, 12.5f));
     }

@@ -21,6 +21,7 @@ public class TelepathyAbility extends ToggleAbility {
         super(id);
         autoClear = false;
         canBeUsedByNPC = false;
+        canBeShared = false;
     }
 
     @Override

@@ -77,8 +77,8 @@ public class PassiveLuckAbility extends PassiveAbilityItem {
 
     private int getLuckRate(int seq){
         return switch (seq){
-            case 7 -> 1;
-            case 6 -> 1;
+            case 7 -> 10;
+            case 6 -> 20;
             case 5 -> 30;
             case 4 -> 100;
             case 3 -> 125;

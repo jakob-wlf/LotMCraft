@@ -52,7 +52,6 @@ public class ConvergenceEvent {
 
         String path = BeyonderData.getPathway(player);
 
-
         Random random = new Random();
         double baseChance = 0.0010;
         double sequenceMultiplier = 1.0 - (seq * 0.09);
@@ -115,6 +114,7 @@ public class ConvergenceEvent {
 
         level.addFreshEntity(entity);
         entity.setTarget(player);
+        entity.setShouldIgnoreGamerule(true);
 
         timer.remove(player.getUUID());
     }
