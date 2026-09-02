@@ -488,7 +488,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
     @SubscribeEvent
     public static void onEffectAdded(MobEffectEvent.Added event) {
-        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide()) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
 

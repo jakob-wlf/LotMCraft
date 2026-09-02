@@ -3,28 +3,23 @@ package de.jakob.lotm.beyonders.abilities.fool.marionettes;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.*;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
-import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.List;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -107,5 +102,34 @@ public class MarionetteUtils {
         }
 
         return null;
+    }
+
+    @SubscribeEvent
+    public static void onSanityDrop(EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+
+        if (entity.tickCount % 100 == 0) return;
+
+        if (!isMarionette(entity)) {
+            return;
+        }
+
+        SanityComponent sanityComponent = entity.getData(ModAttachments.SANITY_COMPONENT);
+        sanityComponent.setSanity(1.0f);
+    }
+
+    @SubscribeEvent
+    public static void onEffectAdded(MobEffectEvent.Applicable event) {
+        LivingEntity entity = event.getEntity();
+
+        if (!isMarionette(entity)) {
+            return;
+        }
+
+        MobEffectInstance newEffect = event.getEffectInstance();
+
+        if (newEffect.getEffect().value() == ModEffects.MENTAL_PLAGUE || newEffect.getEffect().value() == ModEffects.LOOSING_CONTROL || newEffect.getEffect().value() == ModEffects.ASLEEP) {
+            event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
+        }
     }
 }
