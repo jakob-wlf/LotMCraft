@@ -327,6 +327,14 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<MarionetteOwnerComponent>> MARIONETTE_OWNER_COMPONENT =
+            ATTACHMENT_TYPES.register("marionette_owner_component", () ->
+                    AttachmentType.builder(MarionetteOwnerComponent::new)
+                            .serialize(MarionetteOwnerComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

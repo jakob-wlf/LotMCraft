@@ -72,7 +72,7 @@ public class CalamityAttractionAbility extends SelectableAbility {
         if(!(entity instanceof ServerPlayer player)) return;
 
         var component = player.getData(ModAttachments.LUCK_COMPONENT.get());
-        component.addLuckWithMin(-500, -5000);
+        component.addLuckWithMin(-500, -5200);
     }
 
     private void calamity(Level level, LivingEntity entity){

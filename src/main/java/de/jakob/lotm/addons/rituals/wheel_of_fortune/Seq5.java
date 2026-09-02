@@ -47,7 +47,7 @@ public class Seq5 {
             }
         }
 
-        if(component.getStage() >= 30){
+        if(component.getStage() >= 40){
             component.setStage(0);
             component.setCompleted(true);
             timer.remove(player.getUUID());

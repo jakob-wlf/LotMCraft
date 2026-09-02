@@ -364,6 +364,10 @@ public class ParasitationAbility extends SelectableAbility {
             if (event.getSource().is(ModDamageTypes.MIND)) {
                 cancelConcealed(level, player);
             }
+            else{
+                event.setAmount(0);
+                event.setCanceled(true);
+            }
         }
     }
 

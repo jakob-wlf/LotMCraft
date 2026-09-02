@@ -20,7 +20,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq1 {
-    private static final int AMOUNT = 24; // dont forget to sync with puppeteering max
+    private static final int AMOUNT = 100; // dont forget to sync with puppeteering max
 
     private static Map<UUID, Integer> timer = new HashMap<>();
     private static final int TIME_SEC = 20 * 60 * 120;
