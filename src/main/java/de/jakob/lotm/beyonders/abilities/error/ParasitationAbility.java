@@ -231,7 +231,7 @@ public class ParasitationAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 2, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.parasitation.no_target").withColor(0x3240bf));
