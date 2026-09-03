@@ -40,6 +40,16 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 base {
@@ -161,6 +171,12 @@ dependencies {
     implementation 'com.github.Querz:NBT:6.1'
 
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
+
+    //tessellate (for compatibility)
+    compileOnly "curse.maven:tessellate-1660059:8757447"
+    //tessellate in dev for testing
+    localRuntime "curse.maven:tessellate-1660059:8757447"
+    localRuntime "curse.maven:architectury-api-419699:8492726"
 
     // LDLib2
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
