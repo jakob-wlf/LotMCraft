@@ -120,6 +120,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -135,6 +136,7 @@ import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.texboobcat.tessellate.api.TessellateApi;
 
 @Mod(LOTMCraft.MOD_ID)
 public class LOTMCraft
@@ -238,6 +240,11 @@ public class LOTMCraft
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
+        if (ModList.get().isLoaded("tessellate")){
+            LOGGER.debug("registering tesselate exceptions");
+            TessellateApi.registerMainThreadEntity(ModEntities.EXILE_DOORS.get());
+            TessellateApi.registerMainThreadEntity(ModEntities.CONCEALED_DOMAIN.get());
+        }
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
