@@ -89,7 +89,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         mob.setPuppetWarrior(true);
         mob.setMaxLifetimeIfPuppet(20 * 10);
         // No target set yet — mob is passive until harmed
-
+        mob.setShouldIgnoreGamerule(true);
         serverLevel.addFreshEntity(mob);
 
         if (target instanceof Mob targetMob) {

@@ -55,6 +55,8 @@ public class BeyonderSpawnerEntity extends Entity {
 
     private int checkCooldown = 0;
     private static final int CHECK_INTERVAL = 20;
+
+    private int triggerCooldown = 0;
     private static final int TRIGGER_COOLDOWN = 20 * 60 * 60 * 12;
 
     public BeyonderSpawnerEntity(EntityType<?> type, Level level) {
@@ -83,11 +85,8 @@ public class BeyonderSpawnerEntity extends Entity {
 
         if (level().isClientSide()) return;
 
-        if(triggered){
-            if(--checkCooldown <= 0){
-                triggered = false;
-                checkCooldown = CHECK_INTERVAL;
-            }
+        if(triggerCooldown > 0 ){
+            triggerCooldown--;
 
             return;
         }
@@ -113,7 +112,8 @@ public class BeyonderSpawnerEntity extends Entity {
 
         triggered = true;
         performSpawn(serverLevel, triggeringPlayer.get());
-        checkCooldown = TRIGGER_COOLDOWN;
+
+        triggerCooldown = TRIGGER_COOLDOWN;
     }
 
     private void performSpawn(ServerLevel level, Player triggeringPlayer) {
@@ -193,6 +193,7 @@ public class BeyonderSpawnerEntity extends Entity {
         hasTrades       = tag.getBoolean("HasTrades");
         spawnAnimation  = tag.getBoolean("SpawnAnimation");
         triggered       = tag.getBoolean("Triggered");
+        triggerCooldown = tag.getInt("TriggerCooldown");
     }
 
     @Override
@@ -206,6 +207,7 @@ public class BeyonderSpawnerEntity extends Entity {
         tag.putBoolean("HasTrades",     hasTrades);
         tag.putBoolean("SpawnAnimation",spawnAnimation);
         tag.putBoolean("Triggered",     triggered);
+        tag.putInt("TriggerCooldown", triggerCooldown);
     }
 
     public void setTriggerRadius(double radius)       { this.triggerRadius    = radius;    }

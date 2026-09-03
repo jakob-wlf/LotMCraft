@@ -69,7 +69,6 @@ public class MobEvents {
     @SubscribeEvent
     public static  void onDeath(LivingDeathEvent event){
         if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
-        if(!(npc.level() instanceof ServerLevel serverLevel)) return;
 
         npcAmount--;
     }

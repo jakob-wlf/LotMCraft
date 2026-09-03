@@ -399,7 +399,7 @@ public class PotionRecipes {
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.DISCERNER_POTION.get(),
-                new ItemStack(ModIngredients.SUN_ORB.get(), 1),
+                new ItemStack(ModIngredients.ROOT_OF_MIST_TREANT.get(), 1),
                 new ItemStack(Items.WITHER_ROSE, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("visionary", 2)))
         ));

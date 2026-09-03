@@ -101,6 +101,20 @@ public class TeamCommand {
                                         })
                                 )
                         )
+
+                        .then(Commands.literal("disbandall")
+                        .executes(context -> {
+                            var source = context.getSource();
+                            var level = source.getLevel();
+
+                            var server = level.getServer();
+
+                            for(var player : level.players()){
+                                TeamUtils.disbandTeam(player, server);
+                            }
+
+                            return 0;
+                        }))
                 )
         );
     }

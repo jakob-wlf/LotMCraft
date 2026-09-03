@@ -96,8 +96,9 @@ public class ExileDoorsEntity extends Entity {
             return;
         }
 
-
         spawnParticles();
+
+        if(lifetime % 20 != 0) return;
 
         ServerLevel serverLevel = (ServerLevel) level();
         Set<LivingEntity> entities = Set.copyOf(AbilityUtil.getNearbyEntities(null, serverLevel, this.position(), 8.5));
@@ -154,12 +155,12 @@ public class ExileDoorsEntity extends Entity {
 
                 level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + level().random.nextFloat());
 
-                TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+               // TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
                 if(exileLevel.getBlockState(BlockPos.containing(randomX, y, randomZ)).isAir()) {
                     exileLevel.setBlockAndUpdate(BlockPos.containing(randomX, y - 1, randomZ), Blocks.END_STONE.defaultBlockState());
                 }
                 entity.teleportTo(exileLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
-                TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
+                //TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
 
                 entity.resetFallDistance();
                 entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, exileTicks, 1, false, false));

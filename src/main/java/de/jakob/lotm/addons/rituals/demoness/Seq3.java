@@ -61,6 +61,7 @@ public class Seq3 {
             entity.setTarget(player);
             entity.setCustomName(Component.literal(player.getName().getString() + "'s mirror self"));
             entity.setShouldDrop(false);
+            entity.setShouldIgnoreGamerule(true);
 
             player.level().addFreshEntity(entity);
             timer.remove(player.getUUID());

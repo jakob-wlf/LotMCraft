@@ -61,6 +61,7 @@ public class AnchoringEvents {
         component.decreaseSanityAndSync(drain, player);
     }
 
+    @SubscribeEvent
     private static void onVoidDrain(PlayerTickEvent.Post event){
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 

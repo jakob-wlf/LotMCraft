@@ -98,7 +98,7 @@ public class AnchoringStorage extends SavedData {
 
                     var buff = anchoring.get(cname);
 
-                    checkSum += (anchoringLevel + (buff.getAvatarAmount() != 0 ? buff.getAvatarAmount()/2 : 0));
+                    checkSum += (anchoringLevel + (buff.getAvatarAmount() != 0 ? buff.getAvatarAmount()/3 : 0));
                 }
 
                 var nobleList = church.getAllNobles();
@@ -113,7 +113,7 @@ public class AnchoringStorage extends SavedData {
 
                     var buff = anchoring.get(noble.getKey());
 
-                    checkSum += (anchoringLevel + (buff.getAvatarAmount() != 0 ? buff.getAvatarAmount()/2 : 0));
+                    checkSum += (anchoringLevel + (buff.getAvatarAmount() != 0 ? buff.getAvatarAmount()/3 : 0));
                 }
 
                 obj.setAnchoring(checkSum/modifier + obj.getAvatarAmount());

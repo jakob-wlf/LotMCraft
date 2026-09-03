@@ -300,7 +300,7 @@ public class ConcealmentAbility extends SelectableAbility {
 
                 BlockPos safePos = findSafePosition(destinationLevel, targetEntity.getX(), targetEntity.blockPosition().getY(), targetEntity.getZ(), false);
 
-                TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
+                //TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
 
                 targetEntity.teleportTo(destinationLevel,
                         safePos.getX() + 0.5,

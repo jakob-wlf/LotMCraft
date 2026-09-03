@@ -30,6 +30,10 @@ public class Seq2 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
+        if(!timer.containsKey(player.getUUID())){
+            timer.put(player.getUUID(), 0);
+        }
+
        if(player.level().dimension() == ModDimensions.SPIRIT_WORLD_DIMENSION_KEY){
            timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
 

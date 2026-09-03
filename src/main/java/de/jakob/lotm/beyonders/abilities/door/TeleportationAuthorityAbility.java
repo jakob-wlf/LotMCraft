@@ -52,8 +52,8 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         return new String[]{
                 "ability.lotmcraft.teleportation_authority.self",
                 "ability.lotmcraft.teleportation_authority.self_and_nearby",
-                "ability.lotmcraft.teleportation_authority.targets",
-                "ability.lotmcraft.teleportation_authority.banish"
+                "ability.lotmcraft.teleportation_authority.targets"
+                //"ability.lotmcraft.teleportation_authority.banish"
         };
     }
 
@@ -69,7 +69,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
             case 0 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_self"));
             case 1 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_self_and_nearby"));
             case 2 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_targets"));
-            case 3 -> banishTargets((ServerLevel) level, entity);
+            //case 3 -> banishTargets((ServerLevel) level, entity);
         }
     }
 
