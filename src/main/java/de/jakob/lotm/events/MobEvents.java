@@ -11,6 +11,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobSpawnEvent;
 
@@ -67,10 +68,11 @@ public class MobEvents {
     }
 
     @SubscribeEvent
-    public static  void onDeath(LivingDeathEvent event){
+    public static  void onEntityLeave(EntityLeaveLevelEvent event){
         if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
 
-        npcAmount--;
+        if(!npc.getShouldIgnoreGamerule())
+            npcAmount--;
     }
 
 }

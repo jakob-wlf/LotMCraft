@@ -44,7 +44,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3));
+        dynamicCooldown = new LinkedList<>(List.of(0, 0, 1, 2, 3));
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(

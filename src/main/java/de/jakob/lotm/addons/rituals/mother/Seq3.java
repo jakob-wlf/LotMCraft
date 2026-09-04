@@ -38,20 +38,30 @@ public class Seq3 {
         if(!(livingEntity.level() instanceof ServerLevel level)) return;
 
         if(BeyonderData.getPathway(livingEntity).equals("darkness")
-                && BeyonderData.getSequence(livingEntity) <= 2){
+                && BeyonderData.getSequence(livingEntity) <= 3){
 
-            var nearby = AbilityUtil.getNearbyEntities(livingEntity, level, livingEntity.position(), 80);
-            for(var obj : nearby){
-                if(!(obj instanceof ServerPlayer player)) continue;
-
+            if(event.getSource().getEntity() instanceof ServerPlayer player){
                 if (!BeyonderData.getPathway(player).equals("mother") ||
-                        BeyonderData.getSequence(player) != 4) continue;
+                        BeyonderData.getSequence(player) != 4) return;
 
                 var component = player.getData(ModAttachments.RITUALS.get());
-                if(component.isCompleted() || component.getStage() != 0) continue;
+                if(component.isCompleted()) return;
 
                 component.setStage(1);
             }
+
+//            var nearby = AbilityUtil.getNearbyEntities(livingEntity, level, livingEntity.position(), 80);
+//            for(var obj : nearby){
+//                if(!(obj instanceof ServerPlayer player)) continue;
+//
+//                if (!BeyonderData.getPathway(player).equals("mother") ||
+//                        BeyonderData.getSequence(player) != 4) continue;
+//
+//                var component = player.getData(ModAttachments.RITUALS.get());
+//                if(component.isCompleted() || component.getStage() != 0) continue;
+//
+//                component.setStage(1);
+//            }
 
         }
     }

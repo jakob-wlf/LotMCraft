@@ -56,7 +56,7 @@ public class Seq4 {
             if(data.isEmpty()) continue;
 
             int seq = data.get().sequence();
-            if(seq <= 2){
+            if(seq <= 4){
                 var set = map.get(player.getUUID());
                 set.add(target.getUUID());
                 map.put(player.getUUID(), set);

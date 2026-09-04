@@ -1,5 +1,7 @@
 package de.jakob.lotm.attachments;
 
+import com.mojang.datafixers.util.Pair;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
@@ -9,6 +11,8 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
@@ -16,6 +20,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class VirtualPersonaComponent {
     private List<VirtualPersona> affectedBy = new LinkedList<>();
@@ -27,7 +32,7 @@ public class VirtualPersonaComponent {
     private float health = 0;
 
     public boolean outOfSlots(int seq){
-        return affects.size() + ownPersonasOnSelf + avatars.size() >= getMaxPerSeq(seq);
+        return affects.size() + ownPersonasOnSelf >= getMaxPerSeq(seq);
     }
 
     public boolean hasOnSelf(){
@@ -122,13 +127,19 @@ public class VirtualPersonaComponent {
         var buff = new LinkedList<VirtualPersona>();
 
         for(var obj : affectedBy){
-            var seq = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj.owner)).get().sequence();
+            var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj.owner));
+            if(data.isEmpty()) return;
+
+            var seq = data.get().sequence();
             if(seq > obj.seq)
                 buff.add(obj);
         }
 
         for(var obj : affects){
-            var target = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
+            var id = BeyonderData.playerMap.getKeyByName(obj);
+            if(id == null) continue;
+
+            var target = level.getPlayerByUUID(id);
             if(target != null){
                 var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
 

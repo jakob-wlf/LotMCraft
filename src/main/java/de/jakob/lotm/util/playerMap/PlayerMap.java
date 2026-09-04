@@ -104,6 +104,8 @@ public class PlayerMap extends SavedData {
     }
 
     public void addProphecy(UUID entity, Prophecy prophecy){
+        if(!map.containsKey(entity)) map.put(entity, StoredData.builder.build());
+
         var list = map.get(entity).prophecies();
         list.add(prophecy);
 
