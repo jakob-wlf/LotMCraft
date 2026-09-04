@@ -63,7 +63,7 @@ public class RitualDescriptionHelper {
         Map<Integer, String> mother = new HashMap<>();
         mother.put(5, "Examine physical structure of various ordinary creatures");
         mother.put(4, "Collect large amount of life essence from beyonder creatures");
-        mother.put(3, "Witness death of Mythical Creature of darkness pathway");
+        mother.put(3, "Bring death to Saint of darkness pathway");
         mother.put(2, "Nurture your very own faction to it's maximum");
         mother.put(1, "Find dimension without any element and dimension filled with elements");
         mother.put(0, "Give birth to a Deity");
@@ -110,7 +110,7 @@ public class RitualDescriptionHelper {
 
         Map<Integer, String> darkness = new HashMap<>();
         darkness.put(5, "Find a way to enter Spirit World");
-        darkness.put(4, "Collect bloodline characteristics of Mythical Creatures' descendants");
+        darkness.put(4, "Collect bloodline characteristics of Demigods' descendants");
         darkness.put(3, "Drink the potion in near true death state");
         darkness.put(2, "Live isolated in darkness and silence for long period of time");
         darkness.put(1, "Bring Misfortune to an Archangel");
