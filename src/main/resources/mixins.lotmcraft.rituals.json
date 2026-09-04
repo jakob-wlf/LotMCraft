@@ -6,7 +6,8 @@
   "mixins": [
     "VisionarySleepMixin",
     "VisionarySleepStatusMixin",
-    "PackRepositoryMixin"
+    "PackRepositoryMixin",
+    "ClientSuggestionProviderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

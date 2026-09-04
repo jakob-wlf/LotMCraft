@@ -178,7 +178,7 @@ public class UniquenessEntity extends Entity {
 
         serverLevel.players().forEach(p ->
                 p.displayClientMessage(
-                        Component.literal("Somebody ")
+                        Component.literal("Somebody")
                                 .append(Component.translatable("lotm.uniqueness.picked_up"))
                                 .withColor(color),
                         false

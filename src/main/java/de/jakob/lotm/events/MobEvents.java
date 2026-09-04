@@ -43,36 +43,36 @@ public class MobEvents {
 
     private static int npcAmount = 0;
 
-    @SubscribeEvent
-    public static void onEntityJoin(EntityJoinLevelEvent event) {
-        var level = event.getLevel();
-        if(!(level instanceof ServerLevel serverLevel)) return;
-
-        if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
-
-        BlockPos pos = npc.getOnPos();
-
-        if(!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())){
-            event.setCanceled(true);
-        }
-        else{
-            if(!npc.getShouldIgnoreGamerule()){
-                if(npcAmount + 1 > level.getGameRules().getInt(ModGameRules.MAX_NPC_AMOUNT)){
-                    event.setCanceled(true);
-                    return;
-                }
-
-                npcAmount++;
-            }
-        }
-    }
-
-    @SubscribeEvent
-    public static  void onEntityLeave(EntityLeaveLevelEvent event){
-        if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
-
-        if(!npc.getShouldIgnoreGamerule())
-            npcAmount--;
-    }
+//    @SubscribeEvent
+//    public static void onEntityJoin(EntityJoinLevelEvent event) {
+//        var level = event.getLevel();
+//        if(!(level instanceof ServerLevel serverLevel)) return;
+//
+//        if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
+//
+//        BlockPos pos = npc.getOnPos();
+//
+//        if(!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())){
+//            event.setCanceled(true);
+//        }
+//        else{
+//            if(!npc.getShouldIgnoreGamerule()){
+//                if(npcAmount + 1 > level.getGameRules().getInt(ModGameRules.MAX_NPC_AMOUNT)){
+//                    event.setCanceled(true);
+//                    return;
+//                }
+//
+//                npcAmount++;
+//            }
+//        }
+//    }
+//
+//    @SubscribeEvent
+//    public static  void onEntityLeave(EntityLeaveLevelEvent event){
+//        if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
+//
+//        if(!npc.getShouldIgnoreGamerule())
+//            npcAmount--;
+//    }
 
 }

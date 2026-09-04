@@ -41,7 +41,7 @@ public class Seq0 {
         }
 
         if (sanity.getSanity() <= 0.45f && component.getStage() == 1) {
-            if(player.position().y <= -500){
+            if(player.position().y <= -2000){
                 component.setStage(2);
             }
         }

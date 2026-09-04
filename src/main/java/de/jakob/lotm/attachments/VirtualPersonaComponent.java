@@ -2,6 +2,7 @@ package de.jakob.lotm.attachments;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
@@ -11,11 +12,13 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,47 +34,47 @@ public class VirtualPersonaComponent {
     private float maxHealth = 0;
     private float health = 0;
 
-    public boolean outOfSlots(int seq){
+    public boolean outOfSlots(int seq) {
         return affects.size() + ownPersonasOnSelf >= getMaxPerSeq(seq);
     }
 
-    public boolean hasOnSelf(){
+    public boolean hasOnSelf() {
         return ownPersonasOnSelf > 0;
     }
 
-    public int getUsedSlots(){
+    public int getUsedSlots() {
         return affects.size() + ownPersonasOnSelf + avatars.size();
     }
 
-    public boolean affects(String id){
+    public boolean affects(String id) {
         return affects.contains(id);
     }
 
-    public boolean isAffectedBy(String name){
+    public boolean isAffectedBy(String name) {
         return !affectedBy.stream().filter(obj -> obj.owner.equals(name)).toList().isEmpty();
     }
 
-    public void createAvatar(UUID id){
-        if(!hasOnSelf()) return;
+    public void createAvatar(UUID id) {
+        if (!hasOnSelf()) return;
 
         ownPersonasOnSelf--;
         avatars.add(id);
     }
 
-    public void removeAvatar(UUID id){
+    public void removeAvatar(UUID id) {
         avatars.remove(id);
     }
 
-    public void placeBy(ServerPlayer player, ServerPlayer victim){
+    public void placeBy(ServerPlayer player, ServerPlayer victim) {
         var component = player.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         int seq = BeyonderData.getSequence(player);
 
-        if(component.ownPersonasOnSelf == 0) return;
+        if (component.ownPersonasOnSelf == 0) return;
 
         float health = getMaxHealthPerSeq(seq);
         var persona = new VirtualPersona(player.getName().getString(), health, health, seq);
 
-        if(!affectedBy.stream().filter(obj
+        if (!affectedBy.stream().filter(obj
                 -> obj.owner.equals(player.getName().getString())).toList().isEmpty())
             return;
 
@@ -81,8 +84,8 @@ public class VirtualPersonaComponent {
         component.affects.add(victim.getName().getString());
     }
 
-    public void create(int seq){
-        if(outOfSlots(seq)) return;
+    public void create(int seq) {
+        if (outOfSlots(seq)) return;
         float health = getMaxHealthPerSeq(seq);
 
         ownPersonasOnSelf++;
@@ -90,14 +93,14 @@ public class VirtualPersonaComponent {
         this.health = health;
     }
 
-    public void heal(ServerPlayer player){
-        if(player.tickCount % 1500 == 0){
-            for (var obj : affectedBy){
-                if(obj.health + 1 <= obj.maxHealth)
+    public void heal(ServerPlayer player) {
+        if (player.tickCount % 1500 == 0) {
+            for (var obj : affectedBy) {
+                if (obj.health + 1 <= obj.maxHealth)
                     obj.health++;
             }
 
-            if(health + 1 <= maxHealth)
+            if (health + 1 <= maxHealth)
                 health++;
         }
     }
@@ -123,36 +126,36 @@ public class VirtualPersonaComponent {
         return block(leftoverDamage);
     }
 
-    public void onJoin(ServerLevel level, String name){
+    public void onJoin(ServerLevel level, String name) {
         var buff = new LinkedList<VirtualPersona>();
 
-        for(var obj : affectedBy){
+        for (var obj : affectedBy) {
             var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj.owner));
-            if(data.isEmpty()) return;
+            if (data.isEmpty()) return;
 
             var seq = data.get().sequence();
-            if(seq > obj.seq)
+            if (seq > obj.seq)
                 buff.add(obj);
         }
 
-        for(var obj : affects){
+        for (var obj : affects) {
             var id = BeyonderData.playerMap.getKeyByName(obj);
-            if(id == null) continue;
+            if (id == null) continue;
 
             var target = level.getPlayerByUUID(id);
-            if(target != null){
+            if (target != null) {
                 var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
 
-                if(component.isAffectedBy(name)){
+                if (component.isAffectedBy(name)) {
                     removeAffects(target.getName().getString(), name, level);
                 }
             }
         }
 
         var buff2 = new LinkedList<UUID>();
-        for(var obj : avatars){
-            var target = level.getEntity(obj);
-            if(target == null)
+        for (var obj : avatars) {
+            var target = getAvatar(level, obj);
+            if (target == null)
                 buff2.add(obj);
         }
         avatars.removeAll(buff2);
@@ -160,39 +163,39 @@ public class VirtualPersonaComponent {
         affectedBy.removeAll(buff);
     }
 
-    public List<String> getAffects(){
+    public List<String> getAffects() {
         return new LinkedList<>(affects);
     }
 
-    public String getGeneralInfo(int seq){
+    public String getGeneralInfo(int seq) {
         return new String(
                 "Slots: " + getUsedSlots() + "/" + getMaxPerSeq(seq)
-                + "\nOn self: " + ownPersonasOnSelf
-                + "\nHealth: " + health + "/" + maxHealth
+                        + "\nOn self: " + ownPersonasOnSelf
+                        + "\nHealth: " + health + "/" + maxHealth
         );
     }
 
-    public List<UUID> getAvatars(){
+    public List<UUID> getAvatars() {
         return avatars;
     }
 
-    public int getAvatarsSize(){
+    public int getAvatarsSize() {
         return avatars.size();
     }
 
-    public List<String> getAffectedBy(int seq){
+    public List<String> getAffectedBy(int seq) {
         return new LinkedList<>(affectedBy).stream().filter(obj -> obj.seq >= seq).map(obj -> obj.owner).toList();
     }
 
-    private void removeAffectedBy(String owner){
+    private void removeAffectedBy(String owner) {
         affectedBy.removeIf(obj -> obj.owner.equals(owner));
     }
 
-    public void removeAffects(String targetName, String ownerName, ServerLevel level){
-        if(!affects(targetName)) return;
+    public void removeAffects(String targetName, String ownerName, ServerLevel level) {
+        if (!affects(targetName)) return;
 
         var target = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(targetName));
-        if(target == null) return;
+        if (target == null) return;
 
         affects.remove(targetName);
         ownPersonasOnSelf++;
@@ -201,20 +204,20 @@ public class VirtualPersonaComponent {
         component.removeAffectedBy(ownerName);
     }
 
-    public void damageAffectedBy(float amount, ServerLevel level, String name, int seq){
+    public void damageAffectedBy(float amount, ServerLevel level, String name, int seq) {
         var buff = new LinkedList<VirtualPersona>();
 
-        for(var obj : affectedBy){
-            if(seq > obj.seq) continue;
+        for (var obj : affectedBy) {
+            if (seq > obj.seq) continue;
 
             obj.health -= amount;
-            if(obj.health <= 0)
+            if (obj.health <= 0)
                 buff.add(obj);
         }
 
-        for(var obj : buff){
+        for (var obj : buff) {
             var target = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj.owner));
-            if(target != null){
+            if (target != null) {
                 var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
                 component.removeAffects(name, target.getName().getString(), level);
             }
@@ -223,24 +226,24 @@ public class VirtualPersonaComponent {
         affectedBy.removeAll(buff);
     }
 
-    public void onDeath(ServerLevel level, String owner){
-        if(level.getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)){
-            for(var obj : affects){
+    public void onDeath(ServerLevel level, String owner) {
+        if (level.getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)) {
+            for (var obj : affects) {
                 var target = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
-                if(target != null){
+                if (target != null) {
                     var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
                     component.removeAffectedBy(owner);
-                    }
+                }
             }
 
             affects.clear();
         }
     }
 
-    public void clean(ServerLevel level, String owner){
-        for(var obj : affects){
+    public void clean(ServerLevel level, String owner) {
+        for (var obj : affects) {
             var target = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
-            if(target != null){
+            if (target != null) {
                 var component = target.getData(ModAttachments.VIRTUAL_PERSONAS.get());
                 component.removeAffectedBy(owner);
             }
@@ -251,7 +254,7 @@ public class VirtualPersonaComponent {
         List<UUID> toKill = new ArrayList<>(avatars);
 
         for (UUID id : toKill) {
-            var entity = level.getEntity(id);
+            var entity = getAvatar(level, id);
             if (entity != null)
                 entity.kill();
         }
@@ -262,8 +265,8 @@ public class VirtualPersonaComponent {
         health = 0;
     }
 
-    public static int getMaxPerSeq(int seq){
-        return switch (seq){
+    public static int getMaxPerSeq(int seq) {
+        return switch (seq) {
             case 4 -> 5;
             case 3 -> 12;
             case 2 -> 32;
@@ -274,8 +277,8 @@ public class VirtualPersonaComponent {
         };
     }
 
-    public static float getMaxHealthPerSeq(int seq){
-        return switch (seq){
+    public static float getMaxHealthPerSeq(int seq) {
+        return switch (seq) {
             case 4 -> 1;
             case 3 -> 2;
             case 2 -> 3;
@@ -350,22 +353,33 @@ public class VirtualPersonaComponent {
                     return tag;
                 }
             };
+
+    private @Nullable AvatarEntity getAvatar(ServerLevel level, UUID id) {
+        for (ServerLevel obj : level.getServer().getAllLevels()) {
+            var target = obj.getEntity(id);
+
+            if (!(target instanceof AvatarEntity entity)) continue;
+            return entity;
+        }
+
+        return null;
+    }
 }
 
-class VirtualPersona{
+class VirtualPersona {
     public String owner;
     public float health;
     public float maxHealth;
     public int seq;
 
-    public VirtualPersona(String id, float h, float m, int s){
-      owner = id;
-      health = h;
-      maxHealth = m;
-      seq = s;
+    public VirtualPersona(String id, float h, float m, int s) {
+        owner = id;
+        health = h;
+        maxHealth = m;
+        seq = s;
     }
 
-    public CompoundTag toNbt(){
+    public CompoundTag toNbt() {
         var tag = new CompoundTag();
 
         tag.putString("owner", owner);
@@ -376,7 +390,7 @@ class VirtualPersona{
         return tag;
     }
 
-    public static VirtualPersona fromNbt(CompoundTag tag){
+    public static VirtualPersona fromNbt(CompoundTag tag) {
         return new VirtualPersona(
                 tag.getString("owner"),
                 tag.getFloat("health"),
