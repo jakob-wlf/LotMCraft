@@ -2,11 +2,13 @@ package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpMenu;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu;
 import de.jakob.lotm.gui.custom.introspect.IntrospectMenu;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteMenu;
+import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringMenu;
 import de.jakob.lotm.gui.custom.recipe.RecipeMenu;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import de.jakob.lotm.gui.custom.trades.BeyonderTradeMenu;
@@ -63,6 +65,14 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<HistoricalVoidMenu>> HISTORICAL_VOID_MENU =
             MENU_TYPES.register("historical_void_menu",
                     () -> IMenuTypeExtension.create((containerId, inv, buf) -> new HistoricalVoidMenu(containerId, inv)));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FlamingJumpMenu>> FLAMING_JUMP_MENU =
+            MENU_TYPES.register("flaming_jump_menu", () ->
+                    IMenuTypeExtension.create(FlamingJumpMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<MassPuppeteeringMenu>> MASS_PUPPETEERING_MENU =
+            MENU_TYPES.register("mass_puppeteering_menu", () ->
+                    IMenuTypeExtension.create(MassPuppeteeringMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(
             "artifact_wheel_menu",

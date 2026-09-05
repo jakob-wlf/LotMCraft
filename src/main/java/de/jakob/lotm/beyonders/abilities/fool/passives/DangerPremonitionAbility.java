@@ -51,7 +51,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
         boolean shouldShowOverlay = false;
         LivingEntity chosenThreat = null;
 
-        int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
+        int radius = 25 + (3 * (10 - BeyonderData.getSequence(serverPlayer)));
 
         if (!(level instanceof ServerLevel serverLevel)) return;
         List<LivingEntity> possibleThreats = AbilityUtil.getNearbyEntities(serverPlayer, serverLevel, serverPlayer.position(), radius);
@@ -182,7 +182,6 @@ public class DangerPremonitionAbility extends PassiveAbility {
         BeyonderComponent userData = user.getData(ModAttachments.BEYONDER_COMPONENT);
         int userSequence = userData.getSequence();
 
-        // if the sequence difference is one sequences or more, the target will be considered as a threat
         if (userSequence - threatSequence >= 1) return true;
         return false;
     }
@@ -197,7 +196,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
             if(!((DangerPremonitionAbility) PassiveAbilityHandler.getById("danger_premonition_ability")).shouldApplyTo(entity))
                 continue;
 
-            int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
+            int radius = 25 + (3 * (10 - BeyonderData.getSequence(serverPlayer)));
             if (event.getEntity().distanceTo(serverPlayer) > radius) continue;
 
             if (ToggleAbility.getActiveAbilitiesForEntity(event.getEntity()).contains(
@@ -229,7 +228,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
             if(!((DangerPremonitionAbility) PassiveAbilityHandler.getById("danger_premonition_ability")).shouldApplyTo(entity))
                 continue;
 
-            int radius = 13 + (2 * (10 - BeyonderData.getSequence(serverPlayer)));
+            int radius = 25 + (3 * (10 - BeyonderData.getSequence(serverPlayer)));
             if (event.getEntity().distanceTo(serverPlayer) > radius) continue;
 
             if (ToggleAbility.getActiveAbilitiesForEntity(event.getEntity()).contains(

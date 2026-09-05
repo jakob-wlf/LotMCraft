@@ -9,6 +9,7 @@ import de.jakob.lotm.network.packets.toClient.IsPlayerModelPacket;
 import de.jakob.lotm.network.packets.toClient.ShapeShiftingSyncPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -34,7 +35,7 @@ public class ShapeShiftingUtil {
     }
 
     public static void shapeShift(ServerPlayer player, String entityType, boolean sequenceRestrict) {
-        if (!sequenceRestrict || entityType.startsWith("player:") || entityType.startsWith("minecraft:villager")) {
+        if (!sequenceRestrict || entityType.startsWith("player:") || entityType.contains("villager")) {
             performShapeShifting(player, entityType, false, false);
             return;
         }
@@ -60,11 +61,18 @@ public class ShapeShiftingUtil {
             float widthDifference = Math.abs(entityWidth - playerWidth) / playerWidth;
 
             if (sequence >= 6 && (!isPlayerModel)) {
+                player.sendSystemMessage(Component.literal("§fYou Can't Change Shape To This Entity §b"));
                 return;
             } else if (sequence >= 5) {
-                if (heightDifference > 0.25 || widthDifference > 0.25) return;
+                if (heightDifference > 0.25 || widthDifference > 0.25) {
+                    player.sendSystemMessage(Component.literal("§fYou Can't Change Shape To This Entity §b"));
+                    return;
+                }
             } else if (sequence >= 4) {
-                if (heightDifference > 0.9 || widthDifference > 0.9) return;
+                if (heightDifference > 0.9 || widthDifference > 0.9) {
+                    player.sendSystemMessage(Component.literal("§fYou Can't Change Shape To This Entity §b"));
+                    return;
+                }
             }
         }
 

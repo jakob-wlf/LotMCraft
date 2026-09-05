@@ -84,9 +84,11 @@ import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
+import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringScreen;
 import de.jakob.lotm.gui.custom.recipe.RecipeScreen;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualScreen;
 import de.jakob.lotm.gui.custom.trades.BeyonderTradeScreen;
@@ -382,6 +384,8 @@ public class LOTMCraft
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
             event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
             event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
+            event.register(ModMenuTypes.FLAMING_JUMP_MENU.get(), FlamingJumpScreen::new);
+            event.register(ModMenuTypes.MASS_PUPPETEERING_MENU.get(), MassPuppeteeringScreen::new);
         }
 
         @SubscribeEvent

@@ -446,6 +446,9 @@
   "lotmcraft.flaming_jump_ability": "Flaming Jump",
   "lotmcraft.flaming_jump_ability.description": "Teleport into any fire, gaining fire resistance after doing so",
   "lotmcraft.flaming_jump_ability.no_fire_found": "No fire found",
+  "ability.lotmcraft.flaming_jump_ability.close_flaming_jump": "Close Flaming Jump",
+  "ability.lotmcraft.flaming_jump_ability.far_flaming_jump": "Far Flaming Jump",
+
   "lotmcraft.underwater_breathing_ability": "Underwater Breathing",
   "lotmcraft.underwater_breathing_ability.description": "Create a thin, invisible air pipe which allows you to breath underwater",
   "lotmcraft.shapeshifting_ability": "Shapeshifting",
@@ -454,12 +457,15 @@
   "ability.lotmcraft.shape_shifting_ability.reset_shape": "Reset Shape",
   "lotmcraft.puppeteering_ability": "Puppeteering",
   "lotmcraft.puppeteering_ability.description": "Manipulate Spirit Body Threads to turn anyone into your marionette and command them",
+  "ability.lotmcraft.puppeteering_ability.puppeteere": "Puppeteer",
+  "ability.lotmcraft.puppeteering_ability.mass_puppeteering": "Mass Puppeteering",
   "ability.lotmcraft.puppeteering.no_entity_found": "No Entity to control found",
   "ability.lotmcraft.puppeteering.entity_turned": "Turned the entity into your marionette",
   "ability.lotmcraft.puppeteering.entity_turned_failed": "Failed to turn the entity into your marionette",
   "ability.lotmcraft.puppeteering.entity_teleport": "Moved Entity",
   "ability.lotmcraft.puppeteering.follow_mode": "Follow Mode",
   "ability.lotmcraft.puppeteering.attack": "Attack",
+  "ability.lotmcraft.puppeteering.entity_warning": "Your Threads Are Being Manipulated",
   "ability.lotm.puppeteering.entity_released": "Released the Marionette",
   "lotmcraft.marionette_controlling_ability": "Marionette Controlling",
   "lotmcraft.marionette_controlling_ability.description": "Gain more options for controlling you marionettes. Press shift to cycle through all your marionettes",
@@ -2300,6 +2306,12 @@
   "gui.lotm.marionette_control.title": "Marionettes (Same Dimension only)",
   "gui.lotm.marionette.release": "Release",
   "gui.lotm.marionette.attack": "Attack",
+
+  "gui.lotm.flaming_jump.title": "Flaming Jump (Same Dimension only)",
+  "gui.lotm.flaming_jump.close": "Close",
+  "gui.lotm.flaming_jump.none": "No Fire In Range",
+  "gui.lotm.flaming_jump.teleport": "Teleport",
+
 
   "ritual.lotmcraft.carnival_playbill": "Carnival Playbill",
   "ritual.lotmcraft.trackers_field_journal": "Tracker's Field Journal",

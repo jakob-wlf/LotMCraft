@@ -108,7 +108,7 @@ public class MarionetteUtils {
     public static void onSanityDrop(EntityTickEvent.Post event) {
         if (!(event.getEntity() instanceof LivingEntity entity)) return;
 
-        if (entity.tickCount % 100 == 0) return;
+        if (entity.tickCount % 60 == 0) return;
 
         if (!isMarionette(entity)) {
             return;

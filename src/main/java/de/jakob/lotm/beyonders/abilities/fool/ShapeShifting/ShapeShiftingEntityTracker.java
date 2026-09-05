@@ -24,7 +24,6 @@ public class ShapeShiftingEntityTracker {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            // run every 20 ticks
             if (serverPlayer.tickCount % 20 == 0){
                 if (BeyonderData.isBeyonder(serverPlayer)){
                     int radius = 5;
@@ -32,7 +31,7 @@ public class ShapeShiftingEntityTracker {
                     if (BeyonderData.getPathway(serverPlayer).equals("fool")) {
                         int sequence = BeyonderData.getSequence(serverPlayer);
                         radius = 5 + (10 - sequence);
-                        requiredTime = 800 - ((10 - sequence) * 20);
+                        requiredTime = 800 - ((10 - sequence) * 40);
                     }
 
 

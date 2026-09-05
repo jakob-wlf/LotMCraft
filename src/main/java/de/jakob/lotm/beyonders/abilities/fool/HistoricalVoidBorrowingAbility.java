@@ -246,22 +246,30 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
             if (data.getSavedEffects().isEmpty()) return;
 
-            long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
-            CompoundTag tag = new CompoundTag();
-            tag.putFloat("spirituality", BeyonderData.getSpirituality(player));
-
-            incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.EFFECT, player.getUUID(), tag);
-
+            int maxAllowedTicks = getMaxHistoricalBorrowingDurationTicks(player);
+            int maxEffectDuration = 0;
 
             for (HistoricalVoidComponent.SavedEffect saved : data.getSavedEffects()) {
+                int effectiveDuration = Math.min(saved.duration(), maxAllowedTicks);
+
+                if (effectiveDuration > maxEffectDuration) {
+                    maxEffectDuration = effectiveDuration;
+                }
+
                 BuiltInRegistries.MOB_EFFECT.getHolder(saved.effectId()).ifPresent(holder -> {
                     player.addEffect(new MobEffectInstance(
                             holder,
-                            Math.min(saved.duration(), getMaxHistoricalBorrowingDurationTicks(player)),
+                            effectiveDuration,
                             saved.amplifier()
                     ));
                 });
             }
+
+            long borrowTime = level.getGameTime() + maxEffectDuration;
+            CompoundTag tag = new CompoundTag();
+            tag.putFloat("spirituality", BeyonderData.getSpirituality(player));
+
+            incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.EFFECT, player.getUUID(), tag);
 
         }
     }

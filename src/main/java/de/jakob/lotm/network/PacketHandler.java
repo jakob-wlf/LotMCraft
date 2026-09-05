@@ -882,6 +882,12 @@ public class PacketHandler {
                 ShapeShiftingPlayerModelPacket.STREAM_CODEC,
                 ShapeShiftingPlayerModelPacket::handle
         );
+
+        registrar.playToServer(
+                MassPuppeteeringSelectedEntitiesPacket.TYPE,
+                MassPuppeteeringSelectedEntitiesPacket.STREAM_CODEC,
+                MassPuppeteeringSelectedEntitiesPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
