@@ -309,7 +309,9 @@ public class PuppeteeringAbility extends SelectableAbility {
 
             if (entity instanceof Player player && !component.isMarionette() && data.getMarionettes().size() < getMaxPuppetCount(sequence)) {
                 turnIntoMarionette(target, player);
-            } else {
+                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotm.puppeteering.press_b").withColor(getColorForPathway("fool")));
+            }
+            else {
                 target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
             }
         }, level);

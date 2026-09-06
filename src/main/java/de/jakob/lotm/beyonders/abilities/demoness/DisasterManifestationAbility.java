@@ -11,12 +11,15 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,6 +29,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +77,13 @@ public class DisasterManifestationAbility extends SelectableAbility {
 
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
-        ServerScheduler.scheduleForDuration(0, 1, 110, () -> {
+        PacketDistributor.sendToPlayersNear(
+                serverLevel, null,
+                startPos.x, startPos.y, startPos.z, 2056,
+                new PlayPhotonBlockEffectPacket("ice_age", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false)
+        );
+
+        ServerScheduler.scheduleForDuration(0, 2, 110, () -> {
             AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, radius.get(), true, true, false).forEach(b -> {
                 BlockState state = serverLevel.getBlockState(b);
                 BlockState aboveState = serverLevel.getBlockState(b.above());
@@ -100,13 +110,9 @@ public class DisasterManifestationAbility extends SelectableAbility {
                     fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
                     fogComponent.setFogColorAndSync(new Vec3f(152 / 255f, 237 / 255f, 237 / 255f), player);
                 }
-
-                ActiveShaderComponent component = player.getData(ModAttachments.SHADER_COMPONENT);
-                component.setShaderActiveAndSync(true, player);
-                component.setShaderIndexAndSync(ActiveShaderComponent.SHADERTYPE.BLIZZARD, player);
             }
 
-            radius.addAndGet(.5);
+            radius.addAndGet(1);
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 

@@ -46,6 +46,7 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+        canBeUsedWhileControlling = false;
     }
 
     @Override

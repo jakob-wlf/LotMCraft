@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.demoness_pathway.ChaosVortexEntity;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,7 +35,7 @@ public class ChaosAuthorityAbility extends SelectableAbility {
     private void spawnChaosVortex(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 direction = (new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z)).normalize();
         Vec3 spawnPos = entity.getEyePosition().add(direction.scale(6));
-        ChaosVortexEntity vortex = new ChaosVortexEntity(serverLevel, spawnPos, 5, 20 * 20, direction, entity, DamageLookup.lookupDps(0, .9, 10, 60) * multiplier(entity));
+        ChaosVortexEntity vortex = new ChaosVortexEntity(serverLevel, spawnPos, 5, 20 * 20, direction, entity, DamageLookup.lookupDps(0, .9, 10, 60) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         vortex.setPos(spawnPos);
         serverLevel.addFreshEntity(vortex);
     }

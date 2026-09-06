@@ -53,6 +53,9 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
 
         if(!((MiracleOfResurrectionAbility) PassiveAbilityHandler.getById("miracle_of_resurrection_ability")).shouldApplyTo(entity)) return;
 
+        MiracleOfResurrectionAbility ability = (MiracleOfResurrectionAbility) PassiveAbilityHandler.getById("miracle_of_resurrection_ability");
+        if(ability == null || !ability.shouldApplyTo(entity)) return;
+
         if (entity instanceof ServerPlayer serverPlayer) {
 
             if (!(event.getAmount() >= serverPlayer.getHealth())) return;

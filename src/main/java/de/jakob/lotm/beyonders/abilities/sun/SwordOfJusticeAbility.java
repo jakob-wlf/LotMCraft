@@ -37,8 +37,8 @@ public class SwordOfJusticeAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20 * (int) multiplier(entity), 2).add(0, 15, 0);
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20 * (int) multiplier(entity), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (20 * multiplier(entity)), 2).add(0, 15, 0);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
         if(targetEntity != null) {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 4, false, false, false));
         }

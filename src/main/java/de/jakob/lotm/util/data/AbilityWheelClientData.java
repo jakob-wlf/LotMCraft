@@ -3,7 +3,7 @@ package de.jakob.lotm.util.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientData {
+public class AbilityWheelClientData {
     private static List<String> abilityWheelAbilities = new ArrayList<>();
     private static int selectedAbility = 0;
 

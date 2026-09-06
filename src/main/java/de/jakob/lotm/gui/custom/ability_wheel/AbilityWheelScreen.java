@@ -9,7 +9,8 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
+import de.jakob.lotm.util.helper.AbilityId;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -29,10 +30,10 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
 
     @Override
     protected List<String> getAbilities() {
-        if (ClientData.sharedAbilityMode) {
-            return ClientData.getSharedWheelAbilities();
+        if (AbilityWheelClientData.sharedAbilityMode) {
+            return AbilityWheelClientData.getSharedWheelAbilities();
         }
-        return ClientData.getAbilityWheelAbilities();
+        return AbilityWheelClientData.getAbilityWheelAbilities();
     }
 
     @Override
@@ -52,12 +53,13 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
 
     @Override
     protected void renderSlot(GuiGraphics guiGraphics, SlotPosition pos, String abilityId, boolean isHovered, int index) {
-        int selectedIndex = ClientData.getSelectedAbility();
+        int selectedIndex = AbilityWheelClientData.getSelectedAbility();
         boolean isSelected = index == selectedIndex;
 
-        String baseId = abilityId.split(":")[0];
-        int subIndex = getIndex(abilityId);
-        boolean isCopied = isCopied(abilityId);
+        AbilityId parsed = AbilityId.parse(abilityId);
+        String baseId = parsed.baseId();
+        int subIndex = parsed.subIndex();
+        boolean isCopied = parsed.copied();
 
         int size = isHovered ? SLOT_HOVER_SIZE : SLOT_SIZE;
         int x = pos.x() - size / 2;
@@ -133,30 +135,14 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
         }
     }
 
-    private static int getIndex(String s) {
-        String[] parts = s.split(":");
-        if (parts.length < 2) return -1;
-        try {
-            return Integer.parseInt(parts[1]);
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
-
-    private static boolean isCopied(String s) {
-        String[] parts = s.split(":");
-        if (parts.length < 3) return false;
-        return parts[2].equals("copied");
-    }
-
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && hoveredSlot != -1) {
-            if (ClientData.sharedAbilityMode) {
-                ClientData.setSelectedSharedAbility(hoveredSlot);
+            if (AbilityWheelClientData.sharedAbilityMode) {
+                AbilityWheelClientData.setSelectedSharedAbility(hoveredSlot);
             } else {
                 PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
-                ClientData.setAbilityWheelData(
+                AbilityWheelClientData.setAbilityWheelData(
                         new java.util.ArrayList<>(getAbilities()),
                         hoveredSlot
                 );
@@ -174,16 +160,16 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
     public void onClose() {
         if (KeyInputHandler.wasWheelOpenedWithHold && hoveredSlot != -1) {
             PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
-            if (ClientData.sharedAbilityMode) {
-                ClientData.setSelectedSharedAbility(hoveredSlot);
+            if (AbilityWheelClientData.sharedAbilityMode) {
+                AbilityWheelClientData.setSelectedSharedAbility(hoveredSlot);
             } else {
-                ClientData.setAbilityWheelData(
+                AbilityWheelClientData.setAbilityWheelData(
                         new java.util.ArrayList<>(getAbilities()),
                         hoveredSlot
                 );
             }
         }
-        ClientData.sharedAbilityMode = false;
+        AbilityWheelClientData.sharedAbilityMode = false;
         super.onClose();
     }
 }

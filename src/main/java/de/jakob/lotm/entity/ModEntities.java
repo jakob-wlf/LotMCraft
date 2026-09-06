@@ -414,10 +414,12 @@ public class ModEntities {
                     .noSave()
                     .build("blink_afterimage"));
 
-    public static final Supplier<EntityType<OriginalBodyEntity>> ORIGINAL_BODY =
-            ENTITY_TYPES.register("original_body", () -> EntityType.Builder.<OriginalBodyEntity>of(OriginalBodyEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<ControlBodyDouble>> CONTROL_BODY_DOUBLE =
+            ENTITY_TYPES.register("control_body_double", () -> EntityType.Builder.<ControlBodyDouble>of(ControlBodyDouble::new, MobCategory.MISC)
                     .sized(0.6F, 1.8F)
-                    .build("original_body"));
+                    .noSave()
+                    .noSummon()
+                    .build("control_body_double"));
 
     // Utility
 

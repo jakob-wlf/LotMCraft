@@ -65,7 +65,7 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         AtomicInteger ticks = new AtomicInteger();
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
-            Vec3 target = AbilityUtil.getTargetLocation(entity, 60*(int) multiplier(entity), 3);
+            Vec3 target = AbilityUtil.getTargetLocation(entity, (int) (60*multiplier(entity)), 3);
             if(target == null) return;
 
             ticks.addAndGet(1);
@@ -95,7 +95,7 @@ public class SpaceTimeStormAbility extends SelectableAbility {
 
     private void castAOEStorm(ServerLevel serverLevel, LivingEntity entity) {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        Vec3 center = AbilityUtil.getTargetLocation(entity, 60*(int) multiplier(entity), 3);
+        Vec3 center = AbilityUtil.getTargetLocation(entity, (int) (60*multiplier(entity)), 3);
 
         EffectManager.playEffect(EffectIds.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel, entity);
 

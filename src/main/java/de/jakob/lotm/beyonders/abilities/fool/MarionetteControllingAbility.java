@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -9,7 +10,6 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
 import de.jakob.lotm.attachments.MarionetteComponent;
@@ -34,7 +34,7 @@ import java.util.stream.StreamSupport;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteControllingAbility extends SelectableAbility {
 
-    private static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
+    public static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
 
     private static final HashSet<UUID> swapOnDamageIsActive = new HashSet<>();
 
@@ -42,6 +42,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         super(id, .5f);
 
         canBeUsedByNPC = false;
+        canBeUsedWhileControlling = false;
     }
 
     @Override
@@ -232,7 +233,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         marionette.hurt(event.getSource(), event.getAmount());
     }
 
-    private static ArrayList<LivingEntity> getMarionettesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
+    public static ArrayList<LivingEntity> getMarionettesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
         Level level = entity.level();
 
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
@@ -343,13 +344,10 @@ public class MarionetteControllingAbility extends SelectableAbility {
             return;
         }
 
-        TransformationComponent transformationComponent = player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        if (transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex() && transformationComponent.isTransformed()) return;
-
         LivingEntity target = getSelectedMarionette(player);
 
         if (target != null) {
-            ControllingUtil.possess(player, target, true);
+            ControllingUtils.startControlling(player, target, target.getData(ModAttachments.MARIONETTE_COMPONENT.get()).hasWorm(), true);
         }
     }
 }

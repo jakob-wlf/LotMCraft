@@ -141,9 +141,4 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
             default -> List.of();
         };
     }
-
-    @Override
-    protected int getCurrentSequenceLevel(LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

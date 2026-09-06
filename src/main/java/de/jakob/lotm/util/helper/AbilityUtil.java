@@ -1024,6 +1024,55 @@ public class AbilityUtil {
         return blocks;
     }
 
+    public static List<BlockPos> getBlocksInCone(Level level, Vec3 origin, Vec3 direction,
+                                                 double startRadius, double endRadius, boolean includeAir) {
+        List<BlockPos> result = new ArrayList<>();
+
+        double length = direction.length();
+        if (length < 1.0e-6) return result;
+
+        Vec3 axis = direction.scale(1.0 / length);
+        double maxRadius = Math.max(startRadius, endRadius);
+
+        Vec3 end = origin.add(direction);
+
+        int minX = Mth.floor(Math.min(origin.x, end.x) - maxRadius);
+        int maxX = Mth.floor(Math.max(origin.x, end.x) + maxRadius);
+        int minY = Mth.floor(Math.min(origin.y, end.y) - maxRadius);
+        int maxY = Mth.floor(Math.max(origin.y, end.y) + maxRadius);
+        int minZ = Mth.floor(Math.min(origin.z, end.z) - maxRadius);
+        int maxZ = Mth.floor(Math.max(origin.z, end.z) + maxRadius);
+
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Vec3 point = new Vec3(x + 0.5, y + 0.5, z + 0.5);
+                    Vec3 toPoint = point.subtract(origin);
+
+                    double along = toPoint.dot(axis);
+                    if (along < 0 || along > length) continue;
+
+                    Vec3 projected = axis.scale(along);
+                    double distFromAxis = toPoint.subtract(projected).length();
+
+                    double t = along / length;
+                    double radiusAtT = Mth.lerp(t, startRadius, endRadius);
+
+                    if (distFromAxis <= radiusAtT) {
+                        mutable.set(x, y, z);
+                        if (includeAir || !level.getBlockState(mutable).isAir()) {
+                            result.add(mutable.immutable());
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
     public static List<BlockPos> getBlocksInSphereRadius(ServerLevel level, Vec3 center,
                                                          double radius, boolean filled) {
         return getBlocksInSphereRadius(level, center, radius, filled, false, false);

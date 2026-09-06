@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
@@ -117,8 +117,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
             if (dataOp.isPresent()) {
                 var data = dataOp.get();
 
-                ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
-                if (Arrays.stream(data.charStack()).anyMatch(i -> i > 0) && controllingData.getTargetUUID() == null && !controllingData.isControlling()) {
+                if (Arrays.stream(data.charStack()).anyMatch(i -> i > 0) && !ControllingUtils.isControlling(player)) {
 
                     if (sequenceLevel < 9) {
                         currentEnhancements = currentEnhancements.stream()
@@ -170,6 +169,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
     }
 
     protected int getCurrentSequenceLevel(LivingEntity entity) {
+        if(entity instanceof Player player && ControllingUtils.isControlling(player)) {
+            return ControllingUtils.getControlledSequence(player);
+        }
         return BeyonderData.getSequence(entity);
     }
 
@@ -409,6 +411,13 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
     @Override
     public void onPassiveAbilityRemoved(LivingEntity entity, ServerLevel serverLevel) {
         removeAllEnhancements(entity);
+    }
+
+    public static void removeAllEnhancementsForEntity(LivingEntity entity) {
+        for(PassiveAbility passiveAbility : PassiveAbilityHandler.passiveAbilities) {
+            if(passiveAbility instanceof PhysicalEnhancementsAbility physicalEnhancementsAbility)
+                physicalEnhancementsAbility.removeAllEnhancements(entity);
+        }
     }
 
     private void removeAllEnhancements(LivingEntity entity) {

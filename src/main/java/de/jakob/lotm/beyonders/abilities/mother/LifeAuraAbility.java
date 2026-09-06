@@ -79,12 +79,12 @@ public class LifeAuraAbility extends ToggleAbility {
             applyBonemeal(serverLevel, blockPos, blockState, BeyonderData.isGriefingEnabled(entity));
         });
 
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35*(int)multiplier(entity)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35*multiplier(entity)).forEach(e -> {
             if(e instanceof Animal animal && animal.canFallInLove()) {
                 animal.setInLove(entity instanceof Player ? (Player) entity : null);
             }
         });
-        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, null, 35*(int)multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.REGENERATION, 40, 3, false, false, false));
+        AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, null, 35*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.REGENERATION, 40, 3, false, false, false));
     }
 
     private void applyBonemeal(ServerLevel serverLevel, BlockPos blockPos, BlockState blockState, boolean shouldBonemealGrass) {

@@ -112,9 +112,4 @@ public class PhysicalEnhancementsAbyssAbility extends PhysicalEnhancementsAbilit
             default -> List.of();
         };
     }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

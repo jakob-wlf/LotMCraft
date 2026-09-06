@@ -68,6 +68,11 @@ public class ModAttachments {
                     AttachmentType.serializable(LuckComponent::new).copyOnDeath().build()
             );
 
+    public static final Supplier<AttachmentType<EntityControllingComponent>> ENTITY_CONTROLLING_COMPONENT =
+            ATTACHMENT_TYPES.register("entity_controlling_component", () ->
+                    AttachmentType.serializable(EntityControllingComponent::new).copyOnDeath().build()
+            );
+
     public static final Supplier<AttachmentType<DisabledAbilitiesComponent>> DISABLED_ABILITIES_COMPONENT =
             ATTACHMENT_TYPES.register("disabled_abilities_component", () ->
                     AttachmentType.serializable(DisabledAbilitiesComponent::new).build()
@@ -148,14 +153,6 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("fog_component", () ->
                     AttachmentType.builder(FogComponent::new)
                             .serialize(FogComponent.SERIALIZER)
-                            .build()
-            );
-
-    public static final Supplier<AttachmentType<ControllingDataComponent>> CONTROLLING_DATA =
-            ATTACHMENT_TYPES.register("controlling_data", () ->
-                    AttachmentType.builder(ControllingDataComponent::new)
-                            .serialize(ControllingDataComponent.SERIALIZER)
-                            .copyOnDeath()
                             .build()
             );
 

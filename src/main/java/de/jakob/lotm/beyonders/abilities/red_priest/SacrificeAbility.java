@@ -1,10 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.KillCountComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.network.PacketHandler;
@@ -64,8 +64,7 @@ public class SacrificeAbility extends Ability {
         if (!(entity instanceof ServerPlayer player)) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingData.getTargetUUID() != null) {
+        if (ControllingUtils.isControlling(player)) {
             player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
                     net.minecraft.network.chat.Component.literal("Sacrifice cannot be used while controlling a puppet")
                             .withStyle(net.minecraft.ChatFormatting.RED)

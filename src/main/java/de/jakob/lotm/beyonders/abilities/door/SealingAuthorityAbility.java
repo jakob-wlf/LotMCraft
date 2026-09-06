@@ -117,11 +117,11 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         List<BlockPos> barrierBlocks = AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 60*multiplier(entity), 13*multiplier(entity), false, false, false);
 
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel, 20 * 60* (int)multiplier(entity), entity.getUUID(), 60*(int)multiplier(entity), 0.00001f);
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel,  (int) (20 * 60* multiplier(entity)), entity.getUUID(), (int) (60*multiplier(entity)), 0.00001f);
         serverLevel.addFreshEntity(timeChangeEntity);
         timeChangeEntity.setPos(entity.position().add(0, 0, 0));
 
-        currentlySealedLocation = new SealedLocation(entity.getUUID(), new Location(entity.position(), serverLevel), 60*(int)multiplier(entity), 20 * 60 * (int)multiplier(entity), barrierBlocks, timeChangeEntity);
+        currentlySealedLocation = new SealedLocation(entity.getUUID(), new Location(entity.position(), serverLevel), (int) (60*multiplier(entity)), (int) (20 * 60 * multiplier(entity)), barrierBlocks, timeChangeEntity);
 
 
         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.5f, 0.6f);
@@ -173,7 +173,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
             return;
         }
 
-        data.activate(20 * 60 * 8+ (int)multiplier(entity), level.dimension().location().toString());
+        data.activate((int) (20 * 60 * 8+ multiplier(entity)), level.dimension().location().toString());
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.sealing_authority.dimension_sealed").withColor(BeyonderData.pathwayInfos.get("door").color()));
     }
 
@@ -199,7 +199,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private void sealTarget(ServerLevel level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int)multiplier(entity), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 2);
         if(target == null || sealedEntities.contains(target.getUUID())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;

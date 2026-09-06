@@ -58,6 +58,7 @@
   "key.beyonders.next_shared_ability": "Next Shared Sub-Ability",
   "key.beyonders.previous_shared_ability": "Previous Shared Sub-Ability",
   "key.beyonders.open_marionette_menu": "Open Marionette Menu",
+  "key.beyonders.next_marionette": "Next Marionette",
 
 
   "_comment001": "Abilities------------------------------------------------------------------------------------",
@@ -468,6 +469,7 @@
   "ability.lotmcraft.puppeteering.attack": "Attack",
   "ability.lotmcraft.puppeteering.entity_warning": "Your Threads Are Being Manipulated",
   "ability.lotm.puppeteering.entity_released": "Released the Marionette",
+  "ability.lotm.puppeteering.press_b": "Press B to open the Marionette Menu (Keybind may have been changed)",
   "lotmcraft.marionette_controlling_ability": "Marionette Controlling",
   "lotmcraft.marionette_controlling_ability.description": "Gain more options for controlling you marionettes. Press shift to cycle through all your marionettes",
   "ability.lotmcraft.marionette_controlling.damage_auto_swap": "Auto Swap on Damage",
@@ -1907,6 +1909,12 @@
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
   "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
+  "lotm.sefirot.not_in_sefirot": "You are not in a Sefirot",
+  "lotm.sefirot.cannot_reach_player": "That player can't be reached",
+  "lotm.sefirot.invited": "You have been invited to the %s. (Click to join)",
+  "lotm.sefirot.target_not_in_sefirot": "That player is not in a Sefirot",
+  "lotm.sefirot.invite_sent": "Invite sent to %s",
+  "lotm.sefirot.sefirah_castle": "Sefirah Castle",
 
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",
@@ -2333,5 +2341,6 @@
   "ritual.lotmcraft.sacrifices": "Sacrifices: ",
   "ritual.lotmcraft.honorifics": "Honorific: ",
   "ritual.lotmcraft.min_sequence": "Min. Sequence: ",
-  "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity"
+  "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity",
+  "block.lotmcraft.sefirah_block": "Sephirot"
 }

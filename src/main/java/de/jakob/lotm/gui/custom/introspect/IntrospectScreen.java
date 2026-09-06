@@ -6,10 +6,10 @@ import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.beyonders.acting.ActingTask;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -17,6 +17,7 @@ import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.*;
+import de.jakob.lotm.util.helper.AbilityId;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -125,32 +126,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private record SubAbilityEntry(Ability parent, int subIndex) {}
 
 
-    private record ParsedAbilityId(String baseId, int subIndex, boolean isCopied) {}
-
-
-    private static ParsedAbilityId parseAbilityId(String raw) {
-        if (raw == null || raw.isEmpty()) return new ParsedAbilityId(raw, -1, false);
-
-        boolean isCopied = raw.endsWith(":copied");
-        String withoutCopied = isCopied ? raw.substring(0, raw.length() - ":copied".length()) : raw;
-
-        int lastColon = withoutCopied.lastIndexOf(':');
-        if (lastColon >= 0) {
-            String potentialIndex = withoutCopied.substring(lastColon + 1);
-            try {
-                int subIdx = Integer.parseInt(potentialIndex);
-                return new ParsedAbilityId(withoutCopied.substring(0, lastColon), subIdx, isCopied);
-            } catch (NumberFormatException ignored) {
-                // Not a number — treat the whole thing as the base ID
-            }
-        }
-
-        return new ParsedAbilityId(withoutCopied, -1, isCopied);
-    }
-
-    private String buildEffectiveId(Ability ability, int subIndex, boolean isCopied) {
-        return ability.getId() + ":" + subIndex + (isCopied ? ":copied" : "");
-    }
 
     // -----------------------------------------------------------------------
 
@@ -163,7 +138,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private boolean hasRecordAbility() {
-        return !ClientData.getCopiedAbilityIds().isEmpty();
+        return !AbilityWheelClientData.getCopiedAbilityIds().isEmpty();
     }
 
     // -----------------------------------------------------------------------
@@ -177,25 +152,30 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
-            if (controllingDataComponent.isControlling()) {
-                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                availableAbilities.addAll(controllerPathwayAbilities);
+            if (!ControllingUtils.isControlling(minecraft.player)) {
+                // Not controlling anyone - behaves exactly like before
+                addOwnAbilities();
             } else {
-                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
+                ControllingUtils.PathwayData pathwayData = ControllingUtils.currentlyControlling(minecraft.player);
+                boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(minecraft.player);
 
-                if(discernmentComponent.isDiscerning()){
-                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                    availableAbilities.addAll(controllerPathwayAbilities);
-                }
-                else {
-                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                    for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
-                        String pathway = pathwayHistory[i];
-                        if (pathway != null) {
-                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                            availableAbilities.addAll(pathwayAbilities);
-                        }
+                if (pathwayData == null) {
+                    if (canUseOwnAbilities) {
+                        // Can use own abilities, nothing being controlled - just show own abilities
+                        addOwnAbilities();
+                    }
+                    // else: can't use own abilities and no pathway data -> no abilities at all
+                } else {
+                    ArrayList<Ability> targetPathwayAbilities =
+                            LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(pathwayData.pathway(), pathwayData.sequence());
+
+                    if (canUseOwnAbilities) {
+                        // Own abilities plus the controlled target's pathway abilities appended
+                        addOwnAbilities();
+                        availableAbilities.addAll(targetPathwayAbilities);
+                    } else {
+                        // Can't use own abilities - only the controlled target's pathway abilities
+                        availableAbilities.addAll(targetPathwayAbilities);
                     }
                 }
             }
@@ -241,12 +221,35 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         passiveAbilities.addAll(LOTMCraft.passiveAbilityHandler.getPassiveAbilitiesForEntity(minecraft.player));
     }
 
+    /**
+     * Adds the player's own abilities to availableAbilities, using the same
+     * discernment/pathway-history logic that previously lived in the
+     * "not controlling" branch.
+     */
+    private void addOwnAbilities() {
+        var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
+
+        if (discernmentComponent.isDiscerning()) {
+            ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+            availableAbilities.addAll(controllerPathwayAbilities);
+        } else {
+            String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+            for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
+                String pathway = pathwayHistory[i];
+                if (pathway != null) {
+                    ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                    availableAbilities.addAll(pathwayAbilities);
+                }
+            }
+        }
+    }
+
     private boolean isCopiedTab(Tab tab) {
         return tab == Tab.RECORDED_ABILITIES;
     }
 
     private void updateCopiedScroll() {
-        List<String> ids = ClientData.getCopiedAbilityIds();
+        List<String> ids = AbilityWheelClientData.getCopiedAbilityIds();
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int rows = (int) Math.ceil((double) ids.size() / iconsPerRow);
         int visibleRows = (COPIED_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
@@ -266,12 +269,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityWheelSubIndexes.clear();
         this.abilityWheelIsCopied.clear();
         for (String id : abilityIds) {
-            ParsedAbilityId parsed = parseAbilityId(id);
+            AbilityId parsed = AbilityId.parse(id);
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
             if (ability != null) {
                 this.abilityWheelSlots.add(ability);
                 this.abilityWheelSubIndexes.add(parsed.subIndex());
-                this.abilityWheelIsCopied.add(parsed.isCopied());
+                this.abilityWheelIsCopied.add(parsed.copied());
             }
         }
     }
@@ -281,12 +284,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityBarSubIndexes.clear();
         this.abilityBarIsCopied.clear();
         for (String id : abilityIds) {
-            ParsedAbilityId parsed = parseAbilityId(id);
+            AbilityId parsed = AbilityId.parse(id);
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
             if (ability != null) {
                 this.abilityBarSlots.add(ability);
                 this.abilityBarSubIndexes.add(parsed.subIndex());
-                this.abilityBarIsCopied.add(parsed.isCopied());
+                this.abilityBarIsCopied.add(parsed.copied());
             }
         }
     }
@@ -294,7 +297,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ArrayList<String> wheelSlotsToIdList() {
         ArrayList<String> ids = new ArrayList<>();
         for (int i = 0; i < abilityWheelSlots.size(); i++) {
-            ids.add(buildEffectiveId(abilityWheelSlots.get(i), abilityWheelSubIndexes.get(i), abilityWheelIsCopied.get(i)));
+            ids.add(AbilityId.of(abilityWheelSlots.get(i), abilityWheelSubIndexes.get(i), abilityWheelIsCopied.get(i)).toString());
         }
         return ids;
     }
@@ -302,7 +305,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private ArrayList<String> barSlotsToIdList() {
         ArrayList<String> ids = new ArrayList<>();
         for (int i = 0; i < abilityBarSlots.size(); i++) {
-            ids.add(buildEffectiveId(abilityBarSlots.get(i), abilityBarSubIndexes.get(i), abilityBarIsCopied.get(i)));
+            ids.add(AbilityId.of(abilityBarSlots.get(i), abilityBarSubIndexes.get(i), abilityBarIsCopied.get(i)).toString());
         }
         return ids;
     }
@@ -320,7 +323,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         PacketHandler.sendToServer(new RequestSharedAbilitiesPacket());
 
         sharedWheelSlots.clear();
-        sharedWheelSlots.addAll(ClientData.getSharedWheelAbilities());
+        sharedWheelSlots.addAll(AbilityWheelClientData.getSharedWheelAbilities());
 
         KEYBIND_LABELS[0] = LOTMCraft.useAbilityBarAbility1.getKey().getDisplayName().getString();
         KEYBIND_LABELS[1] = LOTMCraft.useAbilityBarAbility2.getKey().getDisplayName().getString();
@@ -1193,9 +1196,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             // Hover over the copied-abilities list
             int copiedIdx = getCopiedAbilityIndexAt(mouseX, mouseY, panelX, panelY);
             if (copiedIdx >= 0) {
-                List<String> ids = ClientData.getCopiedAbilityIds();
+                List<String> ids = AbilityWheelClientData.getCopiedAbilityIds();
                 if (copiedIdx < ids.size()) {
-                    ParsedAbilityId parsed = parseAbilityId(ids.get(copiedIdx));
+                    AbilityId parsed = AbilityId.parse(ids.get(copiedIdx));
                     hoveredAbility = LOTMCraft.abilityHandler.getById(parsed.baseId());
                     hoveredSubIndex = parsed.subIndex();
                 }
@@ -1354,8 +1357,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
     private void renderCopiedAbilitiesPanel(GuiGraphics guiGraphics, int panelX, int panelY, int mouseX, int mouseY) {
         boolean isRecorded = currentTab == Tab.RECORDED_ABILITIES;
-        List<String> ids = ClientData.getCopiedAbilityIds();
-        List<Integer> remainingUses = ClientData.getCopiedAbilityRemainingUses();
+        List<String> ids = AbilityWheelClientData.getCopiedAbilityIds();
+        List<Integer> remainingUses = AbilityWheelClientData.getCopiedAbilityRemainingUses();
 
         String tabLabel = "Copied";
 
@@ -1378,7 +1381,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             if (iy < clipTop || iy + ABILITY_ICON_SIZE > clipBottom) continue;
             if (draggedFromCopiedIndex == listIdx) continue; // being dragged
 
-            ParsedAbilityId parsed = parseAbilityId(ids.get(listIdx));
+            AbilityId parsed = AbilityId.parse(ids.get(listIdx));
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
             if (ability != null) {
                 int uses = listIdx < remainingUses.size() ? remainingUses.get(listIdx) : -1;
@@ -1698,7 +1701,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     }
 
     private int getCopiedAbilityIndexAt(int mouseX, int mouseY, int panelX, int panelY) {
-        List<String> ids = ClientData.getCopiedAbilityIds();
+        List<String> ids = AbilityWheelClientData.getCopiedAbilityIds();
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int clipTop = panelY + 14;
         int clipBottom = panelY + COPIED_PANEL_HEIGHT - 2;
@@ -1788,9 +1791,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             if (isCopiedTab(currentTab)) {
                 int copiedListIdx = getCopiedAbilityIndexAt((int) mouseX, (int) mouseY, panelX, panelY);
                 if (copiedListIdx >= 0) {
-                    List<String> ids = ClientData.getCopiedAbilityIds();
+                    List<String> ids = AbilityWheelClientData.getCopiedAbilityIds();
                     if (copiedListIdx < ids.size()) {
-                        ParsedAbilityId parsed = parseAbilityId(ids.get(copiedListIdx));
+                        AbilityId parsed = AbilityId.parse(ids.get(copiedListIdx));
                         Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
                         if (ability != null) {
                             draggedAbility = ability;
@@ -2172,7 +2175,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                     } else if (!inPoolArea) {
                         myContributions.remove(draggedId);
                         sharedWheelSlots.remove(draggedId);
-                        ClientData.setSharedWheelAbilities(sharedWheelSlots);
+                        AbilityWheelClientData.setSharedWheelAbilities(sharedWheelSlots);
                         PacketHandler.sendToServer(new SyncSharedAbilitiesPacket(new ArrayList<>(myContributions)));
                     }
                 } else {
@@ -2196,7 +2199,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            ClientData.setSharedWheelAbilities(sharedWheelSlots);
+            AbilityWheelClientData.setSharedWheelAbilities(sharedWheelSlots);
             clearDragState();
             return true;
         }

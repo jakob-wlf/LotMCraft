@@ -1,12 +1,9 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
-import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.ArrayList;
@@ -86,10 +83,10 @@ public class AbilityWheelHelper {
 
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
-        for(String abilityId : new ArrayList<>(component.getAbilities())) {
-            Ability ability = LOTMCraft.abilityHandler.getById(abilityId.split(":")[0]);
-            if((ability == null || !ability.hasAbility(player)) && (abilityId.split(":").length < 3 || !abilityId.split(":")[2].equals("copied"))) {
-                component.getAbilities().remove(abilityId);
+        for (String raw : new ArrayList<>(component.getAbilities())) {
+            AbilityId id = AbilityId.parse(raw);
+            if (!id.isUsableBy(player) && (!id.copied() || !CopiedAbilityHelper.hasCopiedAbility(player, id.baseId()))) {
+                component.getAbilities().remove(raw);
             }
         }
         int selected = component.getSelectedAbility();

@@ -4,15 +4,14 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.ChatFormatting;
@@ -56,6 +55,7 @@ public abstract class Ability {
     public boolean canBeUsedInArtifact = true;
     public boolean canBeReplicated = true;
     public boolean canBeShared = true;
+    public boolean canBeUsedWhileControlling = true;
 
     public boolean canAlwaysBeUsed = false;
 
@@ -129,7 +129,7 @@ public abstract class Ability {
         }
 
         // Decrement ability if it was copied
-        if(!isCopied) {
+        if(isCopied) {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 
@@ -223,12 +223,22 @@ public abstract class Ability {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
-        // use the old system in case of controlling - will change once worms get added
-        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingDataComponent.isControlling()) {
-            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-                return true;
+        if (entity instanceof Player player && ControllingUtils.isControlling(player)) {
+            ControllingUtils.PathwayData pathwayData = ControllingUtils.currentlyControlling(player);
+            boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(player);
+
+            boolean hasTargetAbility = pathwayData != null
+                    && getRequirements().containsKey(pathwayData.pathway())
+                    && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
+
+            if (!canUseOwnAbilities) {
+                // Can only use whatever the controlled target's pathway/sequence grants
+                return hasTargetAbility;
             }
+
+            if (hasTargetAbility) return true;
+            // canUseOwnAbilities is true and target didn't grant it directly -
+            // fall through to the normal own-ability checks below
         }
 
         DiscernmentComponent discernmentComponent = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
@@ -272,6 +282,8 @@ public abstract class Ability {
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
         if(entity instanceof Player player && player.isSpectator() && !ParasitationAbility.isConcealed(player.getUUID())) return false;
+
+        if(!canBeUsedWhileControlling && entity instanceof Player player && ControllingUtils.isControlling(player)) return false;
 
         DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;

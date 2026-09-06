@@ -50,7 +50,7 @@ public class PureWhiteLightAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 50* (int) multiplier(entity), 4);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 4);
         for(int i = 0; i < 50; i++) {
             BlockPos pos = BlockPos.containing(targetLoc);
             BlockState blockState = serverLevel.getBlockState(pos);

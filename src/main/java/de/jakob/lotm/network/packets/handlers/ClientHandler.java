@@ -1,5 +1,9 @@
 package de.jakob.lotm.network.packets.handlers;
 
+import com.lowdragmc.photon.client.fx.BlockEffectExecutor;
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
@@ -12,7 +16,6 @@ import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.coordinate_input.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.quest.QuestAcceptanceScreen;
@@ -434,7 +437,7 @@ public class ClientHandler {
         ability.onAbilityUse(level, living);
     }
 
-    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataPacket packet) {
+    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataToIntrospectPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityWheelSlots(packet.abilityIds());
@@ -535,6 +538,10 @@ public class ClientHandler {
             body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
         }
     }
+      
+    public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
+    }
 
     public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
@@ -589,15 +596,6 @@ public class ClientHandler {
         if (packet.active()) {
             WeaknessDetectionRenderLayer.activeWeaknessDetection.putAll(packet.targets());
         }
-    }
-
-    public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
-        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
-        if(entity == null) {
-            return;
-        }
-        entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
-        entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
     }
 
     public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
@@ -710,5 +708,54 @@ public class ClientHandler {
 
     public static void handleSyncHistoricalVoidSummoningCountPacket(SyncHistoricalVoidSummoningCountPacket packet) {
         getPlayer().getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedCount = packet.amount();
+    }
+
+    public static Entity getById(int entityId) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return null;
+
+        return level.getEntity(entityId);
+    }
+
+    public static void playPhotonBlockEffect(PlayPhotonBlockEffectPacket packet) {
+        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath()));
+        if (fx != null) {
+            BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
+            fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+            fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            if(packet.rot() != null) {
+                fxExecutor.setRotation(packet.rot());
+            }
+            fxExecutor.setCheckState(packet.checkState());
+            fxExecutor.setAllowMulti(packet.allowMulti());
+            fxExecutor.start();
+        }
+
+    }
+
+    public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
+        FX fx = FXHelper.getFX(id);
+
+        Entity entity = getById(packet.entityId());
+        if(entity == null) return;
+
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+        executor.setScale(packet.scale(), packet.scale(), packet.scale());
+        executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+        if(packet.rot() != null)  executor.setRotation(packet.rot());
+        executor.setAllowMulti(packet.allowMulti());
+
+        executor.start();
+    }
+
+    public static void handleControllingSync(SyncControllingPacket packet) {
+        Player player = getPlayer();
+        if(player == null) return;
+
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlling(packet.isControlling());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntityPathway(packet.controlledEntityPathway());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
     }
 }

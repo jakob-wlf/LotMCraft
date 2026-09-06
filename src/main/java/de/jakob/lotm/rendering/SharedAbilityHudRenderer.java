@@ -3,7 +3,7 @@ package de.jakob.lotm.rendering;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -48,10 +48,10 @@ public class SharedAbilityHudRenderer {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.options.hideGui) return;
 
-        List<String> wheel = ClientData.getSharedWheelAbilities();
+        List<String> wheel = AbilityWheelClientData.getSharedWheelAbilities();
         if (wheel.isEmpty()) return;
 
-        int idx = ClientData.getSelectedSharedAbility();
+        int idx = AbilityWheelClientData.getSelectedSharedAbility();
         if (idx < 0 || idx >= wheel.size()) return;
 
         Ability selected = LOTMCraft.abilityHandler.getById(wheel.get(idx));
@@ -98,8 +98,8 @@ public class SharedAbilityHudRenderer {
         // Place shared text box immediately to the right of it, same Y alignment
         int existingBoxW;
         {
-            int selIdx = ClientData.getSelectedAbility();
-            var abilities = ClientData.getAbilityWheelAbilities();
+            int selIdx = AbilityWheelClientData.getSelectedAbility();
+            var abilities = AbilityWheelClientData.getAbilityWheelAbilities();
             if (selIdx >= 0 && selIdx < abilities.size()) {
                 Ability selAbility = LOTMCraft.abilityHandler.getById(abilities.get(selIdx));
                 if (selAbility instanceof SelectableAbility selectable) {

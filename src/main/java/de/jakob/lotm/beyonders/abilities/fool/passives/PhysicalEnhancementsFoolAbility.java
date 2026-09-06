@@ -113,9 +113,4 @@ public class PhysicalEnhancementsFoolAbility extends PhysicalEnhancementsAbility
             default -> List.of();
         };
     }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

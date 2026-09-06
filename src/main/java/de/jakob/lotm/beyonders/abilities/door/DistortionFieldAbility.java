@@ -68,7 +68,7 @@ public class DistortionFieldAbility extends Ability {
         distortionFieldEntity.setPos(startPos);
         serverLevel.addFreshEntity(distortionFieldEntity);
 
-        ServerScheduler.scheduleForDuration(0, 6, 20 * 20*(int) multiplier(entity), () -> {
+        ServerScheduler.scheduleForDuration(0, 6, (int) (20 * 20*multiplier(entity)), () -> {
             if(entity.level() != serverLevel) {
                 return;
             }
@@ -88,7 +88,7 @@ public class DistortionFieldAbility extends Ability {
             });
 
             // Replace area near caster with air
-            AbilityUtil.getBlocksInSphereRadius(serverLevel, entity.position(), 4.5*(int) multiplier(entity), true).forEach(b -> {
+            AbilityUtil.getBlocksInSphereRadius(serverLevel, entity.position(), 4.5*multiplier(entity), true).forEach(b -> {
                 if(serverLevel.getBlockState(b).getBlock() != Blocks.BARRIER) {
                     return;
                 }

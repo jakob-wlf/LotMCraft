@@ -28,6 +28,13 @@ public class ModBlocks {
                     .sound(SoundType.METAL)
             ));
 
+    public static final DeferredBlock<Block> SEFIRAH_BLOCK = registerBlock("sefirah_block",
+            () -> new SefirahBlock(BlockBehaviour.Properties.of()
+                    .strength(-1)
+                    .noOcclusion()
+                    .sound(SoundType.POWDER_SNOW)
+            ));
+
     public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
             () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
                     .strength(3.0f)

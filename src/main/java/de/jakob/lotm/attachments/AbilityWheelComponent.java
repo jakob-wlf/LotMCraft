@@ -47,6 +47,7 @@ public class AbilityWheelComponent implements INBTSerializable<CompoundTag> {
         }
 
         tag.put("Abilities", list);
+        tag.putInt("SelectedAbility", selectedAbility);
         return tag;
     }
 
@@ -60,5 +61,6 @@ public class AbilityWheelComponent implements INBTSerializable<CompoundTag> {
                 abilities.add(list.getString(i));
             }
         }
+        selectedAbility = tag.getInt("SelectedAbility");
     }
 }
