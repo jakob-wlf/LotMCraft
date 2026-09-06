@@ -50,16 +50,12 @@ public class PaperDaggersAbility extends PassiveAbility {
             return;
 
         ItemStack stack = event.getItemStack();
-
         if (stack.getItem() != Items.PAPER)
             return;
-
-        if(!((PaperDaggersAbility) PassiveAbilityHandler.getById("paper_daggers_ability")).shouldApplyTo(event.getEntity()))
+        if(!((PaperDaggersAbility) PassiveAbilityHandler.getById("paper_dagger_ability")).shouldApplyTo(event.getEntity()))
             return;
-
         if(event.getHand() != InteractionHand.MAIN_HAND)
             return;
-
         level.playSound(null, event.getPos(), SoundEvents.SNOWBALL_THROW, event.getEntity().getSoundSource(), 1, 1);
 
         Player player = event.getEntity();

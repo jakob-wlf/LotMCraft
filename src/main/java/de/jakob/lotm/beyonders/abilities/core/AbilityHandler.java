@@ -144,6 +144,7 @@ public class AbilityHandler {
         abilities.add(new MarionetteControllingAbility("marionette_controlling_ability"));
         abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
         abilities.add(new HistoricalVoidSummonSelfAbility("historical_void_summon_self_ability"));
+        abilities.add(new HistoricalVoidBorrowingAbility("historical_void_borrowing_ability"));
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));

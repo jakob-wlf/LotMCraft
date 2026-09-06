@@ -448,12 +448,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                OpenHistoricalVoidBorrowingScreenPacket.TYPE,
-                OpenHistoricalVoidBorrowingScreenPacket.STREAM_CODEC,
-                OpenHistoricalVoidBorrowingScreenPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncPlayerTeleportationPlayerNamesPacket.TYPE,
                 SyncPlayerTeleportationPlayerNamesPacket.STREAM_CODEC,
                 SyncPlayerTeleportationPlayerNamesPacket::handle
@@ -549,6 +543,18 @@ public class PacketHandler {
                 SyncEnvisioningPacket::handle
         );
 
+        registrar.playToClient(
+                syncDangerArrowsOverlayPacket.TYPE,
+                syncDangerArrowsOverlayPacket.STREAM_CODEC,
+                syncDangerArrowsOverlayPacket::handle
+        );
+
+        registrar.playToClient(
+                IsPlayerModelPacket.TYPE,
+                IsPlayerModelPacket.STREAM_CODEC,
+                IsPlayerModelPacket::handle
+        );
+          
         registrar.playToClient(
                 PlayPhotonBlockEffectPacket.TYPE,
                 PlayPhotonBlockEffectPacket.STREAM_CODEC,
@@ -858,11 +864,6 @@ public class PacketHandler {
                 BiomeDivinationSelectedPacket::handle);
 
         registrar.playToServer(
-                HistoricalVoidBorrowingSelectedPacket.TYPE,
-                HistoricalVoidBorrowingSelectedPacket.STREAM_CODEC,
-                HistoricalVoidBorrowingSelectedPacket::handle);
-
-        registrar.playToServer(
                 WanderingSelectedPacket.TYPE,
                 WanderingSelectedPacket.STREAM_CODEC,
                 WanderingSelectedPacket::handle
@@ -910,6 +911,18 @@ public class PacketHandler {
                 StopDiscernmentPacket.TYPE,
                 StopDiscernmentPacket.STREAM_CODEC,
                 StopDiscernmentPacket::handle
+        );
+
+        registrar.playToServer(
+                ShapeShiftingPlayerModelPacket.TYPE,
+                ShapeShiftingPlayerModelPacket.STREAM_CODEC,
+                ShapeShiftingPlayerModelPacket::handle
+        );
+
+        registrar.playToServer(
+                MassPuppeteeringSelectedEntitiesPacket.TYPE,
+                MassPuppeteeringSelectedEntitiesPacket.STREAM_CODEC,
+                MassPuppeteeringSelectedEntitiesPacket::handle
         );
     }
 

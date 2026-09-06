@@ -43,14 +43,14 @@ public class UnderWaterBreathingAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
+        if (entity.tickCount % 40 != 0) return;
         if(level.getBlockState(BlockPos.containing(entity.position().x, entity.position().y, entity.position().z)).getBlock() != Blocks.WATER) {
-            cancel((ServerLevel) level, entity);
             return;
         }
 
         entity.addEffect(new MobEffectInstance(
                 net.minecraft.world.effect.MobEffects.WATER_BREATHING,
-                20 * 2,
+                20 * 3,
                 0,
                 false,
                 false,

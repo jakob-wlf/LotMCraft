@@ -1,8 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +12,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,5 +62,18 @@ public class AcrobaticsAbility extends PassiveAbility {
         }
 
         event.setAmount(event.getAmount() - 2);
+    }
+
+    @SubscribeEvent
+    public static void onLivingKnockBack(LivingKnockBackEvent event) {
+        LivingEntity entity = event.getEntity();
+        if(!((AcrobaticsAbility) PassiveAbilityHandler.getById("acrobatics_ability")).shouldApplyTo(entity))
+            return;
+
+        LivingEntity attacker = entity.getLastAttacker();
+        if (BeyonderData.getSequence(attacker) - BeyonderData.getSequence(entity) >= 1) {
+            event.setCanceled(true);
+        }
+
     }
 }

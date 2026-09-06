@@ -4,7 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
@@ -13,7 +12,6 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -22,7 +20,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 
@@ -52,8 +49,9 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
         LivingEntity entity = event.getEntity();
         Level level = entity.level();
 
-        if(level.isClientSide)
-            return;
+        if(level.isClientSide) return;
+
+        if(!((MiracleOfResurrectionAbility) PassiveAbilityHandler.getById("miracle_of_resurrection_ability")).shouldApplyTo(entity)) return;
 
         MiracleOfResurrectionAbility ability = (MiracleOfResurrectionAbility) PassiveAbilityHandler.getById("miracle_of_resurrection_ability");
         if(ability == null || !ability.shouldApplyTo(entity)) return;
@@ -103,7 +101,5 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
                 disabledComponent.disableAbilityUsageForTime("miracle_of_resurrection_" + entity.getUUID(), 10 * 60 * 20, serverPlayer);
             }
         }
-
-
     }
 }
