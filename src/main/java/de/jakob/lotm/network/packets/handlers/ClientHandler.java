@@ -531,18 +531,6 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
 
-    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
-            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
-            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
-        }
-    }
-      
-    public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
-        Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
-    }
-
     public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -637,7 +625,7 @@ public class ClientHandler {
         }
     }
 
-    public static void syncDangerArrowsOverlay(syncDangerArrowsOverlayPacket packet) {
+    public static void syncDangerArrowsOverlay(SyncDangerArrowsOverlayPacket packet) {
         Level level = Minecraft.getInstance().level;
         if (level == null) return;
 

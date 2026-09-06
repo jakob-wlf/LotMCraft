@@ -132,6 +132,15 @@ public class MarionetteOverlayRenderer {
 
         String healthText = Math.round(infos.health()) + " ❤";
         guiGraphics.drawCenteredString(mc.font, healthText, barX + (barWidth / 2), barY + 1 + ((barHeight - mc.font.lineHeight) / 2), 0xFFFFFFFF);
+
+        String hint = Component.translatable(
+                "lotm.marionette.cycle_hint",
+                LOTMCraft.nextMarionetteKey.getTranslatedKeyMessage()
+        ).getString();
+
+        int hintY = y + height + 6;
+        int hintX = x + (width / 2);
+        guiGraphics.drawCenteredString(mc.font, hint, hintX, hintY, 0xFFcaa8ff);
     }
 
     private static void drawHealthBar(GuiGraphics guiGraphics, int barX, int barY, int barWidth, int barHeight,

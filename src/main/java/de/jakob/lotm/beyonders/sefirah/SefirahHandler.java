@@ -1,13 +1,11 @@
 package de.jakob.lotm.beyonders.sefirah;
 
-import com.lowdragmc.photon.client.fx.BlockEffectExecutor;
-import com.lowdragmc.photon.client.fx.FX;
-import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.network.packets.toServer.RequestSefirotSyncPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -23,14 +21,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class SefirahHandler {
 
     public static final String[] implementedSefirah = new String[]{"sefirah_castle", "empty"};
+    private static HashMap<UUID, String> clientSefirotPlayers = new HashMap<>();
 
     public static boolean claimSefirot(ServerPlayer player, String sefirot) {
         return claimSefirot(player, sefirot, false);
@@ -271,6 +273,43 @@ public class SefirahHandler {
                     ), sefirotLevel);
 
                 }
+            }
+        }
+    }
+
+    public static void syncPlayerSefirotToClient(Player player, String sefirot) {
+        if(player instanceof ServerPlayer) return;
+        clientSefirotPlayers.put(player.getUUID(), sefirot);
+    }
+
+    public static String[] getAdditionalPathwaysForPlays(Player player) {
+        if(!(player instanceof ServerPlayer serverPlayer)) {
+            PacketHandler.sendToServer(new RequestSefirotSyncPacket());
+            if(clientSefirotPlayers.containsKey(player.getUUID())) {
+                String claimedSefirot = clientSefirotPlayers.get(player.getUUID());
+                return getPathwaysForSefirot(claimedSefirot);
+            }
+            return new String[]{};
+        }
+
+        if(BeyonderData.getSequence(serverPlayer) > 3) {
+            return new String[]{};
+        }
+        if(!hasSefirot(serverPlayer)) {
+            return new String[]{};
+        }
+
+        String claimedSefirot = getClaimedSefirot(serverPlayer);
+        return getPathwaysForSefirot(claimedSefirot);
+    }
+
+    public static String[] getPathwaysForSefirot(String sefirot) {
+        switch (sefirot) {
+            case "sefirah_castle" -> {
+                return new String[]{"fool", "door", "error"};
+            }
+            default -> {
+                return new String[]{};
             }
         }
     }

@@ -38,6 +38,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncPlayerSefirotPacket.TYPE,
+                SyncPlayerSefirotPacket.STREAM_CODEC,
+                SyncPlayerSefirotPacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncAbilityBarPacket.TYPE,
                 SyncAbilityBarPacket.STREAM_CODEC,
                 SyncAbilityBarPacket::handle
@@ -544,9 +551,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                syncDangerArrowsOverlayPacket.TYPE,
-                syncDangerArrowsOverlayPacket.STREAM_CODEC,
-                syncDangerArrowsOverlayPacket::handle
+                SyncDangerArrowsOverlayPacket.TYPE,
+                SyncDangerArrowsOverlayPacket.STREAM_CODEC,
+                SyncDangerArrowsOverlayPacket::handle
         );
 
         registrar.playToClient(
@@ -574,6 +581,13 @@ public class PacketHandler {
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
         );
+
+        registrar.playToServer(
+                RequestSefirotSyncPacket.TYPE,
+                RequestSefirotSyncPacket.STREAM_CODEC,
+                RequestSefirotSyncPacket::handle
+        );
+
 
         registrar.playToServer(
                 NextMarionettePacket.TYPE,

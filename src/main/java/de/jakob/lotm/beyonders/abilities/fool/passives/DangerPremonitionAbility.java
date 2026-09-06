@@ -5,10 +5,11 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.*;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.syncDangerArrowsOverlayPacket;
+import de.jakob.lotm.network.packets.toClient.SyncDangerArrowsOverlayPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DivinationUtil;
@@ -60,12 +61,13 @@ public class DangerPremonitionAbility extends PassiveAbility {
             AllyComponent allyComponent = entity.getData(ModAttachments.ALLY_COMPONENT);
             if (allyComponent.isAlly(threat.getUUID())) continue;
 
-            if (ToggleAbility.getActiveAbilitiesForEntity(threat).contains(
-                    LOTMCraft.abilityHandler.getById("psychological_invisibility_ability"))) return;
+            if (ToggleAbility.getActiveAbilitiesForEntity(threat).contains((ToggleAbility) LOTMCraft.abilityHandler.getById("psychological_invisibility_ability"))) return;
 
             if (threat instanceof ServerPlayer threatServer) {
                 if (DivinationUtil.getConcealmentPower(threatServer) > DivinationUtil.getDivinationPower(serverPlayer) + 4) return;
             }
+
+            if(isThreatTooWeak(serverPlayer, threat)) continue;
 
             if (isThreatFromThreateningPathway(threat) || isThreatAKiller(threat) || isThreatStronger(serverPlayer, threat)) {
                 shouldShowOverlay = true;
@@ -83,11 +85,19 @@ public class DangerPremonitionAbility extends PassiveAbility {
         if (shouldShowOverlay) {
             double dx = chosenThreat.getX() - serverPlayer.getX();
             double dz = chosenThreat.getZ() - serverPlayer.getZ();
-            PacketHandler.sendToPlayer(serverPlayer, new syncDangerArrowsOverlayPacket(
+            PacketHandler.sendToPlayer(serverPlayer, new SyncDangerArrowsOverlayPacket(
                     getDirection(dx, dz, serverPlayer.getYRot()),
                     40
             ));
         }
+    }
+
+    private boolean isThreatTooWeak(ServerPlayer serverPlayer, LivingEntity threat) {
+        int ownSequence = BeyonderData.getSequence(serverPlayer);
+        int threatSequence = BeyonderData.getSequence(threat);
+
+        if(ownSequence + 1 < threatSequence) return true;
+        return false;
     }
 
     static float[] dodgeChanceForSequence = new float[]{.4f, .35f, .325f, .275f, .25f, .2f, .175f, .15f, .125f, .1f};
@@ -129,9 +139,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
     }
 
     public static Boolean isThreatChanged(LivingEntity threat) {
-        // check if the threat is using shape shifting, controlling or parasited
-        ControllingDataComponent controllingDataComponent = threat.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingDataComponent.isControlling()) return true;
+        if (threat instanceof Player player && ControllingUtils.isControlling(player)) return true;
 
         ParasitationComponent parasitationComponent = threat.getData(ModAttachments.PARASITE_COMPONENT);
         if (parasitationComponent.getParasiteUUID() != null) return true;
@@ -211,7 +219,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
 
             double dx = event.getEntity().getX() - serverPlayer.getX();
             double dz = event.getEntity().getZ() - serverPlayer.getZ();
-            PacketHandler.sendToPlayer(serverPlayer, new syncDangerArrowsOverlayPacket(
+            PacketHandler.sendToPlayer(serverPlayer, new SyncDangerArrowsOverlayPacket(
                     getDirection(dx, dz, serverPlayer.getYRot()),
                     80
             ));
@@ -243,7 +251,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
 
             double dx = event.getEntity().getX() - serverPlayer.getX();
             double dz = event.getEntity().getZ() - serverPlayer.getZ();
-            PacketHandler.sendToPlayer(serverPlayer, new syncDangerArrowsOverlayPacket(
+            PacketHandler.sendToPlayer(serverPlayer, new SyncDangerArrowsOverlayPacket(
                     getDirection(dx, dz, serverPlayer.getYRot()),
                     80
             ));

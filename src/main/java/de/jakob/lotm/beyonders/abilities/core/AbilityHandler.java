@@ -15,6 +15,7 @@ import de.jakob.lotm.beyonders.abilities.sun.*;
 import de.jakob.lotm.beyonders.abilities.tyrant.*;
 import de.jakob.lotm.beyonders.abilities.visionary.*;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.*;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -413,6 +414,16 @@ public class AbilityHandler {
         return filteredPool.get(random.nextInt(filteredPool.size()));
     }
 
+    public List<Ability> getAllAbilitiesForEntity(LivingEntity entity) {
+        ArrayList<Ability> applicableAbilities = new ArrayList<>();
+        for (Ability ability : getAllAbilitiesOrdered()) {
+            if (ability.hasAbility(entity)) {
+                applicableAbilities.add(ability);
+            }
+        }
+        return applicableAbilities.reversed();
+    }
+
     public void disableAbility(Ability ability) {
         disabledAbilities.add(ability);
     }
@@ -438,6 +449,15 @@ public class AbilityHandler {
         return new ArrayList<>(
                 abilities.stream()
                         .filter(ability -> ability.getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence))
+                        .sorted(Comparator.comparing(Ability::getId))
+                        .sorted(Comparator.comparingInt(Ability::lowestSequenceUsable).reversed())
+                        .toList()
+        );
+    }
+
+    public ArrayList<Ability> getAllAbilitiesOrdered() {
+        return new ArrayList<>(
+                abilities.stream()
                         .sorted(Comparator.comparing(Ability::getId))
                         .sorted(Comparator.comparingInt(Ability::lowestSequenceUsable).reversed())
                         .toList()

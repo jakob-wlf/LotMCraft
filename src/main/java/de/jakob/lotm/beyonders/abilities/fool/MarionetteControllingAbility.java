@@ -327,14 +327,16 @@ public class MarionetteControllingAbility extends SelectableAbility {
             currentIndex = 0;
             marionetteIndices.put(entity.getUUID(), currentIndex);
         }
+    }
 
-        //Increment index if shift key is down
-        if(entity.isShiftKeyDown()) {
-            currentIndex++;
-            if(currentIndex >= marionettes.size())
-                currentIndex = 0;
-            marionetteIndices.put(entity.getUUID(), currentIndex);
-        }
+    public static void cycle(LivingEntity entity) {
+        List<LivingEntity> marionettes = getMarionettesOfPlayerInAllLevelsOrderedById(entity);
+
+        int currentIndex = marionetteIndices.getOrDefault(entity.getUUID(), 0);
+        currentIndex++;
+        if(currentIndex >= marionettes.size())
+            currentIndex = 0;
+        marionetteIndices.put(entity.getUUID(), currentIndex);
     }
 
     public static void control(Level level, ServerPlayer player) {

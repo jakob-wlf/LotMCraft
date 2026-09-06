@@ -114,6 +114,8 @@ public class DangerArrowsOverlay {
             case NONE -> {}
         }
 
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.5F);
+
         guiGraphics.blit(
                 texture,
                 x,
@@ -126,6 +128,7 @@ public class DangerArrowsOverlay {
                 ARROW_HEIGHT
         );
 
-        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.5F);
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+
     }
 }

@@ -9,6 +9,7 @@ import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -227,18 +228,13 @@ public abstract class Ability {
             ControllingUtils.PathwayData pathwayData = ControllingUtils.currentlyControlling(player);
             boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(player);
 
-            boolean hasTargetAbility = pathwayData != null
-                    && getRequirements().containsKey(pathwayData.pathway())
-                    && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
+            boolean hasTargetAbility = getRequirements().containsKey(pathwayData.pathway()) && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
 
             if (!canUseOwnAbilities) {
-                // Can only use whatever the controlled target's pathway/sequence grants
                 return hasTargetAbility;
             }
 
             if (hasTargetAbility) return true;
-            // canUseOwnAbilities is true and target didn't grant it directly -
-            // fall through to the normal own-ability checks below
         }
 
         DiscernmentComponent discernmentComponent = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
@@ -253,6 +249,16 @@ public abstract class Ability {
             String userPath = BeyonderData.getPathwayHistory(entity)[i];
             if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
                 return true;
+            }
+        }
+
+        // Check sefirot
+        if(entity instanceof Player player) {
+            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlays(player);
+            for (String sefirotPathway : sefirotPathways) {
+                if (getRequirements().containsKey(sefirotPathway) && getRequirements().get(sefirotPathway) >= sequence) {
+                    return true;
+                }
             }
         }
 

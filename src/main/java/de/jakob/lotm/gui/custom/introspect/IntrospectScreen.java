@@ -152,33 +152,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            if (!ControllingUtils.isControlling(minecraft.player)) {
-                // Not controlling anyone - behaves exactly like before
-                addOwnAbilities();
-            } else {
-                ControllingUtils.PathwayData pathwayData = ControllingUtils.currentlyControlling(minecraft.player);
-                boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(minecraft.player);
-
-                if (pathwayData == null) {
-                    if (canUseOwnAbilities) {
-                        // Can use own abilities, nothing being controlled - just show own abilities
-                        addOwnAbilities();
-                    }
-                    // else: can't use own abilities and no pathway data -> no abilities at all
-                } else {
-                    ArrayList<Ability> targetPathwayAbilities =
-                            LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(pathwayData.pathway(), pathwayData.sequence());
-
-                    if (canUseOwnAbilities) {
-                        // Own abilities plus the controlled target's pathway abilities appended
-                        addOwnAbilities();
-                        availableAbilities.addAll(targetPathwayAbilities);
-                    } else {
-                        // Can't use own abilities - only the controlled target's pathway abilities
-                        availableAbilities.addAll(targetPathwayAbilities);
-                    }
-                }
-            }
+            availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesForEntity(minecraft.player));
         }
 
         List<Ability> unique = availableAbilities.stream().distinct().toList();
@@ -219,29 +193,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         updateCopiedScroll();
 
         passiveAbilities.addAll(LOTMCraft.passiveAbilityHandler.getPassiveAbilitiesForEntity(minecraft.player));
-    }
-
-    /**
-     * Adds the player's own abilities to availableAbilities, using the same
-     * discernment/pathway-history logic that previously lived in the
-     * "not controlling" branch.
-     */
-    private void addOwnAbilities() {
-        var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
-
-        if (discernmentComponent.isDiscerning()) {
-            ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-            availableAbilities.addAll(controllerPathwayAbilities);
-        } else {
-            String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-            for (int i = menu.getSequence(); i < pathwayHistory.length; i++) {
-                String pathway = pathwayHistory[i];
-                if (pathway != null) {
-                    ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                    availableAbilities.addAll(pathwayAbilities);
-                }
-            }
-        }
     }
 
     private boolean isCopiedTab(Tab tab) {

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.HistoricalMarkedComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedInventoryComponent;
@@ -62,7 +63,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-@EventBusSubscriber
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
     // Track placed blocks and their summon times (thread-safe)
