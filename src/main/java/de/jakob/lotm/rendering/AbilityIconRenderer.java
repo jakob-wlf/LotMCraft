@@ -6,7 +6,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestActiveStatusOfAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -52,12 +52,12 @@ public class AbilityIconRenderer {
             return;
         }
 
-        int selectedAbilityIndex = ClientData.getSelectedAbility();
-        if(selectedAbilityIndex < 0 || selectedAbilityIndex >= ClientData.getAbilityWheelAbilities().size()) {
+        int selectedAbilityIndex = AbilityWheelClientData.getSelectedAbility();
+        if(selectedAbilityIndex < 0 || selectedAbilityIndex >= AbilityWheelClientData.getAbilityWheelAbilities().size()) {
             return;
         }
 
-        String selectedAbilityId = ClientData.getAbilityWheelAbilities().get(selectedAbilityIndex);
+        String selectedAbilityId = AbilityWheelClientData.getAbilityWheelAbilities().get(selectedAbilityIndex);
         Ability selectedAbility = LOTMCraft.abilityHandler.getById(selectedAbilityId.split(":")[0]);
         if(selectedAbility == null) {
             return;

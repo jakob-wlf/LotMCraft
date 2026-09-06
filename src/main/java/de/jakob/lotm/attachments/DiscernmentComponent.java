@@ -3,7 +3,6 @@ package de.jakob.lotm.attachments;
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncControllingDataPacket;
 import de.jakob.lotm.network.packets.toClient.SyncDiscernmentDataPacket;
 import jdk.jfr.Frequency;
 import net.minecraft.core.HolderLookup;

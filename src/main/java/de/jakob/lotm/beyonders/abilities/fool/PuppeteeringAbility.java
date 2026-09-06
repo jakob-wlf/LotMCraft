@@ -230,6 +230,7 @@ public class PuppeteeringAbility extends Ability {
                 EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level, player, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
             if(entity instanceof Player player && !component.isMarionette()) {
                 turnIntoMarionette(target, player);
+                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotm.puppeteering.press_b").withColor(getColorForPathway("fool")));
             }
             else {
                 target.hurt(target.damageSources().generic(), Float.MAX_VALUE);

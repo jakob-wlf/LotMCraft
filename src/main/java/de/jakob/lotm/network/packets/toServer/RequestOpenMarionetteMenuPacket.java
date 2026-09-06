@@ -3,8 +3,11 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MarionetteOwnerComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteMenuProvider;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
@@ -34,6 +37,10 @@ public record RequestOpenMarionetteMenuPacket() implements CustomPacketPayload {
     public static void handle(RequestOpenMarionetteMenuPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer serverPlayer)) return;
+            if(ControllingUtils.isControlling(serverPlayer)) {
+                AbilityUtil.sendActionBar(serverPlayer, Component.literal("You cannot open the marionette menu while controlling a marionette.").withColor(0xFF0000));
+                return;
+            }
             ServerLevel level = serverPlayer.serverLevel();
 
             MarionetteOwnerComponent ownerData = serverPlayer.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT);

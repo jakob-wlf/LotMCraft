@@ -1,6 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway;
 
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtil;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -224,7 +224,7 @@ public class CycleOfFateEntity extends Entity {
         List<Player> players = serverLevel.getEntitiesOfClass(Player.class, boundingBox);
         for(Player player : players) {
             if(player instanceof ServerPlayer serverPlayer) {
-                ControllingUtil.reset(serverPlayer, serverPlayer.serverLevel(), true);
+                ControllingUtils.cancel(serverPlayer, 0, true, false);
             }
         }
 

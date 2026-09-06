@@ -16,6 +16,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.big_moon.BigMoonRenderer;
 import de.jakob.lotm.entity.client.ability_entities.big_sun.BigSunRenderer;
+import de.jakob.lotm.entity.client.ability_entities.body_double.ControlBodyDoubleRenderer;
 import de.jakob.lotm.entity.client.ability_entities.darkness_pathway.concealed_domain.ConcealedDomainRenderer;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.divine_kingdom_death.DeathDivineKingdomEntityRenderer;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateRenderer;
@@ -31,7 +32,6 @@ import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
-import de.jakob.lotm.entity.client.ability_entities.original_body.OriginalBodyRenderer;
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
@@ -145,6 +145,7 @@ public class LOTMCraft
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static final Integer NON_BEYONDER_SEQ = 10;
+    public static final String NON_BEYONDER_PATHWAY = "none";
 
     public static KeyMapping pathwayInfosKey;
     public static KeyMapping toggleGriefingKey;
@@ -162,6 +163,7 @@ public class LOTMCraft
     public static KeyMapping nextSharedAbilityKey;
     public static KeyMapping previousSharedAbilityKey;
     public static KeyMapping openMarionetteMenuKey;
+    public static KeyMapping nextMarionetteKey;
 
     public static KeyMapping useAbilityBarAbility1;
     public static KeyMapping useAbilityBarAbility2;
@@ -305,7 +307,6 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.MISFORTUNE_WORDS.get(), MisfortuneWordsRenderer::new);
             EntityRenderers.register(ModEntities.BLOOMING_AREA.get(), BloomingAreaRenderer::new);
             EntityRenderers.register(ModEntities.DESOLATE_AREA.get(), DesolateAreaRenderer::new);
-            EntityRenderers.register(ModEntities.ORIGINAL_BODY.get(), OriginalBodyRenderer::new);
             EntityRenderers.register(ModEntities.CYCLE_OF_FATE.get(), CycleOfFateRenderer::new);
             EntityRenderers.register(ModEntities.NATURE_RETURN_PORTAL.get(), ReturnFromNaturelRenderer::new);
             EntityRenderers.register(ModEntities.GRAFTING_LOCATION_ENTITY.get(), GraftingLocationRenderer::new);
@@ -318,6 +319,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.UNDERWORLD_GATE.get(), UnderworldGateRenderer::new);
             EntityRenderers.register(ModEntities.PLANET.get(), PlanetRenderer::new);
             EntityRenderers.register(ModEntities.CHAOS_VORTEX.get(), ChaosVortextRenderer::new);
+            EntityRenderers.register(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDoubleRenderer::new);
 
             // Spirits
             EntityRenderers.register(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishRenderer::new);

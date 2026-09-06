@@ -58,6 +58,7 @@
   "key.beyonders.next_shared_ability": "Next Shared Sub-Ability",
   "key.beyonders.previous_shared_ability": "Previous Shared Sub-Ability",
   "key.beyonders.open_marionette_menu": "Open Marionette Menu",
+  "key.beyonders.next_marionette": "Next Marionette",
 
 
   "_comment001": "Abilities------------------------------------------------------------------------------------",
@@ -461,6 +462,7 @@
   "ability.lotmcraft.puppeteering.follow_mode": "Follow Mode",
   "ability.lotmcraft.puppeteering.attack": "Attack",
   "ability.lotm.puppeteering.entity_released": "Released the Marionette",
+  "ability.lotm.puppeteering.press_b": "Press B to open the Marionette Menu (Keybind may have been changed)",
   "lotmcraft.marionette_controlling_ability": "Marionette Controlling",
   "lotmcraft.marionette_controlling_ability.description": "Gain more options for controlling you marionettes. Press shift to cycle through all your marionettes",
   "ability.lotmcraft.marionette_controlling.damage_auto_swap": "Auto Swap on Damage",

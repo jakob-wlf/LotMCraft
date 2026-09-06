@@ -45,6 +45,7 @@ public class HistoricalVoidSummonSelfAbility extends Ability {
         cannotBeStolen = true;
         canBeUsedByNPC = false;
         canBeUsedInArtifact = false;
+        canBeUsedWhileControlling = false;
     }
 
     @Override

@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -31,7 +31,7 @@ public record SyncAbilityWheelPacket(List<String> abilities, int selectedAbility
 
     public static void handle(SyncAbilityWheelPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            ClientData.setAbilityWheelData(new ArrayList<>(packet.abilities()), packet.selectedAbility());
+            AbilityWheelClientData.setAbilityWheelData(new ArrayList<>(packet.abilities()), packet.selectedAbility());
         });
     }
 }

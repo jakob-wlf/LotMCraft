@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -47,8 +47,8 @@ public class SelectedAbilityRenderer {
 
         int pathwayColor = BeyonderData.pathwayInfos.get(pathway).color();
 
-        int selectedIndex = ClientData.getSelectedAbility();
-        var abilities = ClientData.getAbilityWheelAbilities();
+        int selectedIndex = AbilityWheelClientData.getSelectedAbility();
+        var abilities = AbilityWheelClientData.getAbilityWheelAbilities();
         if (selectedIndex < 0 || selectedIndex >= abilities.size()) return;
 
         String abilityId = abilities.get(selectedIndex);

@@ -16,7 +16,6 @@ import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.gui.custom.coordinate_input.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.quest.QuestAcceptanceScreen;
@@ -55,9 +54,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-import org.joml.Quaternionf;
 import org.joml.Random;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -434,7 +431,7 @@ public class ClientHandler {
         ability.onAbilityUse(level, living);
     }
 
-    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataPacket packet) {
+    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataToIntrospectPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityWheelSlots(packet.abilityIds());
@@ -532,14 +529,6 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
     }
 
-    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
-            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
-            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
-        }
-    }
-
     public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -593,15 +582,6 @@ public class ClientHandler {
         if (packet.active()) {
             WeaknessDetectionRenderLayer.activeWeaknessDetection.putAll(packet.targets());
         }
-    }
-
-    public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
-        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
-        if(entity == null) {
-            return;
-        }
-        entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
-        entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
     }
 
     public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
@@ -723,5 +703,15 @@ public class ClientHandler {
         executor.setAllowMulti(packet.allowMulti());
 
         executor.start();
+    }
+
+    public static void handleControllingSync(SyncControllingPacket packet) {
+        Player player = getPlayer();
+        if(player == null) return;
+
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlling(packet.isControlling());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntityPathway(packet.controlledEntityPathway());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
     }
 }

@@ -9,7 +9,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.UpdateSelectedAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import de.jakob.lotm.util.helper.AbilityId;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,10 +30,10 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
 
     @Override
     protected List<String> getAbilities() {
-        if (ClientData.sharedAbilityMode) {
-            return ClientData.getSharedWheelAbilities();
+        if (AbilityWheelClientData.sharedAbilityMode) {
+            return AbilityWheelClientData.getSharedWheelAbilities();
         }
-        return ClientData.getAbilityWheelAbilities();
+        return AbilityWheelClientData.getAbilityWheelAbilities();
     }
 
     @Override
@@ -53,7 +53,7 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
 
     @Override
     protected void renderSlot(GuiGraphics guiGraphics, SlotPosition pos, String abilityId, boolean isHovered, int index) {
-        int selectedIndex = ClientData.getSelectedAbility();
+        int selectedIndex = AbilityWheelClientData.getSelectedAbility();
         boolean isSelected = index == selectedIndex;
 
         AbilityId parsed = AbilityId.parse(abilityId);
@@ -138,11 +138,11 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0 && hoveredSlot != -1) {
-            if (ClientData.sharedAbilityMode) {
-                ClientData.setSelectedSharedAbility(hoveredSlot);
+            if (AbilityWheelClientData.sharedAbilityMode) {
+                AbilityWheelClientData.setSelectedSharedAbility(hoveredSlot);
             } else {
                 PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
-                ClientData.setAbilityWheelData(
+                AbilityWheelClientData.setAbilityWheelData(
                         new java.util.ArrayList<>(getAbilities()),
                         hoveredSlot
                 );
@@ -160,16 +160,16 @@ public class AbilityWheelScreen extends BaseAbilityWheelScreen<AbilityWheelMenu>
     public void onClose() {
         if (KeyInputHandler.wasWheelOpenedWithHold && hoveredSlot != -1) {
             PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(hoveredSlot));
-            if (ClientData.sharedAbilityMode) {
-                ClientData.setSelectedSharedAbility(hoveredSlot);
+            if (AbilityWheelClientData.sharedAbilityMode) {
+                AbilityWheelClientData.setSelectedSharedAbility(hoveredSlot);
             } else {
-                ClientData.setAbilityWheelData(
+                AbilityWheelClientData.setAbilityWheelData(
                         new java.util.ArrayList<>(getAbilities()),
                         hoveredSlot
                 );
             }
         }
-        ClientData.sharedAbilityMode = false;
+        AbilityWheelClientData.sharedAbilityMode = false;
         super.onClose();
     }
 }

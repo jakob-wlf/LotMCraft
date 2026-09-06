@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.ChatFormatting;
@@ -35,51 +36,43 @@ public abstract class PassiveAbility {
     public abstract Map<String, Integer> getRequirements();
 
     public boolean shouldApplyTo(LivingEntity entity) {
-        if (entity.level().isClientSide()) {
-            String pathway = ClientBeyonderCache.getPathway(entity.getUUID());
-            int sequence = ClientBeyonderCache.getSequence(entity.getUUID());
+        if(
+                entity instanceof Player player &&
+                ControllingUtils.isControlling(player)
+        ) {
+            String pathway = ControllingUtils.getControlledPathway(player);
+            int sequence = ControllingUtils.getControlledSequence(player);
 
-            if(pathway == null) {
-                return false;
-            }
-
-            if(getRequirements().containsKey(pathway)) {
-                Integer minSeq = getRequirements().get(pathway);
-                if (minSeq != null && sequence <= minSeq) return true;
-            }
-
-            if (!(this instanceof PhysicalEnhancementsAbility)) {
-                String[] history = ClientBeyonderCache.getPathwayHistory(entity.getUUID());
-                for (int i = sequence + 1; i < history.length; i++) {
-                    String histPathway = history[i];
-                    if (histPathway == null || histPathway.isEmpty()) continue;
-                    Integer minSeq = getRequirements().get(histPathway);
-                    if (minSeq != null && i <= minSeq) return true;
+            if(pathway != null) {
+                if(getRequirements().containsKey(pathway)) {
+                    Integer minSeq = getRequirements().get(pathway);
+                    if (minSeq != null && sequence <= minSeq) return true;
                 }
             }
-
-            return false;
-        } else {
-            String pathway = BeyonderData.getPathway(entity);
-            int sequence = BeyonderData.getSequence(entity);
-
-            if(getRequirements().containsKey(pathway)) {
-                Integer minSeq = getRequirements().get(pathway);
-                if (minSeq != null && sequence <= minSeq) return true;
-            }
-
-            if (!(this instanceof PhysicalEnhancementsAbility)) {
-                String[] history = BeyonderData.getPathwayHistory(entity);
-                for (int i = sequence + 1; i < history.length; i++) {
-                    String histPathway = history[i];
-                    if (histPathway == null || histPathway.isEmpty()) continue;
-                    Integer minSeq = getRequirements().get(histPathway);
-                    if (minSeq != null && i <= minSeq) return true;
-                }
-            }
-
-            return false;
+            if(!ControllingUtils.canUseOwnAbilitiesWhileControlling(player)) return false;
+            if(this instanceof PhysicalEnhancementsAbility) return false;
         }
+
+
+        String pathway = BeyonderData.getPathway(entity);
+        int sequence = BeyonderData.getSequence(entity);
+
+        if(getRequirements().containsKey(pathway)) {
+            Integer minSeq = getRequirements().get(pathway);
+            if (minSeq != null && sequence <= minSeq) return true;
+        }
+
+        if (!(this instanceof PhysicalEnhancementsAbility)) {
+            String[] history = BeyonderData.getPathwayHistory(entity);
+            for (int i = sequence + 1; i < history.length; i++) {
+                String histPathway = history[i];
+                if (histPathway == null || histPathway.isEmpty()) continue;
+                Integer minSeq = getRequirements().get(histPathway);
+                if (minSeq != null && i <= minSeq) return true;
+            }
+        }
+
+        return false;
     }
 
     public ResourceLocation getTexture() {
@@ -90,48 +83,6 @@ public abstract class PassiveAbility {
         return id;
     }
 
-    protected void applyRegenReduce(ArrayList<MobEffectInstance> effects, Entity entity, HashMap<UUID, Long> reducedRegen) {
-        if(!(entity instanceof Player)) {
-            return;
-        }
-        if(effects == null) {
-            return;
-        }
-        if(!reducedRegen.containsKey(entity.getUUID())) {
-            return;
-        }
-
-        if ((reducedRegen.get(entity.getUUID()) - System.currentTimeMillis()) <= 0) {
-            reducedRegen.remove(entity.getUUID());
-        }
-
-        MobEffectInstance regen = null;
-
-        for (MobEffectInstance effect : effects) {
-            if (effect.getEffect() == MobEffects.REGENERATION) {
-                regen = effect;
-                break;
-            }
-        }
-
-        if (regen != null) {
-            int newAmplifier = regen.getAmplifier() - 5;
-
-            if (newAmplifier < 0) {
-                effects.remove(regen);
-            } else {
-                effects.remove(regen);
-                effects.add(new MobEffectInstance(
-                        MobEffects.REGENERATION,
-                        regen.getDuration(),
-                        newAmplifier,
-                        regen.isAmbient(),
-                        regen.isVisible(),
-                        regen.showIcon()
-                ));
-            }
-        }
-    }
     /**
      * Gets called every 5 ticks from BeyonderDataTickHandler
      */
@@ -154,19 +105,6 @@ public abstract class PassiveAbility {
 
     public MutableComponent getDescription() {
         return Component.translatable("ability.lotmcraft." + id + ".description");
-    }
-
-    protected void applyPotionEffects(LivingEntity entity, List<MobEffectInstance> effects) {
-        for (MobEffectInstance effect : effects) {
-            entity.addEffect(new MobEffectInstance(
-                    effect.getEffect(),
-                    effect.getDuration(),
-                    effect.getAmplifier(),
-                    effect.isAmbient(),
-                    effect.isVisible(),
-                    effect.showIcon()
-            ));
-        }
     }
 
 

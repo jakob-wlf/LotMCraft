@@ -131,9 +131,4 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
             default -> List.of();
         };
     }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

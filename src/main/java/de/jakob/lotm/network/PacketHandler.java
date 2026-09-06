@@ -38,6 +38,18 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncAbilityBarPacket.TYPE,
+                SyncAbilityBarPacket.STREAM_CODEC,
+                SyncAbilityBarPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncControllingPacket.TYPE,
+                SyncControllingPacket.STREAM_CODEC,
+                SyncControllingPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncHistoricalVoidSummoningCountPacket.TYPE,
                 SyncHistoricalVoidSummoningCountPacket.STREAM_CODEC,
                 SyncHistoricalVoidSummoningCountPacket::handle
@@ -104,9 +116,9 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncAbilityWheelDataPacket.TYPE,
-                SyncAbilityWheelDataPacket.STREAM_CODEC,
-                SyncAbilityWheelDataPacket::handle
+                SyncAbilityWheelDataToIntrospectPacket.TYPE,
+                SyncAbilityWheelDataToIntrospectPacket.STREAM_CODEC,
+                SyncAbilityWheelDataToIntrospectPacket::handle
         );
 
         registrar.playToClient(
@@ -490,12 +502,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncOriginalBodyOwnerPacket.TYPE,
-                SyncOriginalBodyOwnerPacket.STREAM_CODEC,
-                SyncOriginalBodyOwnerPacket::handle
-        );
-
-        registrar.playToClient(
                 SyncSkillScalingPacket.TYPE,
                 SyncSkillScalingPacket.STREAM_CODEC,
                 SyncSkillScalingPacket::handle
@@ -511,12 +517,6 @@ public class PacketHandler {
                 SyncUniquenessPacket.TYPE,
                 SyncUniquenessPacket.STREAM_CODEC,
                 SyncUniquenessPacket::handle
-        );
-
-        registrar.playToClient(
-                SyncControllingDataPacket.TYPE,
-                SyncControllingDataPacket.STREAM_CODEC,
-                SyncControllingDataPacket::handle
         );
 
         registrar.playToClient(
@@ -567,6 +567,18 @@ public class PacketHandler {
                 BecomeBeyonderPacket.TYPE,
                 BecomeBeyonderPacket.STREAM_CODEC,
                 BecomeBeyonderPacket::handle
+        );
+
+        registrar.playToServer(
+                NextMarionettePacket.TYPE,
+                NextMarionettePacket.STREAM_CODEC,
+                NextMarionettePacket::handle
+        );
+
+        registrar.playToServer(
+                RequestControllingSyncPacket.TYPE,
+                RequestControllingSyncPacket.STREAM_CODEC,
+                RequestControllingSyncPacket::handle
         );
 
         registrar.playToServer(

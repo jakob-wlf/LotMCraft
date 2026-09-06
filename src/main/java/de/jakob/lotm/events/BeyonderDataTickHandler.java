@@ -124,7 +124,7 @@ public class BeyonderDataTickHandler {
                 invalidateCache(livingEntity);
             }
 
-            if(entity.tickCount % (20 * 30) == 0) {
+            if(entity.tickCount % getWormRecoverTime(livingEntity) == 0) {
                 BeyonderData.incrementWormAmount(livingEntity, 1);
             }
 
@@ -155,6 +155,13 @@ public class BeyonderDataTickHandler {
                 PacketHandler.sendToTrackingAndSelf(livingEntity, new SyncToggleAbilityPacket(livingEntity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()));
             });
         }
+    }
+
+    private static int getWormRecoverTime(LivingEntity entity) {
+        return switch (BeyonderData.getPathway(entity)) {
+            case "fool" -> 20 * 60 * 5;
+            default -> 20 * 30;
+        };
     }
 
     @SubscribeEvent

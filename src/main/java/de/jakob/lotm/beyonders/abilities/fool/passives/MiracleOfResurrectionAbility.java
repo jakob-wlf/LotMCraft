@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
@@ -48,11 +49,14 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
 
     @SubscribeEvent
     public static void beforePlayerDies(LivingIncomingDamageEvent event) {
-        Entity entity = event.getEntity();
+        LivingEntity entity = event.getEntity();
         Level level = entity.level();
 
         if(level.isClientSide)
             return;
+
+        MiracleOfResurrectionAbility ability = (MiracleOfResurrectionAbility) PassiveAbilityHandler.getById("miracle_of_resurrection_ability");
+        if(ability == null || !ability.shouldApplyTo(entity)) return;
 
         if (entity instanceof ServerPlayer serverPlayer) {
 

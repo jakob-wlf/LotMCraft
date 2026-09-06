@@ -3,9 +3,9 @@ package de.jakob.lotm.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -92,18 +92,6 @@ public class TeamCommand {
     }
 
     private static boolean checkEligible(CommandSourceStack source, ServerPlayer player) {
-        // If the player is currently controlling a marionette, check their original body's data
-        ControllingDataComponent controlling = player.getData(ModAttachments.CONTROLLING_DATA);
-        if (controlling.isControlling()) {
-            net.minecraft.nbt.CompoundTag bodyTag = controlling.getBodyEntity();
-            String pathway = bodyTag != null ? bodyTag.getCompound("NeoForgeData").getString("beyonder_pathway") : "";
-            int sequence = bodyTag != null ? bodyTag.getCompound("NeoForgeData").getInt("beyonder_sequence") : LOTMCraft.NON_BEYONDER_SEQ;
-            if (!pathway.equals("red_priest") || sequence > 3) {
-                source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
-                return false;
-            }
-            return true;
-        }
         if (!TeamUtils.isEligibleLeader(player)) {
             source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
             return false;
