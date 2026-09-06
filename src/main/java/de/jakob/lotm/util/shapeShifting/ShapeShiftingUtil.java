@@ -52,8 +52,8 @@ public class ShapeShiftingUtil {
             EntityType<?> shapeEntity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(cleanEntityType));
             EntityDimensions dimensions = shapeEntity.getDimensions();
 
-            float playerHeight = player.getBbHeight();
-            float playerWidth = player.getBbWidth();
+            float playerHeight = 1.8f;
+            float playerWidth = 0.6f;
             float entityHeight = dimensions.height();
             float entityWidth = dimensions.width();
 
@@ -61,16 +61,11 @@ public class ShapeShiftingUtil {
             float widthDifference = Math.abs(entityWidth - playerWidth) / playerWidth;
 
             if (sequence >= 6 && (!isPlayerModel)) {
-                player.sendSystemMessage(Component.literal("§fYou Can't Change Shape To This Entity §b"));
+                player.sendSystemMessage(Component.literal("§fYou Can't Change Your Shape To This Entity §b"));
                 return;
             } else if (sequence >= 5) {
                 if (heightDifference > 0.25 || widthDifference > 0.25) {
-                    player.sendSystemMessage(Component.literal("§fYou Can't Change Shape To This Entity §b"));
-                    return;
-                }
-            } else if (sequence >= 4) {
-                if (heightDifference > 0.9 || widthDifference > 0.9) {
-                    player.sendSystemMessage(Component.literal("§fYou Can't Change Shape To This Entity §b"));
+                    player.sendSystemMessage(Component.literal("§fYou Can't Change Your Shape To This Entity §b"));
                     return;
                 }
             }

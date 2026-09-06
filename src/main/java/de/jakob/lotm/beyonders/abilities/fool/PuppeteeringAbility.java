@@ -41,7 +41,7 @@ public class PuppeteeringAbility extends SelectableAbility {
     private final Map<UUID, Set<UUID>> massEntitiesBeingManipulated = new HashMap<>();
 
     public PuppeteeringAbility(String id) {
-        super(id, 1);
+        super(id, 0.1f);
 
         onHoldTickInverval = 1;
     }
@@ -60,7 +60,8 @@ public class PuppeteeringAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.puppeteering_ability.puppeteere",
-                "ability.lotmcraft.puppeteering_ability.mass_puppeteering"
+                "ability.lotmcraft.puppeteering_ability.mass_puppeteering",
+                "ability.lotmcraft.puppeteering_ability.cancel_mass_puppeteering"
         };
     }
 
@@ -72,6 +73,7 @@ public class PuppeteeringAbility extends SelectableAbility {
         switch(selectedAbility){
             case 0 -> puppeteering(level, entity);
             case 1 -> massPuppeteering(level, entity);
+            case 2 -> cancelMassPuppeteering(entity);
         }
     }
 
@@ -125,33 +127,19 @@ public class PuppeteeringAbility extends SelectableAbility {
     }
 
     public void massPuppeteering(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel serverLevel)) return;
-        if (!(entity instanceof ServerPlayer player)) return;
-        if(!BeyonderData.isBeyonder(entity)) return;
+        if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer player) || !BeyonderData.isBeyonder(entity)) return;
 
         Map<LivingEntity, Integer> validTargets = new HashMap<>();
-
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
-
         AllyComponent allyComponent = player.getData(ModAttachments.ALLY_COMPONENT);
 
         for (Entity e : serverLevel.getAllEntities()) {
-            if (e instanceof LivingEntity target) {
-                if(target != player && target.isAlive() && !(target instanceof Phantom) && !allyComponent.isAlly(target.getUUID())) {
-                    MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-                    if (!component.isMarionette()) {
-                        int targetSequence = BeyonderData.getSequence(target);
-                        int time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence) * 4;
-                        if (time >= 0) {
-                            if (player.distanceTo(target) < getManipulationDistance(sequence) * 0.25) {
-                                SanityComponent sanityComponent = target.getData(ModAttachments.SANITY_COMPONENT);
-                                if (sanityComponent.getSanity() < 0.8f) {
-                                    time = (int) (time * (0.15f + sanityComponent.getSanity()));
-                                }
-
-                                validTargets.put(target, time);
-                            }
-                        }
+            if (e instanceof LivingEntity target && target != player && target.isAlive() && !(target instanceof Phantom) && !allyComponent.isAlly(target.getUUID())) {
+                MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+                if (!component.isMarionette()) {
+                    int time = calculatePuppetTime(player, target, 4);
+                    if (time >= 0 && player.distanceTo(target) < getManipulationDistance(sequence) * 0.25) {
+                        validTargets.put(target, time);
                     }
                 }
             }
@@ -174,7 +162,6 @@ public class PuppeteeringAbility extends SelectableAbility {
             return;
         }
 
-        int sequence = AbilityUtil.getSeqWithArt(serverPlayer, this);
         Set<UUID> playerMassTargets = massEntitiesBeingManipulated.computeIfAbsent(serverPlayer.getUUID(), k -> new HashSet<>());
 
         for (Map.Entry<LivingEntity, Integer> entry : livingEntitiesMap.entrySet()) {
@@ -186,224 +173,146 @@ public class PuppeteeringAbility extends SelectableAbility {
             }
 
             playerMassTargets.add(target.getUUID());
-
-            int targetSequence = BeyonderData.getSequence(target);
-            if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target) || targetSequence <= 3) {
-                if (target instanceof Mob mob) {
-                    mob.setTarget(serverPlayer);
-                }
-            }
-
-            AtomicBoolean stopped = new AtomicBoolean(false);
-            AtomicDouble health = new AtomicDouble(target.getHealth());
-            AtomicDouble casterHealth = new AtomicDouble(serverPlayer.getHealth());
-            AtomicDouble elapsedTicks = new AtomicDouble(0.0);
-            int finalTime = time;
-
-            ServerScheduler.scheduleForDuration(0, 1, time, () -> {
-                if (stopped.get()) {
-                    return;
-                }
-
-                Set<UUID> currentTargets = massEntitiesBeingManipulated.get(serverPlayer.getUUID());
-                if (currentTargets == null || !currentTargets.contains(target.getUUID())) {
-                    stopped.set(true);
-                    return;
-                }
-
-                double currentTick = elapsedTicks.addAndGet(1.0);
-                float progress = (float) currentTick / finalTime;
-
-                if (!target.isAlive() || target.isRemoved() || target.level() != level || !serverPlayer.isAlive() || serverPlayer.isRemoved()) {
-                    removeMassTarget(serverPlayer.getUUID(), target.getUUID());
-                    stopped.set(true);
-                    return;
-                }
-
-                if (target.distanceTo(serverPlayer) >= getManipulationDistance(sequence) * 1.75f) {
-                    removeMassTarget(serverPlayer.getUUID(), target.getUUID());
-                    stopped.set(true);
-                    return;
-                }
-
-                if (target.getHealth() < health.get() * 0.33) {
-                    removeMassTarget(serverPlayer.getUUID(), target.getUUID());
-                    stopped.set(true);
-                    return;
-                }
-
-                if (serverPlayer.getHealth() < casterHealth.get() * 0.5) {
-                    removeMassTarget(serverPlayer.getUUID(), target.getUUID());
-                    stopped.set(true);
-                    return;
-                }
-
-                Vec3 start = VectorUtil.getRelativePosition(serverPlayer.getEyePosition(), new Vec3(serverPlayer.getLookAngle().x, 0, serverPlayer.getLookAngle().z), .1, .35, -.5);
-                Vec3 end = target.getEyePosition();
-                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 0.5f, 0.1f, 0.7f));
-
-                // Progressive debuffs
-                target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
-                if (progress >= 0.20f) {
-                    target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
-                    target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 5, false, false, false));
-                }
-                if (progress >= 0.60f) {
-                    target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 10, false, false, false));
-                    if (currentTick % 100 == 0) {
-                        DisabledAbilitiesComponent disabledComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                        disabledComponent.disableAbilityUsageForTime("puppeteering_ability_" + serverPlayer.getUUID(), 2 * 20, target);
-                    }
-                }
-
-                health.set(target.getHealth());
-            }, () -> {
-                if (stopped.get()) {
-                    return;
-                }
-                removeMassTarget(serverPlayer.getUUID(), target.getUUID());
-
-                EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), serverLevel, serverPlayer, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
-
-                MarionetteComponent component = serverPlayer.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-                MarionetteOwnerComponent data = serverPlayer.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT);
-
-                if (!component.isMarionette() && data.getMarionettes().size() < getMaxPuppetCount(sequence)) {
-                    turnIntoMarionette(target, serverPlayer);
-                } else {
-                    target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
-                }
-            }, serverLevel);
+            startPuppetProcess(serverLevel, serverPlayer, target, time, true);
         }
     }
 
     public void puppeteering(Level level, LivingEntity entity) {
-        if(entitiesBeingManipulated.containsKey(entity.getUUID())) {
+        if (entitiesBeingManipulated.containsKey(entity.getUUID())) {
             entitiesBeingManipulated.remove(entity.getUUID());
             return;
         }
 
+        if (!(level instanceof ServerLevel serverLevel) || !BeyonderData.isBeyonder(entity)) return;
+
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(!BeyonderData.isBeyonder(entity))
-            return;
-
-
         LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
-        if(target == null || target == entity || target instanceof Phantom) {
-            if(entity instanceof ServerPlayer player) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d));
-                player.connection.send(packet);
+
+        if (target == null || target == entity || target instanceof Phantom) {
+            if (entity instanceof ServerPlayer player) {
+                player.connection.send(new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.puppeteering.no_entity_found").withColor(0xFFff124d)));
             }
             return;
         }
-        int targetSequence = BeyonderData.getSequence(target);
-        int time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence);
 
+        int time = calculatePuppetTime(entity, target, 1);
         if (time < 0) {
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8, 5, false, false, false));
             return;
         }
 
-        SanityComponent sanityComponent = target.getData(ModAttachments.SANITY_COMPONENT);
-        if (sanityComponent.getSanity() < 0.8f) {
-            time = (int) (time * (0.15f + sanityComponent.getSanity()));
-        }
-
         entitiesBeingManipulated.put(entity.getUUID(), target);
+        startPuppetProcess(serverLevel, entity, target, time, false);
+    }
 
-        AtomicBoolean stopped = new AtomicBoolean(false);
+    private int calculatePuppetTime(LivingEntity caster, LivingEntity target, int multiplier) {
+        int sequence = AbilityUtil.getSeqWithArt(caster, this);
+        int targetSequence = BeyonderData.getSequence(target);
+        int time = getManipulationTimeBySequenceAndSequenceDifference(sequence, targetSequence) * multiplier;
+
+        if (time < 0) return time;
+
+        SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
+        if (sanity.getSanity() < 0.8f) {
+            time = (int) (time * (0.15f + sanity.getSanity()));
+        }
+        return time;
+    }
+
+    private void startPuppetProcess(ServerLevel level, LivingEntity entity, LivingEntity target, int time, boolean isMass) {
+        int sequence = AbilityUtil.getSeqWithArt(entity, this);
+        int targetSequence = BeyonderData.getSequence(target);
 
         if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target) || targetSequence <= 3) {
-            if(target instanceof Mob mob) {
-                mob.setTarget(entity);
+            if (target instanceof Mob mob) mob.setTarget(entity);
+            if (target instanceof ServerPlayer targetPlayer) {
+                targetPlayer.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_warning").withColor(0xa26fc9));
             }
         }
 
-        AtomicDouble health = new AtomicDouble(target.getHealth());
+        AtomicBoolean stopped = new AtomicBoolean(false);
+        AtomicDouble targetHealth = new AtomicDouble(target.getHealth());
         AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
         AtomicDouble elapsedTicks = new AtomicDouble(0.0);
 
-        int finalTime = time;
         ServerScheduler.scheduleForDuration(0, 1, time, () -> {
-            if(stopped.get()) {
-                return;
-            }
+            if (stopped.get()) return;
 
-            if(!entitiesBeingManipulated.containsKey(entity.getUUID())) {
-                entitiesBeingManipulated.remove(entity.getUUID());
-                stopped.set(true);
-                return;
+            if (isMass) {
+                Set<UUID> targets = massEntitiesBeingManipulated.get(entity.getUUID());
+                if (targets == null || !targets.contains(target.getUUID())) {
+                    stopped.set(true);
+                    return;
+                }
+            } else {
+                if (!entitiesBeingManipulated.containsKey(entity.getUUID())) {
+                    stopped.set(true);
+                    return;
+                }
             }
 
             double currentTick = elapsedTicks.addAndGet(1.0);
-            float progress = (float) currentTick / finalTime;
+            float progress = (float) currentTick / time;
 
-            if(!target.isAlive() || target.isRemoved() || target.level() != level) {
-                entitiesBeingManipulated.remove(entity.getUUID());
-                stopped.set(true);
-                return;
-            }
-
-            if(target.distanceTo(entity) >= getManipulationDistance(sequence)) {
-                entitiesBeingManipulated.remove(entity.getUUID());
-                stopped.set(true);
-                return;
-            }
-
-            if(target.getHealth() < health.get() * 0.75) {
-                entitiesBeingManipulated.remove(entity.getUUID());
-                stopped.set(true);
-                return;
-            }
-
-            if(entity.getHealth() < casterHealth.get() * 0.5) {
-                entitiesBeingManipulated.remove(entity.getUUID());
+            if (!target.isAlive() || target.isRemoved() || target.level() != level || !entity.isAlive() || entity.isRemoved()
+                    || target.distanceTo(entity) >= getManipulationDistance(sequence)
+                    || target.getHealth() < targetHealth.get() * 0.85
+                    || entity.getHealth() < casterHealth.get() * 0.5) {
+                if (isMass) {
+                    removeMassTarget(entity.getUUID(), target.getUUID());
+                } else {
+                    entitiesBeingManipulated.remove(entity.getUUID());
+                }
                 stopped.set(true);
                 return;
             }
 
             Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
             Vec3 end = target.getEyePosition();
-            if (target instanceof ServerPlayer targetPlayer && (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target) || targetSequence <= 3)) {
-                targetPlayer.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_warning").withColor(0xa26fc9));
-            }
-            if(entity instanceof ServerPlayer serverPlayer)
+
+            if (entity instanceof ServerPlayer serverPlayer) {
                 EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 0.5f, 0.1f, 0.7f));
+            }
+            if (target instanceof ServerPlayer serverTarget && BeyonderData.getPathway(target).equals("fool")) {
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverTarget, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 1.0f, 0.0f, 0.0f));
+            }
 
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
             if (progress >= 0.20f) {
-                target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));
-                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 5, false, false, false));
+                target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 2, false, false, false));
+                target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false, false));
             }
             if (progress >= 0.60f) {
-                target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 10, false, false, false));
-                // every 5 seconds - lose abilities for 2 seconds
+                target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 2, false, false, false));
                 if (currentTick % 100 == 0) {
-                    DisabledAbilitiesComponent disabledComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    disabledComponent.disableAbilityUsageForTime("puppeteering_ability_" + entity.getUUID(), 2 * 20, target);
+                    DisabledAbilitiesComponent disabledAbilitiesComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+                    disabledAbilitiesComponent.disableAbilityUsageForTime("puppeteering_ability_" + entity.getUUID(), 2 * 20, target);
                 }
             }
 
-            health.set(target.getHealth());
+            targetHealth.set(target.getHealth());
         }, () -> {
-            if(stopped.get()) {
-                return;
+            if (stopped.get()) return;
+
+            if (isMass) {
+                removeMassTarget(entity.getUUID(), target.getUUID());
+            } else {
+                entitiesBeingManipulated.remove(entity.getUUID());
             }
-            entitiesBeingManipulated.remove(entity.getUUID());
+
+            if (entity instanceof ServerPlayer serverPlayer) {
+                EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), level, serverPlayer, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
+            }
 
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
-            if(entity instanceof ServerPlayer player)
-                EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level, player, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
-
             MarionetteOwnerComponent data = entity.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT);
-            if(entity instanceof Player player && !component.isMarionette() && data.getMarionettes().size() < getMaxPuppetCount(sequence)) {
+
+            if (entity instanceof Player player && !component.isMarionette() && data.getMarionettes().size() < getMaxPuppetCount(sequence)) {
                 turnIntoMarionette(target, player);
-            }
-            else {
+            } else {
                 target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
             }
-        }, (ServerLevel) level);
+        }, level);
     }
 
     private void turnIntoMarionette(LivingEntity target, Player player) {
@@ -433,6 +342,10 @@ public class PuppeteeringAbility extends SelectableAbility {
         } else {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
         }
+    }
+
+    public void cancelMassPuppeteering(LivingEntity entity) {
+        massEntitiesBeingManipulated.remove(entity.getUUID());
     }
 
     @Override
@@ -484,7 +397,7 @@ public class PuppeteeringAbility extends SelectableAbility {
         if (sequence == 5) {
             if (targetSequence < 5) return -1;
             int targetClamped = Math.min(targetSequence, 10);
-            return 2400 - (20 * 20) * (targetClamped - 5); // so against seq10 9 8 7 6 5 its -> 20s 40s 60s 80s 100s 120s
+            return 2400 - (20 * 20) * (targetClamped - 5);
         }
 
         if (sequence == 4) {

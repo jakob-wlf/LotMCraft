@@ -459,6 +459,7 @@
   "lotmcraft.puppeteering_ability.description": "Manipulate Spirit Body Threads to turn anyone into your marionette and command them",
   "ability.lotmcraft.puppeteering_ability.puppeteere": "Puppeteer",
   "ability.lotmcraft.puppeteering_ability.mass_puppeteering": "Mass Puppeteering",
+  "ability.lotmcraft.puppeteering_ability.cancel_mass_puppeteering": "Cancel Mass Puppeteering",
   "ability.lotmcraft.puppeteering.no_entity_found": "No Entity to control found",
   "ability.lotmcraft.puppeteering.entity_turned": "Turned the entity into your marionette",
   "ability.lotmcraft.puppeteering.entity_turned_failed": "Failed to turn the entity into your marionette",
@@ -2312,6 +2313,10 @@
   "gui.lotm.flaming_jump.none": "No Fire In Range",
   "gui.lotm.flaming_jump.teleport": "Teleport",
 
+  "gui.lotm.mass_puppeteering.title": "Mass Puppeteering (Same Dimension only)",
+  "gui.lotm.mass_puppeteering.close": "Close",
+  "gui.lotm.mass_puppeteering.confirm": "Confirm",
+  "gui.lotm.mass_puppeteering.none": "No Valid Entity In Range",
 
   "ritual.lotmcraft.carnival_playbill": "Carnival Playbill",
   "ritual.lotmcraft.trackers_field_journal": "Tracker's Field Journal",

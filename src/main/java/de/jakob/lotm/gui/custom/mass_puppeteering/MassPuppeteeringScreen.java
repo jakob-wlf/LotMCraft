@@ -78,29 +78,8 @@ public class MassPuppeteeringScreen extends AbstractContainerScreen<MassPuppetee
     }
 
     private void handleConfirm() {
-        List<LivingEntity> selectedEntities = this.list.getSelectedEntities();
         Map<Integer, Integer> selectedTargetTimes = this.list.getSelectedTargetTimes();
-
         PacketHandler.sendToServer(new MassPuppeteeringSelectedEntitiesPacket(selectedTargetTimes));
-
-        if (this.minecraft != null && this.minecraft.player != null) {
-            if (selectedEntities.isEmpty()) {
-                this.minecraft.player.sendSystemMessage(
-                        Component.literal("[Mass Puppeteering] No entities selected!").withStyle(ChatFormatting.RED)
-                );
-            } else {
-                this.minecraft.player.sendSystemMessage(
-                        Component.literal("[Mass Puppeteering] Selected Entities (" + selectedEntities.size() + "):")
-                                .withStyle(ChatFormatting.GOLD)
-                );
-                for (LivingEntity target : selectedEntities) {
-                    this.minecraft.player.sendSystemMessage(
-                            Component.literal(" - " + target.getDisplayName().getString() + " [ID: " + target.getId() + "]")
-                                    .withStyle(ChatFormatting.YELLOW)
-                    );
-                }
-            }
-        }
         onClose();
     }
 

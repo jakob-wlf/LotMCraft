@@ -364,39 +364,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
             decrementHistoricalBorrowingCount(serverPlayer, borrowTime);
         }
-        data.reset();
+        data.resetBorrowing();
     }
-
-
-    @SubscribeEvent
-    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
-
-        returnAllBorrows(player);
-    }
-
-    @SubscribeEvent
-    public static void onPlayerTickEvent(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        Level level = player.level();
-
-        if (player.tickCount % 20 != 0) return;
-        if (level.isClientSide || !(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer)) return;
-
-        HistoricalVoidComponent data = serverPlayer.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-            if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
-                    info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
-                    info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
-                    info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE) {
-
-                if (serverLevel.getGameTime() > info.summonTime()) {
-                    decrementHistoricalBorrowingCount(serverPlayer, info.summonTime());
-                }
-            }
-        }
-    }
-
 
     private static void incrementHistoricalBorrowingCount(ServerPlayer player, long borrowTime, HistoricalVoidSummoningAbility.SummonType type, UUID entityUUID, CompoundTag originalBeforeBorrowing) {
         HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
@@ -462,14 +431,19 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 if (tag.contains("sanity")) {
                     player.getData(ModAttachments.SANITY_COMPONENT).setSanity(specificInfo.originalBeforeBorrowing().getFloat("sanity"));
                 }
-            } else if (specificInfo.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE) {
+            }
+            else if (specificInfo.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE) {
                 BeyonderData.setPathway(player, specificInfo.originalBeforeBorrowing().getString("pathway"));
                 BeyonderData.setSequence(player, specificInfo.originalBeforeBorrowing().getInt("sequence"));
+            }
+            else if (specificInfo.type() == HistoricalVoidSummoningAbility.SummonType.EFFECT) {
+                for (HistoricalVoidComponent.SavedEffect saved : data.getSavedEffects()) {
+                    BuiltInRegistries.MOB_EFFECT.getHolder(saved.effectId()).ifPresent(player::removeEffect);
+                }
             }
             data.activeSummonTimes.remove(borrowTime);
         }
     }
-
 
     private static int getHistoricalBorrowingCount(ServerPlayer player) {
         HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
@@ -489,7 +463,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
         return switch (BeyonderData.getSequence(serverPlayer)){
             case 0 -> 60 * 60 * 20;
             case 1 -> 10 * 60 * 20;
-            case 2 -> 4 * 20;
+            case 2 -> 4 * 60 * 20;
             default -> 60 * 20;
         };
     }
@@ -541,4 +515,34 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             historicalVoidComponentDataBigName.addSavedEffect(effectId, amplifier, duration);
         }
     }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        returnAllBorrows(player);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTickEvent(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        Level level = player.level();
+
+        if (player.tickCount % 20 != 0) return;
+        if (level.isClientSide || !(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer)) return;
+
+        HistoricalVoidComponent data = serverPlayer.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
+        for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
+            if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
+                    info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
+                    info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
+                    info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE) {
+
+                if (serverLevel.getGameTime() > info.summonTime()) {
+                    decrementHistoricalBorrowingCount(serverPlayer, info.summonTime());
+                }
+            }
+        }
+    }
+
 }
