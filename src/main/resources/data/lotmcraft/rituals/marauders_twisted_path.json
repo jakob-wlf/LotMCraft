@@ -20,7 +20,7 @@
   "result": {
     "type": "open_portal",
     "params": {
-      "destination": "minecraft:the_end",
+      "destination": "minecraft:the_end"
     }
   }
 }

@@ -32,8 +32,11 @@ public class ModDimensions {
     public static final Supplier<MapCodec<SpiritWorldChunkGenerator>> SPIRIT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("spirit_world", () -> SpiritWorldChunkGenerator.CODEC);
 
-    public static final Supplier<MapCodec<PreGeneratedChunkGenerator>> PREGENERATED_CHUNK_GENERATOR =
-            CHUNK_GENERATORS.register("pregenerated", () -> PreGeneratedChunkGenerator.CODEC);
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> SEFIRAH_CASTLE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("sefirah_castle", () -> SefirotChunkGenerator.SEFIRAH_CASTLE_CODEC);
+
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> BROOD_HIVE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("brood_hive", () -> SefirotChunkGenerator.BROOD_HIVE_CODEC);
 
     public static final Supplier<MapCodec<ConcealmentWorldChunkGenerator>> CONCEALMENT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("concealment_world", () -> ConcealmentWorldChunkGenerator.CODEC);
@@ -270,6 +273,26 @@ public class ModDimensions {
     public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // BROOD HIVE dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> BROOD_HIVE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+
+    public static final ResourceKey<Level> BROOD_HIVE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+
+    public static final ResourceKey<DimensionType> BROOD_HIVE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+
+    public static final ResourceKey<Biome> BROOD_HIVE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive_biome"));
 
     // =========================================================================
     // CONCEALMENT WORLD dimension

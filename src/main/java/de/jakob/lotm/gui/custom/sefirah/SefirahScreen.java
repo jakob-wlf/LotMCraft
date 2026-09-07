@@ -5,10 +5,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.HandleSefirotGuestPacket;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -25,8 +25,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
-    private static final ResourceLocation GUI_TEXTURE =
+    private ResourceLocation GUI_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/sefirah/sefirah_castle/sefirah_castle_gui.png");
+
 
     Set<AllyComponent.AllyInfo> allies;
     private AllyList allyList;
@@ -44,6 +45,8 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
 
         Player player = ClientHandler.getPlayer();
         allies = player.getData(ModAttachments.ALLY_COMPONENT).allies();
+
+        GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, getTexturePathForPlayer(player));
 
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
@@ -103,6 +106,16 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
                 (height - imageHeight) / 2 + 20 + imageHeight - 120,
                 0xFFFFFF
         );
+    }
+
+    private String getTexturePathForPlayer(Player player) {
+        if(player.level().dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY)) {
+            return "textures/gui/sefirah/sefirah_castle/sefirah_castle_gui.png";
+        } else if(player.level().dimension().equals(ModDimensions.BROOD_HIVE_DIMENSION_KEY)) {
+            return "textures/gui/sefirah/brood_hive/brood_hive_gui.png";
+        }
+
+        return "textures/gui/sefirah/sefirah_castle/sefirah_castle_gui.png";
     }
 
     @Override

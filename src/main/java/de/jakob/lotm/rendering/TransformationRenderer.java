@@ -318,7 +318,7 @@ public class TransformationRenderer {
 
         poseStack.scale(4, -4, 4);
 
-        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(deathMythicalCreatureTexture));
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityTranslucent(deathMythicalCreatureTexture));
 
         float limbSwing = 0;
         float limbSwingAmount = 0;
@@ -346,7 +346,7 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.4, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.7, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
@@ -381,7 +381,7 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 - 1, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
@@ -416,12 +416,12 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .5, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.3, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - yaw));
 
-        poseStack.scale(2.5F, -2.5F, 2.5F);
+        poseStack.scale(3.5F, -3.5F, 3.5F);
 
         VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(errorMythicalCreatureTexture));
 
@@ -451,7 +451,7 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .85, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.2, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
@@ -603,13 +603,12 @@ public class TransformationRenderer {
         float limbSwing = 0;
         float limbSwingAmount = 0;
 
-//        if (entity instanceof LivingEntity living) {
-//            limbSwing = living.walkAnimation.position(partialTick);
-//            limbSwingAmount = living.walkAnimation.speed(partialTick);
-//        }
-//
-//        // Setup animation with proper parameters
-//        tyrantMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        redPriestMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
 
         redPriestMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
                 OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);

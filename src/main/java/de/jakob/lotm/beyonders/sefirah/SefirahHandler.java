@@ -31,7 +31,7 @@ import java.util.UUID;
 
 public class SefirahHandler {
 
-    public static final String[] implementedSefirah = new String[]{"sefirah_castle", "empty"};
+    public static final String[] implementedSefirah = new String[]{"sefirah_castle", "brood_hive", "empty"};
     private static HashMap<UUID, String> clientSefirotPlayers = new HashMap<>();
 
     public static boolean claimSefirot(ServerPlayer player, String sefirot) {
@@ -256,6 +256,34 @@ public class SefirahHandler {
                     playCorrectEffect(BlockPos.containing(x, y, z), sefirot, isOwner, sefirotLevel);
                 }
             }
+            case "brood_hive" -> {
+                ResourceKey<Level> sefirotDimension = ResourceKey.create(Registries.DIMENSION,
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+                ServerLevel sefirotLevel = player.serverLevel().getServer().getLevel(sefirotDimension);
+                if (sefirotLevel == null) {
+                    return;
+                }
+
+                boolean isOwner = sefirotData.getClaimedSefirot(player.getUUID()).equals(sefirot);
+
+                float x = 127.5f;
+                int y = isOwner ? 121 : 118;
+                float z = isOwner ? 116.5f : 125.5f;
+                int yaw = isOwner ? 0 : -180;
+
+                player.teleportTo(sefirotLevel,
+                        x,
+                        y,
+                        z,
+                        yaw,
+                        0);
+
+                sefirotLevel.setBlockAndUpdate(BlockPos.containing(127, 122, 119), ModBlocks.SEFIRAH_BLOCK.get().defaultBlockState());
+
+                if(playTeleportEffect) {
+                    playCorrectEffect(BlockPos.containing(x, y, z), sefirot, isOwner, sefirotLevel);
+                }
+            }
         }
     }
 
@@ -273,9 +301,9 @@ public class SefirahHandler {
 
     public static void playCorrectEffect(BlockPos pos, String sefirot, boolean isOwner, ServerLevel sefirotLevel) {
         switch (sefirot) {
-            case "sefirah_castle" -> {
+            case "sefirah_castle", "brood_hive" -> {
                 if(isOwner) {
-                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 24, -57, 0, sefirotLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, pos.getX(), pos.getY(), pos.getZ(), sefirotLevel);
                 }
                 else {
                     PacketHandler.sendToAllPlayersInSameLevel(new PlayPhotonBlockEffectPacket(
@@ -335,6 +363,9 @@ public class SefirahHandler {
         switch (sefirot) {
             case "sefirah_castle" -> {
                 return new String[]{"fool", "door", "error"};
+            }
+            case "brood_hive" -> {
+                return new String[]{"mother", "moon"};
             }
             default -> {
                 return new String[]{};

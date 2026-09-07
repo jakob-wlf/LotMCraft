@@ -10,18 +10,18 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
-public class SefirahCastleDimensionEffects{
+public class BroodHiveDimensionEffects {
 
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"),
-                new SefirahCastleEffects()
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"),
+                new BroodHiveEffects()
         );
     }
     
-    public static class SefirahCastleEffects extends DimensionSpecialEffects {
-        public SefirahCastleEffects() {
+    public static class BroodHiveEffects extends DimensionSpecialEffects {
+        public BroodHiveEffects() {
             super(
                     Float.NaN, // Cloud height (NaN = no clouds)
                     true, // Has sky effects
@@ -34,7 +34,7 @@ public class SefirahCastleDimensionEffects{
         @Override
         public Vec3 getBrightnessDependentFogColor(Vec3 color, float brightness) {
             // Return a constant fog color, unaffected by brightness
-            return new Vec3(0.5, 0.5, 0.5); // Gray fog
+            return new Vec3(1, 0.5, 0.5); // Gray fog
         }
 
         @Override
