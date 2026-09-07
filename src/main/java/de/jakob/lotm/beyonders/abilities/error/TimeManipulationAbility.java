@@ -45,10 +45,8 @@ public class TimeManipulationAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.ENCHANT, entity.getEyePosition(), 400, 10, 2, 10, 0.05);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.getEyePosition(), 100, 10, 2, 10, 0.05);
 
-        int multiplier = (int) multiplier(entity);
-
         float timeMultiplier = selectedAbility == 0 ? 0.001f : (selectedAbility == 1 ? 4f : 0.2f);
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 8* (int) multiplier(entity), entity.getUUID(), 50 *(int) Math.max(multiplier(entity)/2,1), timeMultiplier);
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level,  (int)(20 * 8* multiplier(entity)), entity.getUUID(), 50 *(int) Math.max(multiplier(entity)/2,1), timeMultiplier);
         timeChangeEntity.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(timeChangeEntity);
     }

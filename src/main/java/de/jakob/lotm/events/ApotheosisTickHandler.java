@@ -6,7 +6,9 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -54,7 +56,7 @@ public class ApotheosisTickHandler {
         ParticleUtil.spawnSphereParticles((ServerLevel) player.level(), dustParticle, currentCenter, 1.5, 60);
 
         if(component.getApotheosisTicksLeft() % (120) == 0) {
-            MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.BEAMS_OF_LIGHT, new EntityLocation(player), 120, false, (ServerLevel) player.level(), player);
+            EffectManager.playMovableEffect(EffectIds.BEAMS_OF_LIGHT, (ServerLevel) player.level(), player, EffectParams.ofDuration(120));
         }
 
         component.setApotheosisTicksLeftAndSync(component.getApotheosisTicksLeft() - 1, (ServerLevel) player.level(), player);

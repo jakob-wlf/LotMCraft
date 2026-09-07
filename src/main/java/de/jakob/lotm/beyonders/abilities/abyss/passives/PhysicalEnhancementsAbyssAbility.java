@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsAbyssAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsAbyssAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsAbyssAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -111,10 +111,5 @@ public class PhysicalEnhancementsAbyssAbility extends PhysicalEnhancementsAbilit
             
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

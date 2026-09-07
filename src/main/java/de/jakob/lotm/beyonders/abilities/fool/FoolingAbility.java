@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.fool;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.FoolingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -58,7 +59,7 @@ public class FoolingAbility extends Ability {
         }
 
         if(entity instanceof ServerPlayer player)
-            EffectManager.playEffect(EffectManager.Effect.FOOLING, entity.getX(), entity.getY(), entity.getZ(), player);
+            EffectManager.playEffect(EffectIds.FOOLING, entity.getX(), entity.getY(), entity.getZ(), player);
 
         double radius = AOE_RADIUS;
         int particleCount = 80;

@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsJusticiarAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsJusticiarAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -106,10 +106,5 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
 
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

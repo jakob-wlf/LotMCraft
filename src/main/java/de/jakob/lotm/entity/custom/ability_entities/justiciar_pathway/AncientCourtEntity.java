@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway;
 
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.ChatFormatting;
@@ -106,7 +107,7 @@ public class AncientCourtEntity extends Entity {
         effectTimer++;
         if (effectTimer >= 100) {
             effectTimer = 0;
-            EffectManager.playEffect(EffectManager.Effect.ANCIENT_COURT, getX(), getY(), getZ(), serverLevel);
+            EffectManager.playEffect(EffectIds.ANCIENT_COURT, getX(), getY(), getZ(), serverLevel);
         }
 
         applyTickProhibitions(serverLevel);

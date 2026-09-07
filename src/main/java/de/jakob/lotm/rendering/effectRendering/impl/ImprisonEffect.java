@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -15,8 +16,8 @@ public class ImprisonEffect extends ActiveEffect {
     private static final float BAR_RADIUS = 1.2f;
     private static final float BAR_HEIGHT = 3.0f;
 
-    public ImprisonEffect(double x, double y, double z) {
-        super(x, y, z, 120);
+    public ImprisonEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
     }
 
     @Override
@@ -26,9 +27,6 @@ public class ImprisonEffect extends ActiveEffect {
 
         float progress = getProgress();
 
-        // Phase 1 (0-20t = 0.0-0.167): bars slide down from above
-        // Phase 2 (20-100t = 0.167-0.833): hold, rotate slowly, golden pulse
-        // Phase 3 (100-120t = 0.833-1.0): fade out
         float alpha;
         float rotation;
         float yOffset;
@@ -53,7 +51,7 @@ public class ImprisonEffect extends ActiveEffect {
         if (alpha < 0.01f) return;
 
         poseStack.pushPose();
-        poseStack.translate(x, y + yOffset, z);
+        poseStack.translate(getX(), getY() + yOffset, getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());

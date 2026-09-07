@@ -1,14 +1,12 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectMenuProvider;
+import de.jakob.lotm.gui.custom.introspect.IntrospectMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataPacket;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataToIntrospectPacket;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,11 +16,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public record OpenIntrospectMenuPacket(int sequence, String pathway) implements CustomPacketPayload {
     public static final Type<OpenIntrospectMenuPacket> TYPE =
@@ -54,25 +48,19 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 String pathway = BeyonderData.getPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
-                List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
-                    if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
-                        return false;
-                    return abilityItem.shouldApplyTo(context.player());
-                }).map(entry -> new ItemStack(entry.get())).toList());
-
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
                 float sanity = sanityComponent.getSanity();
 
                 AbilityWheelHelper.removeUnusableAbilities(player);
                 AbilityWheelComponent abilityWheelComponent = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
 
-                player.openMenu(new IntrospectMenuProvider(passiveAbilities, sequence, pathway, digestionProgress, sanity), buf -> {
+                player.openMenu(new IntrospectMenuProvider(sequence, pathway, digestionProgress, sanity), buf -> {
                     buf.writeInt(sequence);
                     buf.writeUtf(pathway);
                 });
 
                 PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity));
-                PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataPacket(abilityWheelComponent.getAbilities()));
+                PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataToIntrospectPacket(abilityWheelComponent.getAbilities()));
                 PacketHandler.sendToPlayer(player, new SyncKillCountPacket(player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount()));
                 PacketHandler.syncUniquenessToPlayer(player);
             }

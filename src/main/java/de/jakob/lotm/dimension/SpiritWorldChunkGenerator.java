@@ -27,26 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Chunk generator for the Spirit World dimension.
- *
- * Each biome has a structurally distinct generation algorithm.
- *
- *  ARCHIPELAGO  – floating islands sit above a thin "wool sea" surface plane.
- *
- *  SPIRE        – crystal shaft + needle tip + shelf rings.
- *                 A jagged stalactite/stalagmite floor is generated beneath
- *                 each spire cluster so the biome has a ground to stand on.
- *
- *  SCATTERED    – tilted slab islands (Void Gardens, Fungal Depths).
- *
- *  CONTINENTAL  – shelf → cliff → plateau profile (Ember Wastes, Glacial Shelf).
- *                 Ember Wastes fills low-lying pockets with lava.
- *
- *  PLATEAU      – flat-top slabs with rim erosion (Quartz Flats, Gilded Ruins).
- *
- *  CANYON       – slot-canyon carving with per-island flow angle (Terracotta Canyon).
- */
+
 public class SpiritWorldChunkGenerator extends ChunkGenerator {
 
     public static final MapCodec<SpiritWorldChunkGenerator> CODEC = RecordCodecBuilder.mapCodec(
@@ -55,9 +36,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             ).apply(instance, SpiritWorldChunkGenerator::new)
     );
 
-    // -------------------------------------------------------------------------
-    // PatchType – shared block palette
-    // -------------------------------------------------------------------------
 
     public enum PatchType {
         WOOL(new BlockState[]{
@@ -114,39 +92,51 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         GRASS(new BlockState[]{
                 Blocks.GRASS_BLOCK.defaultBlockState(), Blocks.DIRT.defaultBlockState()
         }),
-        // ── New palettes for new biomes ────────────────────────────────────────
-        /** Packed ice, blue ice, snow blocks — Glacial Shelf */
+
         ICE(new BlockState[]{
                 Blocks.PACKED_ICE.defaultBlockState(),  Blocks.BLUE_ICE.defaultBlockState(),
                 Blocks.ICE.defaultBlockState(),         Blocks.SNOW_BLOCK.defaultBlockState()
         }),
-        /** Glowing mushroom blocks, nylium, mycelium, shroomlights — Fungal Depths */
+
         MUSHROOM(new BlockState[]{
                 Blocks.RED_MUSHROOM_BLOCK.defaultBlockState(),  Blocks.BROWN_MUSHROOM_BLOCK.defaultBlockState(),
                 Blocks.MUSHROOM_STEM.defaultBlockState(),       Blocks.SHROOMLIGHT.defaultBlockState(),
                 Blocks.WARPED_NYLIUM.defaultBlockState(),       Blocks.CRIMSON_NYLIUM.defaultBlockState(),
                 Blocks.MYCELIUM.defaultBlockState()
         }),
-        /** Oxidized copper, cut copper, waxed variants, gold — Gilded Ruins */
+
         COPPER(new BlockState[]{
                 Blocks.OXIDIZED_COPPER.defaultBlockState(),          Blocks.OXIDIZED_CUT_COPPER.defaultBlockState(),
                 Blocks.EXPOSED_COPPER.defaultBlockState(),           Blocks.WEATHERED_COPPER.defaultBlockState(),
                 Blocks.COPPER_BLOCK.defaultBlockState(),             Blocks.CUT_COPPER.defaultBlockState()
         }),
-        /** Gold block, gilded blackstone — Gilded Ruins accent */
         GOLD_BLOCK(new BlockState[]{
                 Blocks.GOLD_BLOCK.defaultBlockState(),    Blocks.GILDED_BLACKSTONE.defaultBlockState(),
                 Blocks.RAW_GOLD_BLOCK.defaultBlockState()
+        }),
+        ASH(new BlockState[]{
+                Blocks.TUFF.defaultBlockState(),               Blocks.COBBLED_DEEPSLATE.defaultBlockState(),
+                Blocks.DEEPSLATE.defaultBlockState(),          Blocks.CHISELED_DEEPSLATE.defaultBlockState(),
+                Blocks.POLISHED_DEEPSLATE.defaultBlockState()
+        }),
+        MIRE(new BlockState[]{
+                Blocks.MUD.defaultBlockState(),                Blocks.PACKED_MUD.defaultBlockState(),
+                Blocks.MUD_BRICKS.defaultBlockState(),         Blocks.MOSS_BLOCK.defaultBlockState(),
+                Blocks.ROOTED_DIRT.defaultBlockState()
+        }),
+        BONE(new BlockState[]{
+                Blocks.BONE_BLOCK.defaultBlockState(),         Blocks.SMOOTH_QUARTZ.defaultBlockState(),
+                Blocks.WHITE_TERRACOTTA.defaultBlockState(),   Blocks.DIORITE.defaultBlockState()
+        }),
+        ORB(new BlockState[]{
+                Blocks.CRYING_OBSIDIAN.defaultBlockState(),    Blocks.OBSIDIAN.defaultBlockState(),
+                Blocks.AMETHYST_BLOCK.defaultBlockState()
         });
 
         public final BlockState[] blocks;
         PatchType(BlockState[] blocks) { this.blocks = blocks; }
         public BlockState getBlock(RandomSource rng) { return blocks[rng.nextInt(blocks.length)]; }
     }
-
-    // -------------------------------------------------------------------------
-    // Constants
-    // -------------------------------------------------------------------------
 
     private static final int MAIN_ISLAND_RADIUS = 100;
     private static final int ISLAND_BASE_HEIGHT = 64;
@@ -171,23 +161,21 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
     /** SPIRE: thickness of the solid bedrock-like base layer beneath the floor. */
     private static final int SPIRE_FLOOR_BASE_THICKNESS = 6;
 
-    /** CONTINENTAL: shelf / cliff zone fractions (unchanged). */
+    /** CONTINENTAL: shelf / cliff zone fractions. */
     private static final double CONTINENTAL_SHELF_FRAC = 0.30;
     private static final double CONTINENTAL_CLIFF_FRAC = 0.20;
 
-    /** PLATEAU: erosion strength. */
     private static final double PLATEAU_EROSION_STRENGTH = 0.55;
 
-    /**
-     * EMBER_WASTES: any column whose surface Y falls below this absolute level
-     * gets its empty space filled with lava up to this level, creating lava
-     * lakes in the low-lying depressions between continental masses.
-     */
     private static final int EMBER_LAVA_LEVEL = 48;
 
-    /**
-     * Terracotta colour strata for the CANYON biome (unchanged).
-     */
+    private static final int   CHAOS_ORB_GRID        = 40;
+    private static final int   CHAOS_ORB_MIN_RADIUS   = 3;
+    private static final int   CHAOS_ORB_MAX_RADIUS   = 7;
+    private static final float CHAOS_ORB_SPAWN_CHANCE = 0.35f;
+    private static final int   CHAOS_ORB_Y_MIN         = 40;
+    private static final int   CHAOS_ORB_Y_MAX         = 160;
+
     private static final BlockState[] CANYON_LAYERS = {
             Blocks.RED_TERRACOTTA.defaultBlockState(),
             Blocks.ORANGE_TERRACOTTA.defaultBlockState(),
@@ -201,9 +189,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             Blocks.MAGENTA_TERRACOTTA.defaultBlockState(),
     };
 
-    /**
-     * Glacial Shelf colour strata — ice variants layered like geological strata.
-     */
     private static final BlockState[] GLACIAL_LAYERS = {
             Blocks.SNOW_BLOCK.defaultBlockState(),
             Blocks.PACKED_ICE.defaultBlockState(),
@@ -218,18 +203,12 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
     private static final double PATCH_FREQ_LARGE  = 0.008;
     private static final double PATCH_FREQ_MEDIUM = 0.020;
 
-    // -------------------------------------------------------------------------
-    // Constructor / codec
-    // -------------------------------------------------------------------------
 
     public SpiritWorldChunkGenerator(BiomeSource biomeSource) { super(biomeSource); }
 
     @Override
     protected MapCodec<? extends ChunkGenerator> codec() { return CODEC; }
 
-    // -------------------------------------------------------------------------
-    // Primary fill
-    // -------------------------------------------------------------------------
 
     @Override
     public @NotNull CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState,
@@ -248,7 +227,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                 SpiritWorldBiome               biome = blend[0].biome();   // dominant biome drives mode-specific logic
                 IslandData                    island = getBlendedIslandData(wx, wz, rng, blend);
 
-                // ── ARCHIPELAGO: fill the ambient wool-sea plane ──────────────
                 if (biome.mode == SpiritWorldBiome.GenerationMode.ARCHIPELAGO) {
                     for (int y = WOOL_SEA_LEVEL - WOOL_SEA_DEPTH; y <= WOOL_SEA_LEVEL; y++) {
                         if (island.density <= 0 || y < island.bottom || y > island.top) {
@@ -258,9 +236,12 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                     }
                 }
 
-                // ── CRYSTALLINE_PEAKS: jagged cave floor beneath spires ────────
                 if (biome.mode == SpiritWorldBiome.GenerationMode.SPIRE) {
                     fillSpireFloor(x, z, wx, wz, chunk, island, rng);
+                }
+
+                if (biome.mode == SpiritWorldBiome.GenerationMode.CHAOS) {
+                    fillChaosOrbs(x, z, wx, wz, chunk, rng);
                 }
 
                 if (island.density > 0) {
@@ -278,7 +259,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                     }
                 }
 
-                // ── EMBER_WASTES: lava lakes in low depressions ───────────────
                 if (biome.mode == SpiritWorldBiome.GenerationMode.CONTINENTAL
                         && biome == SpiritWorldBiome.EMBER_WASTES) {
                     fillEmberLava(x, z, wx, wz, chunk, island);
@@ -288,12 +268,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return CompletableFuture.completedFuture(chunk);
     }
 
-    /**
-     * Blends the island geometry from up to two biomes using the supplied
-     * blend weights.  Only top / bottom / density are interpolated; all
-     * mode-specific fields (spire shaft, canyon flow angle …) are taken from
-     * the dominant biome so that SPIRE/CANYON carving still works correctly.
-     */
     private IslandData getBlendedIslandData(int x, int z, RandomSource rng,
                                             SpiritWorldBiome.BiomeWeight[] blend) {
         if (blend.length == 1) return getIslandData(x, z, rng, blend[0].biome());
@@ -302,13 +276,9 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         IslandData b  = getIslandData(x, z, rng, blend[1].biome());
         double     wa = blend[0].weight(), wb = blend[1].weight();
 
-        // Blend density as a straight weighted average.
         double density = a.density() * wa + b.density() * wb;
         if (density <= 0) return IslandData.EMPTY;
 
-        // Weight each biome's height contribution by its LOCAL density, not just
-        // the blend weight.  This prevents a flat "void" neighbour from dragging
-        // an island's surface down when it has no land of its own.
         double ca = a.density() * wa;
         double cb = b.density() * wb;
         double sum = ca + cb;
@@ -317,17 +287,11 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         int top    = (int)((a.top()    * ca + b.top()    * cb) / sum);
         int bottom = (int)((a.bottom() * ca + b.bottom() * cb) / sum);
 
-        // Mode-specific fields always come from the dominant biome (a),
-        // so SPIRE / CANYON per-block logic continues to work unmodified.
         return new IslandData(density, top, bottom,
                 a.centerX(), a.centerZ(),
                 a.shaftTop(), a.shaftRadius(),
                 a.flowAngle());
     }
-
-    // -------------------------------------------------------------------------
-    // ARCHIPELAGO: wool-sea surface block
-    // -------------------------------------------------------------------------
 
     private BlockState woolSeaBlock(int x, int y, int wz, RandomSource rng) {
         if (y == WOOL_SEA_LEVEL) {
@@ -339,27 +303,10 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                 : Blocks.LIGHT_GRAY_WOOL.defaultBlockState();
     }
 
-    // -------------------------------------------------------------------------
-    // CRYSTALLINE PEAKS: jagged stalactite / stalagmite floor
-    // -------------------------------------------------------------------------
-
-    /**
-     * Fills the cave-floor region beneath each spire with:
-     *  1. A solid base slab (SPIRE_FLOOR_Y - SPIRE_FLOOR_BASE_THICKNESS .. SPIRE_FLOOR_Y)
-     *     made of calcite and amethyst blocks.
-     *  2. Stalagmites growing upward from the floor using two octaves of noise.
-     *     Their height varies per column so the floor looks spiked and uneven.
-     *  3. Stalactites hanging down from the spire bottom when the island is close
-     *     overhead — they use the same noise but inverted and offset.
-     *
-     * The floor is always generated in SPIRE biome regardless of whether an island
-     * is directly overhead, giving the biome a continuous crystal cave floor.
-     */
     private void fillSpireFloor(int lx, int lz, int wx, int wz,
                                 ChunkAccess chunk, IslandData island,
                                 RandomSource rng) {
 
-        // ── 1. Solid base slab ────────────────────────────────────────────────
         int baseTop = SPIRE_FLOOR_Y;
         int baseBot = SPIRE_FLOOR_Y - SPIRE_FLOOR_BASE_THICKNESS;
         for (int y = baseBot; y <= baseTop; y++) {
@@ -369,19 +316,15 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             chunk.setBlockState(new BlockPos(lx, y, lz), base, false);
         }
 
-        // ── 2. Stalagmites growing upward ─────────────────────────────────────
-        // Two noise octaves: coarse shape + fine tip variation
         double n1 = improvedNoise(wx * 0.07,       wz * 0.07);
         double n2 = improvedNoise(wx * 0.18 + 300, wz * 0.18 + 300);
         double combined = (n1 * 0.65 + n2 * 0.35 + 1.0) * 0.5; // normalise to [0,1]
 
-        // Only grow stalagmites where the noise is above a threshold (patches, not everywhere)
         if (combined > 0.52) {
             int stalagHeight = (int)(combined * 18); // up to 18 blocks tall
             int stalagTop    = baseTop + stalagHeight;
 
             for (int y = baseTop + 1; y <= stalagTop; y++) {
-                // Taper: wider at base, tapers to a point. Skip if tapered away.
                 double progress = (double)(y - baseTop) / stalagHeight; // 0=base,1=tip
                 double taperNoise = improvedNoise(wx * 0.25 + 600, wz * 0.25 + 600) * 0.3;
                 if (Math.random() < progress * 0.55 + taperNoise) break; // probabilistic taper
@@ -391,7 +334,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             }
         }
 
-        // ── 3. Stalactites hanging from island bottom ──────────────────────────
         if (island.density > 0) {
             int islandBottom = island.bottom;
             double n3 = improvedNoise(wx * 0.09 + 900, wz * 0.09 + 900);
@@ -414,10 +356,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         }
     }
 
-    /**
-     * Picks the block for a stalactite/stalagmite column based on height and noise value.
-     * Uses amethyst, calcite, and prismarine for a crystalline appearance.
-     */
     private BlockState spireFloorBlock(int y, double noiseVal) {
         if (noiseVal > 0.80) return Blocks.BUDDING_AMETHYST.defaultBlockState();
         if (noiseVal > 0.65) return Blocks.AMETHYST_BLOCK.defaultBlockState();
@@ -425,10 +363,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         if (y % 3 == 1)      return Blocks.PRISMARINE.defaultBlockState();
         return Blocks.AMETHYST_BLOCK.defaultBlockState();
     }
-
-    // -------------------------------------------------------------------------
-    // SPIRE: per-block solid check
-    // -------------------------------------------------------------------------
 
     private boolean isSpireSolid(int wx, int y, int wz, IslandData island) {
         double dx = wx - island.centerX;
@@ -454,20 +388,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // EMBER_WASTES: lava lake fill
-    // -------------------------------------------------------------------------
-
-    /**
-     * Fills air columns in the Ember Wastes continental biome with lava up to
-     * EMBER_LAVA_LEVEL.  This creates glowing lava lakes in the depressions
-     * between and around the landmasses, consistent with the volcanic theme.
-     *
-     * Lava is only placed where:
-     *  – The column has no solid island block at or below EMBER_LAVA_LEVEL, OR
-     *    the island surface is below EMBER_LAVA_LEVEL (partially submerged shores).
-     *  – The Y position is <= EMBER_LAVA_LEVEL.
-     */
     private void fillEmberLava(int lx, int lz, int wx, int wz,
                                ChunkAccess chunk, IslandData island) {
         // Determine if this column is open (no island) or shallow (island top below lava level)
@@ -485,9 +405,101 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // CANYON: directional slot-canyon carving
-    // -------------------------------------------------------------------------
+    private IslandData floatingChaos(int x, int z, SpiritWorldBiome b) {
+        SpiritWorldBiome.TerrainParams p = b.terrain;
+        double best = 0; int bestTop = 0, bestBot = 0;
+
+        int gx = Math.floorDiv(x, p.gridSize()), gz = Math.floorDiv(z, p.gridSize());
+        for (int ox = -1; ox <= 1; ox++) for (int oz = -1; oz <= 1; oz++) {
+            int cx = gx + ox, cz = gz + oz;
+            RandomSource cr = cellRng(cx, cz);
+            if (cr.nextFloat() >= p.islandSpawnChance()) continue;
+
+            int ix = cx * p.gridSize() + cr.nextInt(p.gridSize());
+            int iz = cz * p.gridSize() + cr.nextInt(p.gridSize());
+            int radius = p.minRadius() + cr.nextInt(p.maxRadius() - p.minRadius());
+            int yo     = p.yOffsetMin() + cr.nextInt(p.yOffsetMax() - p.yOffsetMin());
+
+            double cellSharpness = 0.6 + cr.nextDouble() * 3.2;
+            double cellChaos     = 0.3 + cr.nextDouble() * 0.9;
+
+            double d    = dist(x, z, ix, iz);
+            double frac = d / radius;
+            if (frac >= 1.0) continue;
+
+            double raw = Mth.clamp(1.0 - frac, 0, 1);
+
+            double shapeNoise = improvedNoise(x * 0.020 + cx * 13.7, z * 0.020 + cz * 13.7) * 0.35
+                    +            improvedNoise(x * 0.055 + 400,      z * 0.055 + 400)       * 0.20 * cellChaos;
+            raw = Mth.clamp(raw + shapeNoise, 0, 1);
+            raw = Math.pow(raw, cellSharpness);
+            if (raw <= 0) continue;
+
+            double stepNoise  = improvedNoise(x * 0.030 + 900, z * 0.030 + 900);
+            int    steps      = 3 + cr.nextInt(3);
+            double terraced   = Math.floor(raw * steps) / (double) steps;
+            double heightFrac = Mth.lerp(0.5, raw, terraced) + stepNoise * 0.05;
+            heightFrac = Mth.clamp(heightFrac, 0, 1);
+
+            if (raw > best) {
+                best    = raw;
+                bestTop = p.baseHeight() + yo + (int)(heightFrac * p.heightVariation());
+                bestBot = bestTop - (int)(heightFrac * p.heightVariation() * p.depthMultiplier())
+                        - (int)(cr.nextDouble() * 10); // ragged, uneven undersides
+            }
+        }
+        return best > 0 ? new IslandData(best, bestTop, bestBot, 0, 0, 0, 0, 0) : IslandData.EMPTY;
+    }
+
+    private void fillChaosOrbs(int lx, int lz, int wx, int wz, ChunkAccess chunk, RandomSource rng) {
+        int gx = Math.floorDiv(wx, CHAOS_ORB_GRID);
+        int gz = Math.floorDiv(wz, CHAOS_ORB_GRID);
+
+        for (int ox = -1; ox <= 1; ox++) {
+            for (int oz = -1; oz <= 1; oz++) {
+                int cx = gx + ox, cz = gz + oz;
+                RandomSource cr = orbCellRng(cx, cz);
+                if (cr.nextFloat() >= CHAOS_ORB_SPAWN_CHANCE) continue;
+
+                int ix     = cx * CHAOS_ORB_GRID + cr.nextInt(CHAOS_ORB_GRID);
+                int iz     = cz * CHAOS_ORB_GRID + cr.nextInt(CHAOS_ORB_GRID);
+                int iy     = CHAOS_ORB_Y_MIN + cr.nextInt(CHAOS_ORB_Y_MAX - CHAOS_ORB_Y_MIN);
+                int radius = CHAOS_ORB_MIN_RADIUS + cr.nextInt(CHAOS_ORB_MAX_RADIUS - CHAOS_ORB_MIN_RADIUS);
+
+                double dx = wx - ix, dz = wz - iz;
+                double horizDistSq = dx * dx + dz * dz;
+                if (horizDistSq > (double) radius * radius) continue;
+
+                int vertRange = (int) Math.sqrt(Math.max(0, radius * radius - horizDistSq));
+                int yBottom = iy - vertRange;
+                int yTop    = iy + vertRange;
+                boolean hollow = radius >= 5;
+
+                for (int y = yBottom; y <= yTop; y++) {
+                    double dy = y - iy;
+                    double distSq = dx * dx + dz * dz + dy * dy;
+                    if (distSq > (double) radius * radius) continue;
+                    if (hollow && distSq < (double) (radius - 2) * (radius - 2)) continue; // hollow shell
+
+                    BlockState orbBlock = chaosOrbBlock(cr, distSq, radius);
+                    chunk.setBlockState(new BlockPos(lx, y, lz), orbBlock, false);
+                }
+            }
+        }
+    }
+
+    private RandomSource orbCellRng(int cx, int cz) {
+        return RandomSource.create((long) cx * 998_244_353L + (long) cz * 500_000_003L + 42L);
+    }
+
+    private BlockState chaosOrbBlock(RandomSource cr, double distSq, int radius) {
+        double edgeFrac = radius > 0 ? distSq / ((double) radius * radius) : 0;
+        if (edgeFrac > 0.75) return Blocks.CRYING_OBSIDIAN.defaultBlockState();
+        if (edgeFrac > 0.45) return cr.nextFloat() < 0.5
+                ? Blocks.OBSIDIAN.defaultBlockState()
+                : Blocks.AMETHYST_BLOCK.defaultBlockState();
+        return Blocks.BUDDING_AMETHYST.defaultBlockState();
+    }
 
     private boolean isCanyonVoid(int wx, int y, int wz, int surfaceY, double flowAngle) {
         int depth = surfaceY - y;
@@ -505,19 +517,13 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return combined > threshold;
     }
 
-    // -------------------------------------------------------------------------
-    // Block selection
-    // -------------------------------------------------------------------------
-
     private BlockState chooseBlock(int y, int surfaceY, int wx, int wy, int wz,
                                    RandomSource rng, SpiritWorldBiome biome) {
-        // CANYON: depth-based colour strata
         if (biome.mode == SpiritWorldBiome.GenerationMode.CANYON) {
             int depth = surfaceY - y;
             return CANYON_LAYERS[depth % CANYON_LAYERS.length];
         }
 
-        // GLACIAL_SHELF: depth-based ice strata (snow cap on top, blue ice deep)
         if (biome == SpiritWorldBiome.GLACIAL_SHELF) {
             int depth = surfaceY - y;
             return GLACIAL_LAYERS[Math.min(depth, GLACIAL_LAYERS.length - 1)];
@@ -526,7 +532,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         PatchType patch = getPatchAt(wx, wy, wz, biome);
 
         if (y == surfaceY) {
-            // FUNGAL_DEPTHS: place shroomlight occasionally on surface for glow
             if (biome == SpiritWorldBiome.FUNGAL_DEPTHS) {
                 double glowNoise = improvedNoise(wx * 0.15 + 500, wz * 0.15 + 500);
                 if (glowNoise > 0.65) return Blocks.SHROOMLIGHT.defaultBlockState();
@@ -560,9 +565,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return PatchType.WOOL;
     }
 
-    // -------------------------------------------------------------------------
-    // Island geometry dispatch
-    // -------------------------------------------------------------------------
 
     private IslandData getIslandData(int x, int z, RandomSource rng, SpiritWorldBiome biome) {
         IslandData main     = centralIsland(x, z);
@@ -573,6 +575,7 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             case CONTINENTAL -> floatingContinental(x, z, biome);
             case PLATEAU     -> floatingPlateau(x, z, biome);
             case CANYON      -> floatingCanyon(x, z, biome);
+            case CHAOS       -> floatingChaos(x, z, biome);
         };
 
         if (floating.density > main.density) return floating;
@@ -580,7 +583,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return IslandData.EMPTY;
     }
 
-    // ── Central spawn island (all biomes) ────────────────────────────────────
 
     private IslandData centralIsland(int x, int z) {
         double dist    = Math.sqrt((double)(x * x + z * z));
@@ -595,8 +597,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         int bottom = top - (int)(density * 35);
         return new IslandData(density, top, bottom, 0, 0, 0, 0, 0);
     }
-
-    // ── ARCHIPELAGO ──────────────────────────────────────────────────────────
 
     private IslandData floatingArchipelago(int x, int z, SpiritWorldBiome b) {
         SpiritWorldBiome.TerrainParams p = b.terrain;
@@ -628,8 +628,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return best > 0 ? new IslandData(best, bestTop, bestBot, 0, 0, 0, 0, 0) : IslandData.EMPTY;
     }
 
-    // ── SPIRE ────────────────────────────────────────────────────────────────
-
     private IslandData floatingSpires(int x, int z, SpiritWorldBiome b) {
         SpiritWorldBiome.TerrainParams p = b.terrain;
         double best = 0;
@@ -653,7 +651,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             if (density <= 0) continue;
 
             int totalHeight = (int)(density * p.heightVariation());
-            // Spire base starts just above the floor level
             int bottom      = SPIRE_FLOOR_Y + 1 + yo / 4; // anchor near floor
             int shaftTop    = bottom + (int)(totalHeight * 0.40);
             int top         = bottom + totalHeight;
@@ -666,8 +663,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         }
         return bestData;
     }
-
-    // ── SCATTERED (Void Gardens + Fungal Depths) ──────────────────────────────
 
     private IslandData floatingScattered(int x, int z, SpiritWorldBiome b) {
         SpiritWorldBiome.TerrainParams p = b.terrain;
@@ -710,8 +705,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         }
         return bestData;
     }
-
-    // ── CONTINENTAL (Ember Wastes + Glacial Shelf) ────────────────────────────
 
     private IslandData floatingContinental(int x, int z, SpiritWorldBiome b) {
         SpiritWorldBiome.TerrainParams p = b.terrain;
@@ -758,8 +751,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return best > 0 ? new IslandData(best, bestTop, bestBot, 0, 0, 0, 0, 0) : IslandData.EMPTY;
     }
 
-    // ── PLATEAU (Quartz Flats + Gilded Ruins) ─────────────────────────────────
-
     private IslandData floatingPlateau(int x, int z, SpiritWorldBiome b) {
         SpiritWorldBiome.TerrainParams p = b.terrain;
         double best = 0;
@@ -800,8 +791,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return bestData;
     }
 
-    // ── CANYON ───────────────────────────────────────────────────────────────
-
     private IslandData floatingCanyon(int x, int z, SpiritWorldBiome b) {
         SpiritWorldBiome.TerrainParams p = b.terrain;
         double best = 0;
@@ -837,10 +826,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return bestData;
     }
 
-    // -------------------------------------------------------------------------
-    // Helpers
-    // -------------------------------------------------------------------------
-
     private double dist(int x, int z, int ix, int iz) {
         return Math.sqrt(Math.pow(x - ix, 2) + Math.pow(z - iz, 2));
     }
@@ -854,9 +839,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         return x * x * (3 - 2 * x);
     }
 
-    // -------------------------------------------------------------------------
-    // Required overrides
-    // -------------------------------------------------------------------------
 
     @Override
     public void applyCarvers(WorldGenRegion r, long seed, RandomState rs, BiomeManager bm,
@@ -928,10 +910,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         info.add("Spirit World | Biome: " + b.name() + " | Mode: " + b.mode);
     }
 
-    // -------------------------------------------------------------------------
-    // Perlin noise
-    // -------------------------------------------------------------------------
-
     private double improvedNoise(double x, double z) {
         int xi = (int) Math.floor(x), zi = (int) Math.floor(z);
         double xf = x - xi, zf = z - zi, u = fade(xf), v = fade(zf);
@@ -957,10 +935,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         x = ((x >> 16) ^ x) * 0x45d9f3b;
         return (x >> 16) ^ x;
     }
-
-    // -------------------------------------------------------------------------
-    // Island data record
-    // -------------------------------------------------------------------------
 
     private record IslandData(
             double density,

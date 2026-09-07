@@ -1,0 +1,74 @@
+package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.fool.passives.PuppeteeringEnhancementsAbility;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.player.Player;
+
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+public class MarionetteUseAbilityGoal extends TargetGoal {
+    private final Mob marionette;
+    private Player controller;
+
+    public MarionetteUseAbilityGoal(Mob marionette) {
+        super(marionette, false);
+        this.marionette = marionette;
+        this.setFlags(EnumSet.noneOf(Goal.Flag.class));
+    }
+
+    @Override
+    public boolean canUse() {
+        if (!getControllerAndCheckValid()) return false;
+
+        MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+
+        return component.isMarionette() && marionette.getTarget() != null && component.hasWorm() && !BeyonderData.isBeyonder(marionette);
+    }
+
+    private List<Ability> usableAbilities() {
+        return LOTMCraft.abilityHandler.getAbilities().stream().filter(a -> a.canUse(controller)).toList();
+    }
+
+    private final Random random = new Random();
+
+    @Override
+    public void tick() {
+        if(marionette.level().isClientSide) {
+            return;
+        }
+
+        if(random.nextInt(100) >= 40) {
+            List<Ability> abilityItems = usableAbilities();
+            if (!abilityItems.isEmpty()) {
+                abilityItems.get(random.nextInt(abilityItems.size())).useAbility((ServerLevel) marionette.level(), marionette);
+            }
+        }
+    }
+
+
+    private boolean getControllerAndCheckValid() {
+        MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if (!component.isMarionette()) return false;
+
+        try {
+            UUID controllerUUID = UUID.fromString(component.getControllerUUID());
+            controller = marionette.level().getPlayerByUUID(controllerUUID);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        return controller != null && controller.isAlive();
+    }
+}

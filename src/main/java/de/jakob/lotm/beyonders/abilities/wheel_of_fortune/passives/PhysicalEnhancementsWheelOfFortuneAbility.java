@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsWheelOfFortuneAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsWheelOfFortuneAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -110,10 +110,5 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
 
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

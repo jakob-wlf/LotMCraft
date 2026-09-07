@@ -1,9 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.neoforged.bus.api.IEventBus;
@@ -23,6 +21,14 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("marionette_component", () ->
                     AttachmentType.builder(MarionetteComponent::new)
                             .serialize(MarionetteComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<MarionetteOwnerComponent>> MARIONETTE_OWNER_COMPONENT =
+            ATTACHMENT_TYPES.register("marionette_owner_component", () ->
+                    AttachmentType.builder(MarionetteOwnerComponent::new)
+                            .serialize(MarionetteOwnerComponent.SERIALIZER)
                             .copyOnDeath()
                             .build()
             );
@@ -60,6 +66,11 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<LuckComponent>> LUCK_COMPONENT =
             ATTACHMENT_TYPES.register("luck_component", () ->
                     AttachmentType.serializable(LuckComponent::new).copyOnDeath().build()
+            );
+
+    public static final Supplier<AttachmentType<EntityControllingComponent>> ENTITY_CONTROLLING_COMPONENT =
+            ATTACHMENT_TYPES.register("entity_controlling_component", () ->
+                    AttachmentType.serializable(EntityControllingComponent::new).copyOnDeath().build()
             );
 
     public static final Supplier<AttachmentType<DisabledAbilitiesComponent>> DISABLED_ABILITIES_COMPONENT =
@@ -124,13 +135,6 @@ public class ModAttachments {
                             .build()
             );
 
-    public static final Supplier<AttachmentType<MirrorWorldTraversalComponent>> MIRROR_WORLD_COMPONENT =
-            ATTACHMENT_TYPES.register("mirror_world_component", () ->
-                    AttachmentType.builder(MirrorWorldTraversalComponent::new)
-                            .serialize(MirrorWorldTraversalComponent.SERIALIZER)
-                            .build()
-            );
-
     public static final Supplier<AttachmentType<TransformationComponent>> TRANSFORMATION_COMPONENT =
             ATTACHMENT_TYPES.register("transformation_component", () ->
                     AttachmentType.builder(TransformationComponent::new)
@@ -149,14 +153,6 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("fog_component", () ->
                     AttachmentType.builder(FogComponent::new)
                             .serialize(FogComponent.SERIALIZER)
-                            .build()
-            );
-
-    public static final Supplier<AttachmentType<ControllingDataComponent>> CONTROLLING_DATA =
-            ATTACHMENT_TYPES.register("controlling_data", () ->
-                    AttachmentType.builder(ControllingDataComponent::new)
-                            .serialize(ControllingDataComponent.SERIALIZER)
-                            .copyOnDeath()
                             .build()
             );
 
@@ -266,6 +262,14 @@ public class ModAttachments {
     public static final Supplier<AttachmentType<HistoricalVoidComponent>> HISTORICAL_VOID_COMPONENT =
             ATTACHMENT_TYPES.register("historical_void_component", () ->
                     AttachmentType.serializable(HistoricalVoidComponent::new)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<HistoricalMarkedComponent>> HISTORICAL_MARKED_ENTITIES_COMPONENT =
+            ATTACHMENT_TYPES.register("historical_marked_entities_component", () ->
+                    AttachmentType.builder(HistoricalMarkedComponent::new)
+                            .serialize(HistoricalMarkedComponent.SERIALIZER)
                             .copyOnDeath()
                             .build()
             );

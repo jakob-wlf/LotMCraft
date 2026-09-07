@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.sun;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -65,7 +66,7 @@ public class LightOfHolinessAbility extends Ability {
 
         level.playSound(null, initialPos.x, initialPos.y - 18, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
 
-        EffectManager.playEffect(EffectManager.Effect.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
+        EffectManager.playEffect(EffectIds.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
 
         double multiplier = multiplier(entity);
         ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
@@ -78,7 +79,7 @@ public class LightOfHolinessAbility extends Ability {
                 lights.add(blockPos);
             }
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, DamageLookup.lookupDamage(5, .8) * (int) multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, DamageLookup.lookupDamage(5, .8) * multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
 
             currentPos.set(pos.subtract(0, 2.5, 0));
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

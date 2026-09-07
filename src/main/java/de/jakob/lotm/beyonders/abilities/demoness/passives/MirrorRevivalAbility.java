@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.demoness.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
@@ -27,9 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MirrorRevivalAbility extends PassiveAbilityItem {
-    public MirrorRevivalAbility(Properties properties) {
-        super(properties);
+public class MirrorRevivalAbility extends PassiveAbility {
+    public MirrorRevivalAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class MirrorRevivalAbility extends PassiveAbilityItem {
             return;
         }
 
-        if(!((MirrorRevivalAbility) PassiveAbilityHandler.MIRROR_REVIVAL.get()).shouldApplyTo(entity)) {
+        if(!PassiveAbilityHandler.getById("mirror_revival_ability").shouldApplyTo(entity)) {
             return;
         }
 

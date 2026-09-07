@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.tyrant.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -22,9 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class LightningArrowAbility extends PassiveAbilityItem {
-    public LightningArrowAbility(Properties properties) {
-        super(properties);
+public class LightningArrowAbility extends PassiveAbility {
+    public LightningArrowAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class LightningArrowAbility extends PassiveAbilityItem {
         if (!(arrow.getOwner() instanceof Player player))
             return;
 
-        if(!((LightningArrowAbility) PassiveAbilityHandler.LIGHTNING_ARROW.get()).shouldApplyTo(player)) {
+        if(!((LightningArrowAbility) PassiveAbilityHandler.getById("lightning_arrow_ability")).shouldApplyTo(player)) {
             return;
         }
 
@@ -80,7 +80,7 @@ public class LightningArrowAbility extends PassiveAbilityItem {
         if (!(arrow.getOwner() instanceof Player player))
             return;
 
-        if(!((LightningArrowAbility) PassiveAbilityHandler.LIGHTNING_ARROW.get()).shouldApplyTo(player)) {
+        if(!((LightningArrowAbility) PassiveAbilityHandler.getById("lightning_arrow_ability")).shouldApplyTo(player)) {
             return;
         }
 

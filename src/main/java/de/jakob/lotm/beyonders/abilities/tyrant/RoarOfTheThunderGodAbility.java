@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -59,7 +60,7 @@ public class RoarOfTheThunderGodAbility extends Ability {
             e.setDeltaMovement(knockBack);
         });
 
-        EffectManager.playEffect(EffectManager.Effect.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
+        EffectManager.playEffect(EffectIds.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
 
         for(int y = 0; y < 3; y++) {
             for (int i = 3; i < 27; i+=2) {

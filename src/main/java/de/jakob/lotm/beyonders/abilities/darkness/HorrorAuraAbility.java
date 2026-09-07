@@ -8,7 +8,9 @@ import de.jakob.lotm.beyonders.abilities.sun.HolyOathAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -55,13 +57,19 @@ public class HorrorAuraAbility extends Ability {
         }
         float multiplier = multiplier(entity);
         Location loc = new Location(entity.position(), serverLevel);
-        UUID effectID = MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.HORROR_AURA, loc, 20 * 25 *(int) Math.max(multiplier/2,1), false, serverLevel, entity);
+        UUID effectID = EffectManager.playMovableEffect(EffectIds.HORROR_AURA, serverLevel, entity, EffectParams.ofDuration(20 * 25 *(int) Math.max(multiplier/2,1)));
 
         AtomicInteger ticks = new AtomicInteger(0);
         ServerScheduler.scheduleForDuration(0, 1, 20 * 15*(int) Math.max(multiplier(entity)/3, 1), () -> {
             loc.setPosition(entity.position());
             loc.setLevel(serverLevel);
-            MovableEffectManager.updateEffectPosition(effectID, loc, serverLevel);
+
+            if(entity.level() != serverLevel) {
+                EffectManager.cancelEffect(effectID, serverLevel);
+                return;
+            }
+
+            EffectManager.updateEffectPosition(effectID, loc.getX(), loc.getY(), loc.getZ(), serverLevel);
 
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, entity.position(), entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
 

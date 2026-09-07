@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -22,8 +23,8 @@ public class TeleportationEffect extends ActiveEffect {
     private final List<ConquestParticle> conquestParticles = new ArrayList<>();
 
 
-    public TeleportationEffect(double x, double y, double z) {
-        super(x, y, z, 25);
+    public TeleportationEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         for (int i = 0; i < 120; i++) {
             conquestParticles.add(new ConquestParticle());
@@ -36,13 +37,13 @@ public class TeleportationEffect extends ActiveEffect {
         Level level = mc.level;
         if (level == null) return;
 
-        // Update animation state
+
         float progress = getProgress();
         float expansionProgress = Mth.clamp(progress * 1.15f, 0f, 1f);
         float dominanceIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         renderSphere(poseStack, expansionProgress, dominanceIntensity, 115 / 255f, 208 / 255f, 1, 5, 3);
         renderSphere(poseStack, expansionProgress, dominanceIntensity, 169 / 255f, 115 / 255f, 1, 3f, 3);
@@ -114,7 +115,7 @@ public class TeleportationEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Dark particles with red highlights
+
             float r = particle.isRed ? 233 / 255f : 89 / 255f;
             float g = particle.isRed ? 92 / 255f : 203 / 255f;
             float b = 1;
@@ -177,7 +178,7 @@ public class TeleportationEffect extends ActiveEffect {
             maxLifetime = 25f + random.nextFloat() * 45f;
             lifetime = 0f;
             alpha = 0f;
-            isRed = random.nextFloat() < 0.6f; // 60% red, 40% dark
+            isRed = random.nextFloat() < 0.6f;
         }
 
         void update(float expansion, float intensity) {

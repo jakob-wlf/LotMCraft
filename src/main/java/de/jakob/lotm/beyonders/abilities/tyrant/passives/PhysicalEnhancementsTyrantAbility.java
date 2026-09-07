@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsTyrantAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsTyrantAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -130,10 +130,5 @@ public class PhysicalEnhancementsTyrantAbility extends PhysicalEnhancementsAbili
 
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

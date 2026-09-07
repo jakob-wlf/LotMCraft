@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -28,7 +29,7 @@ public class SefirahCastleEventHandler {
     public static HashMap<UUID, Long> timeoutForRitual = new HashMap<>();
 
 
-    // Check for ritual -------------------------------------------------------------------------------
+
     @SubscribeEvent
     public static void onChatMessageSent(ServerChatEvent event) {
         UUID playerUUID = event.getPlayer().getUUID();
@@ -64,7 +65,7 @@ public class SefirahCastleEventHandler {
             return;
         }
 
-        SefirahHandler.teleportToSefirot(event.getPlayer(), true);
+        SefirahHandler.teleportToOwnSefirot(event.getPlayer(), true);
     }
 
     private static boolean checkIfChantIsCompleted(String rawMessage, UUID playerUUID, Vec3 pos, ServerLevel serverLevel) {
@@ -76,7 +77,7 @@ public class SefirahCastleEventHandler {
             luckRitualProgress.put(playerUUID, 0);
             timeoutForRitual.put(playerUUID, System.currentTimeMillis() + (60 * 1000));
 
-            EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
+            EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
             return false;
         }
 
@@ -89,7 +90,7 @@ public class SefirahCastleEventHandler {
             return false;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
+        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
 
         luckRitualProgress.replace(playerUUID, ritualProgress + 1);
 

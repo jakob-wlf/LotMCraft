@@ -12,7 +12,6 @@ import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
-import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
@@ -255,8 +254,7 @@ public class DivinationUtil {
         if ((InvisibilityAbility.invisiblePlayers.contains(serverPlayer.getUUID())) || (ShadowConcealmentAbility.invisiblePlayers.contains(serverPlayer.getUUID()))) {
             addedValue += 2;
         }
-        MirrorWorldTraversalComponent component = serverPlayer.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get());
-        if(component.isInMirrorWorld()) {
+        if(serverPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY)) {
             addedValue += 8;
         }
         // Space Concealment provides strong anti-divination

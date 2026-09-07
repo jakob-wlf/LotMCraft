@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.justiciar;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -60,7 +61,7 @@ public class DeliveringJudgmentAbility extends Ability {
         }
 
         entity.teleportTo(target.getX(), target.getY(), target.getZ());
-        EffectManager.playEffect(EffectManager.Effect.WAYPOINT, target.getX(), target.getY(), target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.WAYPOINT, target.getX(), target.getY(), target.getZ(), serverLevel);
 
         if (entity instanceof ServerPlayer sp) {
             sp.sendSystemMessage(Component.translatable("ability.lotmcraft.delivering_judgment.arrived")

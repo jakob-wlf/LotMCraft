@@ -1,15 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.KillCountComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncSacrificeDurationPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
@@ -63,8 +64,7 @@ public class SacrificeAbility extends Ability {
         if (!(entity instanceof ServerPlayer player)) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingData.getTargetUUID() != null) {
+        if (ControllingUtils.isControlling(player)) {
             player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
                     net.minecraft.network.chat.Component.literal("Sacrifice cannot be used while controlling a puppet")
                             .withStyle(net.minecraft.ChatFormatting.RED)
@@ -172,7 +172,7 @@ public class SacrificeAbility extends Ability {
                 // Phase 3: Blood Inferno vortex erupts around the player for 2 seconds
                 level.playSound(null, player.blockPosition(), SoundEvents.TOTEM_USE, SoundSource.PLAYERS, 1.0f, 0.5f);
                 level.playSound(null, player.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS, 0.6f, 0.7f);
-                EffectManager.playEffect(EffectManager.Effect.BLOOD_INFERNO,
+                EffectManager.playEffect(EffectIds.BLOOD_INFERNO,
                         player.getX(), player.getY(), player.getZ(), level, player);
             }, level);
         }, level);

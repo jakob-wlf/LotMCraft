@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -19,13 +20,13 @@ public class SpaceFragmentationEffect extends ActiveEffect {
     private static final ResourceLocation DISTORTION_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/obsidian.png");
     private static final ResourceLocation CRACK_TEXTURE = ResourceLocation.withDefaultNamespace("textures/block/glass.png");
 
-    // Cached data structures for massive visual density
+
     private final List<MassiveRealityCrack> realityCracks;
     private final List<VortexLayer> vortexLayers;
     private final List<ChaoticEnergyBolt> energyBolts;
-    private final float[][][] cachedVortexGeometry; // [layer][segment][xyz]
+    private final float[][][] cachedVortexGeometry;
 
-    // Color constants - much more vibrant
+
     private static final int[] COLOR_VOID_DEEP = {5, 0, 10};
     private static final int[] COLOR_MAGENTA_BRIGHT = {255, 20, 255};
     private static final int[] COLOR_CYAN_BRIGHT = {20, 255, 255};
@@ -34,27 +35,27 @@ public class SpaceFragmentationEffect extends ActiveEffect {
     private static final int[] COLOR_WHITE = {255, 255, 255};
 
     private static final float EFFECT_RADIUS = 50.0f;
-    private static final int DENSITY_MULTIPLIER = 4; // Massive density increase
+    private static final int DENSITY_MULTIPLIER = 4;
 
-    public SpaceFragmentationEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 25);
+    public SpaceFragmentationEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Pre-calculate vortex geometry - multiple dense layers
+
         cachedVortexGeometry = calculateVortexGeometry(8, 48, 40);
 
-        // Massive reality cracks that cover the entire area
+
         realityCracks = new ArrayList<>();
         for (int i = 0; i < 50; i++) {
             realityCracks.add(new MassiveRealityCrack(i));
         }
 
-        // Multiple vortex layers for depth
+
         vortexLayers = new ArrayList<>();
         for (int i = 0; i < 6; i++) {
             vortexLayers.add(new VortexLayer(i));
         }
 
-        // Chaotic energy bolts everywhere
+
         energyBolts = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
             energyBolts.add(new ChaoticEnergyBolt(i));
@@ -70,9 +71,9 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                 float heightRatio = h / (float) heightRings;
                 for (int s = 0; s < segments; s++) {
                     float segRatio = s / (float) segments;
-                    geometry[layer][idx][0] = segRatio;      // normalized segment
-                    geometry[layer][idx][1] = heightRatio;   // normalized height
-                    geometry[layer][idx][2] = layer;         // layer index
+                    geometry[layer][idx][0] = segRatio;
+                    geometry[layer][idx][1] = heightRatio;
+                    geometry[layer][idx][2] = layer;
                     idx++;
                 }
             }
@@ -84,25 +85,25 @@ public class SpaceFragmentationEffect extends ActiveEffect {
     @Override
     protected void render(PoseStack poseStack, float tick) {
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         float progress = getProgress();
         float intensity = calculateIntensity(progress);
 
-        // Render in layers - complete visual chaos
-        renderVoidSphere(poseStack, tick, intensity);          // Complete blackout sphere
-        renderSecondVoidSphere(poseStack, tick, intensity);          // Complete blackout sphere
-        //renderBlackVoidClouds(poseStack, tick, intensity);     // Dense black clouds
-        renderMassiveVortex(poseStack, tick, intensity);       // Main spiraling vortex
-        renderSmallerVortex(poseStack, tick, intensity);       // Main spiraling vortex
-        renderSecondaryVortices(poseStack, tick, intensity);   // Counter-rotating vortices
-        //renderRealityCracks(poseStack, tick, intensity);       // Massive cracks everywhere
-        //renderBlackVoidPillars(poseStack, tick, intensity);    // Black void columns
-        renderEnergyStorm(poseStack, tick, intensity);         // Dense energy bolts
-        renderFragmentationWaves(poseStack, tick, intensity);  // Pulsating waves
-        renderVoidTendrils(poseStack, tick, intensity);        // Writhing tentacles
-        //renderBlackVoidParticles(poseStack, tick, intensity);  // Floating black debris
-        renderCatastrophicCore(poseStack, tick, intensity);    // Devastating core
+
+        renderVoidSphere(poseStack, tick, intensity);
+        renderSecondVoidSphere(poseStack, tick, intensity);
+
+        renderMassiveVortex(poseStack, tick, intensity);
+        renderSmallerVortex(poseStack, tick, intensity);
+        renderSecondaryVortices(poseStack, tick, intensity);
+
+
+        renderEnergyStorm(poseStack, tick, intensity);
+        renderFragmentationWaves(poseStack, tick, intensity);
+        renderVoidTendrils(poseStack, tick, intensity);
+
+        renderCatastrophicCore(poseStack, tick, intensity);
 
         poseStack.popPose();
     }
@@ -122,13 +123,13 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
-        RenderSystem.disableCull(); // Render from inside too!
+        RenderSystem.disableCull();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Multiple overlapping void spheres for complete coverage
-        for (int sphere = 0; sphere < 6; sphere++) { // Doubled from 3 to 6
+
+        for (int sphere = 0; sphere < 6; sphere++) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(tick * (0.3f + sphere * 0.2f)));
             poseStack.mulPose(Axis.XP.rotationDegrees(tick * 0.2f * (sphere + 1)));
@@ -164,20 +165,20 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                     float y4 = Mth.cos(phi2) * r;
                     float z4 = Mth.sin(phi2) * Mth.sin(theta2) * r;
 
-                    // Deep void with magenta/cyan swirls
+
                     float swirl = Mth.sin(tick * 0.1f + phi1 * 5 + theta1 * 3);
                     int r_col = (int)(COLOR_VOID_DEEP[0] + Math.abs(swirl) * 80);
                     int g_col = (int)(COLOR_VOID_DEEP[1] + (swirl > 0 ? 0 : 100));
                     int b_col = (int)(COLOR_VOID_DEEP[2] + Math.abs(swirl) * 120);
-                    int a = (int)(intensity * 220); // Very opaque to block terrain
+                    int a = (int)(intensity * 220);
 
-                    // Render both sides for inside viewing
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r_col, g_col, b_col, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x2, y2, z2).setColor(r_col, g_col, b_col, a).setUv(1, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y4, z4).setColor(r_col, g_col, b_col, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y3, z3).setColor(r_col, g_col, b_col, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
 
-                    // Reverse winding for inside
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r_col, g_col, b_col, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y3, z3).setColor(r_col, g_col, b_col, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y4, z4).setColor(r_col, g_col, b_col, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -200,13 +201,13 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
-        RenderSystem.disableCull(); // Render from inside too!
+        RenderSystem.disableCull();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Multiple overlapping void spheres for complete coverage
-        for (int sphere = 0; sphere < 6; sphere++) { // Doubled from 3 to 6
+
+        for (int sphere = 0; sphere < 6; sphere++) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(tick * (0.3f + sphere * 0.2f)));
             poseStack.mulPose(Axis.XP.rotationDegrees(tick * 0.2f * (sphere + 1)));
@@ -242,20 +243,20 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                     float y4 = Mth.cos(phi2) * r;
                     float z4 = Mth.sin(phi2) * Mth.sin(theta2) * r;
 
-                    // Deep void with magenta/cyan swirls
+
                     float swirl = Mth.sin(tick * 0.1f + phi1 * 5 + theta1 * 3);
                     int r_col = (int)(COLOR_VOID_DEEP[0] + Math.abs(swirl) * 80);
                     int g_col = (int)(COLOR_VOID_DEEP[1] + (swirl > 0 ? 0 : 100));
                     int b_col = (int)(COLOR_VOID_DEEP[2] + Math.abs(swirl) * 120);
-                    int a = (int)(intensity * 220); // Very opaque to block terrain
+                    int a = (int)(intensity * 220);
 
-                    // Render both sides for inside viewing
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r_col, g_col, b_col, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x2, y2, z2).setColor(r_col, g_col, b_col, a).setUv(1, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y4, z4).setColor(r_col, g_col, b_col, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y3, z3).setColor(r_col, g_col, b_col, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
 
-                    // Reverse winding for inside
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r_col, g_col, b_col, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y3, z3).setColor(r_col, g_col, b_col, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y4, z4).setColor(r_col, g_col, b_col, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -279,17 +280,17 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
-        RenderSystem.disableCull(); // Visible from inside too!
+        RenderSystem.disableCull();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Main vortex - thick, solid, CYLINDRICAL spiraling destruction
+
         int layers = 7;
         int segments = 48;
-        int heightSegments = 35; // Reduced further
-        float maxHeight = EFFECT_RADIUS * 0.9f; // Even shorter - 60% of radius
-        float vortexRadius = EFFECT_RADIUS * 0.7f; // CONSTANT radius - perfect cylinder
+        int heightSegments = 35;
+        float maxHeight = EFFECT_RADIUS * 0.9f;
+        float vortexRadius = EFFECT_RADIUS * 0.7f;
 
         for (int layer = 0; layer < layers; layer++) {
             poseStack.pushPose();
@@ -327,24 +328,24 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                     float x4 = Mth.cos(angle4 * Mth.DEG_TO_RAD) * radius2;
                     float z4 = Mth.sin(angle4 * Mth.DEG_TO_RAD) * radius2;
 
-                    // Alternating magenta and cyan bands
+
                     boolean isMagenta = ((h / 3 + s / 6 + layer) % 2) == 0;
                     int[] baseColor = isMagenta ? COLOR_MAGENTA_BRIGHT : COLOR_CYAN_BRIGHT;
 
-                    // Add pulsing
+
                     float pulse = 1.0f + Mth.sin(tick * 0.3f + h * 0.5f) * 0.3f;
                     int r = (int)(baseColor[0] * pulse);
                     int g = (int)(baseColor[1] * pulse);
                     int b = (int)(baseColor[2] * pulse);
-                    int a = (int)(intensity * 240); // Very solid
+                    int a = (int)(intensity * 240);
 
-                    // Outside faces
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x2, y1, z2).setColor(r, g, b, a).setUv(1, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y2, z4).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y2, z3).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
 
-                    // Inside faces (reversed winding)
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y2, z3).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y2, z4).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -367,16 +368,16 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
-        RenderSystem.disableCull(); // Visible from inside too!
+        RenderSystem.disableCull();
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Main vortex - thick, solid, CYLINDRICAL spiraling destruction
+
         int layers = 4;
         int segments = 48;
-        int heightSegments = 15; // Reduced further
-        float maxHeight = EFFECT_RADIUS * 0.55f; // Even shorter - 60% of radius
+        int heightSegments = 15;
+        float maxHeight = EFFECT_RADIUS * 0.55f;
         float vortexRadius = EFFECT_RADIUS * 0.55f;
 
         for (int layer = 0; layer < layers; layer++) {
@@ -415,24 +416,24 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                     float x4 = Mth.cos(angle4 * Mth.DEG_TO_RAD) * radius2;
                     float z4 = Mth.sin(angle4 * Mth.DEG_TO_RAD) * radius2;
 
-                    // Alternating magenta and cyan bands
+
                     boolean isMagenta = ((h / 3 + s / 6 + layer) % 2) == 0;
                     int[] baseColor = isMagenta ? COLOR_MAGENTA_BRIGHT : COLOR_CYAN_BRIGHT;
 
-                    // Add pulsing
+
                     float pulse = 1.0f + Mth.sin(tick * 0.3f + h * 0.5f) * 0.3f;
                     int r = (int)(baseColor[0] * pulse);
                     int g = (int)(baseColor[1] * pulse);
                     int b = (int)(baseColor[2] * pulse);
-                    int a = (int)(intensity * 240); // Very solid
+                    int a = (int)(intensity * 240);
 
-                    // Outside faces
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x2, y1, z2).setColor(r, g, b, a).setUv(1, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y2, z4).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y2, z3).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
 
-                    // Inside faces (reversed winding)
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y2, z3).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y2, z4).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -455,11 +456,11 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.depthMask(false);
-        RenderSystem.disableCull(); // Visible from inside!
+        RenderSystem.disableCull();
 
         Tesselator tesselator = Tesselator.getInstance();
 
-        // Counter-rotating smaller vortices for chaos
+
         for (VortexLayer vortex : vortexLayers) {
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
             vortex.render(buffer, poseStack, tick, intensity);
@@ -521,7 +522,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Expanding rings of destruction
+
         int numWaves = 8;
         int segments = 64;
 
@@ -580,7 +581,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Writhing tentacles of void energy
+
         int numTendrils = 24;
 
         for (int tendril = 0; tendril < numTendrils; tendril++) {
@@ -643,7 +644,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP);
 
-        // Violently pulsating core with multiple layers
+
         for (int layer = 0; layer < 4; layer++) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(tick * (10.0f - layer * 2.0f)));
@@ -664,7 +665,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                 float x2 = Mth.cos(angle2) * coreSize;
                 float z2 = Mth.sin(angle2) * coreSize;
 
-                // White hot core blending to magenta/cyan
+
                 int r, g, b;
                 if (layer == 0) {
                     r = COLOR_WHITE[0];
@@ -680,13 +681,13 @@ public class SpaceFragmentationEffect extends ActiveEffect {
 
                 int a = (int)(intensity * 250);
 
-                // Top pyramid
+
                 buffer.addVertex(pose, 0, coreSize * 1.5f, 0).setColor(r, g, b, a).setUv(0.5f, 0).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, x1, 0, z1).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, x2, 0, z2).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, 0, coreSize * 1.5f, 0).setColor(r, g, b, a).setUv(0.5f, 0).setLight(LightTexture.FULL_BRIGHT);
 
-                // Bottom pyramid
+
                 buffer.addVertex(pose, 0, -coreSize * 1.5f, 0).setColor(r, g, b, a).setUv(0.5f, 0).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, x2, 0, z2).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, x1, 0, z1).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -702,7 +703,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
         RenderSystem.disableBlend();
     }
 
-    // Cached particle classes for maximum performance
+
     private static class MassiveRealityCrack {
         private final Vector3f[] path;
         private final float speed;
@@ -714,7 +715,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
             this.width = 1.2f + (seed % 3) * 0.4f;
             this.isMagenta = (seed % 2) == 0;
 
-            // Pre-calculate massive crack path
+
             int pathLength = 60;
             path = new Vector3f[pathLength];
 
@@ -755,7 +756,7 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                 int b = (int)Math.min(255, color[2] * brightness);
                 int a = (int)(intensity * 230);
 
-                // Draw thick crack ribbon
+
                 buffer.addVertex(pose, p1.x - currentWidth, p1.y, p1.z).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, p1.x + currentWidth, p1.y, p1.z).setColor(r, g, b, a).setUv(1, 0).setLight(LightTexture.FULL_BRIGHT);
                 buffer.addVertex(pose, p2.x + currentWidth, p2.y, p2.z).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -787,8 +788,8 @@ public class SpaceFragmentationEffect extends ActiveEffect {
             Matrix4f pose = poseStack.last().pose();
 
             int segments = 36;
-            int heightSegments = 20; // Reduced from 30
-            float maxHeight = EFFECT_RADIUS * 0.5f; // Reduced from 0.7f
+            int heightSegments = 20;
+            float maxHeight = EFFECT_RADIUS * 0.5f;
 
             for (int h = 0; h < heightSegments - 1; h++) {
                 float t1 = h / (float) heightSegments;
@@ -797,10 +798,10 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                 float y1 = (t1 - 0.5f) * maxHeight;
                 float y2 = (t2 - 0.5f) * maxHeight;
 
-                // PERFECT CYLINDER - no variation with height!
+
                 float baseRadius = EFFECT_RADIUS * radiusMultiplier;
                 float radius1 = baseRadius;
-                float radius2 = baseRadius; // Same radius!
+                float radius2 = baseRadius;
 
                 float twist1 = t1 * 720.0f;
                 float twist2 = t2 * 720.0f;
@@ -828,13 +829,13 @@ public class SpaceFragmentationEffect extends ActiveEffect {
                     int b = color[2];
                     int a = (int)(intensity * 180);
 
-                    // Outside
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x2, y1, z2).setColor(r, g, b, a).setUv(1, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y2, z4).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y2, z3).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
 
-                    // Inside (reversed)
+
                     buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setUv(0, 0).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x3, y2, z3).setColor(r, g, b, a).setUv(0, 1).setLight(LightTexture.FULL_BRIGHT);
                     buffer.addVertex(pose, x4, y2, z4).setColor(r, g, b, a).setUv(1, 1).setLight(LightTexture.FULL_BRIGHT);
@@ -871,9 +872,9 @@ public class SpaceFragmentationEffect extends ActiveEffect {
             float z = Mth.sin(angle) * orbitRadius;
             float y = Mth.sin(tick * heightSpeed * 0.1f + angleOffset) * EFFECT_RADIUS * 0.8f;
 
-            // Crackle effect
+
             float crackle = Mth.sin(tick * 0.6f + cracklePhase);
-            if (crackle < 0) return; // Flicker on/off
+            if (crackle < 0) return;
 
             float currentSize = size * (1.0f + crackle * 0.8f);
 

@@ -2,17 +2,17 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.ControllingUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
@@ -21,7 +21,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -35,7 +34,7 @@ import java.util.stream.StreamSupport;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteControllingAbility extends SelectableAbility {
 
-    private static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
+    public static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
 
     private static final HashSet<UUID> swapOnDamageIsActive = new HashSet<>();
 
@@ -43,11 +42,12 @@ public class MarionetteControllingAbility extends SelectableAbility {
         super(id, .5f);
 
         canBeUsedByNPC = false;
+        canBeUsedWhileControlling = false;
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("fool", 4));
+        return new HashMap<>(Map.of("fool", 5));
     }
 
     @Override
@@ -57,7 +57,59 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.marionette_controlling.swap", "ability.lotmcraft.marionette_controlling.damage_auto_swap", "ability.lotmcraft.marionette_controlling.control", "ability.lotmcraft.marionette_controlling.get_item"};
+        return new String[]{
+                "ability.lotmcraft.marionette_controlling.control",
+                "ability.lotmcraft.marionette_controlling.damage_auto_swap",
+                "ability.lotmcraft.marionette_controlling.swap",
+                "ability.lotmcraft.marionette_controlling.add_worm"};
+    }
+
+    @Override
+    public void nextAbility(LivingEntity entity) {
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        selectedAbility++;
+        if(selectedAbility >= getAbilityNames().length) {
+            selectedAbility = 0;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(entitySeq > 4 && selectedAbility >= 1) {
+            selectedAbility = 0;
+        }
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    @Override
+    public void previousAbility(LivingEntity entity) {
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        selectedAbility--;
+        if(selectedAbility <= -1) {
+            selectedAbility = getAbilityNames().length - 1;
+        }
+
+        if(entitySeq > 4 && selectedAbility >= 1) {
+            selectedAbility = 0;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
 
     @Override
@@ -66,23 +118,27 @@ public class MarionetteControllingAbility extends SelectableAbility {
             return;
 
         switch (abilityIndex) {
-            case 0 -> activateSwap((ServerLevel) level, player);
+            case 0 -> control(level, player);
             case 1 -> toggleAutoSwap(player);
-            case 2 -> control(level, player);
-            case 3  -> getItem(player);
+            case 2 -> activateSwap((ServerLevel) level, player);
+            case 3 -> addWormToSelectedMarionette(player);
         }
-
     }
 
-    private void getItem(ServerPlayer player) {
+    private void addWormToSelectedMarionette(ServerPlayer player) {
         LivingEntity marionette = getSelectedMarionette(player);
+
         if(marionette == null) {
             return;
         }
 
-        ItemStack controller = MarionetteUtils.createMarionetteController(marionette);
-        if(!player.getInventory().add(controller)) {
-            player.drop(controller, false);
+        MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if(component.hasWorm()) {
+            component.setHasWorm(false);
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.removed_worm").withColor(getColorForPathway("fool")));
+        } else {
+            component.setHasWorm(true);
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.added_worm").withColor(getColorForPathway("fool")));
         }
     }
 
@@ -168,12 +224,16 @@ public class MarionetteControllingAbility extends SelectableAbility {
         if(marionette == null)
             return;
 
+        // skip damage canceling if the damage was lower than 10% of the player's max health, or if the attack was not fatal
+        if (!(event.getAmount() / player.getMaxHealth() >= 0.1)
+                && !(player.getHealth() - event.getAmount() <= 0)) return;
+
         event.setCanceled(true);
         swapWithMarionette(level, player, marionette);
         marionette.hurt(event.getSource(), event.getAmount());
     }
 
-    private static ArrayList<LivingEntity> getMarionettesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
+    public static ArrayList<LivingEntity> getMarionettesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
         Level level = entity.level();
 
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
@@ -227,7 +287,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         String name = marionette.getDisplayName() == null ? marionette.getName().getString(): marionette.getDisplayName().getString();
 
-        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, name, marionette.getHealth(), marionette.getMaxHealth());
+        SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(true, name, marionette.getHealth(), marionette.getMaxHealth(), marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get()).hasWorm());
         PacketHandler.sendToPlayer(player, packet);
 
         return marionette;
@@ -244,7 +304,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
         //If no marionette is selected make sure no overlay gets rendered
         if(marionette == null) {
-            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, "", 0, 0);
+            SyncSelectedMarionettePacket packet = new SyncSelectedMarionettePacket(false, "", 0, 0, false);
             PacketHandler.sendToPlayer(player, packet);
             return;
         }
@@ -252,7 +312,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
         //Make sure the overlay goes away when the player stops holding the item
         ServerScheduler.scheduleDelayed(10, () -> {
             if(!player.getItemInHand(entity.getUsedItemHand()).getItem().equals(this)) {
-                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, "", 0, 0);
+                SyncSelectedMarionettePacket packet1 = new SyncSelectedMarionettePacket(false, "", 0, 0, false);
                 PacketHandler.sendToPlayer(player, packet1);
             }
         });
@@ -267,14 +327,16 @@ public class MarionetteControllingAbility extends SelectableAbility {
             currentIndex = 0;
             marionetteIndices.put(entity.getUUID(), currentIndex);
         }
+    }
 
-        //Increment index if shift key is down
-        if(entity.isShiftKeyDown()) {
-            currentIndex++;
-            if(currentIndex >= marionettes.size())
-                currentIndex = 0;
-            marionetteIndices.put(entity.getUUID(), currentIndex);
-        }
+    public static void cycle(LivingEntity entity) {
+        List<LivingEntity> marionettes = getMarionettesOfPlayerInAllLevelsOrderedById(entity);
+
+        int currentIndex = marionetteIndices.getOrDefault(entity.getUUID(), 0);
+        currentIndex++;
+        if(currentIndex >= marionettes.size())
+            currentIndex = 0;
+        marionetteIndices.put(entity.getUUID(), currentIndex);
     }
 
     public static void control(Level level, ServerPlayer player) {
@@ -284,13 +346,10 @@ public class MarionetteControllingAbility extends SelectableAbility {
             return;
         }
 
-        TransformationComponent transformationComponent = player.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        if (transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex() && transformationComponent.isTransformed()) return;
-
         LivingEntity target = getSelectedMarionette(player);
 
         if (target != null) {
-            ControllingUtil.possess(player, target, true);
+            ControllingUtils.startControlling(player, target, target.getData(ModAttachments.MARIONETTE_COMPONENT.get()).hasWorm(), true);
         }
     }
 }

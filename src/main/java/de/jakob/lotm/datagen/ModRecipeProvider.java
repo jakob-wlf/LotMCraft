@@ -5,7 +5,9 @@ import de.jakob.lotm.item.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -60,6 +62,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('I', Items.IRON_INGOT)
                 .define('S', Items.STICK)
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUALISTIC_TABLE.asItem())
+                .pattern("   ")
+                .pattern("GCG")
+                .pattern("W W")
+                .define('G', Items.GOLD_INGOT)
+                .define('C', Items.PURPLE_CARPET)
+                .define('W', Ingredient.of(ItemTags.PLANKS))
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
                 .save(recipeOutput);
     }
 }

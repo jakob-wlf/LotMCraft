@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities;
 
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PerformantExplosion;
@@ -202,7 +203,7 @@ public class MeteorEntity extends Entity {
 
         if(!level().getBlockState(BlockPos.containing(position())).isAir()) {
             AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
-            EffectManager.playEffect(EffectManager.Effect.EXPLOSION, position().x, position().y, position().z, serverLevel);
+            EffectManager.playEffect(EffectIds.EXPLOSION, position().x, position().y, position().z, serverLevel);
             PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
 
             if(getCaster() instanceof LivingEntity livingCaster) {
@@ -212,11 +213,11 @@ public class MeteorEntity extends Entity {
 
             if (isAbyssImpact()) {
                 // Spawn a cluster of green pillars around the impact point
-                EffectManager.playEffect(EffectManager.Effect.ABYSS_PILLAR, position().x, position().y, position().z, serverLevel);
+                EffectManager.playEffect(EffectIds.ABYSS_PILLAR, position().x, position().y, position().z, serverLevel);
                 for (int i = 0; i < 3; i++) {
                     double ox = (random.nextDouble() - 0.5) * 8;
                     double oz = (random.nextDouble() - 0.5) * 8;
-                    EffectManager.playEffect(EffectManager.Effect.ABYSS_PILLAR, position().x + ox, position().y, position().z + oz, serverLevel);
+                    EffectManager.playEffect(EffectIds.ABYSS_PILLAR, position().x + ox, position().y, position().z + oz, serverLevel);
                 }
                 // Apply abyss debuffs to nearby entities
                 double r = getRadius();

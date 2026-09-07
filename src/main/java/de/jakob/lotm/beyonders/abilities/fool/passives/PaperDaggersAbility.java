@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.entity.custom.projectiles.PaperDaggerProjectileEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class PaperDaggersAbility extends PassiveAbilityItem {
+public class PaperDaggersAbility extends PassiveAbility {
 
-    public PaperDaggersAbility(Properties properties) {
-        super(properties);
+    public PaperDaggersAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -50,16 +50,12 @@ public class PaperDaggersAbility extends PassiveAbilityItem {
             return;
 
         ItemStack stack = event.getItemStack();
-
         if (stack.getItem() != Items.PAPER)
             return;
-
-        if(!((PaperDaggersAbility) PassiveAbilityHandler.PAPER_DAGGERS.get()).shouldApplyTo(event.getEntity()))
+        if(!((PaperDaggersAbility) PassiveAbilityHandler.getById("paper_dagger_ability")).shouldApplyTo(event.getEntity()))
             return;
-
         if(event.getHand() != InteractionHand.MAIN_HAND)
             return;
-
         level.playSound(null, event.getPos(), SoundEvents.SNOWBALL_THROW, event.getEntity().getSoundSource(), 1, 1);
 
         Player player = event.getEntity();

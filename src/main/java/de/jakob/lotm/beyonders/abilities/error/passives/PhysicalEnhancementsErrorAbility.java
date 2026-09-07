@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsErrorAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsErrorAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -114,10 +114,5 @@ public class PhysicalEnhancementsErrorAbility extends PhysicalEnhancementsAbilit
 
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

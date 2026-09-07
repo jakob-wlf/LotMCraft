@@ -2,8 +2,9 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.*;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.*;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
@@ -33,12 +34,12 @@ public class MarionetteEventHandler {
                         goal instanceof TargetGoal
                 );
 
-                mob.goalSelector.addGoal(0, new MarionetteFollowGoal(mob));
-                mob.goalSelector.addGoal(0, new MarionetteLoadChunksGoal(mob));
-                mob.goalSelector.addGoal(1, new MarionetteStayGoal(mob));
+                mob.goalSelector.addGoal(0, new MarionetteMovementGoal(mob));
+                mob.goalSelector.addGoal(0, new EntityLoadChunksGoal(mob));
+                mob.goalSelector.addGoal(1, new MarionetteMovementGoal(mob));
                 mob.goalSelector.addGoal(1, new MarionetteUseAbilityGoal(mob));
                 mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));
-                mob.goalSelector.addGoal(10, new MarionetteLifelinkGoal(mob));
+                mob.goalSelector.addGoal(10, new MarionetteMaxDistanceGoal(mob));
                 mob.setTarget(null);
 
                 if(!(event.getLevel() instanceof ServerLevel serverLevel)) {

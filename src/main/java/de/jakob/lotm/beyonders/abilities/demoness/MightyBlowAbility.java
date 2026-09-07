@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;

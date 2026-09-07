@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.tyrant.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -8,9 +8,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RiptideAbility extends PassiveAbilityItem {
-    public RiptideAbility(Properties properties) {
-        super(properties);
+public class RiptideAbility extends PassiveAbility {
+    public RiptideAbility(String id) {
+        super(id);
     }
 
     @Override

@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.WaypointComponent;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -62,8 +63,8 @@ public record WaypointSelectedPacket(WaypointComponent.ClientWaypoint waypoint, 
                 serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1, 1);
                 player.teleportTo(destinationLevel, packet.waypoint.x(), packet.waypoint.y(), packet.waypoint.z(), Set.of(), player.getYRot(), player.getXRot());
                 serverLevel.playSound(null, packet.waypoint.x(), packet.waypoint.y(), packet.waypoint.z(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1, 1);
-                EffectManager.playEffect(EffectManager.Effect.WAYPOINT, packet.waypoint.x(), packet.waypoint.y() + 1, packet.waypoint.z(), serverLevel);
-                EffectManager.playEffect(EffectManager.Effect.WAYPOINT, player.getX(), player.getY() + 1, player.getZ(), serverLevel);
+                EffectManager.playEffect(EffectIds.WAYPOINT, packet.waypoint.x(), packet.waypoint.y() + 1, packet.waypoint.z(), serverLevel);
+                EffectManager.playEffect(EffectIds.WAYPOINT, player.getX(), player.getY() + 1, player.getZ(), serverLevel);
             }
             else if (packet.use.equals("delete")) {
                 WaypointComponent waypointComponent = player.getData(ModAttachments.WAYPOINT_COMPONENT);

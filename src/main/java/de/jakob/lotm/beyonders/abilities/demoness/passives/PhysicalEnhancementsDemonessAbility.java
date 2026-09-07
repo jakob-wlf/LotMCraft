@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsDemonessAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDemonessAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -117,8 +117,4 @@ public class PhysicalEnhancementsDemonessAbility extends PhysicalEnhancementsAbi
         };
     }
 
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
-    }
 }

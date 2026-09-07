@@ -15,7 +15,7 @@ import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -589,18 +589,11 @@ public class AbilityUtil {
         return getTargetLocation(entity, radius, entityDetectionRadius, positionAtEntityFeet, false);
     }
 
-    /**
-     * Core method for finding target locations (either entity or block)
-     * Fires a TargetLocationEvent that allows modification of the target location
-     * @param allowAllies If true, allows targeting allies (for support abilities)
-     */
     public static Vec3 getTargetLocation(LivingEntity entity, int radius, float entityDetectionRadius,
                                          boolean positionAtEntityFeet, boolean allowAllies) {
-        // Set flag to prevent TargetEntityEvent from firing during this call
         INSIDE_GET_TARGET_LOCATION.set(true);
 
         try {
-            // Check for existing targets first
             LivingEntity currentTarget = getCurrentTarget(entity);
             if (currentTarget != null && currentTarget.distanceTo(entity) <= radius) {
                 if (allowAllies || mayTarget(entity, currentTarget)) {
@@ -609,7 +602,6 @@ public class AbilityUtil {
                 }
             }
 
-            // Raycast for entities or blocks
             Vec3 lookDirection = entity.getLookAngle().normalize();
             Vec3 startPosition = entity.position().add(0, entity.getEyeHeight(), 0);
             Vec3 targetPosition = startPosition;
@@ -629,6 +621,7 @@ public class AbilityUtil {
                         .toList();
 
                 if (!nearbyEntities.isEmpty()) {
+                    System.out.println("Found nearby entity: " + nearbyEntities.get(0).getName().getString());
                     Entity target = nearbyEntities.get(0);
                     Vec3 location = getEntityTargetPosition(target, positionAtEntityFeet);
                     return fireTargetLocationEvent(entity, radius, entityDetectionRadius, positionAtEntityFeet, allowAllies, location);
@@ -1029,6 +1022,55 @@ public class AbilityUtil {
             blocks.addAll(getBlocksInCircleOutline(level, center, r, steps));
         }
         return blocks;
+    }
+
+    public static List<BlockPos> getBlocksInCone(Level level, Vec3 origin, Vec3 direction,
+                                                 double startRadius, double endRadius, boolean includeAir) {
+        List<BlockPos> result = new ArrayList<>();
+
+        double length = direction.length();
+        if (length < 1.0e-6) return result;
+
+        Vec3 axis = direction.scale(1.0 / length);
+        double maxRadius = Math.max(startRadius, endRadius);
+
+        Vec3 end = origin.add(direction);
+
+        int minX = Mth.floor(Math.min(origin.x, end.x) - maxRadius);
+        int maxX = Mth.floor(Math.max(origin.x, end.x) + maxRadius);
+        int minY = Mth.floor(Math.min(origin.y, end.y) - maxRadius);
+        int maxY = Mth.floor(Math.max(origin.y, end.y) + maxRadius);
+        int minZ = Mth.floor(Math.min(origin.z, end.z) - maxRadius);
+        int maxZ = Mth.floor(Math.max(origin.z, end.z) + maxRadius);
+
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Vec3 point = new Vec3(x + 0.5, y + 0.5, z + 0.5);
+                    Vec3 toPoint = point.subtract(origin);
+
+                    double along = toPoint.dot(axis);
+                    if (along < 0 || along > length) continue;
+
+                    Vec3 projected = axis.scale(along);
+                    double distFromAxis = toPoint.subtract(projected).length();
+
+                    double t = along / length;
+                    double radiusAtT = Mth.lerp(t, startRadius, endRadius);
+
+                    if (distFromAxis <= radiusAtT) {
+                        mutable.set(x, y, z);
+                        if (includeAir || !level.getBlockState(mutable).isAir()) {
+                            result.add(mutable.immutable());
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     public static List<BlockPos> getBlocksInSphereRadius(ServerLevel level, Vec3 center,

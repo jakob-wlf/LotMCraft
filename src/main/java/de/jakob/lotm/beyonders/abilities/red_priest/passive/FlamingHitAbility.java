@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.red_priest.passive;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class FlamingHitAbility extends PassiveAbilityItem {
-    public FlamingHitAbility(Properties properties) {
-        super(properties);
+public class FlamingHitAbility extends PassiveAbility {
+    public FlamingHitAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class FlamingHitAbility extends PassiveAbilityItem {
         }
 
         LivingEntity victim = event.getEntity();
-        if(((FlamingHitAbility) (PassiveAbilityHandler.FLAMING_HIT.get())).shouldApplyTo(source)) {
+        if(PassiveAbilityHandler.getById("flaming_hit_ability").shouldApplyTo(source)) {
             victim.setRemainingFireTicks(victim.getRemainingFireTicks() + 50);
         }
     }

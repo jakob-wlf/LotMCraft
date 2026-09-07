@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -23,8 +24,8 @@ public class AbyssPillarEffect extends ActiveEffect {
     private final RandomSource random = RandomSource.create();
     private final List<EmberQuad> embers = new ArrayList<>();
 
-    public AbyssPillarEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 7);
+    public AbyssPillarEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         for (int i = 0; i < 35; i++) {
             embers.add(new EmberQuad());
         }
@@ -42,7 +43,7 @@ public class AbyssPillarEffect extends ActiveEffect {
         else intensity = 1f;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
@@ -122,9 +123,9 @@ public class AbyssPillarEffect extends ActiveEffect {
 
             float ex = ember.ex, ey = ember.ey, ez = ember.ez;
             Vec3 toCamera = new Vec3(
-                    cameraPos.x - (x + ex),
-                    cameraPos.y - (y + ey),
-                    cameraPos.z - (z + ez)).normalize();
+                    cameraPos.x - (location.getX() + ex),
+                    cameraPos.y - (location.getY() + ey),
+                    cameraPos.z - (location.getZ() + ez)).normalize();
 
             Vec3 up = new Vec3(0, 1, 0);
             Vec3 right = toCamera.cross(up).normalize().scale(ember.size);

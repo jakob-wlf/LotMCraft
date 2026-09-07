@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.death.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -31,7 +31,7 @@ import java.util.Map;
 import net.minecraft.util.RandomSource;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class ReincarnationAbility extends PassiveAbilityItem {
+public class ReincarnationAbility extends PassiveAbility {
 
     private static final String NBT_COOLDOWN_TIME = "reincarnation_cooldown_until";
     private static final String SEAL_CAUSE = "reincarnation_debuff";
@@ -51,8 +51,8 @@ public class ReincarnationAbility extends PassiveAbilityItem {
         return 20 * 60 * 30;                    // 30 minutes (seq 4+)
     }
 
-    public ReincarnationAbility(Properties properties) {
-        super(properties);
+    public ReincarnationAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class ReincarnationAbility extends PassiveAbilityItem {
         // Never trigger on losing-control deaths
         if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
 
-        if (!((ReincarnationAbility) PassiveAbilityHandler.REINCARNATION.get()).shouldApplyTo(player)) return;
+        if (!PassiveAbilityHandler.getById("reincarnation_ability").shouldApplyTo(player)) return;
         if (!BeyonderData.isBeyonder(player)) return;
 
         int sequence = BeyonderData.getSequence(player);

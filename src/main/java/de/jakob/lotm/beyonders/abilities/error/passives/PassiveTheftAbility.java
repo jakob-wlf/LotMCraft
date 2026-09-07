@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.error.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SendPassiveTheftEffectPacket;
@@ -19,9 +19,9 @@ import java.util.Map;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class PassiveTheftAbility extends PassiveAbilityItem {
-    public PassiveTheftAbility(Properties properties) {
-        super(properties);
+public class PassiveTheftAbility extends PassiveAbility {
+    public PassiveTheftAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class PassiveTheftAbility extends PassiveAbilityItem {
         }
 
 
-        PassiveTheftAbility ability = (PassiveTheftAbility) PassiveAbilityHandler.PASSIVE_THEFT.get();
+        PassiveTheftAbility ability = (PassiveTheftAbility) PassiveAbilityHandler.getById("passive_theft_ability");
 
         if(!(event.getSource().getEntity() instanceof ServerPlayer player) || !ability.shouldApplyTo(player)) {
             return;

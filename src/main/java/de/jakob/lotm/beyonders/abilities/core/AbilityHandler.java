@@ -15,6 +15,7 @@ import de.jakob.lotm.beyonders.abilities.sun.*;
 import de.jakob.lotm.beyonders.abilities.tyrant.*;
 import de.jakob.lotm.beyonders.abilities.visionary.*;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.*;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,7 +32,6 @@ public class AbilityHandler {
     private void registerAbilities() {
         // COMMON
         abilities.add(new CogitationAbility("cogitation_ability"));
-        abilities.add(new AllyAbility("ally_ability"));
         abilities.add(new DivinationAbility("divination_ability"));
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
@@ -144,6 +144,8 @@ public class AbilityHandler {
         abilities.add(new PuppeteeringAbility("puppeteering_ability"));
         abilities.add(new MarionetteControllingAbility("marionette_controlling_ability"));
         abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
+        abilities.add(new HistoricalVoidSummonSelfAbility("historical_void_summon_self_ability"));
+        abilities.add(new HistoricalVoidBorrowingAbility("historical_void_borrowing_ability"));
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
@@ -182,6 +184,7 @@ public class AbilityHandler {
         abilities.add(new DisasterManifestationAbility("disaster_manifestation_ability"));
         abilities.add(new StructuralCollapseAbility("structural_collapse_ability"));
         abilities.add(new ApocalypseAbility("apocalypse_ability"));
+        abilities.add(new ChaosAuthorityAbility("chaos_authority_ability"));
 
         // MOTHER PATHWAY
         abilities.add(new PlantNurturingAbility("plant_nurturing_ability"));
@@ -411,6 +414,16 @@ public class AbilityHandler {
         return filteredPool.get(random.nextInt(filteredPool.size()));
     }
 
+    public List<Ability> getAllAbilitiesForEntity(LivingEntity entity) {
+        ArrayList<Ability> applicableAbilities = new ArrayList<>();
+        for (Ability ability : getAllAbilitiesOrdered()) {
+            if (ability.hasAbility(entity)) {
+                applicableAbilities.add(ability);
+            }
+        }
+        return applicableAbilities.reversed();
+    }
+
     public void disableAbility(Ability ability) {
         disabledAbilities.add(ability);
     }
@@ -436,6 +449,15 @@ public class AbilityHandler {
         return new ArrayList<>(
                 abilities.stream()
                         .filter(ability -> ability.getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence))
+                        .sorted(Comparator.comparing(Ability::getId))
+                        .sorted(Comparator.comparingInt(Ability::lowestSequenceUsable).reversed())
+                        .toList()
+        );
+    }
+
+    public ArrayList<Ability> getAllAbilitiesOrdered() {
+        return new ArrayList<>(
+                abilities.stream()
                         .sorted(Comparator.comparing(Ability::getId))
                         .sorted(Comparator.comparingInt(Ability::lowestSequenceUsable).reversed())
                         .toList()

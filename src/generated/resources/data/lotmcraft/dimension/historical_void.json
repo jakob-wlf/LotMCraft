@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:historical_void",
+  "generator": {
+    "type": "lotmcraft:historical_void",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:historical_void_biome"
+    }
+  }
+}

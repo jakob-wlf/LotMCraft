@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
@@ -11,16 +11,15 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PassiveLuckAbility extends PassiveAbilityItem {
+public class PassiveLuckAbility extends PassiveAbility {
 
 
-    public PassiveLuckAbility(Properties properties) {
-        super(properties);
-
+    public PassiveLuckAbility(String id) {
+        super(id);
     }
 
     public static int getNormalLuckForEntity(LivingEntity livingEntity) {
-        if(!(PassiveAbilityHandler.PASSIVE_LUCK.get() instanceof PassiveLuckAbility instance)) {
+        if(!(PassiveAbilityHandler.getById("passive_luck_ability") instanceof PassiveLuckAbility instance)) {
             return 0;
         }
 

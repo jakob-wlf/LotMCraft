@@ -4,15 +4,15 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.ChatFormatting;
@@ -56,12 +56,14 @@ public abstract class Ability {
     public boolean canBeUsedInArtifact = true;
     public boolean canBeReplicated = true;
     public boolean canBeShared = true;
+    public boolean canBeUsedWhileControlling = true;
 
     public boolean canAlwaysBeUsed = false;
 
     // Misc
     public boolean doesNotIncreaseDigestion = false;
     protected boolean shouldBeHidden = false;
+    public int onHoldTickInverval = 5;
 
     // Utility
     protected final Random random = new Random();
@@ -128,7 +130,7 @@ public abstract class Ability {
         }
 
         // Decrement ability if it was copied
-        if(!isCopied) {
+        if(isCopied) {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 
@@ -218,17 +220,21 @@ public abstract class Ability {
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
-        // Creative + OP players can use any ability up to their sequence
         if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
-        // use the old system in case of controlling - will change once worms get added
-        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingDataComponent.isControlling()) {
-            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-                return true;
+        if (entity instanceof Player player && ControllingUtils.isControlling(player)) {
+            ControllingUtils.PathwayData pathwayData = ControllingUtils.currentlyControlling(player);
+            boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(player);
+
+            boolean hasTargetAbility = getRequirements().containsKey(pathwayData.pathway()) && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
+
+            if (!canUseOwnAbilities) {
+                return hasTargetAbility;
             }
+
+            if (hasTargetAbility) return true;
         }
 
         DiscernmentComponent discernmentComponent = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
@@ -243,6 +249,16 @@ public abstract class Ability {
             String userPath = BeyonderData.getPathwayHistory(entity)[i];
             if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
                 return true;
+            }
+        }
+
+        // Check sefirot
+        if(entity instanceof Player player) {
+            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlays(player);
+            for (String sefirotPathway : sefirotPathways) {
+                if (getRequirements().containsKey(sefirotPathway) && getRequirements().get(sefirotPathway) >= sequence) {
+                    return true;
+                }
             }
         }
 
@@ -267,12 +283,13 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
-        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality && BeyonderData.getSpirituality(entity) < getSpiritualityCost() * 0.7f) return false;
+        if(BeyonderData.getSpirituality(entity) < getSpiritualityCost()) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
         if(entity instanceof Player player && player.isSpectator() && !ParasitationAbility.isConcealed(player.getUUID())) return false;
+
+        if(!canBeUsedWhileControlling && entity instanceof Player player && ControllingUtils.isControlling(player)) return false;
 
         DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -21,20 +22,20 @@ public class ConceptualTheftEffect extends ActiveEffect {
     private final List<ConceptFragment> fragments = new ArrayList<>();
     private final List<SiphonLine> siphonLines = new ArrayList<>();
 
-    // Subtle purple theme - mysterious and conceptual
-    private static final float[] MAIN_COLOR = {0.45f, 0.2f, 0.65f};      // Deep purple
-    private static final float[] DRAIN_COLOR = {0.25f, 0.1f, 0.4f};      // Darker purple
-    private static final float[] ESSENCE_COLOR = {0.7f, 0.5f, 0.9f};     // Light purple glow
 
-    public ConceptualTheftEffect(double x, double y, double z) {
-        super(x, y, z, 30);
+    private static final float[] MAIN_COLOR = {0.45f, 0.2f, 0.65f};
+    private static final float[] DRAIN_COLOR = {0.25f, 0.1f, 0.4f};
+    private static final float[] ESSENCE_COLOR = {0.7f, 0.5f, 0.9f};
 
-        // Create concept fragments that represent stolen abilities
+    public ConceptualTheftEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
+
+
         for (int i = 0; i < 50; i++) {
             fragments.add(new ConceptFragment());
         }
 
-        // Create siphon lines that pull essence inward
+
         for (int i = 0; i < 16; i++) {
             siphonLines.add(new SiphonLine(i));
         }
@@ -50,18 +51,18 @@ public class ConceptualTheftEffect extends ActiveEffect {
         float intensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
-        // Render the central void - where concepts are being absorbed
+
         renderCentralVoid(poseStack, progress, intensity);
 
-        // Render siphon lines pulling inward
+
         renderSiphonLines(poseStack, progress, intensity);
 
-        // Render fragmenting concepts being stolen
+
         renderConceptFragments(poseStack, progress, intensity);
 
-        // Render the absorption ring
+
         renderAbsorptionRing(poseStack, progress, intensity);
 
         poseStack.popPose();
@@ -78,7 +79,7 @@ public class ConceptualTheftEffect extends ActiveEffect {
         float radius = 0.8f + intensity * 0.25f;
         int segments = 16;
 
-        // Dark central sphere representing the void
+
         Tesselator tesselator = Tesselator.getInstance();
 
         for (int lat = 0; lat < segments; lat++) {
@@ -174,7 +175,7 @@ public class ConceptualTheftEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Render as small diamond shapes
+
             float size = fragment.size;
             Vec3 pos = fragment.pos;
 
@@ -288,11 +289,11 @@ public class ConceptualTheftEffect extends ActiveEffect {
                 return;
             }
 
-            // Pull toward center with spiral motion
+
             Vec3 toCenter = targetOffset.subtract(pos).normalize();
             velocity = velocity.add(toCenter.scale(0.04));
 
-            // Add slight spiral
+
             float spiralAngle = lifetime * 0.05f;
             Vec3 spiral = new Vec3(
                     Math.cos(spiralAngle) * 0.01,
@@ -302,14 +303,14 @@ public class ConceptualTheftEffect extends ActiveEffect {
 
             pos = pos.add(velocity.add(spiral));
 
-            // Fade in, sustain, then dissolve
+
             float fadeIn = Mth.clamp(progress * 3f, 0f, 1f);
             float fadeOut = 1f - Mth.clamp((progress - 0.7f) * 3.3f, 0f, 1f);
             float flicker = (float)(Math.sin(lifetime * 0.2 + dissolveFactor * Math.PI * 2) * 0.3 + 0.7);
 
             alpha = intensity * fadeIn * fadeOut * flicker;
 
-            // Shrink as it gets absorbed
+
             size = (0.05f + random.nextFloat() * 0.07f) * (1f - progress * 0.5f);
         }
     }
@@ -340,10 +341,10 @@ public class ConceptualTheftEffect extends ActiveEffect {
         }
 
         Vec3 getPosition(float t) {
-            // Curved path from outer to center
+
             Vec3 straightPath = startPos.add(direction.scale(startPos.length() * t));
 
-            // Add curve
+
             float curvature = (float)Math.sin(t * Math.PI) * 0.3f;
             Vec3 perpendicular = new Vec3(-direction.z, 0, direction.x).scale(curvature);
 

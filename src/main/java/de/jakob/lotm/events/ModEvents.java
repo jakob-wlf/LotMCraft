@@ -3,6 +3,8 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateModel;
@@ -43,7 +45,7 @@ import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthModel;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneModel;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
 import de.jakob.lotm.entity.custom.*;
-import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
@@ -56,6 +58,7 @@ import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCre
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
@@ -140,8 +143,8 @@ public class ModEvents {
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
-        event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
+        event.put(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDouble.createAttributes().build());
 
         event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardEntity.createAttributes().build());
@@ -225,8 +228,6 @@ public class ModEvents {
         BeyonderCommand.register(event.getDispatcher());
         SpawnBeyonderSpawnerCommand.register(event.getDispatcher());
         LuckCheckCommand.register(event.getDispatcher());
-        AllyRequestCommands.register(event.getDispatcher());
-        AllyCommand.register(event.getDispatcher());
         EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         DigestionCommand.register(event.getDispatcher());
@@ -243,6 +244,14 @@ public class ModEvents {
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
+        event.getDispatcher().register(
+                Commands.literal("accept_sefirot_invite")
+                            .executes(ctx -> {
+                                ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                SefirahHandler.acceptInvite(player);
+                                return 1;
+                            })
+        );
     }
 
     @SubscribeEvent
@@ -285,6 +294,8 @@ public class ModEvents {
         PacketHandler.syncUniquenessToPlayer(player);
 
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
+
+        ControllingUtils.handleRejoin(player);
 
         if (team.isInTeam()) {
             // Player is a member — check if their leader still has them listed

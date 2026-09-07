@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -45,12 +46,10 @@ public class ApocalypseAbility extends Ability {
 
         Vec3 loc = entity.position();
 
-        // Play effect
-        EffectManager.playEffect(EffectManager.Effect.APOCALYPSE, loc.x, loc.y, loc.z, serverLevel, entity);
+        EffectManager.playEffect(EffectIds.APOCALYPSE, loc.x, loc.y, loc.z, serverLevel, entity);
 
         double yLevel = loc.y - 1;
 
-        // Remove blocks and damage entities
         AtomicDouble radius = new AtomicDouble(2);
 
         ServerScheduler.scheduleForDuration(0, 2, (int) (55*multiplier(entity)), () -> {

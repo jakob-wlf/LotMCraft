@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.DoorAuthorityData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -132,7 +133,7 @@ public class SealedArtifactItem extends Item {
             level.playSound(null, player.blockPosition(), SoundEvents.ANVIL_PLACE, player.getSoundSource(), 1.0f, 1.0f);
             player.closeContainer();
             Vec3 explosionPos = player.position().add(0, player.getBbHeight() / 2, 0);
-            ServerScheduler.scheduleDelayed(10, () -> EffectManager.playEffect(EffectManager.Effect.ARTIFACT_EXPLOSION, explosionPos.x, explosionPos.y, explosionPos.z, (ServerLevel) level));
+            ServerScheduler.scheduleDelayed(10, () -> EffectManager.playEffect(EffectIds.ARTIFACT_EXPLOSION, explosionPos.x, explosionPos.y, explosionPos.z, (ServerLevel) level));
             player.setDeltaMovement(new Vec3(level.random.nextDouble(), .65, level.random.nextDouble()).normalize());
             player.hurtMarked = true;
             player.getInventory().setItem(slot, newStack);
@@ -140,7 +141,6 @@ public class SealedArtifactItem extends Item {
 
     }
 
-    // ── Sections ────────────────────────────────────────────────
 
     private void addPathwayInfo(List<Component> tooltip, SealedArtifactData data, int pathwayColor) {
         tooltip.add(

@@ -1,29 +1,7 @@
 package de.jakob.lotm.dimension;
 
-/**
- * Defines all Spirit World biomes. Each biome controls three things:
- *
- *  1. GENERATION MODE  – fundamentally different island geometry per biome
- *  2. TERRAIN PARAMS   – radius, height, depth, grid spacing, etc.
- *  3. FOG COLOUR       – unique animated colour theme
- *
- * Biome regions are large (~1800-block Voronoi cells) so that the player
- * must travel a meaningful distance to reach a new biome.
- *
- * Generation modes
- * ----------------
- *  ARCHIPELAGO  – many medium islands clustered together (Wool Meadows)
- *  SPIRE        – very tall, razor-thin crystal columns (Crystalline Peaks)
- *  SCATTERED    – hundreds of tiny islands spread across a huge Y range (Void Gardens, Fungal Depths)
- *  CONTINENTAL  – enormous, nearly continent-sized solid landmasses (Ember Wastes, Glacial Shelf)
- *  PLATEAU      – huge perfectly flat-topped tables (Quartz Flats, Gilded Ruins)
- *  CANYON       – large masses with deep layered canyon relief (Terracotta Canyon)
- */
-public enum SpiritWorldBiome {
 
-    // -------------------------------------------------------------------------
-    // Biome declarations
-    // -------------------------------------------------------------------------
+public enum SpiritWorldBiome {
 
     WOOL_MEADOWS(
             GenerationMode.ARCHIPELAGO,
@@ -68,15 +46,26 @@ public enum SpiritWorldBiome {
             GenerationMode.CONTINENTAL,
             new TerrainParams(58, 10, 0.80f, 0.38f, 70, 180, 200, -4, 8, 0.60f,
                     250)
+    ),
+
+    SPIRIT_WORLD_WASTES(
+            GenerationMode.CHAOS,
+            new TerrainParams(64, 50, 0.65f, 0.55f, 20, 70, 85, -30, 50, 1.6f,
+                    300)
+    ),
+    MIRE_HOLLOW(
+            GenerationMode.SCATTERED,
+            new TerrainParams(58, 14, 0.50f, 0.50f, 10, 30, 62, -40, 50, 1.3f,
+                    250)
+    ),
+    BONE_STEPPES(
+            GenerationMode.PLATEAU,
+            new TerrainParams(60, 5, 0.30f, 0.18f, 85, 270, 290, -4, 15, 0.5f,
+                    250)
     );
 
 
-    /** A biome and its normalised blend contribution at a given world position. */
     public record BiomeWeight(SpiritWorldBiome biome, double weight) {}
-
-    // -------------------------------------------------------------------------
-    // Fields
-    // -------------------------------------------------------------------------
 
     public final GenerationMode mode;
     public final TerrainParams terrain;
@@ -86,48 +75,33 @@ public enum SpiritWorldBiome {
         this.terrain = terrain;
     }
 
-    // -------------------------------------------------------------------------
-    // Generation modes
-    // -------------------------------------------------------------------------
-
     public enum GenerationMode {
         ARCHIPELAGO,
         SPIRE,
         SCATTERED,
         CONTINENTAL,
         PLATEAU,
-        CANYON
+        CANYON,
+        CHAOS
     }
 
-    // -------------------------------------------------------------------------
-    // Block palette weights
-    // -------------------------------------------------------------------------
 
-    /**
-     * Per-biome weights for each PatchType, indexed by PatchType ordinal:
-     *   0=WOOL  1=AMETHYST  2=PRISMARINE  3=END_STONE  4=QUARTZ
-     *   5=TERRACOTTA  6=NETHERRACK  7=BLACKSTONE  8=BASALT
-     *   9=DEEPSLATE  10=STONE  11=GRASS  12=ICE  13=MUSHROOM  14=COPPER  15=GOLD_BLOCK
-     */
     public double[] getPatchWeights() {
         return switch (this) {
-            case WOOL_MEADOWS      -> new double[]{ 0.48, 0.06, 0.03, 0.01, 0.02, 0.10, 0.01, 0.005, 0.003, 0.002, 0.001, 0.22, 0.0, 0.0, 0.0, 0.0 };
-            case CRYSTALLINE_PEAKS -> new double[]{ 0.02, 0.46, 0.30, 0.04, 0.14, 0.01, 0.005, 0.005, 0.003, 0.008, 0.001, 0.003, 0.0, 0.0, 0.0, 0.0 };
-            case VOID_GARDENS      -> new double[]{ 0.03, 0.18, 0.12, 0.52, 0.05, 0.01, 0.03, 0.02, 0.004, 0.010, 0.002, 0.002, 0.0, 0.0, 0.0, 0.0 };
-            case EMBER_WASTES      -> new double[]{ 0.005, 0.02, 0.01, 0.01, 0.01, 0.02, 0.50, 0.30, 0.12, 0.01, 0.003, 0.002, 0.0, 0.0, 0.0, 0.0 };
-            case QUARTZ_FLATS      -> new double[]{ 0.01, 0.10, 0.08, 0.02, 0.72, 0.02, 0.005, 0.005, 0.005, 0.003, 0.002, 0.002, 0.0, 0.0, 0.0, 0.0 };
-            case TERRACOTTA_CANYON -> new double[]{ 0.03, 0.03, 0.02, 0.02, 0.02, 0.78, 0.02, 0.02, 0.02, 0.005, 0.003, 0.03, 0.0, 0.0, 0.0, 0.0 };
-            // Ice dominates, with snow, packed ice, blue ice accents
-            case GLACIAL_SHELF     -> new double[]{ 0.0, 0.02, 0.01, 0.005, 0.02, 0.0, 0.0, 0.005, 0.01, 0.03, 0.005, 0.0, 0.90, 0.0, 0.0, 0.0 };
-            // Glowing mushroom blocks, nylium variants, mycelium-toned deepslate
-            case FUNGAL_DEPTHS     -> new double[]{ 0.0, 0.03, 0.0, 0.02, 0.0, 0.0, 0.02, 0.01, 0.005, 0.04, 0.005, 0.0, 0.0, 0.88, 0.0, 0.0 };
-            case GILDED_RUINS -> new double[]{ 0.0, 0.02, 0.01, 0.01, 0.02, 0.01, 0.0, 0.05, 0.0, 0.05, 0.01, 0.0, 0.0, 0.0, 0.60, 0.27 };
+            case WOOL_MEADOWS      -> new double[]{ 0.48, 0.06, 0.03, 0.01, 0.02, 0.10, 0.01, 0.005, 0.003, 0.002, 0.001, 0.22, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case CRYSTALLINE_PEAKS -> new double[]{ 0.02, 0.46, 0.30, 0.04, 0.14, 0.01, 0.005, 0.005, 0.003, 0.008, 0.001, 0.003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case VOID_GARDENS      -> new double[]{ 0.03, 0.18, 0.12, 0.52, 0.05, 0.01, 0.03, 0.02, 0.004, 0.010, 0.002, 0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case EMBER_WASTES      -> new double[]{ 0.005, 0.02, 0.01, 0.01, 0.01, 0.02, 0.50, 0.30, 0.12, 0.01, 0.003, 0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case QUARTZ_FLATS      -> new double[]{ 0.01, 0.10, 0.08, 0.02, 0.72, 0.02, 0.005, 0.005, 0.005, 0.003, 0.002, 0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case TERRACOTTA_CANYON -> new double[]{ 0.03, 0.03, 0.02, 0.02, 0.02, 0.78, 0.02, 0.02, 0.02, 0.005, 0.003, 0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case GLACIAL_SHELF     -> new double[]{ 0.0, 0.02, 0.01, 0.005, 0.02, 0.0, 0.0, 0.005, 0.01, 0.03, 0.005, 0.0, 0.90, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case FUNGAL_DEPTHS     -> new double[]{ 0.0, 0.03, 0.0, 0.02, 0.0, 0.0, 0.02, 0.01, 0.005, 0.04, 0.005, 0.0, 0.0, 0.88, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+            case GILDED_RUINS -> new double[]{ 0.0, 0.02, 0.01, 0.01, 0.02, 0.01, 0.0, 0.05, 0.0, 0.05, 0.01, 0.0, 0.0, 0.0, 0.60, 0.27, 0.0, 0.0, 0.0, 0.0 };
+            case SPIRIT_WORLD_WASTES -> new double[]{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.08, 0.10, 0.15, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.55, 0.0, 0.0, 0.07 };
+            case MIRE_HOLLOW          -> new double[]{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.08, 0.0, 0.0, 0.0, 0.0, 0.0, 0.80, 0.0, 0.02 };
+            case BONE_STEPPES         -> new double[]{ 0.0, 0.02, 0.0, 0.0, 0.15, 0.0, 0.0, 0.0, 0.0, 0.03, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75, 0.0 };
         };
     }
-
-    // -------------------------------------------------------------------------
-    // Fog colour
-    // -------------------------------------------------------------------------
 
     public float[] getFogColor(long timeMs) {
         return switch (this) {
@@ -195,39 +169,41 @@ public enum SpiritWorldBiome {
                 float p = sinPulse(timeMs, 800, 0.04f, 0.96f);
                 yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
             }
+            case SPIRIT_WORLD_WASTES -> {
+                float h = 0.75f + (float) Math.sin(timeMs / 6000.0) * 0.05f;
+                float s = 0.20f + sinPulse(timeMs, 500, 0.08f, 0.0f);
+                float[] c = hsb(h, s, 0.38f);
+                float p = sinPulse(timeMs, 350, 0.12f, 0.55f);
+                yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
+            }
+            case MIRE_HOLLOW -> {
+                float h = 0.28f + (float) Math.sin(timeMs / 5000.0) * 0.03f;
+                float[] c = hsb(h, 0.55f, 0.42f);
+                float p = sinPulse(timeMs, 450, 0.12f, 0.55f);
+                yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
+            }
+            case BONE_STEPPES -> {
+                float h = 0.12f + (float) Math.sin(timeMs / 8000.0) * 0.02f;
+                float[] c = hsb(h, 0.15f, 0.90f);
+                float p = sinPulse(timeMs, 700, 0.05f, 0.90f);
+                yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
+            }
         };
     }
 
-    // -------------------------------------------------------------------------
-    // Biome determination – large Voronoi cells
-    // -------------------------------------------------------------------------
 
-
-    /** Width (in blocks) of the cross-fade zone between two adjacent biomes. */
     private static final double BLEND_RADIUS  = 220.0;
 
     private static final SpiritWorldBiome[] WEIGHTED_POOL = buildWeightedPool();
 
     private static SpiritWorldBiome[] buildWeightedPool() {
-        SpiritWorldBiome[] extra = { WOOL_MEADOWS, WOOL_MEADOWS };
-        SpiritWorldBiome[] base  = values();
-        SpiritWorldBiome[] pool  = new SpiritWorldBiome[base.length + extra.length];
-        System.arraycopy(base,  0, pool, 0,           base.length);
-        System.arraycopy(extra, 0, pool, base.length, extra.length);
-        return pool;
+        return values();
     }
 
-    /**
-     * Returns the nearest 1–2 Voronoi biome cells with smooth blend weights.
-     *
-     * Deep inside a biome: only one entry with weight 1.0.
-     * Within {@code BLEND_RADIUS} blocks of any border: two entries whose
-     * weights sum to 1.0, smoothly interpolated so neither hard-cuts.
-     */
     public static BiomeWeight[] getBlendedBiomesAt(int x, int z) {
         SpiritWorldBiome[] values = values();
         double d1sq = Double.MAX_VALUE, d2sq = Double.MAX_VALUE;
-        SpiritWorldBiome b1 = WOOL_MEADOWS, b2 = WOOL_MEADOWS;
+        SpiritWorldBiome b1 = SPIRIT_WORLD_WASTES, b2 = SPIRIT_WORLD_WASTES;
 
         int searchStride = 0;
         for (SpiritWorldBiome b : values()) searchStride = Math.max(searchStride, b.terrain.cellSize());
@@ -240,13 +216,11 @@ public enum SpiritWorldBiome {
                 int  cx   = gridX + ox, cz = gridZ + oz;
                 long seed = jenkinsHash((long) cx * 1_234_567_891L + (long) cz * 987_654_321L);
 
-                // Pick biome first so we know its cell size
                 int poolIdx = Math.min(
                         Math.abs((int)(pseudoRand(seed ^ 0xCAFE_BABEL) * WEIGHTED_POOL.length)),
                         WEIGHTED_POOL.length - 1);
                 SpiritWorldBiome b = WEIGHTED_POOL[poolIdx];
 
-                // Place the Voronoi seed using this biome's own cell size
                 int cs = b.terrain.cellSize();
                 int px = cx * cs + (int)(pseudoRand(seed)                * (cs - 1));
                 int pz = cz * cs + (int)(pseudoRand(seed ^ 0xDEAD_BEEFL) * (cs - 1));
@@ -257,9 +231,6 @@ public enum SpiritWorldBiome {
             }
         }
 
-        // Gap between nearest and second-nearest encodes boundary proximity.
-        //   gap → 0   : right on border  → 50 / 50 blend
-        //   gap → BLEND_RADIUS : deep in biome → 100 / 0
         double gap = Math.sqrt(d2sq) - Math.sqrt(d1sq);
         double t   = biomeSmooth(Math.min(gap / BLEND_RADIUS, 1.0));
         double w1  = 0.5 + t * 0.5;   // [0.5 … 1.0]
@@ -280,9 +251,6 @@ public enum SpiritWorldBiome {
         return x * x * (3.0 - 2.0 * x);
     }
 
-    // -------------------------------------------------------------------------
-    // Internal helpers
-    // -------------------------------------------------------------------------
 
     private static float hue(long t, long periodMs, float offsetDeg) {
         return ((t / periodMs + (long) offsetDeg) % 360L) / 360.0f;
@@ -313,10 +281,6 @@ public enum SpiritWorldBiome {
         x = (x ^ (x >>> 27)) * 0x94d049bb133111ebL;
         return x ^ (x >>> 31);
     }
-
-    // -------------------------------------------------------------------------
-    // TerrainParams record
-    // -------------------------------------------------------------------------
 
     public record TerrainParams(
             int baseHeight, int heightVariation,

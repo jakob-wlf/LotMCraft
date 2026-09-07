@@ -32,6 +32,18 @@ public class Location {
         return level == levelToCompare;
     }
 
+    public double getX() {
+        return position.x;
+    }
+
+    public double getY() {
+        return position.y;
+    }
+
+    public double getZ() {
+        return position.z;
+    }
+
     /**
      * Gets the distance to another location. If the other location is in a different level, returns Double.MAX_VALUE.
      */

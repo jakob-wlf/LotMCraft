@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsDoorAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsDoorAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDoorAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -102,10 +102,5 @@ public class PhysicalEnhancementsDoorAbility extends PhysicalEnhancementsAbility
 
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(net.minecraft.world.entity.LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

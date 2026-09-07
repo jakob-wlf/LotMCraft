@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -35,30 +36,30 @@ public class DiscernEffect extends ActiveEffect {
     private float waveRotation = 0f;
     private float cleansePulse = 0f;
 
-    public DiscernEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 2);
+    public DiscernEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Create cascading waves that wash over the player
+
         for (int i = 0; i < 8; i++) {
             waves.add(new CascadingWave(i));
         }
 
-        // Create purification particles
+
         for (int i = 0; i < 200; i++) {
             particles.add(new PurificationParticle());
         }
 
-        // Create spirit fragments that dissolve impurities
+
         for (int i = 0; i < 15; i++) {
             fragments.add(new SpiritFragment());
         }
 
-        // Create golden rays of divine light
+
         for (int i = 0; i < 6; i++) {
             goldenRays.add(new GoldenRay(i));
         }
 
-        // Create cleansing orbs that orbit
+
         for (int i = 0; i < 10; i++) {
             cleansingOrbs.add(new CleansingOrb(i));
         }
@@ -71,7 +72,7 @@ public class DiscernEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Build up intensity, sustain, then fade
+
         if (progress < 0.1f) {
             baptismIntensity = progress / 0.1f;
         } else if (progress > 0.9f) {
@@ -84,11 +85,11 @@ public class DiscernEffect extends ActiveEffect {
         cleansePulse = Mth.sin(currentTick * 0.1f) * 0.5f + 0.5f;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(location.getX(), location.getY(), location.getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render in order for proper visual layering
+
         renderDivineColumn(poseStack, bufferSource, progress);
         renderGoldenRays(poseStack, bufferSource, progress);
         renderCascadingWaves(poseStack, bufferSource, progress);
@@ -106,7 +107,7 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Central column of descending divine light
+
         float columnRadius = 0.8f + Mth.sin(currentTick * 0.07f) * 0.15f;
         int segments = 24;
 
@@ -121,7 +122,7 @@ public class DiscernEffect extends ActiveEffect {
 
             float alpha = 0.6f * baptismIntensity;
 
-            // Top to bottom gradient (descending light)
+
             addVertex(consumer, matrix, x1, 4f, z1,
                     1f, 1f, 1f, alpha);
             addVertex(consumer, matrix, x2, 4f, z2,
@@ -132,7 +133,7 @@ public class DiscernEffect extends ActiveEffect {
                     PRIMARY_R * 0.6f, PRIMARY_G * 0.6f, PRIMARY_B * 0.6f, alpha * 0.2f);
         }
 
-        // Inner golden core
+
         float coreRadius = columnRadius * 0.4f;
         for (int i = 0; i < segments; i++) {
             float angle1 = (float) (i * Math.PI * 2 / segments);
@@ -183,7 +184,7 @@ public class DiscernEffect extends ActiveEffect {
                 float x2 = Mth.cos(angle2) * r2;
                 float z2 = Mth.sin(angle2) * r2;
 
-                // Mix of blue and gold based on wave phase
+
                 float goldMix = wave.goldRatio;
                 float r = PRIMARY_R + (GOLD_R - PRIMARY_R) * goldMix;
                 float g = PRIMARY_G + (GOLD_G - PRIMARY_G) * goldMix;
@@ -224,11 +225,11 @@ public class DiscernEffect extends ActiveEffect {
 
             if (fragment.alpha <= 0f) continue;
 
-            // Render fragment as ethereal cross/star
+
             float size = fragment.size;
             float alpha = fragment.alpha * baptismIntensity;
 
-            // Vertical beam
+
             addVertex(consumer, matrix, fragment.x - size * 0.1f, fragment.y - size, fragment.z,
                     fragment.r, fragment.g, fragment.b, alpha * 0.6f);
             addVertex(consumer, matrix, fragment.x + size * 0.1f, fragment.y - size, fragment.z,
@@ -238,7 +239,7 @@ public class DiscernEffect extends ActiveEffect {
             addVertex(consumer, matrix, fragment.x - size * 0.1f, fragment.y + size, fragment.z,
                     1f, 1f, 1f, alpha);
 
-            // Horizontal beam
+
             addVertex(consumer, matrix, fragment.x - size, fragment.y - size * 0.1f, fragment.z,
                     fragment.r, fragment.g, fragment.b, alpha * 0.6f);
             addVertex(consumer, matrix, fragment.x + size, fragment.y - size * 0.1f, fragment.z,
@@ -291,11 +292,11 @@ public class DiscernEffect extends ActiveEffect {
 
             if (orb.alpha <= 0f) continue;
 
-            // Core orb
+
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, orb.size,
                     orb.r, orb.g, orb.b, orb.alpha * baptismIntensity);
 
-            // Outer glow
+
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, orb.size * 1.8f,
                     orb.r * 0.8f, orb.g * 0.8f, orb.b * 0.8f, orb.alpha * baptismIntensity * 0.3f);
         }
@@ -305,7 +306,7 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Swirling vortex at player level
+
         int vortexLayers = 3;
         for (int layer = 0; layer < vortexLayers; layer++) {
             float layerY = 0.5f + layer * 0.4f;
@@ -342,13 +343,13 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Descending rings of light
+
         int ringCount = 5;
         for (int r = 0; r < ringCount; r++) {
             float ringOffset = r * 0.2f;
             float ringProgress = ((progress * 1.5f + ringOffset) % 1f);
 
-            float ringY = 4f - ringProgress * 5.5f; // Descends from top
+            float ringY = 4f - ringProgress * 5.5f;
             float ringRadius = 0.8f + ringProgress * 1.5f;
             float ringAlpha = Mth.sin(ringProgress * Mth.PI) * 0.5f * baptismIntensity;
 
@@ -362,7 +363,7 @@ public class DiscernEffect extends ActiveEffect {
                 float x2 = Mth.cos(angle2) * ringRadius;
                 float z2 = Mth.sin(angle2) * ringRadius;
 
-                // Golden to blue gradient
+
                 float goldMix = 1f - ringProgress;
                 float red = PRIMARY_R + (GOLD_R - PRIMARY_R) * goldMix;
                 float g = PRIMARY_G + (GOLD_G - PRIMARY_G) * goldMix;
@@ -384,7 +385,7 @@ public class DiscernEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Crown of light above the effect
+
         float crownY = 2.5f + Mth.sin(currentTick * 0.08f) * 0.2f;
         int points = 8;
 
@@ -407,7 +408,7 @@ public class DiscernEffect extends ActiveEffect {
             float alpha = 0.6f * baptismIntensity;
             float pulse = Mth.sin(currentTick * 0.15f + i * 0.5f) * 0.3f + 0.7f;
 
-            // Triangle peak
+
             addVertex(consumer, matrix, x1, crownY, z1,
                     GOLD_R * 0.8f, GOLD_G * 0.8f, GOLD_B * 0.8f, alpha * pulse);
             addVertex(consumer, matrix, x2, crownY, z2,
@@ -432,9 +433,9 @@ public class DiscernEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-                cameraPos.x - (this.x + x),
-                cameraPos.y - (this.y + y),
-                cameraPos.z - (this.z + z)
+                cameraPos.x - (this.location.getX() + x),
+                cameraPos.y - (this.location.getY() + y),
+                cameraPos.z - (this.location.getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);
@@ -479,12 +480,12 @@ public class DiscernEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity, float tick) {
-            // Descend and expand
+
             this.height -= descendSpeed;
             this.radius = 0.5f + (4f - height) * 0.4f;
             this.rotation = tick * 0.03f + index * 0.5f;
 
-            // Fade based on height
+
             if (height > 2f) {
                 this.alpha = Mth.clamp((4f - height) / 2f, 0f, 1f) * 0.7f;
             } else if (height < -0.5f) {
@@ -521,7 +522,7 @@ public class DiscernEffect extends ActiveEffect {
             this.y = height;
             this.z = Mth.sin(angle) * dist;
 
-            // Gentle inward and downward drift
+
             this.vx = -x * 0.006f + (random.nextFloat() - 0.5f) * 0.01f;
             this.vy = -0.02f - random.nextFloat() * 0.01f;
             this.vz = -z * 0.006f + (random.nextFloat() - 0.5f) * 0.01f;
@@ -530,7 +531,7 @@ public class DiscernEffect extends ActiveEffect {
             this.lifetime = 80f + random.nextFloat() * 60f;
             this.age = 0f;
 
-            // Mix of blue and golden particles
+
             if (random.nextFloat() < 0.3f) {
                 this.r = GOLD_R;
                 this.g = GOLD_G;
@@ -585,7 +586,7 @@ public class DiscernEffect extends ActiveEffect {
             this.heightBase = 0.8f + random.nextFloat() * 2f;
             this.dissolveRate = 0.005f + random.nextFloat() * 0.003f;
 
-            // Mostly white/blue with occasional gold
+
             if (random.nextFloat() < 0.25f) {
                 this.r = GOLD_R;
                 this.g = GOLD_G;
@@ -604,7 +605,7 @@ public class DiscernEffect extends ActiveEffect {
             this.y = heightBase + Mth.sin(currentTick * 0.11f + angleOffset) * 0.3f;
             this.z = Mth.sin(angle) * orbitRadius;
 
-            // Slowly dissolve and drift inward
+
             orbitRadius -= dissolveRate;
             if (orbitRadius < 0.3f) {
                 orbitRadius = 2.0f + random.nextFloat() * 0.5f;
@@ -668,20 +669,20 @@ public class DiscernEffect extends ActiveEffect {
             this.heightBase = 0.5f + (index % 4) * 0.6f;
             this.phaseOffset = random.nextFloat() * Mth.TWO_PI;
 
-            // Mix of colors
+
             float colorChoice = random.nextFloat();
             if (colorChoice < 0.3f) {
-                // Golden
+
                 this.r = GOLD_R;
                 this.g = GOLD_G;
                 this.b = GOLD_B;
             } else if (colorChoice < 0.6f) {
-                // White
+
                 this.r = 1f;
                 this.g = 1f;
                 this.b = 1f;
             } else {
-                // Light blue
+
                 this.r = PRIMARY_R + (1f - PRIMARY_R) * 0.5f;
                 this.g = PRIMARY_G + (1f - PRIMARY_G) * 0.5f;
                 this.b = PRIMARY_B + (1f - PRIMARY_B) * 0.5f;

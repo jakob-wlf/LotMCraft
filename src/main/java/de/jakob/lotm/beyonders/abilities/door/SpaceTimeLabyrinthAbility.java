@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.MysticalDoorEntity;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -60,7 +61,7 @@ public class SpaceTimeLabyrinthAbility extends Ability {
             target.hurtMarked = true;
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.STAR.get(), target.position().add(0, 1, 0), 5, .4, 0.05);
         }, () -> {
-            EffectManager.playEffect(EffectManager.Effect.TELEPORTATION, doorPos.x, doorEntity.getEyeY() - (doorEntity.getEyeHeight() / 2f), doorPos.z, (ServerLevel) level);
+            EffectManager.playEffect(EffectIds.TELEPORTATION, doorPos.x, doorEntity.getEyeY() - (doorEntity.getEyeHeight() / 2f), doorPos.z, (ServerLevel) level);
             BlockPos spawnPos = findSafeSpawn(labyrinthLevel, doorEntity.blockPosition(), 20).orElse(null);
             if(spawnPos == null) {
                 return;

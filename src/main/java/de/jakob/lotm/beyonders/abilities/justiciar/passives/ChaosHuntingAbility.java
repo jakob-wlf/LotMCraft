@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.justiciar.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -14,14 +14,14 @@ import net.minecraft.world.level.Level;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ChaosHuntingAbility extends PassiveAbilityItem {
+public class ChaosHuntingAbility extends PassiveAbility {
 
     private static final Map<UUID, Set<Entity>> TRACKED = new ConcurrentHashMap<>();
 
     private static final double SCAN_RADIUS = 60.0;
 
-    public ChaosHuntingAbility(Item.Properties properties) {
-        super(properties);
+    public ChaosHuntingAbility(String id) {
+        super(id);
     }
 
     @Override

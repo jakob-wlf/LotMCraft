@@ -4,6 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -113,7 +114,7 @@ public class UniquenessEntity extends Entity {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.UNIQUENESS_SPAWN, position().x, position().y, position().z, (ServerLevel) level());
+        EffectManager.playEffect(EffectIds.UNIQUENESS_SPAWN, position().x, position().y, position().z, (ServerLevel) level());
         this.discard();
         ServerScheduler.scheduleDelayed(20 * 3, () -> {
             if (level() instanceof ServerLevel serverLevel) {

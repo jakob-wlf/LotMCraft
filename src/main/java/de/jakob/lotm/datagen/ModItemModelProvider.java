@@ -26,7 +26,6 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         basicItem(ModItems.PAPER_FIGURINE_SUBSTITUTE.get());
         basicItem(ModItems.MIRROR.get());
-        basicItem(ModItems.MARIONETTE_CONTROLLER.get());
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
         basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
         basicItem(ModItems.SUN_ITEM.get());
@@ -83,10 +82,6 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         ModIngredients.ITEMS.getEntries().forEach(i -> {
             basicItem(i.get());
-        });
-
-        PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {
-            itemWithCustomDisplay(i.get());
         });
 
         itemWithCustomDisplay(ModItems.FOOL_Card.get());

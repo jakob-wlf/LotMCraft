@@ -6,6 +6,7 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlayersPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.DivinationUtil;
 import net.minecraft.network.chat.Component;
@@ -91,7 +92,7 @@ public class PlayerTeleportationAbility extends SelectableAbility {
 
         player.teleportTo(targetLevel, targetPlayer.getX(), targetPlayer.getY(), targetPlayer.getZ(), Set.of(), player.getYRot(), player.getXRot());
         targetLevel.playSound(null, targetPlayer.getX(), targetPlayer.getY(), targetPlayer.getZ(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 1, 1);
-        EffectManager.playEffect(EffectManager.Effect.WAYPOINT, targetPlayer.getX(), targetPlayer.getY() + 1, targetPlayer.getZ(), targetLevel);
+        EffectManager.playEffect(EffectIds.WAYPOINT, targetPlayer.getX(), targetPlayer.getY() + 1, targetPlayer.getZ(), targetLevel);
     }
 
     @Override

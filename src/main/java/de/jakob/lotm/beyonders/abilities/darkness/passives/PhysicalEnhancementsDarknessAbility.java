@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsDarknessAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDarknessAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -132,10 +132,5 @@ public class PhysicalEnhancementsDarknessAbility extends PhysicalEnhancementsAbi
 
             default -> List.of();
         };
-    }
-
-    @Override
-    protected int getCurrentSequenceLevel(LivingEntity entity) {
-        return BeyonderData.getSequence(entity);
     }
 }

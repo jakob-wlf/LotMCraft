@@ -82,13 +82,13 @@ public class HairEntanglementAbility extends Ability {
         int targetSeq = BeyonderData.getSequence(targetEntity);
         Location eLoc = new Location(targetEntity.position(), (ServerLevel) level);
         if(entitySeq < targetSeq) {
-            duration = 20 * 60*(int) multiplier;
+            duration = (int) (20 * 60*multiplier);
         }else if (entitySeq > targetSeq){
             if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = 35*(int) multiplier;
+                duration = (int) (35*multiplier);
             };
         }else{
-            duration = 20 * 30*(int) multiplier/  (int) multiplier(targetEntity);
+            duration = (int) (20 * 30*multiplier/  multiplier(targetEntity));
         };
         if(targetSeq > entitySeq-1 ) {
             if(targetEntity instanceof Mob) {

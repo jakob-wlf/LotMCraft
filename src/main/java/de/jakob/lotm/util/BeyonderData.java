@@ -3,8 +3,7 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
-import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
@@ -20,7 +19,7 @@ import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -306,25 +305,25 @@ public class BeyonderData {
     }
 
     private static void callPassiveEffectsOnRemoved(LivingEntity entity, ServerLevel serverLevel) {
-        List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
-            if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
+        List<PassiveAbility> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.passiveAbilities.stream().filter(entry -> {
+            if (!(entry instanceof PassiveAbility abilityItem))
                 return false;
             return abilityItem.shouldApplyTo(entity);
-        }).map(entry -> (PassiveAbilityItem) entry.get()).toList());
+        }).map(entry -> (PassiveAbility) entry).toList());
 
-        for (PassiveAbilityItem ability : passiveAbilities) {
+        for (PassiveAbility ability : passiveAbilities) {
             ability.onPassiveAbilityRemoved(entity, serverLevel);
         }
     }
 
     private static void callPassiveEffectsOnAdd(LivingEntity entity, ServerLevel serverLevel) {
-        List<PassiveAbilityItem> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {
-            if (!(entry.get() instanceof PassiveAbilityItem abilityItem))
+        List<PassiveAbility> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.passiveAbilities.stream().filter(entry -> {
+            if (!(entry instanceof PassiveAbility abilityItem))
                 return false;
             return abilityItem.shouldApplyTo(entity);
-        }).map(entry -> (PassiveAbilityItem) entry.get()).toList());
+        }).map(entry -> (PassiveAbility) entry).toList());
 
-        for (PassiveAbilityItem ability : passiveAbilities) {
+        for (PassiveAbility ability : passiveAbilities) {
             ability.onPassiveAbilityGained(entity, serverLevel);
         }
     }
@@ -335,7 +334,7 @@ public class BeyonderData {
         }
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         String pathway = component.getPathway();
-        return pathway == null || pathway.isEmpty() ? "none" : pathway;
+        return pathway == null || pathway.isEmpty() ? LOTMCraft.NON_BEYONDER_PATHWAY : pathway;
     }
 
     public static int getSequence(LivingEntity entity) {
@@ -482,13 +481,12 @@ public class BeyonderData {
         }
     }
 
+    public static float getMaxSpirituality(Player player) {
+        return getMaxSpirituality(getPathway(player), getSequence(player), player);
+    }
+
     // for getting the spirituality of the main body instead, works on both client and server side
     public static float getMaxSpirituality(String path, int seq, Player player){
-        ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
-        if (data.isControlling()) {
-            CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-            return getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
-        }
         return getMaxSpirituality(path, seq) * ActingCapHelper.getEffectiveCap(player);
     }
 

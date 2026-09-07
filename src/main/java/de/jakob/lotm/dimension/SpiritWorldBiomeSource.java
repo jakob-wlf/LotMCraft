@@ -84,7 +84,6 @@ public class SpiritWorldBiomeSource extends BiomeSource {
             }
         }
 
-        // Fallback — should never happen unless BIOME_ORDER/biomes are out of sync
         return biomes.get(0);
     }
 }

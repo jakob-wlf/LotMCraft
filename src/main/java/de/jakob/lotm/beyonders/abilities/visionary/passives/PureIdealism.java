@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,9 +9,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PureIdealism extends PassiveAbilityItem {
-    public PureIdealism(Properties properties) {
-        super(properties);
+public class PureIdealism extends PassiveAbility {
+    public PureIdealism(String id) {
+        super(id);
     }
 
     @Override

@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.justiciar.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class OrderJusticiarAbility extends PassiveAbilityItem {
+public class OrderJusticiarAbility extends PassiveAbility {
 
-    public OrderJusticiarAbility(Properties properties) {
-        super(properties);
+    public OrderJusticiarAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class OrderJusticiarAbility extends PassiveAbilityItem {
                 .append(Component.translatable("ability.lotmcraft.order_justiciar.murder_suffix")
                         .withStyle(ChatFormatting.GRAY));
 
-        OrderJusticiarAbility orderAbility = (OrderJusticiarAbility) PassiveAbilityHandler.ORDER_JUSTICIAR.get();
+        OrderJusticiarAbility orderAbility = (OrderJusticiarAbility) PassiveAbilityHandler.getById("order_justiciar_ability");
 
         List<ServerPlayer> allPlayers = serverLevel.getServer().getPlayerList().getPlayers();
         for (ServerPlayer observer : allPlayers) {

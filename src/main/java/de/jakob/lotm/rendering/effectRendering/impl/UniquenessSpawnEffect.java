@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -14,7 +15,6 @@ import org.joml.Vector3f;
 
 public class UniquenessSpawnEffect extends ActiveEffect {
 
-    private static final float DURATION      = 20 * 7;
     private static final float GATHER_END    = 72f;
     private static final int   GATHER_COUNT  = 70;
     private static final int   WISP_COUNT    = 45;
@@ -61,8 +61,8 @@ public class UniquenessSpawnEffect extends ActiveEffect {
     private final float[] ePhase  = new float[EMBER_COUNT];
     private final float[] eDelay  = new float[EMBER_COUNT];
 
-    public UniquenessSpawnEffect(double x, double y, double z) {
-        super(x, y, z, (int) DURATION);
+    public UniquenessSpawnEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         bake();
     }
 
@@ -123,14 +123,14 @@ public class UniquenessSpawnEffect extends ActiveEffect {
         if (Minecraft.getInstance().level == null) return;
 
         float age        = currentTick + partialTick;
-        float globalFade = Mth.clamp((DURATION - age) / 10f, 0f, 1f);
+        float globalFade = Mth.clamp((getMaxDuration() - age) / 10f, 0f, 1f);
 
         Quaternionf camRot = Minecraft.getInstance().gameRenderer.getMainCamera().rotation();
         Vector3f right = new Vector3f(1f, 0f, 0f).rotate(camRot);
         Vector3f up    = new Vector3f(0f, 1f, 0f).rotate(camRot);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
         Matrix4f m = poseStack.last().pose();
 
         RenderSystem.depthMask(false);
@@ -251,7 +251,7 @@ public class UniquenessSpawnEffect extends ActiveEffect {
             float alpha   = presenceFade * flicker * 0.60f * globalFade;
             if (alpha < 0.005f) continue;
 
-            float t     = age / DURATION;
+            float t     = age / getMaxDuration();
             float[] col = mysteriousColor(wHue[i], t);
             float size  = wSize[i] * (1f + 0.2f * pulse);
 

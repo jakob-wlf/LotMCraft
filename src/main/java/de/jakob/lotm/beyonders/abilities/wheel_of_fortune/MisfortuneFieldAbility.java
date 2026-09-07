@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -36,7 +37,7 @@ public class MisfortuneFieldAbility extends Ability {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.MISFORTUNE_FIELD, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.MISFORTUNE_FIELD, entity.getX(), entity.getY(), entity.getZ(), serverLevel);
 
         Vec3 startPos = entity.position();
         float multiplier = multiplier(entity);

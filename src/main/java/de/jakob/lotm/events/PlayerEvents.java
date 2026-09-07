@@ -9,6 +9,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
@@ -22,6 +23,7 @@ import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
@@ -59,6 +61,9 @@ public class PlayerEvents {
             ToggleAbility.cleanUp(player.serverLevel(), player);
             DivinationAbility.cleanupOnLogout(player);
 
+            ShapeShiftingUtil.resetShape(player);
+            ControllingUtils.cancel(player, 0, true, false);
+
             // Clean up concealed domain entities
             ConcealedDomainEntity concealedDomainEntity = ConcealedDomainEntity.getActiveForOwner(player.getUUID());
             if(concealedDomainEntity != null) {
@@ -91,24 +96,11 @@ public class PlayerEvents {
     @SubscribeEvent
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            // Prune stale ally entries: remove any ally UUID whose owner no longer lists
-            // this player back (e.g. the player was removed while they were offline).
-            AllyComponent comp = player.getData(ModAttachments.ALLY_COMPONENT.get());
-            for (String uuidStr : new java.util.HashSet<>(comp.allies())) {
-                try {
-                    java.util.UUID allyUUID = java.util.UUID.fromString(uuidStr);
-                    ServerPlayer ally = player.getServer().getPlayerList().getPlayer(allyUUID);
-                    if (ally != null && !AllyUtil.isAlly(ally, player.getUUID())) {
-                        // Ally is online but doesn't have us listed — remove the stale entry
-                        player.setData(ModAttachments.ALLY_COMPONENT.get(),
-                                player.getData(ModAttachments.ALLY_COMPONENT.get()).removeAlly(allyUUID));
-                    }
-                    // If ally is offline we can't check their data, so leave it for the
-                    // next time they log in and this same check runs on their side.
-                } catch (IllegalArgumentException ignored) {}
-            }
-
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
+
+            if(player instanceof ServerPlayer serverPlayer) {
+                AllyUtil.syncAllyData(serverPlayer);
+            }
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
@@ -135,6 +127,10 @@ public class PlayerEvents {
         }
         if(!(event.getEntity().level() instanceof ServerLevel level)) {
             return;
+        }
+
+        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
         }
 
         ToggleAbility.cleanUp(level, event.getEntity());
@@ -180,6 +176,20 @@ public class PlayerEvents {
             if(!level.isClientSide) {
                 ParticleUtil.spawnParticles((ServerLevel) level, dust, event.getEntity().getEyePosition().subtract(0, .4, 0), 40, .4, .8, .4, 0);
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerCloned(PlayerEvent.Clone event) {
+        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
         }
     }
 
