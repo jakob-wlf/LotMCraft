@@ -50,10 +50,17 @@ import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimage
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
+import de.jakob.lotm.rendering.models.darkness.DarknessMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.death.DeathMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.demoness.DemonessMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.error.ErrorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.justiciar.JusticiarMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.mother.MotherMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
@@ -135,6 +142,13 @@ public class ModEvents {
         event.registerLayerDefinition(RedPriestMythicalCreatureModel.LAYER_LOCATION, RedPriestMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(SunMythicalCreatureModel.LAYER_LOCATION, SunMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(DoorHighMythicalCreatureModel.LAYER_LOCATION, DoorHighMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(MotherMythicalCreatureModel.LAYER_LOCATION, MotherMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DarknessMythicalCreatureModel.LAYER_LOCATION, DarknessMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DeathMythicalCreatureModel.LAYER_LOCATION, DeathMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(ErrorMythicalCreatureModel.LAYER_LOCATION, ErrorMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(JusticiarMythicalCreatureModel.LAYER_LOCATION, JusticiarMythicalCreatureModel::createBodyLayer);;
+        event.registerLayerDefinition(VisionaryMythicalCreatureModel.LAYER_LOCATION, VisionaryMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DemonessMythicalCreatureModel.LAYER_LOCATION, DemonessMythicalCreatureModel::createBodyLayer);
     }
 
     @SubscribeEvent

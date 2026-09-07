@@ -1,0 +1,29 @@
+{
+  "id": "lotm:deaths_cold_embrace",
+  "discovered_from": "lotm:grave_keepers_tome",
+  "candle": "minecraft:black_candle",
+  "sacrifices": [
+    { "item": "minecraft:wither_rose", "count": 1 },
+    { "item": "minecraft:bone", "count": 3 },
+    { "item": "minecraft:rotten_flesh", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "Reaper who walks unseen among the dying breaths",
+      "Silence that follows after every ended life",
+      "Let your cold touch wither the one who stands before me."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.1, "g": 0.1, "b": 0.1 },
+  "book_color": "DARK_GRAY",
+  "duration_ticks": 250,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:wither", "duration_ticks": 100, "amplifier": 1, "target": "nearest", "max_distance": 8 }
+      ]
+    }
+  }
+}

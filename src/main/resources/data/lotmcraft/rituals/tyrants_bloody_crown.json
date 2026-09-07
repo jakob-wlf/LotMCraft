@@ -1,0 +1,30 @@
+{
+  "id": "lotm:tyrants_bloody_crown",
+  "discovered_from": "lotm:conquerors_edict",
+  "candle": "minecraft:red_candle",
+  "sacrifices": [
+    { "item": "minecraft:iron_ingot", "count": 2 },
+    { "item": "minecraft:red_dye", "count": 2 },
+    { "item": "minecraft:rotten_flesh", "count": 4 }
+  ],
+  "honorific": {
+    "lines": [
+      "Crowned one whose throne is built on broken kingdoms",
+      "Will that bends the weak and breaks the proud",
+      "Grant me the strength to rule this ground by force."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.5, "g": 0.0, "b": 0.0 },
+  "book_color": "RED",
+  "duration_ticks": 250,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:strength", "duration_ticks": 3600, "amplifier": 1, "target": "self", "max_distance": -1 },
+        { "id": "minecraft:resistance", "duration_ticks": 1200, "amplifier": 0, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

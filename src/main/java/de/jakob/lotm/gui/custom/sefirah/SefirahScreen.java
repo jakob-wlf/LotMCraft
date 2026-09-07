@@ -4,10 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.HandleSefirotGuestPacket;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -49,7 +51,7 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
         int listX = x + 8;
         int listY = y + 20;
         int listWidth = imageWidth - 16;
-        int listHeight = imageHeight - 110;
+        int listHeight = imageHeight - 125;
 
         allyList = new AllyList(listX, listY, listWidth, listHeight, this::onInviteClicked, this::onKickClicked);
         allyList.setAllies(allies);
@@ -91,6 +93,14 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
                 Component.literal("Allies"),
                 (width - imageWidth) / 2 + 8,
                 (height - imageHeight) / 2 + 8,
+                0xFFFFFF
+        );
+
+        guiGraphics.drawString(
+                ClientHandler.getMinecraftInstance().font,
+                Component.literal("Sefirot Control: " + SefirahHandler.getSefirotProgress(ClientHandler.getPlayer())).withStyle(ChatFormatting.BOLD),
+                (width - imageWidth) / 2 + 8,
+                (height - imageHeight) / 2 + 20 + imageHeight - 120,
                 0xFFFFFF
         );
     }

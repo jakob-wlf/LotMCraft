@@ -1907,6 +1907,7 @@
   "lotm.calamity.earthquake": "Earthquake",
 
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
+  "lotm.sefirot.in_combat": "You are in combat",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
   "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
   "lotm.sefirot.not_in_sefirot": "You are not in a Sefirot",

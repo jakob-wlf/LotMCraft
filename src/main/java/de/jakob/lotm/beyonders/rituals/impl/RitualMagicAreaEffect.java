@@ -3,12 +3,16 @@ package de.jakob.lotm.beyonders.rituals.impl;
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.justiciar.ExecutionAbility;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -158,9 +162,6 @@ public class RitualMagicAreaEffect implements RitualResultHandler {
                 target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSyncIgnoreSequence(0.1f * power, target);
             }
             case "degeneracy" -> {
-                target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSyncIgnoreSequence(-0.1f * power, target);
-                target.hurt(target.damageSources().wither(), target.getHealth() - 1);
-                target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 3, 2, false, false, false));
                 ParticleUtil.spawnSphereParticles(
                         source.serverLevel(),
                         ParticleTypes.SMOKE,
@@ -169,6 +170,18 @@ public class RitualMagicAreaEffect implements RitualResultHandler {
                         40,
                         0.05
                 );
+                ServerScheduler.scheduleDelayed(20, () -> {
+                    target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSyncIgnoreSequence(-0.1f * power, target);
+                    target.hurt(target.damageSources().wither(), target.getHealth() - 1);
+                    target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 3, 2, false, false, false));
+                });
+            }
+            case "execute" -> {
+                ExecutionAbility.playGuillotineAnimation(source.serverLevel(), target, source);
+                target.hurt(target.damageSources().magic(), (float) DamageLookup.lookupDamage(Math.min(9, 10 - power), 1));
+            }
+            case "fear" -> {
+                target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference(.35f, target, Math.min(9, 10 - power), BeyonderData.getSequence(target));
             }
         }
     }

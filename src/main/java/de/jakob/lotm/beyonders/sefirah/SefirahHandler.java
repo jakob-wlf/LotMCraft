@@ -147,6 +147,12 @@ public class SefirahHandler {
         return SefirotData.get(player.server).getClaimedSefirot(player.getUUID());
     }
 
+    private static boolean isSefirotLevel(ServerLevel level) {
+        ResourceKey<Level> sefirotDimension = ResourceKey.create(Registries.DIMENSION,
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+        return level.dimension().equals(sefirotDimension);
+    }
+
     public static void handleSefirotKey(ServerPlayer player) {
         SefirotData sefirotData = SefirotData.get(player.server);
         if(sefirotData.isInSefirot(player))  {
@@ -155,6 +161,11 @@ public class SefirahHandler {
         else {
             if(!hasSefirot(player)) {
                 AbilityUtil.sendActionBar(player, Component.translatable("lotm.sefirot.no_sefirot").withColor(0x942de3));
+                return;
+            }
+
+            if((player.tickCount - player.getCombatTracker().lastDamageTime) < (20 * 10)) {
+                AbilityUtil.sendActionBar(player, Component.translatable("lotm.sefirot.in_combat").withColor(0x942de3));
                 return;
             }
 
@@ -173,19 +184,25 @@ public class SefirahHandler {
             }
 
             if(returnLocation.getLevel().dimension().equals(player.level().dimension())) {
-                ServerLevel level = player.serverLevel();
-                Vec3 newPos = level.getServer().overworld().getSharedSpawnPos().getCenter();
-                ServerLevel returnLevel = level.getServer().overworld();
-                player.teleportTo(returnLevel, newPos.x, newPos.y, newPos.z, 0, 0);
+                if(isSefirotLevel(player.serverLevel())) {
+                    ServerLevel level = player.serverLevel();
+                    Vec3 newPos = level.getServer().overworld().getSharedSpawnPos().getCenter();
+                    ServerLevel returnLevel = level.getServer().overworld();
+                    player.teleportTo(returnLevel, newPos.x, newPos.y, newPos.z, 0, 0);
 
-                sefirotData.setIsInSefirot(player.getUUID(), false, "none");
-                sefirotData.setLastReturnLocation(player);
+                    sefirotData.setIsInSefirot(player.getUUID(), false, "none");
+                    sefirotData.setLastReturnLocation(player);
 
-                if(playTeleportEffect) {
-                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+                    if (playTeleportEffect) {
+                        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+                    }
+
+                    return;
                 }
-
-                return;
+                else {
+                    sefirotData.setIsInSefirot(player.getUUID(), false, "none");
+                    sefirotData.setLastReturnLocation(player);
+                }
             }
 
             player.teleportTo(returnLocation.getLevel(), returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, 0, 0);
@@ -282,20 +299,31 @@ public class SefirahHandler {
         clientSefirotPlayers.put(player.getUUID(), sefirot);
     }
 
+    public static int getSefirotProgress(Player player) {
+        String sefirot = player instanceof ServerPlayer ? getClaimedSefirot((ServerPlayer) player) : clientSefirotPlayers.get(player.getUUID());
+        if(sefirot == null || sefirot.isEmpty() || !Arrays.asList(implementedSefirah).contains(sefirot.toLowerCase())) {
+            return 0;
+        }
+
+        return switch (BeyonderData.getSequence(player)) {
+            case 4 -> 2;
+            case 3, 2 -> 3;
+            case 1, 0 -> 4;
+            default -> 1;
+        };
+    }
+
     public static String[] getAdditionalPathwaysForPlays(Player player) {
+        if(getSefirotProgress(player) < 3) {
+            return new String[]{};
+        }
+
         if(!(player instanceof ServerPlayer serverPlayer)) {
             PacketHandler.sendToServer(new RequestSefirotSyncPacket());
             if(clientSefirotPlayers.containsKey(player.getUUID())) {
                 String claimedSefirot = clientSefirotPlayers.get(player.getUUID());
                 return getPathwaysForSefirot(claimedSefirot);
             }
-            return new String[]{};
-        }
-
-        if(BeyonderData.getSequence(serverPlayer) > 3) {
-            return new String[]{};
-        }
-        if(!hasSefirot(serverPlayer)) {
             return new String[]{};
         }
 

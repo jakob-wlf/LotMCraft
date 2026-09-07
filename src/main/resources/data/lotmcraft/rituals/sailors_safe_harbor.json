@@ -1,0 +1,30 @@
+{
+  "id": "lotm:sailors_safe_harbor",
+  "discovered_from": "lotm:mariners_logbook",
+  "candle": "minecraft:cyan_candle",
+  "sacrifices": [
+    { "item": "minecraft:kelp", "count": 4 },
+    { "item": "minecraft:prismarine_shard", "count": 2 },
+    { "item": "minecraft:turtle_scute", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Harbor-keeper who calms the fury of the open sea",
+      "Guide of ships lost beneath the endless waves",
+      "Grant me safe passage through your drowned domain."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.0, "g": 0.5, "b": 0.6 },
+  "book_color": "CYAN",
+  "duration_ticks": 250,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:water_breathing", "duration_ticks": 6000, "amplifier": 0, "target": "self", "max_distance": -1 },
+        { "id": "minecraft:dolphins_grace", "duration_ticks": 6000, "amplifier": 0, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

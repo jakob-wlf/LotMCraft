@@ -1,0 +1,34 @@
+{
+  "id": "lotm:gamblers_winning_streak",
+  "discovered_from": "lotm:cardsharps_handbook",
+  "candle": "minecraft:yellow_candle",
+  "sacrifices": [
+    { "item": "minecraft:rabbit_foot", "count": 1 },
+    { "item": "minecraft:gold_nugget", "count": 4 },
+    { "item": "minecraft:emerald", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Trickster who turns every wager in your favor",
+      "Dealer whose cards always fall the right way",
+      "Tilt fortune's wheel to favor me instead."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.9, "g": 0.7, "b": 0.1 },
+  "book_color": "GOLD",
+  "duration_ticks": 200,
+  "result": {
+    "type": "area_effect",
+    "params": {
+      "effects": [
+        {
+          "effect": "make_lucky",
+          "target": "self",
+          "max_distance": -1,
+          "power": 3
+        }
+      ]
+    }
+  }
+}

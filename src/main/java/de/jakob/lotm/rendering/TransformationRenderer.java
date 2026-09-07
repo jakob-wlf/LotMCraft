@@ -7,12 +7,19 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
+import de.jakob.lotm.rendering.models.darkness.DarknessMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.death.DeathMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.demoness.DemonessMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.error.ErrorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.justiciar.JusticiarMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.mother.MotherMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -59,12 +66,33 @@ public class TransformationRenderer {
     private static DoorHighMythicalCreatureModel<Entity> doorHighMythicalCreatureModel;
     private static final ResourceLocation doorHighMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/door_high.png");
 
+    private static MotherMythicalCreatureModel<Entity> motherMythicalCreatureModel;
+    private static final ResourceLocation motherMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/mother.png");
+
+    private static DarknessMythicalCreatureModel<Entity> darknessMythicalCreatureModel;
+    private static final ResourceLocation darknessMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/darkness.png");
+
+    private static DemonessMythicalCreatureModel<Entity> demonessMythicalCreatureModel;
+    private static final ResourceLocation demonessMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/demoness.png");
+
+    private static ErrorMythicalCreatureModel<Entity> errorMythicalCreatureModel;
+    private static final ResourceLocation errorMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/error.png");
+
+    private static VisionaryMythicalCreatureModel<Entity> visionaryMythicalCreatureModel;
+    private static final ResourceLocation visionaryMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/visionary.png");
+
+    private static JusticiarMythicalCreatureModel<Entity> justiciarMythicalCreatureModel;
+    private static final ResourceLocation justiciarMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/justiciar.png");
+
+    private static DeathMythicalCreatureModel<Entity> deathMythicalCreatureModel;
+    private static final ResourceLocation deathMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/death.png");
+
     private static HighSequenceDoorsModel<Entity> mysticalDoorsModel;
     private static final ResourceLocation mysticalDoorsTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_1.png");
     private static final ResourceLocation mysticalDoorsTexture2 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_2.png");
     private static final ResourceLocation mysticalDoorsTexture3 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_3.png");
     private static final ResourceLocation mysticalDoorsTexture4 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_4.png");
-    private static final ResourceLocation mysticalDoorsTextur5 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_5.png");
+    private static final ResourceLocation mysticalDoorsTexture5 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_5.png");
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
@@ -116,7 +144,7 @@ public class TransformationRenderer {
             case 2 -> mysticalDoorsTexture2;
             case 3 -> mysticalDoorsTexture3;
             case 4 -> mysticalDoorsTexture4;
-            case 5 -> mysticalDoorsTextur5;
+            case 5 -> mysticalDoorsTexture5;
             default -> mysticalDoorsTexture;
         };
 
@@ -252,12 +280,271 @@ public class TransformationRenderer {
                     packedLight, entity, partialTick);
             case "sun" -> renderSunMythicalCreature(poseStack, multiBufferSource,
                     packedLight, entity, partialTick);
+            case "mother" -> renderMotherMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "darkness" -> renderDarknessMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "demoness" -> renderDemonessMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "error" -> renderErrorMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "visionary" -> renderVisionaryMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "justiciar" -> renderJusticiarMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "death" -> renderDeathMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
             default -> {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private static void renderDeathMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (deathMythicalCreatureModel == null) {
+            deathMythicalCreatureModel = new DeathMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DeathMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.5, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(4, -4, 4);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(deathMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        deathMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        deathMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderJusticiarMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (justiciarMythicalCreatureModel == null) {
+            justiciarMythicalCreatureModel = new JusticiarMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(JusticiarMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.4, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(3.5F, -3.5F, 3.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(justiciarMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        justiciarMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        justiciarMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderVisionaryMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (visionaryMythicalCreatureModel == null) {
+            visionaryMythicalCreatureModel = new VisionaryMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(VisionaryMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(1, -1, 1);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(visionaryMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        visionaryMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        visionaryMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderErrorMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (errorMythicalCreatureModel == null) {
+            errorMythicalCreatureModel = new ErrorMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(ErrorMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .5, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.5F, -2.5F, 2.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(errorMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        errorMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        errorMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderDemonessMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (demonessMythicalCreatureModel == null) {
+            demonessMythicalCreatureModel = new DemonessMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DemonessMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .85, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.5F, -2.5F, 2.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityTranslucent(demonessMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        demonessMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        demonessMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderDarknessMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (darknessMythicalCreatureModel == null) {
+            darknessMythicalCreatureModel = new DarknessMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DarknessMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .25, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(90 - yaw));
+
+        poseStack.scale(2F, -2F, 2F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(darknessMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        darknessMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        darknessMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderMotherMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (motherMythicalCreatureModel == null) {
+            motherMythicalCreatureModel = new MotherMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(MotherMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .75, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.4F, -2.4F, 2.4F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(motherMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        motherMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        motherMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
     }
 
     private static void renderSunMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {

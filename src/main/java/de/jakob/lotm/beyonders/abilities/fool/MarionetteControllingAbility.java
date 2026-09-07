@@ -135,10 +135,13 @@ public class MarionetteControllingAbility extends SelectableAbility {
         MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if(component.hasWorm()) {
             component.setHasWorm(false);
+            BeyonderData.incrementWormAmount(player, 1);
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.removed_worm").withColor(getColorForPathway("fool")));
         } else {
             component.setHasWorm(true);
+            BeyonderData.incrementWormAmount(player, -1);
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.marionette_controlling.added_worm").withColor(getColorForPathway("fool")));
+            player.hurt(player.damageSources().generic(), 1.0F);
         }
     }
 

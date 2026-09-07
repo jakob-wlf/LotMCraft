@@ -223,7 +223,7 @@ public class PuppeteeringAbility extends SelectableAbility {
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
         int targetSequence = BeyonderData.getSequence(target);
 
-        if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target) || targetSequence < BeyonderData.getSequence(entity)) {
+        if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target, false) || targetSequence < BeyonderData.getSequence(entity)) {
             if (target instanceof Mob mob) mob.setTarget(entity);
             if (target instanceof ServerPlayer targetPlayer) {
                 targetPlayer.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_warning").withColor(0xa26fc9));
@@ -277,7 +277,7 @@ public class PuppeteeringAbility extends SelectableAbility {
                 EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverTarget, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 1.0f, 0.0f, 0.0f));
             }
 
-            if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target) || targetSequence < BeyonderData.getSequence(entity) || (progress >= 0.5f && targetSequence == BeyonderData.getSequence(entity))) {
+            if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target, false) || targetSequence < BeyonderData.getSequence(entity) || (progress >= 0.5f && targetSequence == BeyonderData.getSequence(entity))) {
                 if (target instanceof Mob mob) mob.setTarget(entity);
                 if (target instanceof ServerPlayer targetPlayer) {
                     targetPlayer.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_warning").withColor(0xa26fc9));

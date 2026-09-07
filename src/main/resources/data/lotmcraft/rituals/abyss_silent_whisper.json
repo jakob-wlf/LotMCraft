@@ -1,0 +1,34 @@
+{
+  "id": "lotm:abyss_silent_whisper",
+  "discovered_from": "lotm:whispering_codex",
+  "candle": "minecraft:gray_candle",
+  "sacrifices": [
+    { "item": "minecraft:spider_eye", "count": 2 },
+    { "item": "minecraft:fermented_spider_eye", "count": 1 },
+    { "item": "minecraft:gunpowder", "count": 2 }
+  ],
+  "honorific": {
+    "lines": [
+      "Voice that murmurs from the cracks between worlds",
+      "Dread that gnaws at the courage of lesser men",
+      "Send your whisper to scatter those who oppose me."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.15, "g": 0.05, "b": 0.2 },
+  "book_color": "GRAY",
+  "duration_ticks": 250,
+  "result": {
+    "type": "area_effect",
+    "params": {
+      "effects": [
+        {
+          "effect": "fear",
+          "target": "nearby",
+          "max_distance": 16,
+          "power": 5
+        }
+      ]
+    }
+  }
+}

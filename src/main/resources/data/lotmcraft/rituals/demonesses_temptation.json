@@ -1,0 +1,29 @@
+{
+  "id": "lotm:demonesses_temptation",
+  "discovered_from": "lotm:seductress_confession",
+  "candle": "minecraft:pink_candle",
+  "sacrifices": [
+    { "item": "minecraft:red_dye", "count": 2 },
+    { "item": "minecraft:rose_bush", "count": 1 },
+    { "item": "minecraft:spider_eye", "count": 3 }
+  ],
+  "honorific": {
+    "lines": [
+      "Temptress whose gaze unravels the strongest resolve",
+      "Whisper that turns ally against ally in the dark",
+      "Sap the strength from all who stand near me."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.8, "g": 0.2, "b": 0.5 },
+  "book_color": "PINK",
+  "duration_ticks": 250,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:weakness", "duration_ticks": 400, "amplifier": 1, "target": "nearby", "max_distance": 12 }
+      ]
+    }
+  }
+}
