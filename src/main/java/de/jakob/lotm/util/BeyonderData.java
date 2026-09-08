@@ -259,8 +259,11 @@ public class BeyonderData {
 
         component.setPathway(pathway);
         component.setSequence(sequence);
-        if(clearCharStack) component.clearCharacteristicStack();
-        else component.setCharacteristicStack(0, sequence - 1);
+        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
+        if (!controllingDataComponent.isControlling()) {
+            if(clearCharStack) component.clearCharacteristicStack();
+            else component.setCharacteristicStack(0, sequence - 1);
+        }
         if (resetSpirituality) {
             float maxSp = getMaxSpirituality(pathway, sequence);
             if (entity instanceof Player player) {

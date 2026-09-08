@@ -39,7 +39,7 @@ public class Seq1 {
             timer.put(player.getUUID(), 0);
         }
 
-        var marionetteList = player.getData(ModAttachments.MARIONETTE_COMPONENT.get()).marionettes;
+        var marionetteList = player.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT.get()).getMarionettes();
         int count = 0;
         var nearby = AbilityUtil.getNearbyEntities(null, level, player.position(), 100);
         for(var obj : nearby){

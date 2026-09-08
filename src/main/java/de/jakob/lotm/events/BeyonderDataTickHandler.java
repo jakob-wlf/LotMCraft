@@ -217,7 +217,7 @@ public class BeyonderDataTickHandler {
                 return;
             }
 
-            String abilityId = component.getAbilities().get(component.getSelectedAbility());
+            String abilityId = component.getAbilities().get(component.getSelectedAbility()).split(":")[0];
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if(ability != null) {
                 ability.onHold(player.serverLevel(), player);
