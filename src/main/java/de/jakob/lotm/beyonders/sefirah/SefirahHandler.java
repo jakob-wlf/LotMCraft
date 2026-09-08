@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.sefirah;
 
+import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.block.ModBlocks;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -301,7 +303,7 @@ public class SefirahHandler {
 
     public static void playCorrectEffect(BlockPos pos, String sefirot, boolean isOwner, ServerLevel sefirotLevel) {
         switch (sefirot) {
-            case "sefirah_castle", "brood_hive" -> {
+            case "sefirah_castle" -> {
                 if(isOwner) {
                     EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, pos.getX(), pos.getY(), pos.getZ(), sefirotLevel);
                 }
@@ -318,6 +320,18 @@ public class SefirahHandler {
                     ), sefirotLevel);
 
                 }
+            }
+            case "brood_hive" -> {
+                PacketHandler.sendToAllPlayersInSameLevel(new PlayPhotonBlockEffectPacket(
+                        "brood_hive_player",
+                        pos,
+                        0, 1, 0,
+                        1.5,
+                        null,
+                        -1,
+                        true,
+                        false
+                ), sefirotLevel);
             }
         }
     }
