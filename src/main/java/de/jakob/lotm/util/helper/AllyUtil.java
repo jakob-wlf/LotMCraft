@@ -13,6 +13,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -119,6 +120,15 @@ public class AllyUtil {
         return comp1.isAlly(entity2.getUUID());
     }
 
+    public static Set<String> getAllAllies(LivingEntity entity){
+        var comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
+        Set<String> names = new HashSet<>();
+        for (AllyComponent.AllyInfo info : comp.allies()) {
+            names.add(info.playerName());
+        }
+        return names;
+    }
+
     public static boolean isAlly(LivingEntity entity, UUID allyUUID) {
         if (entity == null || allyUUID == null) return false;
         if (entity.getUUID().equals(allyUUID)) return true;
@@ -129,22 +139,30 @@ public class AllyUtil {
         return comp.isAlly(allyUUID);
     }
 
+    public static int getAllyCount(LivingEntity entity) {
+        if (entity == null) return 0;
+        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
+        return comp.allies().size();
+    }
+
+    public static boolean hasAllies(LivingEntity entity) {
+        if (entity == null) return false;
+        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
+        return comp.hasAllies();
+    }
+
+    public static boolean canBeAllied(LivingEntity entity) {
+        if (entity == null) return false;
+
+        if(entity.getType().getCategory() == MobCategory.MONSTER) return false;
+
+        return !BeyonderData.isBeyonder(entity);
+    }
 
     public static void syncAllyData(ServerPlayer player) {
         AllyComponent comp = player.getData(ModAttachments.ALLY_COMPONENT.get());
         SyncAllyDataPacket packet = new SyncAllyDataPacket(comp.allies(), comp.requests());
         PacketHandler.sendToPlayer(player, packet);
-    }
-
-    public static void addAllyOneWay(LivingEntity entity, LivingEntity ally) {
-        if (entity == null || ally == null) return;
-
-        AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.addAlly(ally.getUUID(), ally.getDisplayName().getString(), ally instanceof Player));
-
-        if (entity instanceof ServerPlayer player) {
-            syncAllyData(player);
-        }
     }
 
     public static void removeAllyOneWay(LivingEntity entity, UUID allyUUID) {

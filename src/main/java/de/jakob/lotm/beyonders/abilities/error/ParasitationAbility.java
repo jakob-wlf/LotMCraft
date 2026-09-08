@@ -7,22 +7,34 @@ import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.*;
@@ -36,7 +48,7 @@ public class ParasitationAbility extends SelectableAbility {
     private static final HashMap<UUID, Boolean> controllingLowerSeq = new HashMap<>();
 
     public ParasitationAbility(String id) {
-        super(id, 5f);
+        super(id, 1f);
         canBeUsedByNPC = false;
         canBeCopied = false;
         canBeReplicated = false;
@@ -59,16 +71,16 @@ public class ParasitationAbility extends SelectableAbility {
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
-                "ability.lotmcraft.parasitation.controlling",
                 "ability.lotmcraft.parasitation.concealed"
+                //"ability.lotmcraft.parasitation.controlling"
         };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch (abilityIndex) {
-            case 0 -> controlling(level, entity);
-            case 1 -> concealed(level, entity);
+            case 0 -> concealed(level, entity);
+            //case 1 -> controlling(level, entity);
         }
     }
 
@@ -110,14 +122,19 @@ public class ParasitationAbility extends SelectableAbility {
         int targetSeq = BeyonderData.isBeyonder(target) ? BeyonderData.getSequence(target) : 10;
         boolean lowerSeq = targetSeq > userSeq;
 
-        // 55% vs lower seq, 15% against same, 0% chance against higher sequence
-        float chance = lowerSeq ? 0.55f : 0.15f;
-        if (random.nextFloat() >= chance || userSeq > targetSeq) {
-            AbilityUtil.sendActionBar(player, Component.literal(lowerSeq
-                    ? "§cControl failed!"
-                    : "§cControl failed — resistance too strong!"));
+
+        if(userSeq >= targetSeq){
+            AbilityUtil.sendActionBar(player, Component.literal("§cControl failed!"));
             return;
         }
+//        // 55% vs lower seq, 15% against same, 0% chance against higher sequence
+//        float chance = lowerSeq ? 0.55f : 0.15f;
+//        if (random.nextFloat() >= chance || userSeq > targetSeq) {
+//            AbilityUtil.sendActionBar(player, Component.literal(lowerSeq
+//                    ? "§cControl failed!"
+//                    : "§cControl failed — resistance too strong!"));
+//            return;
+//        }
 
         startControl(serverLevel, player, target, lowerSeq);
     }
@@ -154,10 +171,10 @@ public class ParasitationAbility extends SelectableAbility {
             pc.setParasited(false);
             pc.setParasiteUUID(null);
 
-            if (!lowerSeq) {
-                boolean killedBySteal = performExitSteal(serverLevel, player, host);
-                if (killedBySteal) MarionetteUtils.turnEntityIntoMarionette(host, player);
-            }
+//            if (!lowerSeq) {
+//                boolean killedBySteal = performExitSteal(serverLevel, player, host);
+//                if (killedBySteal) MarionetteUtils.turnEntityIntoMarionette(host, player);
+//            }
         }
     }
 
@@ -214,7 +231,7 @@ public class ParasitationAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 2, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.parasitation.no_target").withColor(0x3240bf));
@@ -255,11 +272,23 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(serverPlayer.getUUID());
 
-        serverPlayer.setGameMode(GameType.SPECTATOR);
-        serverPlayer.setCamera(host);
+        var comp = serverPlayer.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(true);
+        comp.setParasitingUUID(host.getUUID());
+
+//        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.addTransientModifier(new AttributeModifier
+//                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                            "parasite"),
+//                            -0.6,
+//                            AttributeModifier.Operation.ADD_VALUE));
+//        }
+
+        PsychologicalInvisibilityAbility.addInvisFromOtherSkills(serverPlayer, BeyonderData.getSequence(serverPlayer) + 1);
     }
 
-    private void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
+    static private void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
         if (concealedMap.containsKey(serverPlayer.getUUID())) {
             Entity hostEntity = serverLevel.getEntity(concealedMap.get(serverPlayer.getUUID()));
             if (hostEntity instanceof LivingEntity host) {
@@ -270,62 +299,108 @@ public class ParasitationAbility extends SelectableAbility {
         }
         concealedMap.remove(serverPlayer.getUUID());
 
-        serverPlayer.setGameMode(GameType.SURVIVAL);
-        serverPlayer.setCamera(null);
+        var comp = serverPlayer.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(false);
+        comp.setParasitingUUID(null);
+
+//        AttributeInstance scaleAttribute = serverPlayer.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                    "parasite"));
+//        }
+
+        PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(serverPlayer);
     }
 
-    // to set the player as spectator when in concealment mode
+
     @SubscribeEvent
     public static void onPlayerTargetTick(PlayerTickEvent.Post event) {
         Player target = event.getEntity();
 
         if (!(target instanceof ServerPlayer serverTarget)) return;
+        if (!(serverTarget.level() instanceof ServerLevel serverLevel)) return;
 
         if (!isConcealed(serverTarget.getUUID())) return;
 
         UUID currentHostUUID = concealedMap.get(serverTarget.getUUID());
 
-        Entity host = serverTarget.serverLevel().getEntity(currentHostUUID);
+        Entity hostEntity = serverTarget.serverLevel().getEntity(currentHostUUID);
 
-        if (isConcealed(serverTarget.getUUID())) {
-            if (host != null) {
-                serverTarget.setGameMode(GameType.SPECTATOR);
-                serverTarget.setCamera(host);
-            } else {
-                serverTarget.setGameMode(GameType.SURVIVAL);
-                serverTarget.setCamera(serverTarget);
+        int seq = BeyonderData.getSequence(serverTarget);
+
+        if (hostEntity == null || hostEntity.isRemoved() || !(hostEntity instanceof LivingEntity host)
+                || !host.isAlive() || seq >= BeyonderData.getSequence(host)) {
+            cancelConcealed(serverLevel, serverTarget);
+            return;
+        }
+
+        serverTarget.startRiding(host, true);
+
+//        Vec3 hostPos = host.position();
+//        Vec3 floatPos = hostPos.add(0, host.getBbHeight() + 0.3, 0);
+//        serverTarget.teleportTo(floatPos.x, floatPos.y, floatPos.z);
+//        serverTarget.setDeltaMovement(Vec3.ZERO);
+
+//        serverTarget.setBoundingBox(new AABB(
+//                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ(),
+//                serverTarget.getX(), serverTarget.getY(), serverTarget.getZ()
+//        ));
+       // serverTarget.hurtMarked = true;
+
+        if (host instanceof Mob mob) {
+            if (mob.getTarget() != null && mob.getTarget().equals(serverTarget)) {
+                mob.setTarget(null);
             }
         }
     }
 
     @SubscribeEvent
-    public static void onEntityTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
+    public static void onDamage(LivingIncomingDamageEvent event) {
+        var entity = event.getEntity();
+        if (!(entity.level() instanceof ServerLevel level)) return;
+        if((!(entity instanceof ServerPlayer player))) return;
 
-        if (!(player instanceof ServerPlayer serverPlayer)) return;
-
-        if (serverPlayer.level().isClientSide) return;
-        if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
-
-        if (!ControllingUtils.isControlling(serverPlayer)) {
-            // Ended externally — clean up without calling reset again
-            controllingMap.remove(serverPlayer.getUUID());
-            controllingTimer.remove(serverPlayer.getUUID());
-            controllingLowerSeq.remove(serverPlayer.getUUID());
-            return;
-        }
-
-        // Tick down timer for same/higher seq
-        boolean lowerSeq = controllingLowerSeq.getOrDefault(serverPlayer.getUUID(), false);
-        if (!lowerSeq) {
-            int ticks = controllingTimer.getOrDefault(serverPlayer.getUUID(), 0) - 1;
-            if (ticks <= 0) {
-                serverLevel.getServer().execute(() -> exitControl(serverLevel, serverPlayer));
-                return;
+        if (concealedMap.containsKey(entity.getUUID())) {
+            if (event.getSource().is(ModDamageTypes.MIND)) {
+                cancelConcealed(level, player);
             }
-            controllingTimer.put(serverPlayer.getUUID(), ticks);
+            else{
+                event.setAmount(0);
+                event.setCanceled(true);
+            }
         }
     }
+
+//    @SubscribeEvent
+//    public static void onEntityTick(PlayerTickEvent.Post event) {
+//        Player player = event.getEntity();
+//
+//        if (!(player instanceof ServerPlayer serverPlayer)) return;
+//
+//        if (serverPlayer.level().isClientSide) return;
+//        if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
+//
+//
+//        ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
+//        if (!data.isControlling()) {
+//            // Ended externally — clean up without calling reset again
+//            controllingMap.remove(serverPlayer.getUUID());
+//            controllingTimer.remove(serverPlayer.getUUID());
+//            controllingLowerSeq.remove(serverPlayer.getUUID());
+//            return;
+//        }
+//
+//        // Tick down timer for same/higher seq
+//        boolean lowerSeq = controllingLowerSeq.getOrDefault(serverPlayer.getUUID(), false);
+//        if (!lowerSeq) {
+//            int ticks = controllingTimer.getOrDefault(serverPlayer.getUUID(), 0) - 1;
+//            if (ticks <= 0) {
+//                serverLevel.getServer().execute(() -> exitControl(serverLevel, serverPlayer));
+//                return;
+//            }
+//            controllingTimer.put(serverPlayer.getUUID(), ticks);
+//        }
+//    }
 
     private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {
         if (uuid == null) return null;
@@ -348,4 +423,5 @@ public class ParasitationAbility extends SelectableAbility {
     public static boolean isControlling(UUID uuid) {
         return controllingMap.containsKey(uuid);
     }
+
 }

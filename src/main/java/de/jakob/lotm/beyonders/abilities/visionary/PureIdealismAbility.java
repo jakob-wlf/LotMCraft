@@ -87,7 +87,7 @@ public class PureIdealismAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        var target = AbilityUtil.getTargetEntity(player, 100, 1f);
+        var target = AbilityUtil.getTargetEntity(player, baseDistance, 1f, true, true);
         if (target == null) return;
 
         if (!BeyonderData.isBeyonder(target)) return;
@@ -185,7 +185,7 @@ public class PureIdealismAbility extends SelectableAbility {
     private static int getMeditationDuration(int seq, int targetSeq){
         int diff = 10 - (targetSeq - seq);
 
-        return 50 * diff;
+        return 360 * diff;
     }
 
     @SubscribeEvent

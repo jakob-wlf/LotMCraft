@@ -1,32 +1,40 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
+import de.jakob.lotm.addons.rituals.fool.Seq5;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class SirenSongAbility extends SelectableAbility {
     public SirenSongAbility(String id) {
         super(id, 45);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(20, 23, 25, 33, 35, 45));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6500f, 3250f, 2000f, 1000f, 800f, 600f));
+
+        baseDamage = 3.5f;
     }
 
     @Override
@@ -102,16 +110,37 @@ public class SirenSongAbility extends SelectableAbility {
         int strengthLevel = strength == null ? 1 : strength.getAmplifier() + 1;
         int speedLevel = speed == null ? 1 : speed.getAmplifier() + 1;
 
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 20* multiplier(entity)), strengthLevel, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 20* multiplier(entity)), speedLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20 * 20, strengthLevel, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20 * 20, speedLevel, false, false, false));
 
-        ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 20* multiplier(entity)), () -> {
+        Set<UUID> buff = new HashSet<>();
+        ServerScheduler.scheduleForDuration(0,  2, 20 * 20, () -> {
             if(entity.level().isClientSide)
                 return;
             loc.setPosition(entity.position());
             loc.setLevel(entity.level());
+
+            if(entity instanceof ServerPlayer playerEntity) {
+                var nearby = AbilityUtil.getNearbyEntities(playerEntity, (ServerLevel) playerEntity.level(), playerEntity.position(), 20);
+
+                for (var obj : nearby) {
+                    if(!(obj instanceof ServerPlayer target)) continue;
+
+                    if(BeyonderData.getSequence(target) == 6 && BeyonderData.getPathway(target).equals("fool")){
+                        Seq5.affected.add(target.getUUID());
+                        buff.add(target.getUUID());
+                    }
+                }
+            }
+
         }, level);
-        ServerScheduler.scheduleDelayed((int) (20 * 20* multiplier(entity)), () -> BeyonderData.removeModifier(entity, "buff_song"));
+        ServerScheduler.scheduleDelayed(20 * 20, () -> {
+            BeyonderData.removeModifier(entity, "buff_song");
+
+            for(var obj : buff){
+                Seq5.affected.remove(obj);
+            }
+        });
     }
 
     private void deathMelody(ServerLevel level, LivingEntity entity) {
@@ -121,15 +150,18 @@ public class SirenSongAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        float multiplier = multiplier(entity);
+        float damage = baseDamage;
+
         final UUID[] posTrackerHolder = new UUID[1];
-        posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 20* multiplier(entity)), () -> {
+        posTrackerHolder[0] = ServerScheduler.scheduleForDuration(0,  2, (int) (20 * 8* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
             supplier.setPosition(entity.position());
             supplier.setLevel(entity.level());
         }, level);
         final UUID[] effectHolder = new UUID[1];
-        effectHolder[0] = ServerScheduler.scheduleForDuration(0,  18, (int) (20 * 20* multiplier(entity)), () -> {
+        effectHolder[0] = ServerScheduler.scheduleForDuration(0,  18, (int) (20 * 8* multiplier(entity)), () -> {
             if(entity.level().isClientSide)
                 return;
 
@@ -139,7 +171,14 @@ public class SirenSongAbility extends SelectableAbility {
                 return;
             }
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, DamageLookup.lookupDps(5,  .65, 18, 20) * multiplier(entity), entity.position(), true, false, true, 0);
-        }, level);
+            if(entitySeq > 1) {
+                AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, ModDamageTypes.AWE, damage, entity.position(), true, false, true, 0);
+            }
+            else{
+                AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, ModDamageTypes.AWE, damage/2, entity.position(), true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 25, ModDamageTypes.INFORMATION_DESTRUCTION, damage/2, entity.position(), true, false, true, 0);
+
+            }
+            }, level);
     }
 }

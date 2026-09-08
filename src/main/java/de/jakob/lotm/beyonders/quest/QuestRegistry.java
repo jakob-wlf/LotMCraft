@@ -2,9 +2,6 @@ package de.jakob.lotm.beyonders.quest;
 
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.beyonders.quest.impl.*;
-import de.jakob.lotm.beyonders.quest.impl.kill_beyonder_quests.KillBeyonderGenericQuest;
-import de.jakob.lotm.beyonders.quest.impl.kill_beyonder_quests.KillTyrantSeq4Quest;
-//import de.jakob.lotm.beyonders.quest.impl.HelpBeyonderQuest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +25,11 @@ public class QuestRegistry {
     public static void init() {
         registerQuest(new KillZombiesQuest("kill_zombies", 25, 9));
         registerQuest(new DefendVillageQuest("defend_village", 8));
-        registerQuest(new KillTyrantSeq4Quest("kill_tyrant_seq4", 5));
-        registerQuest(new KillBeyonderGenericQuest("kill_seq4", 5, 4));
-        registerQuest(new KillBeyonderGenericQuest("kill_seq3", 4, 3));
-        registerQuest(new KillBeyonderGenericQuest("kill_seq2", 3, 2));
-        registerQuest(new KillBeyonderGenericQuest("kill_seq1", 2, 1));
+//        registerQuest(new KillTyrantSeq4Quest("kill_tyrant_seq4", 5));
+//        registerQuest(new KillBeyonderGenericQuest("kill_seq4", 5, 4));
+//        registerQuest(new KillBeyonderGenericQuest("kill_seq3", 4, 3));
+//        registerQuest(new KillBeyonderGenericQuest("kill_seq2", 3, 2));
+//        registerQuest(new KillBeyonderGenericQuest("kill_seq1", 2, 1));
         registerQuest(new CollectCharacteristicsQuest("collect_low_seq_characteristics", 6, 5));
         registerQuest(new FindStructureQuest("find_random_structures", 8));
         registerQuest(new KillPlayerQuest("kill_player_target", 1));

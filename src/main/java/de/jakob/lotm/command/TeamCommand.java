@@ -34,21 +34,35 @@ public class TeamCommand {
                 .requires(source -> source.getPlayer() != null)
                 // /team add <player> — leader invites a player
                 .then(Commands.literal("add")
-                        .then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.argument("player", StringArgumentType.string())
                                 .executes(context -> {
                                     ServerPlayer leader = context.getSource().getPlayerOrException();
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "player");
-                                    return executeAdd(context.getSource(), leader, target);
+                                    String target = StringArgumentType.getString(context, "player");
+
+                                    var id = BeyonderData.playerMap.getKeyByName(target);
+                                    if(id == null) return 0;
+
+                                    var targetPlayer = context.getSource().getLevel().getPlayerByUUID(id);
+                                    if(!(targetPlayer instanceof ServerPlayer serverPlayer)) return 0;
+
+                                    return executeAdd(context.getSource(), leader, serverPlayer);
                                 })
                         )
                 )
                 // /team remove <player> — leader removes a member, or member removes themselves
                 .then(Commands.literal("remove")
-                        .then(Commands.argument("player", EntityArgument.player())
+                        .then(Commands.argument("player", StringArgumentType.string())
                                 .executes(context -> {
                                     ServerPlayer sender = context.getSource().getPlayerOrException();
-                                    ServerPlayer target = EntityArgument.getPlayer(context, "player");
-                                    return executeRemove(context.getSource(), sender, target);
+                                    String target = StringArgumentType.getString(context, "player");
+
+                                    var id = BeyonderData.playerMap.getKeyByName(target);
+                                    if(id == null) return 0;
+
+                                    var targetPlayer = context.getSource().getLevel().getPlayerByUUID(id);
+                                    if(!(targetPlayer instanceof ServerPlayer serverPlayer)) return 0;
+
+                                    return executeRemove(context.getSource(), sender, serverPlayer);
                                 })
                         )
                 )
@@ -87,6 +101,20 @@ public class TeamCommand {
                                         })
                                 )
                         )
+
+                        .then(Commands.literal("disbandall")
+                        .executes(context -> {
+                            var source = context.getSource();
+                            var level = source.getLevel();
+
+                            var server = level.getServer();
+
+                            for(var player : level.players()){
+                                TeamUtils.disbandTeam(player, server);
+                            }
+
+                            return 0;
+                        }))
                 )
         );
     }

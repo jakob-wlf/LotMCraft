@@ -16,27 +16,28 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
 
@@ -49,6 +50,13 @@ public class DreamTraversalAbility extends SelectableAbility {
         super(id, 1f);
         this.autoClear = false;
         canBeUsedInArtifact = false;
+        canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1300f, 1000f, 625f, 550f, 380f));
     }
 
     @Override
@@ -74,7 +82,7 @@ public class DreamTraversalAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -84,7 +92,7 @@ public class DreamTraversalAbility extends SelectableAbility {
         switch (abilityIndex) {
             case 0 -> jump(level, entity);
             case 1 -> jumpInRange(level, entity);
-            case 2 -> hide(level, entity);
+            case 2 -> hideWithJump(level, entity);
         }
     }
 
@@ -93,13 +101,13 @@ public class DreamTraversalAbility extends SelectableAbility {
             1f
     );
 
-    private void jumpInRange(Level level, LivingEntity entity){
+    private void jumpInRange(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         var server = entity.getServer();
         if (server == null) return;
 
-        if(!(entity instanceof ServerPlayer player)) return;
+        if (!(entity instanceof ServerPlayer player)) return;
 
         int seq = BeyonderData.getSequence(entity);
         int range = getRangeBySeq(seq);
@@ -120,14 +128,14 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     private void jump(Level level, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
             return;
         }
 
-        if(level.isClientSide) {
+        if (level.isClientSide) {
             ParticleUtil.spawnParticles((ClientLevel) level, dust, target.position().add(0, entity.getEyeHeight() / 2, 0), 100, .35, entity.getEyeHeight() / 2, .35, 0);
             return;
         }
@@ -135,7 +143,7 @@ public class DreamTraversalAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = BeyonderData.getSequence(entity);
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
+        if (VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)) {
             return;
         }
 
@@ -162,7 +170,7 @@ public class DreamTraversalAbility extends SelectableAbility {
         performTeleport(entity, target);
     }
 
-    private void hide(Level level, LivingEntity entity) {
+    private void hideWithJump(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
@@ -172,14 +180,14 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (40 * multiplier(entity)), 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
             return;
         }
 
-        if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)){
+        if (VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)) {
             return;
         }
 
@@ -196,12 +204,21 @@ public class DreamTraversalAbility extends SelectableAbility {
         parasitationComponent.setParasited(true);
         parasitationComponent.setParasiteUUID(entity.getUUID());
 
-        player.setBoundingBox(new AABB(
-                player.getX(), player.getY(), player.getZ(),
-                player.getX(), player.getY(), player.getZ()
-        ));
+        var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(true);
+        comp.setParasitingUUID(target.getUUID());
+
         player.onUpdateAbilities();
         player.hurtMarked = true;
+
+//        AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.addTransientModifier(new AttributeModifier
+//                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                            "dream_hide"),
+//                            -0.6,
+//                            AttributeModifier.Operation.ADD_VALUE));
+//        }
 
         PsychologicalInvisibilityAbility.addInvisFromOtherSkills(entity, hideSeqMap.get(entity.getUUID()));
     }
@@ -225,13 +242,24 @@ public class DreamTraversalAbility extends SelectableAbility {
             ));
             player.onUpdateAbilities();
             player.hurtMarked = true;
+
+            var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+            comp.setParasiting(false);
+            comp.setParasitingUUID(null);
         }
 
+//        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                    "dream_hide"));
+//        }
+
         PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
+        entity.stopRiding();
     }
 
-    public static int getRangeBySeq(int seq){
-        return switch (seq){
+    public static int getRangeBySeq(int seq) {
+        return switch (seq) {
             case 5 -> 250;
             case 4 -> 500;
             case 3 -> 1000;
@@ -242,34 +270,58 @@ public class DreamTraversalAbility extends SelectableAbility {
         };
     }
 
-    public static void performTeleport(LivingEntity entity, LivingEntity target){
+    public static void performTeleport(LivingEntity entity, LivingEntity target) {
         entity.teleportTo(target.getX(), target.getY(), target.getZ());
+    }
+
+    public void hideWithJump(ServerPlayer player, LivingEntity target) {
+        if(hideMap.containsKey(player.getUUID())){
+            cancelHide((ServerLevel) player.level(), player);
         }
+
+        hideMap.put(player.getUUID(), target.getUUID());
+        // Store sequence at cast time for artifact stuff
+        hideSeqMap.put(player.getUUID(), AbilityUtil.getSeqWithArt(player, this));
+
+        ParasitationComponent parasitationComponent = target.getData(ModAttachments.PARASITE_COMPONENT);
+        parasitationComponent.setParasited(true);
+        parasitationComponent.setParasiteUUID(player.getUUID());
+
+        player.setBoundingBox(new AABB(
+                player.getX(), player.getY(), player.getZ(),
+                player.getX(), player.getY(), player.getZ()
+        ));
+        player.onUpdateAbilities();
+        player.hurtMarked = true;
+
+        var comp = player.getData(ModAttachments.PARASITE_COMPONENT.get());
+        comp.setParasiting(true);
+        comp.setParasitingUUID(target.getUUID());
+
+//        AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
+//        if(scaleAttribute != null) {
+//            scaleAttribute.addTransientModifier(new AttributeModifier
+//                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+//                            "dream_hide"),
+//                            -1.0,
+//                            AttributeModifier.Operation.ADD_VALUE));
+//        }
+
+        PsychologicalInvisibilityAbility.addInvisFromOtherSkills(player, hideSeqMap.get(player.getUUID()));
+    }
 
     @SubscribeEvent
     public static void onDamage(LivingIncomingDamageEvent event) {
         var entity = event.getEntity();
-        if(!(entity.level() instanceof ServerLevel level)) return;
+        if (!(entity.level() instanceof ServerLevel level)) return;
 
-        if(isHiding(entity.getUUID())){
-            if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)){
+        if (isHiding(entity.getUUID())) {
+            if (event.getSource().is(ModDamageTypes.MIND)) {
                 cancelHide(level, entity);
-            }
-            else{
+            } else {
                 event.setAmount(0.0f);
                 event.setCanceled(true);
             }
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
-        if(!(event.getLevel() instanceof ServerLevel level)) return;
-
-        LivingEntity entity = event.getEntity();
-
-        if (hideMap.containsKey(entity.getUUID())) {
-            DreamTraversalAbility.cancelHide(level, entity);
         }
     }
 
@@ -284,39 +336,56 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         // Use the sequence stored at cast time (ie the artifact if used)
         boolean seqUnlocked = hideSeqMap.getOrDefault(entity.getUUID(), 9) <= 3;
+        var idealism = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
 
         if (hostEntity == null || hostEntity.isRemoved() || !(hostEntity instanceof LivingEntity host)
-                || !host.isAlive() || (!seqUnlocked && !host.hasEffect(ModEffects.ASLEEP))) {
+                || !host.isAlive() || (!seqUnlocked && !host.hasEffect(ModEffects.ASLEEP))
+                || idealism.isDiscerning()) {
 
             cancelHide(serverLevel, entity);
             return;
         }
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(hideSeqMap.getOrDefault(entity.getUUID(), 9))){
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(hideSeqMap.getOrDefault(entity.getUUID(), 9))) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
             cancelHide(serverLevel, entity);
         }
 
-        Vec3 hostPos = host.position();
-        Vec3 floatPos = hostPos.add(0, host.getBbHeight() + 0.3, 0);
-        entity.teleportTo(floatPos.x, floatPos.y, floatPos.z);
-        entity.setDeltaMovement(Vec3.ZERO);
+        entity.startRiding(host, true);
 
-        if (entity instanceof Player player) {
-            player.setBoundingBox(new AABB(
-                    player.getX(), player.getY(), player.getZ(),
-                    player.getX(), player.getY(), player.getZ()
-            ));
-            player.hurtMarked = true;
-        }
-
-        if(host instanceof Mob mob){
-            if(mob.getTarget() != null && mob.getTarget().equals(entity)){
+        if (host instanceof Mob mob) {
+            if (mob.getTarget() != null && mob.getTarget().equals(entity)) {
                 mob.setTarget(null);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onEntityChangedDimension(EntityTravelToDimensionEvent event) {
+        if(!(event.getEntity() instanceof LivingEntity entity)) return;
+        if(!(event.getEntity().level() instanceof ServerLevel level)) return;
+
+        var component = entity.getData(ModAttachments.PARASITE_COMPONENT.get());
+        if(!component.isParasited()) return;
+
+        var parasiteId = component.getParasiteUUID();
+        if(parasiteId == null){
+            component.setParasited(false);
+            return;
+        }
+
+        var parasite = level.getEntity(parasiteId);
+        if(parasite == null){
+            component.setParasited(false);
+            return;
+        }
+
+        component.setParasited(false);
+
+        var pos = entity.position();
+        parasite.teleportTo((ServerLevel) entity.level(), pos.x, pos.y, pos.z, Set.of(), entity.getYRot(), entity.getXRot());
     }
 
     public static boolean isHiding(UUID uuid) {

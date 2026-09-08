@@ -23,9 +23,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TravelersDoorAbility extends SelectableAbility {
@@ -37,6 +35,9 @@ public class TravelersDoorAbility extends SelectableAbility {
 
         canBeUsedByNPC = false;
         canBeCopied = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8000f, 4500f, 3000f, 1750f, 1680f, 1140f));
     }
     @Override
     public Map<String, Integer> getRequirements() {
@@ -87,7 +88,12 @@ public class TravelersDoorAbility extends SelectableAbility {
 
         BeyonderData.reduceSpirituality(player, 70);
 
-        TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, 2, AbilityUtil.getSeqWithArt(player, this));
+        TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(),
+                serverLevel, player.getLookAngle().normalize().scale(-1),
+                targetLoc, 2,
+                AbilityUtil.getSeqWithArt(player, this),
+                player);
+
         serverLevel.addFreshEntity(door);
         serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
 
@@ -125,7 +131,10 @@ public class TravelersDoorAbility extends SelectableAbility {
                 }
                 BeyonderData.reduceSpirituality(player, spiritualityCost);
 
-                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, pos.getX(), pos.getY(), pos.getZ());
+                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(),
+                        serverLevel, player.getLookAngle().normalize().scale(-1),
+                        targetLoc, pos.getX(), pos.getY(), pos.getZ());
+
                 serverLevel.addFreshEntity(door);
                 serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
 

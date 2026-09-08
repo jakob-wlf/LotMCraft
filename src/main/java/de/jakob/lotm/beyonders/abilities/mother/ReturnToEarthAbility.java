@@ -17,14 +17,20 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReturnToEarthAbility extends Ability {
     public ReturnToEarthAbility(String id) {
         super(id, 12);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 8, 10, 15));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12500f, 6600f, 5000f, 3000f));
+
+        baseDamage = 5;
     }
 
     @Override
@@ -51,8 +57,8 @@ public class ReturnToEarthAbility extends Ability {
                 Set.of(target) :
                 new HashSet<>(AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20, false, true));
 
-        int drainDuration = 20 * 10;
-        double dps = DamageLookup.lookupDps(3, hasSingleTarget ? .85 : .6, 10, 30) * multiplier(entity);
+        int drainDuration = 20 * 3;
+        double dps = baseDamage;
 
         serverLevel.playSound(null, BlockPos.containing(entity.position()), SoundEvents.WITHER_SPAWN, entity.getSoundSource(), 1f, 1f);
         for(LivingEntity e : targets) BeyonderData.addModifierWithTimeLimit(e, "return_to_earth", .8, drainDuration * 500);
@@ -61,7 +67,7 @@ public class ReturnToEarthAbility extends Ability {
         ServerScheduler.scheduleForDuration(0, 1, drainDuration, () -> {
             for(LivingEntity e : targets) {
                 if(tickCounter.get() % 10 == 0) {
-                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.MOTHER_GENERIC), (float) dps);
+                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.RETURN_TO_EARTH, entity), (float) dps);
                     serverLevel.playSound(null, BlockPos.containing(e.position()), SoundEvents.WITHER_SHOOT, e.getSoundSource(), .5f, .5f);
                     if(tickCounter.get() % 20 == 0) {
                         e.teleportRelative(0, -.001, 0);

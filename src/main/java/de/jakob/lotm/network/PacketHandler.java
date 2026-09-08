@@ -613,11 +613,11 @@ public class PacketHandler {
                 HandleSefirotGuestPacket::handle
         );
 
-        registrar.playToServer(
-                RitualSaveLinesPacket.TYPE,
-                RitualSaveLinesPacket.STREAM_CODEC,
-                RitualSaveLinesPacket::handle
-        );
+//        registrar.playToServer(
+//                RitualSaveLinesPacket.TYPE,
+//                RitualSaveLinesPacket.STREAM_CODEC,
+//                RitualSaveLinesPacket::handle
+//        );
 
         registrar.playToServer(
                 RequestMarionetteSyncPacket.TYPE,
@@ -655,11 +655,11 @@ public class PacketHandler {
                 SendAllyRequestPacket::handle
         );
 
-        registrar.playToServer(
-                RitualStartPacket.TYPE,
-                RitualStartPacket.STREAM_CODEC,
-                RitualStartPacket::handle
-        );
+//        registrar.playToServer(
+//                RitualStartPacket.TYPE,
+//                RitualStartPacket.STREAM_CODEC,
+//                RitualStartPacket::handle
+//        );
 
         registrar.playToServer(
                 PlayerLeftClickWhileSummonSelfPacket.TYPE,

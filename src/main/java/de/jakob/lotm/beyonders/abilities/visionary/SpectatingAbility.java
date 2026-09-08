@@ -1,11 +1,15 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpectatingAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,16 +18,25 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@EventBusSubscriber(
+        modid = LOTMCraft.MOD_ID,
+        value = Dist.CLIENT
+)
 public class SpectatingAbility extends ToggleAbility {
     public SpectatingAbility(String id) {
         super(id);
 
         canBeUsedByNPC = false;
         autoClear = false;
+        canBeShared = false;
     }
 
     @Override
@@ -62,7 +75,7 @@ public class SpectatingAbility extends ToggleAbility {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f, true, true);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f, true, true);
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(lookedAt != null) {
@@ -103,5 +116,25 @@ public class SpectatingAbility extends ToggleAbility {
             clearArtifactScaling(entity);
         }
 
+    }
+
+
+    @SubscribeEvent
+    public static void onRenderLiving(RenderLivingEvent.Pre<?, ?> event) {
+        LivingEntity target = event.getEntity();
+
+        if (!target.isInvisible()) {
+            return;
+        }
+
+        LocalPlayer viewer = Minecraft.getInstance().player;
+
+        if (viewer == null) {
+            return;
+        }
+
+        if(ClientHandler.isSpectating && !VisionaryHandler.isInvisible(target)){
+            target.setInvisible(false);
+        }
     }
 }

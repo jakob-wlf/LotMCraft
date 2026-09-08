@@ -13,35 +13,51 @@ import java.util.List;
 
 public class CopiedAbilityHelper {
 
-    public static void addAbility(ServerPlayer player, CopiedAbilityComponent.CopiedAbilityData data) {
+    public static void addAbility(LivingEntity player, CopiedAbilityComponent.CopiedAbilityData data) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.addAbility(data);
-        syncToClient(player);
+
+        if(player instanceof ServerPlayer serverPlayer)
+            syncToClient(serverPlayer);
     }
 
-    public static void removeAbility(ServerPlayer player, int index) {
+    public static void removeAbility(LivingEntity player, int index) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(index);
-        syncToClient(player);
+
+        if(player instanceof ServerPlayer serverPlayer)
+            syncToClient(serverPlayer);
     }
 
 
-    public static void clearAbilities(ServerPlayer player) {
+    public static void clearAbilities(LivingEntity player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.getAbilities().clear();
-        syncToClient(player);
+
+        if(player instanceof ServerPlayer serverPlayer)
+            syncToClient(serverPlayer);
     }
 
     public static void decrementUses(LivingEntity entity, String abilityId) {
         CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
 
-        int index = component.getAbilities().indexOf(component.getAbilities().stream().filter(data -> data.abilityId().equals(abilityId) && shouldReduceUsesForType(data.copyType())).findFirst().orElse(null));
+        int index = component.getAbilities()
+                .indexOf(component.getAbilities()
+                        .stream()
+                        .filter(data ->
+                                data.abilityId().equals(abilityId)
+                                        && shouldReduceUsesForType(data.copyType()))
+                        .findFirst().orElse(null));
+
         if (index < 0 || index >= component.getAbilities().size()) return;
         CopiedAbilityComponent.CopiedAbilityData data = component.getAbilities().get(index);
+
         if (data.remainingUses() == -1) return;
+
         int newUses = data.remainingUses() - 1;
+
         if (newUses <= 0) {
-            component.getAbilities().remove(index);
+            removeAbility(entity, index);
         } else {
             component.getAbilities().set(index, data.withRemainingUses(newUses));
         }
@@ -70,8 +86,8 @@ public class CopiedAbilityHelper {
 
     private static boolean shouldReduceUsesForType(String copyType) {
         return switch (copyType) {
-            default -> true;
             case "replicated" -> false;
+            default -> true;
         };
     }
 

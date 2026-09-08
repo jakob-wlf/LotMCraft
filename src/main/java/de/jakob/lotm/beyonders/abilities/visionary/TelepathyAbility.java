@@ -21,6 +21,7 @@ public class TelepathyAbility extends ToggleAbility {
         super(id);
         autoClear = false;
         canBeUsedByNPC = false;
+        canBeShared = false;
     }
 
     @Override
@@ -41,6 +42,7 @@ public class TelepathyAbility extends ToggleAbility {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
+            return;
         }
     }
 
@@ -50,7 +52,7 @@ public class TelepathyAbility extends ToggleAbility {
         if (!(entity instanceof ServerPlayer player)) return;
         if (entity.tickCount % 10 != 0) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20 * (int) Math.max(multiplier(entity) / 4, 1), 1.5f, true, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.literal(""));

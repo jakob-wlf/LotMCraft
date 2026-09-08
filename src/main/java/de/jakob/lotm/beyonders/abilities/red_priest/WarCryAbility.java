@@ -21,6 +21,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class WarCryAbility extends Ability {
@@ -29,6 +31,14 @@ public class WarCryAbility extends Ability {
         interactionRadius = 19;
         interactionCacheTicks = 20 * 12;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 7, 8, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1100f, 800f, 570f));
+
+        baseDamage = 12f;
     }
 
     @Override
@@ -51,26 +61,24 @@ public class WarCryAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(3, .9) *multiplier(entity)));
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 20).forEach(e -> {
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.AWE, entity), baseDamage);
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(1.5);
             e.setDeltaMovement(knockBack);
         });
 
-        BeyonderData.addModifierWithTimeLimit(entity, "war_cry", 1.05, (long) (20L *30*multiplier(entity)));
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 12*multiplier(entity)), 3, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 12*multiplier(entity)), 4, false, false, false));
-        //entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 12*multiplier(entity), 1, false, false, false));
+        BeyonderData.addModifierWithTimeLimit(entity, "war_cry", 1.05, (long) (20 * 5));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 5), 4, false, false, false));
 
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos.add(0, 1, 0), 600, .75, .75, .75, .15);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos, 600, 7, .2, 7, .005);
 
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
     }
 
     private void spawnFallingBlocks(Level level, Vec3 startPos, BlockPos b, boolean griefing) {
@@ -85,13 +93,13 @@ public class WarCryAbility extends Ability {
         Vec3 vectorFromCenter = new Vec3(b.getX() + 0.5 - startPos.x, 0, b.getZ() + 0.5 - startPos.z).normalize();
         Vec3 movement = (new Vec3(vectorFromCenter.x, 1, vectorFromCenter.z)).normalize().scale(.75);
 
-        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
-        block.setDeltaMovement(movement);
-        if(!griefing)
-            block.disableDrop();
-        else {
-            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-        }
-        block.hurtMarked = true;
+//        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
+//        block.setDeltaMovement(movement);
+//        if(!griefing)
+//            block.disableDrop();
+//        else {
+//            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
+//        }
+//        block.hurtMarked = true;
     }
 }

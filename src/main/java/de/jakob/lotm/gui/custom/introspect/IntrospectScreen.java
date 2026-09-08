@@ -2,6 +2,7 @@ package de.jakob.lotm.gui.custom.introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualDescriptionHelper;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
@@ -23,6 +24,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -204,6 +206,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
         int rows = (int) Math.ceil((double) ids.size() / iconsPerRow);
         int visibleRows = (COPIED_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
+
         maxCopiedScroll = Math.max(0, rows - visibleRows);
         copiedScrollOffset = Math.min(copiedScrollOffset, maxCopiedScroll);
     }
@@ -212,6 +215,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         int questsCount = ClientQuestData.getCompletedQuests().size();
         int lineHeight = this.font.lineHeight + 2;
         int visibleLines = (COMPLETED_QUESTS_HEIGHT - 20) / lineHeight;
+
         maxCompletedQuestsScroll = Math.max(0, questsCount - visibleLines);
     }
 
@@ -219,9 +223,11 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.abilityWheelSlots.clear();
         this.abilityWheelSubIndexes.clear();
         this.abilityWheelIsCopied.clear();
+
         for (String id : abilityIds) {
             AbilityId parsed = AbilityId.parse(id);
             Ability ability = LOTMCraft.abilityHandler.getById(parsed.baseId());
+
             if (ability != null) {
                 this.abilityWheelSlots.add(ability);
                 this.abilityWheelSubIndexes.add(parsed.subIndex());
@@ -416,7 +422,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             boolean canApotheosize = false;
             if (this.minecraft != null && this.minecraft.player != null) {
                 int charStack = ClientBeyonderCache.getCharStack(this.minecraft.player.getUUID());
-                canApotheosize = ClientUniquenessCache.getKillCount() >= RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS && charStack >= 2;
+                canApotheosize = charStack >= 2;
             }
             final boolean finalCanApotheosize = canApotheosize;
 
@@ -427,6 +433,15 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                             })
                     .bounds(apotheosisButtonX, apotheosisButtonY, 60, 20)
                     .build();
+
+            apotheosisButton.setTooltip(
+                    Tooltip.create(
+                            Component.literal(
+                                    RitualDescriptionHelper.getRitualDescription(menu.getPathway(),
+                                            menu.getSequence()-1)
+                            )
+                    ));
+
             apotheosisButton.active = finalCanApotheosize;
             this.addRenderableWidget(apotheosisButton);
         }
@@ -1238,13 +1253,13 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 tooltipLines.add(Component.literal(""));
             }
 
-            int cooldown = hoveredAbility.getCooldown();
+            int cooldown = hoveredAbility.getCooldown(menu.getSequence());
             if (cooldown > 0) {
                 tooltipLines.add(Component.literal("Cooldown: ").withStyle(ChatFormatting.DARK_GRAY)
                         .append(Component.literal(cooldown / 20 + "s").withStyle(ChatFormatting.BLUE)));
             }
 
-            float spiritualityCost = hoveredAbility.spiritualityCost();
+            float spiritualityCost = hoveredAbility.spiritualityCost(menu.getSequence());
             if (spiritualityCost > 0) {
                 tooltipLines.add(Component.literal("Spirituality Cost: ").withStyle(ChatFormatting.DARK_GRAY)
                         .append(Component.literal(spiritualityCost + "").withStyle(ChatFormatting.DARK_PURPLE)));
@@ -2370,9 +2385,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         guiGraphics.blit(textureLocation, iconX, iconY, 0, 0, iconSize, iconSize, iconSize, iconSize);
 
-        int kills = ClientUniquenessCache.getKillCount();
-        Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
-        guiGraphics.drawString(this.font, killText, iconX + iconSize + 3, iconY + 4, 0xFFAA00, true);
+        //int kills = ClientUniquenessCache.getKillCount();
+        //Component killText = Component.literal(kills + "/" + RequestUniquenessApotheosisPacket.KILLS_REQUIRED_FOR_APOTHEOSIS + " kills").withStyle(ChatFormatting.GOLD);
+        //guiGraphics.drawString(this.font, killText, iconX + iconSize + 3, iconY + 4, 0xFFAA00, true);
     }
 
     private void renderPassiveAbilitiesText(GuiGraphics guiGraphics, int x, int y) {

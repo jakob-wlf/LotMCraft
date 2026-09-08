@@ -1,10 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.rendering.effectRendering.EffectIds;
-import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,6 +13,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class MightyBlowAbility extends Ability {
@@ -24,6 +24,14 @@ public class MightyBlowAbility extends Ability {
 
         hasOptimalDistance = true;
         optimalDistance = 1.5f;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 2, 2, 3, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 700f, 600f, 300f, 200f, 200f, 125f, 90f, 40f, 40f, 20f));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -47,7 +55,9 @@ public class MightyBlowAbility extends Ability {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CRIT, pos, 60, 0, 0.325);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION, pos, 1, 0, 0.115);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 3.5f, DamageLookup.lookupDamage(9, 1.5) * multiplier(entity), pos, true, false, true, 0);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level,
+                entity, 3.5f, ModDamageTypes.IMPACT, baseDamage,
+                pos, true, false, true, 0);
 
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 1, 1);
     }

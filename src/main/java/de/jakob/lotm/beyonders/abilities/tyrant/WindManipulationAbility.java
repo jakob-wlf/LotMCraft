@@ -1,5 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.common.AngelFlightAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.WindBladeEntity;
@@ -26,8 +28,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WindManipulationAbility extends SelectableAbility {
     private final HashSet<UUID> isFlying = new HashSet<>();
 
+    private WindManipulationFlightAbility flightSkill;
+
     public WindManipulationAbility(String id) {
         super(id, 1.5f);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1250f, 900f, 400f, 400f, 250f, 200f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2));
+
+        baseDamage = 6f;
     }
 
     @Override
@@ -64,64 +76,25 @@ public class WindManipulationAbility extends SelectableAbility {
         }
     }
 
-
-    @Override
-    public void nextAbility(LivingEntity entity){
-        if(getAbilityNames().length == 0)
-            return;
-
-        if(!selectedAbilities.containsKey(entity.getUUID())) {
-            selectedAbilities.put(entity.getUUID(), 0);
-        }
-
-        int selectedAbility = selectedAbilities.get(entity.getUUID());
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        selectedAbility++;
-        if(selectedAbility >= getAbilityNames().length) {
-            selectedAbility = 0;
-        }
-
-        if((entitySeq > 4 && selectedAbility >= 3)){
-            selectedAbility = 0;
-        }
-
-        selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
-    }
-
-    @Override
-    public void previousAbility(LivingEntity entity){
-        if(getAbilityNames().length == 0)
-            return;
-
-        if(!selectedAbilities.containsKey(entity.getUUID())) {
-            selectedAbilities.put(entity.getUUID(), 0);
-        }
-
-        int selectedAbility = selectedAbilities.get(entity.getUUID());
-        selectedAbility--;
-        if(selectedAbility <= -1) {
-            selectedAbility = getAbilityNames().length - 1;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if((entitySeq > 4 && selectedAbility >= 3)){
-            selectedAbility = 0;
-        }
-
-        selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
-    }
-
-
     private void flight(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
         if(!(entity instanceof Player player))
             return;
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(entitySeq <= 4){
+            if(flightSkill == null)
+                flightSkill = (WindManipulationFlightAbility) LOTMCraft.abilityHandler.getById("wind_manipulation_flight");
+
+            if(flightSkill == null) return;
+
+            flightSkill.useAbility((ServerLevel) level, player);
+
+            return;
+        }
 
         if(isFlying.contains(player.getUUID())) {
             isFlying.remove(player.getUUID());
@@ -150,7 +123,7 @@ public class WindManipulationAbility extends SelectableAbility {
                 return;
             }
 
-            BeyonderData.reduceSpirituality(player, 25);
+            BeyonderData.reduceSpirituality(player, 3);
 
             if(player.isShiftKeyDown())
                 player.setDeltaMovement(new Vec3(0, 0, 0));
@@ -177,7 +150,7 @@ public class WindManipulationAbility extends SelectableAbility {
         Location loc = new Location(targetPos, level);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        ServerScheduler.scheduleForDuration(0, 1, (int) (20 * 13* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, (int) 20 * 5, () -> {
             for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetPos, 2.5)) {
                 // Blink Escape - only the bound entity can free itself
                 if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", entitySeq, e)) {
@@ -223,7 +196,9 @@ public class WindManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BREEZE_WIND_CHARGE_BURST, entity.getSoundSource(), 1.0f, 1.0f);
 
-        WindBladeEntity blade = new WindBladeEntity(level, entity, DamageLookup.lookupDamage(6, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        float damage = baseDamage;
+
+        WindBladeEntity blade = new WindBladeEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity));
         blade.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         blade.shoot(direction.x, direction.y, direction.z, 2.4f* multiplier(entity), 0);
         level.addFreshEntity(blade);

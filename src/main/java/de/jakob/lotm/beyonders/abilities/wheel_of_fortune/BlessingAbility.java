@@ -19,6 +19,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class BlessingAbility extends Ability {
@@ -29,6 +31,12 @@ public class BlessingAbility extends Ability {
         postsUsedAbilityEventManually = true;
         interactionRadius = 2;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8500f, 5000f, 3500f, 2350f, 2275f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 2, 3, 3, 4));
     }
 
     @Override
@@ -52,7 +60,7 @@ public class BlessingAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2, false, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, false, true);
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
@@ -69,9 +77,22 @@ public class BlessingAbility extends Ability {
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
 
-        int amplifier = Math.min(Math.round(multiplier(entity) * 750), 3000);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int luck = getLuck(entitySeq);
+
         LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        component.addLuckWithMax(amplifier, 3000);
+        component.addLuckWithMax(luck, 3000);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
+    }
+
+    private static int getLuck(int seq){
+        return switch (seq){
+            case 4 -> 350;
+            case 3 -> 500;
+            case 2 -> 750;
+            case 1 -> 1000;
+            case 0 -> 1500;
+            default -> 0;
+        };
     }
 }

@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway;
 
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.tyrant.WaterMasteryAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -280,21 +281,17 @@ public class StrongLightningEntity extends Entity {
             boolean inWater = isNearWater(pos);
             float waterMultiplier = inWater ? 1.8f : 1.0f;
 
-            entity.hurt(source.damageSources().mobAttack(source), (float) damage * waterMultiplier);
+            entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source),
+                    (float) damage * waterMultiplier);
 
             List<Entity> nearbyEntities = level().getEntities(this,
                     new AABB(pos.add(-4, -4, -4), pos.add(4, 4, 4)));
             for (Entity nearby : nearbyEntities) {
                 if (nearby != entity && !(nearby instanceof StrongLightningEntity) && !nearby.isSpectator()) {
-                    nearby.hurt(source.damageSources().mobAttack(source), (float) (damage * 0.3));
+                    nearby.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source),
+                            (float) (damage * 0.3));
                 }
             }
-
-            if(inWater) {
-                dealWaterConductionDamage(pos);
-            }
-
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else if(level().isClientSide) {
@@ -317,15 +314,9 @@ public class StrongLightningEntity extends Entity {
         if (!level().isClientSide) {
             Vec3 pos = hit.getLocation();
             if(source != null) {
-                explode(pos);
+                //explode(pos);
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower, 12));
             }
-
-            if(isNearWater(pos)) {
-                dealWaterConductionDamage(pos);
-            }
-
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(15, this::discardEntityAndBranches);
         } else {
@@ -360,7 +351,8 @@ public class StrongLightningEntity extends Entity {
         ServerLevel serverLevel = (ServerLevel) level();
         AbilityUtil.getNearbyEntities(source, serverLevel, pos, 15).forEach(e -> {
             if(e.isInWater() || isNearWater(e.position())) {
-                e.hurt(source.damageSources().mobAttack(source), (float) (damage * 1.5));
+                e.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source)
+                        , (float) (damage * 1.5));
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, e.position(), 20, .5, 0);
             }
         });
@@ -381,7 +373,7 @@ public class StrongLightningEntity extends Entity {
             if(distToWallLine < 5 && Math.abs(alongWall) < wall.halfWidth()) {
                 for(int j = -wall.halfWidth(); j <= wall.halfWidth(); j += 3) {
                     Vec3 wallPoint = wallPos.add(perp.scale(j));
-                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, (float) (damage * 1.5), wallPoint, true, false, true, 0);
+                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, ModDamageTypes.LIGHTNING , (float) (damage * 1.5), wallPoint, true, false, true, 0);
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, wallPoint, 10, 1, 0);
                 }
                 break;

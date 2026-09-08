@@ -38,8 +38,15 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
     public SpaceConcealmentAbility(String id) {
         super(id, 5f);
-        canBeCopied = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 6700f, 3750f, 2500f, 2340f));
+
+        baseDamage = 12f;
     }
 
     @Override
@@ -54,7 +61,11 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.space_concealment.other", "ability.lotmcraft.space_concealment.self", "ability.lotmcraft.space_concealment.collapse"};
+        return new String[]{
+                "ability.lotmcraft.space_concealment.other",
+                "ability.lotmcraft.space_concealment.self",
+                "ability.lotmcraft.space_concealment.collapse"
+        };
     }
 
     @Override
@@ -100,7 +111,8 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
         // Remove all spaces
         for(ConcealedSpace space : new ArrayList<>(spaces)) {
-            space.collapse(entity, multiplier(entity));
+            space.collapse(entity, baseDamage);
+
             ServerScheduler.cancel(space.getTaskId());
             if(space.getParticleTaskId() != null) {
                 ServerScheduler.cancel(space.getParticleTaskId());
@@ -111,6 +123,14 @@ public class SpaceConcealmentAbility extends SelectableAbility {
     }
 
     private void createConcealedSpace(ServerLevel level, LivingEntity entity, Vec3 center) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(playerSpaces.containsKey(entity.getUUID())){
+            var list = playerSpaces.get(entity.getUUID());
+
+            if(list.size() + 1 >= getMax(entitySeq)) return;
+        }
+
         ConcealedSpace space = new ConcealedSpace(center, level, 8, entity.getUUID());
 
         // Add to player's list of spaces
@@ -187,6 +207,17 @@ public class SpaceConcealmentAbility extends SelectableAbility {
             }
         }
         return false;
+    }
+
+    private static int getMax(int seq){
+        return switch (seq){
+            case 4 -> 1;
+            case 3 -> 2;
+            case 2 -> 4;
+            case 1 -> 5;
+            case 0 -> 7;
+            default -> 0;
+        };
     }
 
     private static class ConcealedSpace {
@@ -423,7 +454,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
             });
         }
 
-        public void collapse(LivingEntity source, double multiplier) {
+        public void collapse(LivingEntity source, float damage) {
             removeBarriers();
 
             BlockPos centerPos = BlockPos.containing(center);
@@ -463,7 +494,8 @@ public class SpaceConcealmentAbility extends SelectableAbility {
 
                 // Deal damage to living entities
                 if(entity instanceof LivingEntity && AbilityUtil.mayDamage(source, (LivingEntity) entity)) {
-                    entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE), (float) (DamageLookup.lookupDamage(4, 1.5) * multiplier));
+                    entity.hurt(ModDamageTypes.source(level, ModDamageTypes.SPACE_DESTRUCTION, source)
+                            ,damage);
                 }
             }
         }

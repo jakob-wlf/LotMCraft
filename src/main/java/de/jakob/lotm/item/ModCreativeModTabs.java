@@ -30,7 +30,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.CRYSTAL_BALL.get());
                         output.accept(ModItems.CANE.get());
                         output.accept(ModItems.GUIDING_BOOK.get());
-                        output.accept(ModItems.MYSTICAL_RING.get());
+                        //output.accept(ModItems.MYSTICAL_RING.get());
                         output.accept(ModBlocks.BREWING_CAULDRON.get());
                         output.accept(ModBlocks.VOID);
                         output.accept(ModBlocks.SOLID_VOID);
@@ -43,7 +43,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.ONE_SOLI);
                         output.accept(ModItems.UNIQUENESS_MAP);
                         output.accept(ModItems.CITY_MAP);
-                        output.accept(ModBlocks.RITUALISTIC_TABLE);
+//                        output.accept(ModBlocks.RITUALISTIC_TABLE);
                     })
                     .build());
 

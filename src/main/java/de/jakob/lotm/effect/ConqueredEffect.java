@@ -42,17 +42,17 @@ public class ConqueredEffect extends MobEffect {
         DisabledAbilitiesComponent component = livingEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         component.disableAbilityUsageForTime("conquered", 20, livingEntity);
 
-        if(livingEntity.tickCount % 10 == 0) {
-            ServerLevel serverLevel = (ServerLevel) livingEntity.level();
-            for (ServerPlayer player : serverLevel.players()) {
-                if (player.distanceToSqr(livingEntity) < 4096) {
-                    MobEffectInstance effectInstance = livingEntity.getEffect(ModEffects.CONQUERED);
-                    if (effectInstance != null) {
-                        player.connection.send(new ClientboundUpdateMobEffectPacket(livingEntity.getId(), effectInstance, false));
-                    }
-                }
-            }
-        }
+//        if(livingEntity.tickCount % 10 == 0) {
+//            ServerLevel serverLevel = (ServerLevel) livingEntity.level();
+//            for (ServerPlayer player : serverLevel.players()) {
+//                if (player.distanceToSqr(livingEntity) < 4096) {
+//                    MobEffectInstance effectInstance = livingEntity.getEffect(ModEffects.CONQUERED);
+//                    if (effectInstance != null) {
+//                        player.connection.send(new ClientboundUpdateMobEffectPacket(livingEntity.getId(), effectInstance, false));
+//                    }
+//                }
+//            }
+//        }
         return true;
     }
 

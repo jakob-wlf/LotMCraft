@@ -3,6 +3,8 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -21,11 +23,21 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class PsycheStormAbility extends Ability {
     public PsycheStormAbility(String id) {
         super(id, 7);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 3, 5, 6, 7));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(11000f, 4100f, 2500f, 1750f, 1700f, 1100f, 1000f));
+
+        baseDamage = 4f;
     }
 
     @Override
@@ -51,16 +63,21 @@ public class PsycheStormAbility extends Ability {
         float multiplier = multiplier(entity);
         int seq = AbilityUtil.getSeqWithArt(entity, this);
 
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 10 * Math.max(multiplier / 2, 1), DamageLookup.lookupDamage(6, 1.2) * multiplier, entity.getEyePosition(), true, false);
+        float damage = baseDamage;
 
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier / 2, 1)).forEach(e -> {
+        if(seq > 4) {
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 10 * Math.max(multiplier, 1), ModDamageTypes.SPIRITUAL, damage, entity.getEyePosition(), true, false);
+        }
+        else{
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 10 * Math.max(multiplier, 1), ModDamageTypes.SPIRITUAL, damage/2, entity.getEyePosition(), true, false);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, 10 * Math.max(multiplier, 1), ModDamageTypes.AWE, damage/2, entity.getEyePosition(), true, false);
+        }
+
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier, 1)).forEach(e -> {
             boolean shouldFail = VisionaryHandler.shouldFailAndTrigger(seq, entity, e, this, false);
 
             if(!shouldFail) {
-                e.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 7, getAmplifier(entity, e)));
-
-                if(seq <= 4)
-                    e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (-0.5f * multiplier(entity)), e);
+                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
             }
         });
 
@@ -74,28 +91,5 @@ public class PsycheStormAbility extends Ability {
 
         serverLevel.playSound(null, BlockPos.containing(loc.getPosition()), SoundEvents.BREEZE_DEATH, SoundSource.BLOCKS);
 
-    }
-
-    private int getAmplifier(LivingEntity entity, LivingEntity target) {
-        if (AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
-            return 6;
-        }
-
-        if (AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
-            return 1;
-        }
-
-        if (BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(target)) {
-            int targetSequence = BeyonderData.getSequence(target);
-            int sequence = AbilityUtil.getSeqWithArt(entity, this);
-
-            if (targetSequence <= sequence) {
-                return 2;
-            } else {
-                return random.nextInt(3, 5);
-            }
-        }
-
-        return 1;
     }
 }

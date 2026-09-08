@@ -68,7 +68,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private static final HashSet<TrappedEntity> trappedEntities = new HashSet<>();
 
     public SealingAuthorityAbility(String id) {
-        super(id, 45);
+        super(id, 10);
         canBeUsedByNPC = false;
     }
 
@@ -79,17 +79,22 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 50000;
+        return 60000;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.sealing_authority.seal_target", "ability.lotmcraft.sealing_authority.make_trap", "ability.lotmcraft.sealing_authority.lock_dimension", "ability.lotmcraft.sealing_authority.seal_area"};
+        return new String[]{
+                "ability.lotmcraft.sealing_authority.seal_target",
+                //"ability.lotmcraft.sealing_authority.make_trap",
+                "ability.lotmcraft.sealing_authority.lock_dimension",
+                //"ability.lotmcraft.sealing_authority.seal_area"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
-        if(selectedAbility == 2) { // Not using switch since I need the client level as well for this one
+        if(selectedAbility == 1) { // Not using switch since I need the client level as well for this one
             lockDimension(level, entity);
             return;
         }
@@ -99,8 +104,8 @@ public class SealingAuthorityAbility extends SelectableAbility {
         ServerLevel serverLevel = (ServerLevel) level;
         switch (selectedAbility) {
             case 0 -> sealTarget(serverLevel, entity);
-            case 1 -> makeTrap(serverLevel, entity);
-            case 3 -> sealArea(serverLevel, entity);
+            //case 1 -> makeTrap(serverLevel, entity);
+            //case 2 -> sealArea(serverLevel, entity);
         }
     }
 
@@ -115,14 +120,15 @@ public class SealingAuthorityAbility extends SelectableAbility {
             currentlySealedLocation = null;
         }
 
-        List<BlockPos> barrierBlocks = AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 60*multiplier(entity), 13*multiplier(entity), false, false, false);
+        int duration = 20 * 10;
 
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel,  (int) (20 * 60* multiplier(entity)), entity.getUUID(), (int) (60*multiplier(entity)), 0.00001f);
+        List<BlockPos> barrierBlocks = AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), duration, 15, false, false, false);
+
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel, duration, entity.getUUID(), 60, 0.00001f);
         serverLevel.addFreshEntity(timeChangeEntity);
         timeChangeEntity.setPos(entity.position().add(0, 0, 0));
 
         currentlySealedLocation = new SealedLocation(entity.getUUID(), new Location(entity.position(), serverLevel), (int) (60*multiplier(entity)), (int) (20 * 60 * multiplier(entity)), barrierBlocks, timeChangeEntity);
-
 
         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.5f, 0.6f);
         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BELL_RESONATE, entity.getSoundSource(), 1.5f, 0.6f);
@@ -173,7 +179,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
             return;
         }
 
-        data.activate((int) (20 * 60 * 8+ multiplier(entity)), level.dimension().location().toString());
+        data.activate(20 * 60 * 5, level.dimension().location().toString());
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.sealing_authority.dimension_sealed").withColor(BeyonderData.pathwayInfos.get("door").color()));
     }
 
@@ -199,12 +205,13 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private void sealTarget(ServerLevel level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(target == null || sealedEntities.contains(target.getUUID())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;
         }
         int radius = Math.max(3, (int) target.getEyeHeight());
+        int duration = 20 * 10;
 
         Vec3 targetLoc = target.position();
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1f, 1f);
@@ -214,8 +221,6 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         sealedEntities.add(target.getUUID());
 
-        int duration = getSealingDuration(entity, target);
-
         DisabledAbilitiesComponent comp = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         comp.disableAbilityUsageForTime("sealed_sealing_authority", duration, target);
 
@@ -224,7 +229,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         sealBlocksToRemove.addAll(sphereBlocks);
 
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, 20 * 14, () -> {
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, duration, () -> {
             Location sealLoc = new Location(targetLoc, level);
 
             if(InteractionHandler.isInteractionPossible(sealLoc, "explosion", entitySeq) || InteractionHandler.isInteractionPossible(sealLoc, "sealing_malfunction", entitySeq)) {
@@ -282,9 +287,9 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private int getSealingDuration(LivingEntity entity, LivingEntity target) {
         int sequenceDifference = BeyonderData.getSequence(target) - BeyonderData.getSequence(entity);
         if(sequenceDifference >= 0) {
-            return 20 * 18 * sequenceDifference;
+            return 20 * 2 * sequenceDifference;
         }
-        return 20 * 3;
+        return 20;
     }
 
     @SubscribeEvent
@@ -338,72 +343,72 @@ public class SealingAuthorityAbility extends SelectableAbility {
         });
     }
 
-    @SubscribeEvent
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if(!(event.getEntity() instanceof LivingEntity entity)) return;
-
-        if(entity.level().isClientSide()) return;
-
-        if(BeyonderData.getSequence(entity) <= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
-
-        List<ItemEntity> nearbyTraps = AbilityUtil.getAllNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 2.5).stream()
-                .filter(e -> e instanceof net.minecraft.world.entity.item.ItemEntity)
-                .map(e -> ((net.minecraft.world.entity.item.ItemEntity) e))
-                .filter(s -> s.getItem().getOrDefault(ModDataComponents.IS_TRAP, false))
-                .toList();
-
-        boolean hasTrap = false;
-        for (ItemStack item : entity.getAllSlots()) if (item.getOrDefault(ModDataComponents.IS_TRAP, false)) {
-            hasTrap = true;
-            break;
-        }
-
-        if(!hasTrap && nearbyTraps.isEmpty()) {
-            return;
-        }
-
-        nearbyTraps.forEach(Entity::discard);
-        clearItemsWithComponent(entity, ModDataComponents.IS_TRAP.get());
-
-        ResourceKey<Level> spaceDimension = ResourceKey.create(Registries.DIMENSION,
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
-        ServerLevel spaceLevel = entity.level().getServer().getLevel(spaceDimension);
-        if (spaceLevel == null) {
-            return;
-        }
-
-        Vec3 previousPos = entity.position();
-        ServerLevel previousLevel = (ServerLevel) entity.level();
-        spaceLevel.setBlockAndUpdate(spaceLevel.getSharedSpawnPos(), Blocks.END_STONE.defaultBlockState());
-
-        trappedEntities.add(new TrappedEntity(entity, previousLevel, previousPos));
-
-        previousLevel.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1f, 1f);
-        ParticleUtil.spawnSphereParticles(previousLevel, ParticleTypes.PORTAL, entity.position().add(0, .75, 0), 1.5, 40);
-        ParticleUtil.spawnSphereParticles(previousLevel, ParticleTypes.END_ROD, entity.position().add(0, .75, 0), 2, 40);
-        ParticleUtil.spawnSphereParticles(previousLevel, ParticleTypes.ENCHANT, entity.position().add(0, .75, 0), 1, 40);
-        entity.teleportTo(spaceLevel,
-                spaceLevel.getSharedSpawnPos().getX() + 0.5,
-                spaceLevel.getSharedSpawnPos().getY() + 0.5,
-                spaceLevel.getSharedSpawnPos().getZ() + 0.5,
-                Set.of(),
-                entity.getYRot(),
-                entity.getXRot());
-
-        int duration = getSealingDurationBySequence(BeyonderData.getSequence(entity));
-        ServerScheduler.scheduleDelayed(duration, () -> {
-            if(entity.isAlive()) {
-                entity.teleportTo(previousLevel,
-                        previousPos.x,
-                        previousPos.y,
-                        previousPos.z,
-                        Set.of(),
-                        entity.getYRot(),
-                        entity.getXRot());
-            }
-            trappedEntities.removeIf(te -> te.entity.getUUID().equals(entity.getUUID()));
-        });
-    }
+//    @SubscribeEvent
+//    public static void onEntityTick(EntityTickEvent.Post event) {
+//        if(!(event.getEntity() instanceof LivingEntity entity)) return;
+//
+//        if(entity.level().isClientSide()) return;
+//
+//        if(BeyonderData.getSequence(entity) <= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
+//
+//        List<ItemEntity> nearbyTraps = AbilityUtil.getAllNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 2.5).stream()
+//                .filter(e -> e instanceof net.minecraft.world.entity.item.ItemEntity)
+//                .map(e -> ((net.minecraft.world.entity.item.ItemEntity) e))
+//                .filter(s -> s.getItem().getOrDefault(ModDataComponents.IS_TRAP, false))
+//                .toList();
+//
+//        boolean hasTrap = false;
+//        for (ItemStack item : entity.getAllSlots()) if (item.getOrDefault(ModDataComponents.IS_TRAP, false)) {
+//            hasTrap = true;
+//            break;
+//        }
+//
+//        if(!hasTrap && nearbyTraps.isEmpty()) {
+//            return;
+//        }
+//
+//        nearbyTraps.forEach(Entity::discard);
+//        clearItemsWithComponent(entity, ModDataComponents.IS_TRAP.get());
+//
+//        ResourceKey<Level> spaceDimension = ResourceKey.create(Registries.DIMENSION,
+//                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
+//        ServerLevel spaceLevel = entity.level().getServer().getLevel(spaceDimension);
+//        if (spaceLevel == null) {
+//            return;
+//        }
+//
+//        Vec3 previousPos = entity.position();
+//        ServerLevel previousLevel = (ServerLevel) entity.level();
+//        spaceLevel.setBlockAndUpdate(spaceLevel.getSharedSpawnPos(), Blocks.END_STONE.defaultBlockState());
+//
+//        trappedEntities.add(new TrappedEntity(entity, previousLevel, previousPos));
+//
+//        previousLevel.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 1f, 1f);
+//        ParticleUtil.spawnSphereParticles(previousLevel, ParticleTypes.PORTAL, entity.position().add(0, .75, 0), 1.5, 40);
+//        ParticleUtil.spawnSphereParticles(previousLevel, ParticleTypes.END_ROD, entity.position().add(0, .75, 0), 2, 40);
+//        ParticleUtil.spawnSphereParticles(previousLevel, ParticleTypes.ENCHANT, entity.position().add(0, .75, 0), 1, 40);
+//        entity.teleportTo(spaceLevel,
+//                spaceLevel.getSharedSpawnPos().getX() + 0.5,
+//                spaceLevel.getSharedSpawnPos().getY() + 0.5,
+//                spaceLevel.getSharedSpawnPos().getZ() + 0.5,
+//                Set.of(),
+//                entity.getYRot(),
+//                entity.getXRot());
+//
+//        int duration = getSealingDurationBySequence(BeyonderData.getSequence(entity));
+//        ServerScheduler.scheduleDelayed(duration, () -> {
+//            if(entity.isAlive()) {
+//                entity.teleportTo(previousLevel,
+//                        previousPos.x,
+//                        previousPos.y,
+//                        previousPos.z,
+//                        Set.of(),
+//                        entity.getYRot(),
+//                        entity.getXRot());
+//            }
+//            trappedEntities.removeIf(te -> te.entity.getUUID().equals(entity.getUUID()));
+//        });
+//    }
 
     // Method generated by claude because I was too lazy, sorry -_-
     public static void clearItemsWithComponent(LivingEntity entity, DataComponentType<?> componentType) {
@@ -436,50 +441,50 @@ public class SealingAuthorityAbility extends SelectableAbility {
         };
     }
 
-    @SubscribeEvent
-    public static void onGlobalTick(ServerTickEvent.Post event) {
-        if(currentlySealedLocation == null) return;
-
-        ServerLevel level = currentlySealedLocation.loc().getLevel() instanceof ServerLevel serverLevel ? (ServerLevel) serverLevel: null;
-        if(level == null) return;
-
-        currentlySealedLocation = new SealedLocation(
-                currentlySealedLocation.casterUUId,
-                currentlySealedLocation.loc,
-                currentlySealedLocation.radius,
-                currentlySealedLocation.ticksRemaining - 1,
-                currentlySealedLocation.barrierBlocks,
-                currentlySealedLocation.timeChangeEntity
-        );
-        if(currentlySealedLocation.ticksRemaining <= 0) {
-            currentlySealedLocation.removeSeal();
-            currentlySealedLocation = null;
-            return;
-        }
-
-        currentlySealedLocation.barrierBlocks.forEach(b -> {
-            BlockState state = level.getBlockState(b);
-            if(!state.getCollisionShape(level, b).isEmpty()) return;
-
-            level.setBlockAndUpdate(b, Blocks.BARRIER.defaultBlockState());
-        });
-
-        AbilityUtil.getNearbyEntities(null, level, currentlySealedLocation.loc.getPosition(), currentlySealedLocation.radius).forEach(e -> {
-            FogComponent fogComponent = e.getData(ModAttachments.FOG_COMPONENT);
-            fogComponent.setActiveAndSync(true, e);
-            fogComponent.setFogColorAndSync(new Vec3f(110 / 255f, 240 / 255f, 255 / 255f), e);
-            fogComponent.setFogIndex(-1);
-
-            if(currentlySealedLocation.casterUUId != null && e.getUUID().equals(currentlySealedLocation.casterUUId)) return;
-
-            ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), e.getEyePosition().subtract(0, .5, 0), 8, .3, .9, .3, 0.05);
-
-            if(BeyonderData.getSequence(e) < 1) return;
-
-            DisabledAbilitiesComponent comp = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            comp.disableAbilityUsageForTime("sealed_area_sealing_authority", 20, e);
-        });
-    }
+//    @SubscribeEvent
+//    public static void onGlobalTick(ServerTickEvent.Post event) {
+//        if(currentlySealedLocation == null) return;
+//
+//        ServerLevel level = currentlySealedLocation.loc().getLevel() instanceof ServerLevel serverLevel ? (ServerLevel) serverLevel: null;
+//        if(level == null) return;
+//
+//        currentlySealedLocation = new SealedLocation(
+//                currentlySealedLocation.casterUUId,
+//                currentlySealedLocation.loc,
+//                currentlySealedLocation.radius,
+//                currentlySealedLocation.ticksRemaining - 1,
+//                currentlySealedLocation.barrierBlocks,
+//                currentlySealedLocation.timeChangeEntity
+//        );
+//        if(currentlySealedLocation.ticksRemaining <= 0) {
+//            currentlySealedLocation.removeSeal();
+//            currentlySealedLocation = null;
+//            return;
+//        }
+//
+//        currentlySealedLocation.barrierBlocks.forEach(b -> {
+//            BlockState state = level.getBlockState(b);
+//            if(!state.getCollisionShape(level, b).isEmpty()) return;
+//
+//            level.setBlockAndUpdate(b, Blocks.BARRIER.defaultBlockState());
+//        });
+//
+//        AbilityUtil.getNearbyEntities(null, level, currentlySealedLocation.loc.getPosition(), currentlySealedLocation.radius).forEach(e -> {
+//            FogComponent fogComponent = e.getData(ModAttachments.FOG_COMPONENT);
+//            fogComponent.setActiveAndSync(true, e);
+//            fogComponent.setFogColorAndSync(new Vec3f(110 / 255f, 240 / 255f, 255 / 255f), e);
+//            fogComponent.setFogIndex(-1);
+//
+//            if(currentlySealedLocation.casterUUId != null && e.getUUID().equals(currentlySealedLocation.casterUUId)) return;
+//
+//            ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), e.getEyePosition().subtract(0, .5, 0), 8, .3, .9, .3, 0.05);
+//
+//            if(BeyonderData.getSequence(e) < 1) return;
+//
+//            DisabledAbilitiesComponent comp = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+//            comp.disableAbilityUsageForTime("sealed_area_sealing_authority", 20, e);
+//        });
+//    }
 
     private record SealedLocation(UUID casterUUId, Location loc, int radius, int ticksRemaining, List<BlockPos> barrierBlocks, TimeChangeEntity timeChangeEntity) {
         public boolean isEntityInside(LivingEntity entity) {

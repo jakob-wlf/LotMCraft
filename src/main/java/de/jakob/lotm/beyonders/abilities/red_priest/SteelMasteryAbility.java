@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -19,18 +20,23 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SteelMasteryAbility extends SelectableAbility {
-    private final HashSet<UUID> castingSteelSkin = new HashSet<>();
+    SteelSkinAbility skinAbility = null;
+
+    private final static DustParticleOptions dust = new DustParticleOptions(new Vector3f(0.3f, 0.3f, 0.3f), 2.25f);
 
     public SteelMasteryAbility(String id) {
         super(id, 2);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 800f, 530f, 400f, 390f));
     }
 
     @Override
@@ -59,7 +65,7 @@ public class SteelMasteryAbility extends SelectableAbility {
     }
 
     private void steelChains(ServerLevel level, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 25*(int) Math.max(multiplier(entity)/2,1), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
 
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
@@ -75,7 +81,7 @@ public class SteelMasteryAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 8*multiplier(entity)), () -> {
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 4), () -> {
             if(entity.isDeadOrDying())
                 return;
 
@@ -108,46 +114,12 @@ public class SteelMasteryAbility extends SelectableAbility {
         player.connection.send(packet);
     }
 
-
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(0.3f, 0.3f, 0.3f), 2.25f);
-
     private void steelSkin(ServerLevel level, LivingEntity entity) {
-        UUID entityId = entity.getUUID();
+        if(skinAbility == null)
+            skinAbility = (SteelSkinAbility) LOTMCraft.abilityHandler.getById("steel_skin");
 
-        if(castingSteelSkin.contains(entityId)) {
-            castingSteelSkin.remove(entityId);
-            entity.removeEffect(MobEffects.DAMAGE_RESISTANCE);
-            return;
-        }
+        if(skinAbility == null) return;
 
-        castingSteelSkin.add(entityId);
-        AtomicBoolean shouldStop = new AtomicBoolean(false);
-
-        ServerScheduler.scheduleUntil(level, () -> {
-            int seq = BeyonderData.getSequence(entity);
-            int effectlevel =  seq<=2? 1: 0;
-            if (seq<=2) {BeyonderData.reduceSpirituality(entity, 32);} else{
-            BeyonderData.reduceSpirituality(entity, 16);};
-
-            if(BeyonderData.getSpirituality(entity) <= 0) {
-                if (entity instanceof ServerPlayer player) {
-                    sendActionBar(player, Component.literal("Your spirituality is exhausted.").withColor(0xFF422a2a));
-                }
-                castingSteelSkin.remove(entityId);
-                entity.removeEffect(MobEffects.DAMAGE_RESISTANCE);
-                shouldStop.set(true);
-                return;
-            }
-
-            if(!castingSteelSkin.contains(entityId)) {
-                entity.removeEffect(MobEffects.DAMAGE_RESISTANCE);
-                shouldStop.set(true);
-                return;
-            }
-
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, effectlevel, false, false, false));
-            ParticleUtil.spawnParticles(level, dust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 10, .4, entity.getEyeHeight() / 2, .4, 0);
-
-        }, 2, () -> castingSteelSkin.remove(entityId), shouldStop);
+        skinAbility.useAbility((ServerLevel) level, entity);
     }
 }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -16,6 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,6 +26,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AirBulletAbility extends Ability {
     public AirBulletAbility(String id) {
         super(id, .75f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5200f, 2000f, 1400f, 875f, 800f, 475f, 420f, 390f));
+
+        baseDamage = 9;
     }
 
     @Override
@@ -39,9 +50,8 @@ public class AirBulletAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-        float multiplier = multiplier(entity);
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (20 * multiplier), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 
@@ -50,8 +60,7 @@ public class AirBulletAbility extends Ability {
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.SNOWBALL_THROW, entity.getSoundSource(), 1.0f, 1.0f);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        double rawDamage = Math.min(DamageLookup.lookupDamage(entitySeq, 1), DamageLookup.lookupDamage(3, .95f));
+        float damage = baseDamage;
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
             if(hasHit.get())
@@ -59,7 +68,7 @@ public class AirBulletAbility extends Ability {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, rawDamage * multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, ModDamageTypes.WIND, damage, pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }

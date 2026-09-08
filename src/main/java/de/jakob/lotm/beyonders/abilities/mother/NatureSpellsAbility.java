@@ -35,6 +35,14 @@ public class NatureSpellsAbility extends SelectableAbility {
 
     public NatureSpellsAbility(String id) {
         super(id, 3);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f));
+
+        baseDamage = 3;
     }
 
     @Override
@@ -49,7 +57,10 @@ public class NatureSpellsAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.nature_spells.swamp", "ability.lotmcraft.nature_spells.child_of_oak", "ability.lotmcraft.nature_spells.natures_wrath"};
+        return new String[]{
+                "ability.lotmcraft.nature_spells.swamp",
+                "ability.lotmcraft.nature_spells.child_of_oak",
+                "ability.lotmcraft.nature_spells.natures_wrath"};
     }
 
     @Override
@@ -72,7 +83,7 @@ public class NatureSpellsAbility extends SelectableAbility {
 
 
     private void naturesWrath(ServerLevel serverLevel, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.nature_spells.natures_wrath.no_target").withColor(0x496e52));
             return;
@@ -86,8 +97,9 @@ public class NatureSpellsAbility extends SelectableAbility {
         affectedByNatureWrath.add(entity.getUUID());
 
         double multiplier = multiplier(entity);
+        int duration = 20 * 5;
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 10*(int) Math.max(multiplier(entity)/2,1), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
             if(target.isDeadOrDying()) {
                 affectedByNatureWrath.remove(target.getUUID());
                 return;
@@ -98,7 +110,7 @@ public class NatureSpellsAbility extends SelectableAbility {
             ParticleUtil.spawnParticles(serverLevel, greenDustSmall, target.position().add(0, entity.getEyeHeight() / 2, 0), 10, .2, entity.getEyeHeight() / 2, .2, 0);
 
             if(random.nextInt(20) == 0) {
-                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(5, .775f) * (int) Math.max(multiplier(entity)/2,1)));
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.NATURE_WRATH, entity), baseDamage);
             }
 
             if(random.nextInt(25) == 0) {
@@ -132,7 +144,7 @@ public class NatureSpellsAbility extends SelectableAbility {
                 if(targetEntity == null)
                     return;
 
-                targetEntity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(5, .85) * (float) multiplier);
+                targetEntity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.NATURE_WRATH, entity), baseDamage);
             }
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(target.position().add(0, target.getEyeHeight() / 2, 0), serverLevel)));
     }
@@ -158,9 +170,8 @@ public class NatureSpellsAbility extends SelectableAbility {
             ParticleUtil.spawnParticles(serverLevel, brownDustSmall, entity.position().add(0, entity.getEyeHeight() / 2, 0), 10, .2, entity.getEyeHeight() / 2, .2, 0);
             ParticleUtil.spawnParticles(serverLevel, greenDustSmall, entity.position().add(0, entity.getEyeHeight() / 2, 0), 10, .2, entity.getEyeHeight() / 2, .2, 0);
 
-            BeyonderData.addModifierWithTimeLimit(entity, "child_of_oak", 1.25f, 1500);
+            BeyonderData.addModifierWithTimeLimit(entity, "child_of_oak", 1.1f, 1500);
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 1, false, false, false));
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 40, 0, false, false, false));
 
         }, 5, () -> castingChildOfOak.remove(entity.getUUID()), finished);
     }
@@ -188,8 +199,9 @@ public class NatureSpellsAbility extends SelectableAbility {
         castingSwamp.add(uuid);
 
         final int[] tick = {0};
+        int duration = 20 * 5;
 
-        ServerScheduler.scheduleForDuration(0, 2, 200, () -> {
+        ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
             tick[0]++;
 
             // particles

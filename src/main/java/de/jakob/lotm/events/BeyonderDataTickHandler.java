@@ -25,6 +25,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -109,10 +110,11 @@ public class BeyonderDataTickHandler {
             }
         }
 
+        if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
+            entity.kill();
+        }
+
         if(BeyonderData.isBeyonder(livingEntity)) {
-            if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
-                entity.kill();
-            }
 
             if(entity.tickCount % 20 == 0){
                 entity.getData(ModAttachments.REGEN_DISABLER.get()).incrementCount();
@@ -124,12 +126,12 @@ public class BeyonderDataTickHandler {
                 invalidateCache(livingEntity);
             }
 
-            if(entity.tickCount % getWormRecoverTime(livingEntity) == 0) {
+            if(entity.tickCount % (20 * 30) == 0) {
                 BeyonderData.incrementWormAmount(livingEntity, 1);
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
-            if(entity.tickCount % 5 == 0) {
+            if(entity.tickCount % 20 == 0) {
                 tickPassiveAbilities(livingEntity);
 
                 // Remove Unluck gradually
@@ -172,13 +174,15 @@ public class BeyonderDataTickHandler {
             return;
         }
 
-        if(player.getY() < -200 && !VoidImmunityAbility.IMMUNE_ENTITIES.contains(player)) {
-            player.kill();
-        }
-
         if (BeyonderData.isBeyonder(player)) {
             // Regenerate Spirituality
-            float amount = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player), BeyonderData.getSequence(player), player) * 0.0006f;
+            float amount = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player),
+                    BeyonderData.getSequence(player), player) * 0.0006f;
+
+            var disabler = player.getData(ModAttachments.REGEN_DISABLER.get());
+            if(disabler.isDisabled())
+                amount /= 2;
+
             BeyonderData.incrementSpirituality(player, amount);
 
             // Slowly digest potion
@@ -226,11 +230,15 @@ public class BeyonderDataTickHandler {
     }
 
     @SubscribeEvent
-    public static void disableRegen(LivingIncomingDamageEvent event) {
+    public static void disableRegen(LivingDamageEvent.Pre event) {
         var entity = event.getEntity();
         if(!BeyonderData.isBeyonder(entity)) return;
 
-        entity.getData(ModAttachments.REGEN_DISABLER.get()).disableFor(10);
+        int duration = 10;
+
+        if(BeyonderData.getPathway(entity).equals("mother")) duration = 2;
+
+        entity.getData(ModAttachments.REGEN_DISABLER.get()).disableFor(duration);
 
         if (entity.hasEffect(MobEffects.REGENERATION)){
             entity.removeEffect(MobEffects.REGENERATION);

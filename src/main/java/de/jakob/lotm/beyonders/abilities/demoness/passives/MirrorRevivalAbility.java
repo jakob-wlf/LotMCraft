@@ -56,15 +56,17 @@ public class MirrorRevivalAbility extends PassiveAbility {
             return;
         }
 
-        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+        if(event.getSource().is(ModDamageTypes.MIND)) {
             return;
         }
+
         if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
 
         BlockPos glassPos = getNearestGlassBlock((ServerLevel) entity.level(), entity.position(), 100);
         if(glassPos == null) {
             return;
         }
+
         SanityComponent sanity = entity.getData(ModAttachments.SANITY_COMPONENT);
         if (sanity.getSanity() < 0.1) return;
 

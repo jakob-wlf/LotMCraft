@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.sun_pathway;
 
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -35,6 +36,8 @@ public class SunKingdomEntity extends Entity {
     private static final EntityDataAccessor<Boolean> GRIEFING =
             SynchedEntityData.defineId(SunKingdomEntity.class, EntityDataSerializers.BOOLEAN);
 
+    private float damage = 1f;
+
     public SunKingdomEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
         setDuration(20 * 60 * 2);
@@ -59,13 +62,15 @@ public class SunKingdomEntity extends Entity {
 
     }
 
-    public SunKingdomEntity(EntityType<?> entityType, Level level, int ticks, UUID casterUUID, boolean griefing) {
+    public SunKingdomEntity(EntityType<?> entityType, Level level, int ticks, UUID casterUUID, boolean griefing, float damage) {
         super(entityType, level);
         this.noPhysics = true;
         this.noCulling = true;
         this.setDuration(ticks);
         this.setCasterUUID(casterUUID);
         this.setGriefing(griefing);
+
+        this.damage = damage;
     }
 
     int lifetime = 0;
@@ -96,13 +101,17 @@ public class SunKingdomEntity extends Entity {
             }
             else if(BeyonderData.getSequence(e) >= 4) {
                 DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                component.disableAbilityUsageForTime("sun_kingdom", 20 * 5, e);
+                component.disableAbilityUsageForTime("sun_kingdom", 20 * 3, e);
 
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, e.position().add(0, e.getEyeHeight() / 2, 0), 8, .5, e.getEyeHeight() / 2, .5, .01);
             }
             else {
-                BeyonderData.addModifier(e, "sun_kingdom", .3);
+                BeyonderData.addModifier(e, "sun_kingdom", .5);
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, e.position().add(0, e.getEyeHeight() / 2, 0), 8, .5, e.getEyeHeight() / 2, .5, .01);
+            }
+
+            if(BeyonderData.isEvilPathway(e)){
+                e.hurt(ModDamageTypes.source(level(), ModDamageTypes.PURIFICATION, getCasterEntity()), damage);
             }
         });
     }

@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
@@ -35,10 +36,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -59,6 +57,14 @@ public class NightmareAbility extends SelectableAbility {
         canBeUsedByNPC = false;
         canBeCopied = false;
         autoClear = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 2400f, 1900f, 900f, 600f, 400f, 250f, 100f));
+
+        baseDamage = 8;
     }
 
     @Override
@@ -75,7 +81,7 @@ public class NightmareAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.nightmare.nightmare",
-                "ability.lotmcraft.nightmare.reshape",
+                //"ability.lotmcraft.nightmare.reshape",
                 "ability.lotmcraft.nightmare.restrict",
                 "ability.lotmcraft.nightmare.attack",
                 "ability.lotmcraft.nightmare.teleport"};
@@ -85,13 +91,13 @@ public class NightmareAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> nightmare(level, entity);
-            case 1 -> reshape(level, entity);
-            case 2 -> restrict(level, entity);
-            case 3 -> attack(level, entity);
-            case 4 -> teleport(level, entity);
+            //case 1 -> reshape(level, entity);
+            case 1 -> restrict(level, entity);
+            case 2 -> attack(level, entity);
+            case 3 -> teleport(level, entity);
         }
 
-        if(abilityIndex != 3){
+        if(abilityIndex != 2){
             clearArtifactScaling(entity);
         }
     }
@@ -129,7 +135,7 @@ public class NightmareAbility extends SelectableAbility {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20 * (int)(Math.max(multiplier(entity)/2,1)), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
         if(!isBlockInRadius(targetLoc, entity.getUUID())) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("You cant attack outside the nightmare.").withColor(0xFFff124d));
@@ -148,7 +154,7 @@ public class NightmareAbility extends SelectableAbility {
         ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, DamageLookup.lookupDamage(7, 1.3) * multiplier(entity), pos, true, false, true, 0)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, ModDamageTypes.IMAGINATION, baseDamage, pos, true, false, true, 0)) {
                 hasHit.set(true);
                 return;
             }
@@ -175,26 +181,28 @@ public class NightmareAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20 * (int)(Math.max(multiplier(entity)/2,1)), 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity == null || !isAffectedByNightmare(targetEntity)) {
-            Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 15* (int)(Math.max(multiplier(entity)/2,1)), 1.5f, true);
-            ParticleUtil.createParticleSpirals((ServerLevel) level, dustSmall, targetPos, 2, 2, 2.5, .5, 8, 20 * 5* (int)(Math.max(multiplier(entity)/2,1)), 11, 8);
+            Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.5f, true);
+            ParticleUtil.createParticleSpirals((ServerLevel) level, dustSmall, targetPos, 2, 2, 2.5, .5, 8, 20 * 5, 11, 8);
             return;
         }
 
         Location loc = new Location(targetEntity.position(), level);
         ParticleUtil.createParticleSpirals(dustVerySmall, loc, 1.2, 1.2, 2.5, .5, 8, 20 * 20, 11, 8);
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 20* (int)(Math.max(multiplier(entity)/2,1)), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, 20 * 2, () -> {
             if(entity.level().isClientSide)
                 return;
             loc.setPosition(targetEntity.position());
             loc.setLevel(entity.level());
             Vec3 startPos = targetEntity.getEyePosition().subtract(0, .15, 0);
+
             ParticleUtil.drawParticleLine((ServerLevel) level, dustSmall, startPos, startPos.add(2.75, -3, 0), .25, 1);
             ParticleUtil.drawParticleLine((ServerLevel) level, dustSmall, startPos, startPos.add(-2.75, -3, 0), .25, 1);
             ParticleUtil.drawParticleLine((ServerLevel) level, dustSmall, startPos, startPos.add(0, -3, -2.75), .25, 1);
             ParticleUtil.drawParticleLine((ServerLevel) level, dustSmall, startPos, startPos.add(0, -3, 2.75), .25, 1);
+
             targetEntity.setOnGround(true);
             var pos = targetEntity.position();
             targetEntity.setDeltaMovement(new Vec3(0, 0, 0));
@@ -202,7 +210,7 @@ public class NightmareAbility extends SelectableAbility {
 
             targetEntity.teleportTo(pos.x, pos.y, pos.z);
             targetEntity.hurtMarked = true;
-            targetEntity.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 40, 10, false, false, false));
+            targetEntity.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20, 10, false, false, false));
         }, (ServerLevel) level);
     }
 
@@ -223,7 +231,7 @@ public class NightmareAbility extends SelectableAbility {
             return;
         }
 
-        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, 35 * (int)(Math.max(multiplier(entity)/20,1)), false);
+        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, baseDistance, false);
         BlockState state = level.getBlockState(targetLoc);
         if(!isBlockInRadius(targetLoc.getCenter(), entity.getUUID()) || state.getCollisionShape(level, targetLoc).isEmpty()) {
             if(entity instanceof ServerPlayer player) {

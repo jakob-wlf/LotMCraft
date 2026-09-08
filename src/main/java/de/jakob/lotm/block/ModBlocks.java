@@ -2,6 +2,9 @@ package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.*;
+import de.jakob.lotm.block.custom.BrewingCauldronBlock;
+import de.jakob.lotm.block.custom.RealityPortalBlock;
+import de.jakob.lotm.block.custom.VoidBlock;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -28,27 +31,27 @@ public class ModBlocks {
                     .sound(SoundType.METAL)
             ));
 
-    public static final DeferredBlock<Block> SEFIRAH_BLOCK = registerBlock("sefirah_block",
-            () -> new SefirahBlock(BlockBehaviour.Properties.of()
-                    .strength(-1)
-                    .noOcclusion()
-                    .sound(SoundType.POWDER_SNOW)
-            ));
-
-    public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
-            () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
-                    .strength(3.0f)
-                    .noOcclusion()
-                    .lightLevel(state -> 12)
-                    .sound(SoundType.WOOD)
-            ));
-
-    public static final DeferredHolder<Block, RitualisticTablePartBlock> RITUALISTIC_TABLE_PART =
-            BLOCKS.register("ritualistic_table_part", () ->
-                    new RitualisticTablePartBlock(BlockBehaviour.Properties.of()
-                            .noOcclusion()
-                            .strength(-1.0F, 3600000.0F)
-                            .noLootTable()));
+//    public static final DeferredBlock<Block> SEFIRAH_BLOCK = registerBlock("sefirah_block",
+//            () -> new SefirahBlock(BlockBehaviour.Properties.of()
+//                    .strength(-1)
+//                    .noOcclusion()
+//                    .sound(SoundType.POWDER_SNOW)
+//            ));
+//
+//    public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
+//            () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
+//                    .strength(3.0f)
+//                    .noOcclusion()
+//                    .lightLevel(state -> 12)
+//                    .sound(SoundType.WOOD)
+//            ));
+//
+//    public static final DeferredHolder<Block, RitualisticTablePartBlock> RITUALISTIC_TABLE_PART =
+//            BLOCKS.register("ritualistic_table_part", () ->
+//                    new RitualisticTablePartBlock(BlockBehaviour.Properties.of()
+//                            .noOcclusion()
+//                            .strength(-1.0F, 3600000.0F)
+//                            .noLootTable()));
 
     public static final DeferredBlock<Block> VOID = registerBlock("void_block",
             () -> new VoidBlock(BlockBehaviour.Properties.of()
@@ -60,16 +63,16 @@ public class ModBlocks {
                     .strength(-1.0f, 3600000.0F)
             ));
 
-    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
-            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
-                    .strength(0.1f)
-                    .sound(SoundType.WOOL)
-                    .noOcclusion()
-                    .lightLevel(state -> 7)
-                    .isViewBlocking((state, level, pos) -> false)
-                    .isSuffocating((state, level, pos) -> false)
-            )
-    );
+//    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
+//            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
+//                    .strength(0.1f)
+//                    .sound(SoundType.WOOL)
+//                    .noOcclusion()
+//                    .lightLevel(state -> 7)
+//                    .isViewBlocking((state, level, pos) -> false)
+//                    .isSuffocating((state, level, pos) -> false)
+//            )
+//    );
 
     public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
             () -> new RealityPortalBlock(BlockBehaviour.Properties.of()

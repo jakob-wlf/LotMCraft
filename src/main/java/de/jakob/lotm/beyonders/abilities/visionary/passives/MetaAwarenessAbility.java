@@ -96,7 +96,6 @@ public class MetaAwarenessAbility extends PassiveAbility {
         }
     }
 
-
     // Called from PlayerDivinationSelectedPacket.handle when a divination succeeds. If the divined target has MetaAwareness, auto-pray  to the diviner.
     public static void onDivined(ServerPlayer diviner, ServerPlayer target) {
         if(target.equals(diviner)) return;
@@ -149,7 +148,11 @@ public class MetaAwarenessAbility extends PassiveAbility {
     }
 
     private static boolean hasMetaAwareness(ServerPlayer player) {
-        var data = BeyonderData.playerMap.get(player.getUUID()).get();
+        var dataOp = BeyonderData.playerMap.get(player.getUUID());
+        if(dataOp.isEmpty()) return false;
+
+        var data = dataOp.get();
+
         return data.sequence() <= 1 && data.pathway().equals("visionary");
     }
 }

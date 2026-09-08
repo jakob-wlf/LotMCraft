@@ -93,6 +93,9 @@ public class BeyonderNPCEntity extends PathfinderMob {
     private Boolean _hasTrade = null;
     private boolean defaultHostile;
     private long tickCounter = 0;
+    private boolean shouldDrop = true;
+
+    private boolean shouldIgnoreGamerule = false;
 
     // ========================= Constructors =========================
     public BeyonderNPCEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
@@ -176,8 +179,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
             return false;
         }
 
-        if(pos.getY() >= 100)
-            return false;
+//        if(pos.getY() >= 100)
+//            return false;
 
         int nearby = level.getEntitiesOfClass(
                 BeyonderNPCEntity.class,
@@ -263,6 +266,11 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
     }
 
+    @Override
+    public boolean canRide(Entity vehicle) {
+        return false;
+    }
+
     // ========================= Tick Logic =========================
     @Override
     public void tick() {
@@ -288,6 +296,25 @@ public class BeyonderNPCEntity extends PathfinderMob {
 
         if (tickCounter == 1) {
             this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 255, false, true, true));
+        }
+
+        if(this.isInWall()){
+            BlockPos headPos = BlockPos.containing(
+                    this.getX(),
+                    this.getEyeY(),
+                    this.getZ()
+            );
+
+            if(!this.level().isClientSide)
+                this.level().destroyBlock(headPos, true);
+        }
+
+        if(this.isOnFire()){
+            this.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 20 * 15 * 60, 255, false, false, false));
+        }
+
+        if(this.getAirSupply() == 0){
+            this.setAirSupply(20);
         }
 
         tickCounter++;
@@ -338,8 +365,14 @@ public class BeyonderNPCEntity extends PathfinderMob {
         super.dropCustomDeathLoot(level, damageSource, recentlyHit);
     }
 
+    public void setShouldDrop(Boolean value){
+        shouldDrop = value;
+    }
+
     @Override
     protected void dropFromLootTable(DamageSource damageSource, boolean attackedRecently) {
+        if(!shouldDrop) return;
+
         if (!BeyonderData.playerMap.check(_pathway, _sequence)) {
             return;
         }
@@ -398,10 +431,16 @@ public class BeyonderNPCEntity extends PathfinderMob {
         return result;
     }
 
+    public void setShouldIgnoreGamerule(boolean value){
+        shouldIgnoreGamerule = value;
+    }
 
+    public boolean getShouldIgnoreGamerule(){
+        return shouldIgnoreGamerule;
+    }
 
     private TradeEntry generateRandomTrade(RandomSource random) {
-        int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 1, 9);
+        int itemSequence = Math.clamp(BeyonderData.getSequence(this) + (random.nextInt(3) - 1), 3, 9);
         
         float randomFloat = random.nextFloat();
         Item item = randomFloat < .4f ? PotionRecipeItemHandler.selectRandomRecipeOfSequence(random, itemSequence) :

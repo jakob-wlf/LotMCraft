@@ -170,6 +170,7 @@ public class ShapeShiftingUtil {
         if (event.getTarget() instanceof Player serverPlayer) {
             ShapeShiftComponent data = serverPlayer.getData(ModAttachments.SHAPE_SHIFT);
             String shape = data.getShape();
+
             PacketDistributor.sendToPlayersTrackingEntityAndSelf(serverPlayer,
                     new ShapeShiftingSyncPacket(serverPlayer.getUUID(), shape));
         }

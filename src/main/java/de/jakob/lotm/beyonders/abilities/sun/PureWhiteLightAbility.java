@@ -24,6 +24,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class PureWhiteLightAbility extends Ability {
@@ -32,6 +34,14 @@ public class PureWhiteLightAbility extends Ability {
         interactionRadius = 50;
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6000f, 3000f));
+
+        baseDamage = 22f;
     }
 
     @Override
@@ -50,7 +60,7 @@ public class PureWhiteLightAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 4);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 4);
         for(int i = 0; i < 50; i++) {
             BlockPos pos = BlockPos.containing(targetLoc);
             BlockState blockState = serverLevel.getBlockState(pos);
@@ -76,7 +86,9 @@ public class PureWhiteLightAbility extends Ability {
                 });
             }
 
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), DamageLookup.lookupDamage(1, 1.2) * multiplier(entity), finalTargetLoc, true, false, false, 15, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.PURIFICATION, baseDamage * 0.34, finalTargetLoc, true, false, false, 10);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.LIGHT, baseDamage * 0.33, finalTargetLoc, true, false, false, 10);
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.FAITH, baseDamage * 0.33, finalTargetLoc, true, false, false, 10);
 
             radius.addAndGet(0.8);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

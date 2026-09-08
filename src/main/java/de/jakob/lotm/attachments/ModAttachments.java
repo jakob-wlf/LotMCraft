@@ -188,6 +188,7 @@ public class ModAttachments {
                             return attachment.saveToNBT();
                         }
                     })
+                    .copyOnDeath()
                     .build()
     );
 
@@ -294,6 +295,14 @@ public class ModAttachments {
             ATTACHMENT_TYPES.register("regen_disabler", () ->
                     AttachmentType.builder(RegenDisableComponent::new)
                             .serialize(RegenDisableComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
+    public static final Supplier<AttachmentType<RitualsComponent>> RITUALS =
+            ATTACHMENT_TYPES.register("rituals", () ->
+                    AttachmentType.builder(RitualsComponent::new)
+                            .serialize(RitualsComponent.SERIALIZER)
                             .copyOnDeath()
                             .build()
             );

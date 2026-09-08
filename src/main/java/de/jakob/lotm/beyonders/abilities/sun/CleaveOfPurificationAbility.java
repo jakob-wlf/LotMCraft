@@ -18,6 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class CleaveOfPurificationAbility extends Ability {
@@ -27,6 +29,14 @@ public class CleaveOfPurificationAbility extends Ability {
         hasOptimalDistance = true;
         optimalDistance = 1f;
         interactionRadius = 4;
+
+        baseDamage = 5f;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f));
     }
 
     @Override
@@ -76,7 +86,11 @@ public class CleaveOfPurificationAbility extends Ability {
                 .5, 12, .4
         );
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75* multiplier(entity), DamageLookup.lookupDamage(7, .9) * multiplier(entity), startPos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(entitySeq <= 4)
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75* (int) multiplier(entity), ModDamageTypes.LIGHT ,baseDamage, startPos, true, false, true, 0);
+        else
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75* (int) multiplier(entity), ModDamageTypes.PURIFICATION ,baseDamage, startPos, true, false, true, 0);
 
         BlockState block = level.getBlockState(BlockPos.containing(startPos));
         if(block.isAir()) {

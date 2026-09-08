@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.item.ModIngredients;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.beyonders.potions.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -49,7 +50,7 @@ public class VillagerTradesEventHandler {
                         Random random = new Random();
                         int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
 
-                        ItemCost firstItemCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                        ItemCost firstItemCost = new ItemCost(ModItems.ONE_POUND, diamondAmount);
 
                         java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
 
@@ -90,7 +91,7 @@ public class VillagerTradesEventHandler {
                 trades.get(level).add((entity, randomSource) -> {
                     Random random = new Random();
                     int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
-                    ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                    ItemCost diamondCost = new ItemCost(ModItems.ONE_POUND, diamondAmount);
                     java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
 
                     return new MerchantOffer(

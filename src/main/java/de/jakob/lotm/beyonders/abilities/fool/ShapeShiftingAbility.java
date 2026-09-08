@@ -11,6 +11,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,10 @@ public class ShapeShiftingAbility extends SelectableAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         cannotBeStolen = false;
+        canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 5));
     }
 
     @Override

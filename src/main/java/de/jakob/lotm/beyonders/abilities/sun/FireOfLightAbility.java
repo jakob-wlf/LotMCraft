@@ -21,6 +21,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class FireOfLightAbility extends Ability {
@@ -28,6 +30,14 @@ public class FireOfLightAbility extends Ability {
         super(id, 1.75f, "purification", "burning", "light_source", "light_weak");
         postsUsedAbilityEventManually = true;
         interactionRadius = 4;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f));
+
+        baseDamage = 4f;
     }
 
     @Override
@@ -52,14 +62,24 @@ public class FireOfLightAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 10, 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 2.0f, .5f);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), .4f, .5f);
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HOLY_FLAME.get(), targetPos, 140, .4, .04);
         ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, targetPos, 90, .75, 0);
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* multiplier(entity), DamageLookup.lookupDamage(7, .75) * multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(entitySeq <= 4){
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.PURIFICATION, baseDamage * 0.34, targetPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.LIGHT, baseDamage * 0.33, targetPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.FAITH, baseDamage * 0.33, targetPos, true, false, true, 0);
+
+        }
+        else{
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.LIGHT, baseDamage, targetPos, true, false, true, 0);
+        }
 
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {

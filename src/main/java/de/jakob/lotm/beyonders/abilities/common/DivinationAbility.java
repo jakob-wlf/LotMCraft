@@ -3,6 +3,8 @@ package de.jakob.lotm.beyonders.abilities.common;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
@@ -27,11 +29,12 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DivinationAbility extends SelectableAbility {
     public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
-    public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -59,6 +62,7 @@ public class DivinationAbility extends SelectableAbility {
             if (!reqs.containsKey(pathway) && !pathway.equalsIgnoreCase("death"))
                 reqs.put(pathway, 4);
         }
+
         return reqs;
     }
 
@@ -71,7 +75,7 @@ public class DivinationAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[] {
                 "ability.lotmcraft.divination.danger_premonition",
-                "ability.lotmcraft.divination.dream_divination",
+                //"ability.lotmcraft.divination.dream_divination",
                 "ability.lotmcraft.divination.structure_divination",
                 "ability.lotmcraft.divination.biome_divination",
                 "ability.lotmcraft.divination.player_divination",
@@ -83,11 +87,11 @@ public class DivinationAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> dangerPremonition(level, entity);
-            case 1 -> dreamDivination(level, entity);
-            case 2 -> structureDivination(level, entity);
-            case 3 -> biomeDivination(level, entity);
-            case 4 -> playerDivination(level, entity);
-            case 5 -> antiDivination(level, entity);
+            //case 1 -> dreamDivination(level, entity);
+            case 1 -> structureDivination(level, entity);
+            case 2 -> biomeDivination(level, entity);
+            case 3 -> playerDivination(level, entity);
+            case 4 -> antiDivination(level, entity);
         }
     }
 
@@ -188,6 +192,7 @@ public class DivinationAbility extends SelectableAbility {
                 .stream()
                 .filter(p -> p != player)
                 .filter(p -> !DIVINATION_IMMUNE.contains(p.getUUID()))
+                .filter(p -> !p.hasEffect(ModEffects.CONCEALMENT) && !VisionaryHandler.isInvisible(p))
                 .map(p -> new PlayerInfo(p.getUUID(), p.getGameProfile().getName()))
                 .toList();
 

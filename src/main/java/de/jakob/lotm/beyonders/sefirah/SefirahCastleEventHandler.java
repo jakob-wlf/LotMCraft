@@ -60,12 +60,12 @@ public class SefirahCastleEventHandler {
         }
 
         // Claim Sefirah Castle
-        if (!SefirahHandler.claimSefirot(event.getPlayer(), "sefirah_castle")) {
+       // if (!SefirahHandler.claimSefirot(event.getPlayer(), "sefirah_castle")) {
             AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.sefirah_castle_already_occupied").withColor(0x942de3));
             return;
-        }
+       // }
 
-        SefirahHandler.teleportToOwnSefirot(event.getPlayer(), true);
+        //SefirahHandler.teleportToOwnSefirot(event.getPlayer(), true);
     }
 
     private static boolean checkIfChantIsCompleted(String rawMessage, UUID playerUUID, Vec3 pos, ServerLevel serverLevel) {
@@ -98,32 +98,32 @@ public class SefirahCastleEventHandler {
     }
 
 
-    // Disable abilities inside the castle and disable griefing inside completely --------------------
-    @SubscribeEvent
-    public static void onEntityTick(EntityTickEvent.Post event) {
-        if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        if(!(event.getEntity() instanceof LivingEntity entity)) {
-            return;
-        }
-
-        if (!entity.level().dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY)) {
-            return;
-        }
-
-        // Disable griefing
-        if (entity instanceof Player player) {
-            BeyonderData.setGriefingEnabled(player, false);
-        }
-
-        // Disable ability use
-        if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("sefirah_castle")) {
-            DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("sefirah_castle", 20 * 20, entity);
-        }
-    }
+//    // Disable abilities inside the castle and disable griefing inside completely --------------------
+//    @SubscribeEvent
+//    public static void onEntityTick(EntityTickEvent.Post event) {
+//        if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
+//            return;
+//        }
+//
+//        if(!(event.getEntity() instanceof LivingEntity entity)) {
+//            return;
+//        }
+//
+//        if (!entity.level().dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY)) {
+//            return;
+//        }
+//
+//        // Disable griefing
+//        if (entity instanceof Player player) {
+//            BeyonderData.setGriefingEnabled(player, false);
+//        }
+//
+//        // Disable ability use
+//        if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("sefirah_castle")) {
+//            DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+//            component.disableAbilityUsageForTime("sefirah_castle", 20 * 5, entity);
+//        }
+//    }
 
     private static String getNextIncantationForProgressIndex(int progress) {
         return switch (progress) {

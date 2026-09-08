@@ -30,14 +30,19 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class GiftAbility extends SelectableAbility {
     public GiftAbility(String id) {
         super(id, 1f);
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 1000f, 670f, 650f, 430f, 400f));
+
     }
 
     @Override
@@ -131,7 +136,8 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -170,7 +176,8 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int)(15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -209,7 +216,8 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -238,7 +246,8 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -303,7 +312,8 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
             return;
@@ -354,7 +364,7 @@ public class GiftAbility extends SelectableAbility {
             for(int i = 0; i < offHandItem.getCount(); i++) {
                 FallingBlockEntity anvil = FallingBlockEntity.fall(level, BlockPos.containing(target.getX(), target.getY() + 10 + i, target.getZ()), Blocks.ANVIL.defaultBlockState());
                 anvil.disableDrop();
-                anvil.setHurtsEntities(6, 50);
+                anvil.setHurtsEntities(3, 20);
             }
         }
         else if(offHandItem.is(Items.ENDER_PEARL)) {

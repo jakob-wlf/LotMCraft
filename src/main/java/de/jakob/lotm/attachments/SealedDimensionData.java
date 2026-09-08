@@ -23,14 +23,16 @@ public class SealedDimensionData extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
         tag.putInt("ticksRemaining", ticksRemaining);
-        tag.putString("dimension", dimensionLocation);
+        if(dimensionLocation != null)
+            tag.putString("dimension", dimensionLocation);
         return tag;
     }
 
     public static SealedDimensionData load(CompoundTag tag, HolderLookup.Provider registries) {
         SealedDimensionData data = new SealedDimensionData();
         data.ticksRemaining = tag.getInt("ticksRemaining");
-        data.dimensionLocation = tag.getString("dimension");
+        if(tag.contains("dimension"))
+            data.dimensionLocation = tag.getString("dimension");
         return data;
     }
 
