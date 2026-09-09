@@ -3,16 +3,23 @@ package de.jakob.lotm.entity.custom.ability_entities;
 import com.mojang.authlib.GameProfile;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,6 +31,8 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +45,11 @@ public class ControlBodyDouble extends Mob {
     private static final EntityDataAccessor<Optional<UUID>> DATA_OWNER_UUID =
             SynchedEntityData.defineId(ControlBodyDouble.class, EntityDataSerializers.OPTIONAL_UUID);
 
+    private static final EntityDataAccessor<Boolean> MAKE_INVISIBLE =
+            SynchedEntityData.defineId(ControlBodyDouble.class, EntityDataSerializers.BOOLEAN);
+
     private boolean cancelling = false;
+    private final List<HeldEffect> heldEffects = new ArrayList<>();
 
     public ControlBodyDouble(EntityType<? extends ControlBodyDouble> type, Level level) {
         super(type, level);
@@ -67,7 +80,16 @@ public class ControlBodyDouble extends Mob {
             if (this.forcedChunkPos == null || !this.forcedChunkPos.equals(currentChunk)) {
                 forceCurrentChunk();
             }
+
+            tickHeldEffects();
         }
+    }
+
+    private void tickHeldEffects() {
+        heldEffects.removeIf(held -> {
+            held.duration--;
+            return held.duration <= 0;
+        });
     }
 
     private void forceCurrentChunk() {
@@ -104,6 +126,7 @@ public class ControlBodyDouble extends Mob {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(DATA_OWNER_UUID, Optional.empty());
+        builder.define(MAKE_INVISIBLE, false);
     }
 
     public void setOwnerUUID(@Nullable UUID uuid) {
@@ -127,7 +150,6 @@ public class ControlBodyDouble extends Mob {
         }
         return null;
     }
-
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
@@ -135,6 +157,12 @@ public class ControlBodyDouble extends Mob {
         if (owner != null) {
             tag.putUUID("OwnerUUID", owner);
         }
+
+        ListTag effectsTag = new ListTag();
+        for (HeldEffect held : heldEffects) {
+            effectsTag.add(held.save());
+        }
+        tag.put("HeldEffects", effectsTag);
     }
 
     @Override
@@ -143,9 +171,20 @@ public class ControlBodyDouble extends Mob {
         if (tag.hasUUID("OwnerUUID")) {
             setOwnerUUID(tag.getUUID("OwnerUUID"));
         }
+
+        heldEffects.clear();
+        if (tag.contains("HeldEffects", Tag.TAG_LIST)) {
+            ListTag effectsTag = tag.getList("HeldEffects", Tag.TAG_COMPOUND);
+            for (int i = 0; i < effectsTag.size(); i++) {
+                HeldEffect held = HeldEffect.load(effectsTag.getCompound(i));
+                if (held != null) {
+                    heldEffects.add(held);
+                }
+            }
+        }
     }
 
-    public static ControlBodyDouble create(Level level, Player player) {
+    public static ControlBodyDouble create(Level level, Player player, boolean makeInvisible) {
         ControlBodyDouble bodyDouble = new ControlBodyDouble(ModEntities.CONTROL_BODY_DOUBLE.get(), level);
 
         bodyDouble.setOwnerUUID(player.getUUID());
@@ -155,8 +194,15 @@ public class ControlBodyDouble extends Mob {
 
         bodyDouble.copyAttributesAndHealthFrom(player);
         bodyDouble.copyEquipmentFrom(player);
+        bodyDouble.copyMobEffectsFrom(player);
+
+        bodyDouble.entityData.set(MAKE_INVISIBLE, makeInvisible);
 
         return bodyDouble;
+    }
+
+    public boolean renderInvisible() {
+        return this.entityData.get(MAKE_INVISIBLE);
     }
 
     public void copyAttributesAndHealthFrom(LivingEntity source) {
@@ -178,12 +224,33 @@ public class ControlBodyDouble extends Mob {
             getAttribute(Attributes.MAX_HEALTH).setBaseValue(source.getMaxHealth());
         }
 
+        BeyonderData.setBeyonder(this, BeyonderData.getPathway(source), BeyonderData.getSequence(source), true, true, false, true, true, false);
         float maxHealth = getMaxHealth();
         float sourceHealth = source.getHealth();
         float newHealth = Math.min(sourceHealth, maxHealth);
+        ServerScheduler.scheduleDelayed(20, () -> { // delayed to ensure that the health is set after the enhancements from being a beyonder are applied
 
-        setHealth(newHealth);
+            setHealth(newHealth);
+        });
     }
+
+    public void copyMobEffectsFrom(LivingEntity source) {
+        heldEffects.clear();
+        for (MobEffectInstance activeEffect : source.getActiveEffects()) {
+            heldEffects.add(HeldEffect.fromInstance(activeEffect));
+        }
+    }
+
+    public void reapplyHeldEffectsTo(LivingEntity target) {
+        for (HeldEffect held : heldEffects) {
+            MobEffectInstance instance = held.toInstance();
+            if (instance != null) {
+                target.addEffect(instance);
+            }
+        }
+        heldEffects.clear();
+    }
+
 
     // Copied from Player class
     public static AttributeSupplier.Builder createAttributes() {
@@ -207,5 +274,78 @@ public class ControlBodyDouble extends Mob {
             }
         }
         return super.hurt(source, amount);
+    }
+
+    private static class HeldEffect {
+        final Holder<MobEffect> effect;
+        final int amplifier;
+        int duration;
+        final boolean ambient;
+        final boolean visible;
+        final boolean showIcon;
+
+        private HeldEffect(Holder<MobEffect> effect, int amplifier, int duration, boolean ambient, boolean visible, boolean showIcon) {
+            this.effect = effect;
+            this.amplifier = amplifier;
+            this.duration = duration;
+            this.ambient = ambient;
+            this.visible = visible;
+            this.showIcon = showIcon;
+        }
+
+        static HeldEffect fromInstance(MobEffectInstance instance) {
+            return new HeldEffect(
+                    instance.getEffect(),
+                    instance.getAmplifier(),
+                    instance.getDuration(),
+                    instance.isAmbient(),
+                    instance.isVisible(),
+                    instance.showIcon()
+            );
+        }
+
+        @Nullable
+        MobEffectInstance toInstance() {
+            if (duration <= 0) return null;
+            return new MobEffectInstance(effect, duration, amplifier, ambient, visible, showIcon);
+        }
+
+        CompoundTag save() {
+            CompoundTag tag = new CompoundTag();
+            ResourceLocation id = BuiltInRegistries.MOB_EFFECT.getKey(effect.value());
+            if (id != null) {
+                tag.putString("Id", id.toString());
+            }
+            tag.putInt("Amplifier", amplifier);
+            tag.putInt("Duration", duration);
+            tag.putBoolean("Ambient", ambient);
+            tag.putBoolean("Visible", visible);
+            tag.putBoolean("ShowIcon", showIcon);
+            return tag;
+        }
+
+        @Nullable
+        static HeldEffect load(CompoundTag tag) {
+            if (!tag.contains("Id")) return null;
+            ResourceLocation id = ResourceLocation.tryParse(tag.getString("Id"));
+            if (id == null || !BuiltInRegistries.MOB_EFFECT.containsKey(id)) return null;
+
+            MobEffect mobEffect = BuiltInRegistries.MOB_EFFECT.get(id);
+            if (mobEffect == null) return null;
+
+            Holder<MobEffect> holder = BuiltInRegistries.MOB_EFFECT.wrapAsHolder(mobEffect);
+
+            int duration = tag.getInt("Duration");
+            if (duration <= 0) return null;
+
+            return new HeldEffect(
+                    holder,
+                    tag.getInt("Amplifier"),
+                    duration,
+                    tag.getBoolean("Ambient"),
+                    tag.getBoolean("Visible"),
+                    tag.getBoolean("ShowIcon")
+            );
+        }
     }
 }

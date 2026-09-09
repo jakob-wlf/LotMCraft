@@ -382,6 +382,14 @@ public class ModEntities {
             ENTITY_TYPES.register("spirit_malmouth", () -> EntityType.Builder.of(SpiritMalmouthEntity::new, MobCategory.MONSTER)
                     .sized(1.3f, 1.3f).build("spirit_malmouth"));
 
+    public static final Supplier<EntityType<AbscessedHandEntity>> ABSCESSED_HAND =
+            ENTITY_TYPES.register("abscessed_hand", () -> EntityType.Builder.of(AbscessedHandEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("abscessed_hand"));
+
+    public static final Supplier<EntityType<MurlocEntity>> MURLOC =
+            ENTITY_TYPES.register("murloc", () -> EntityType.Builder.of(MurlocEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("murloc"));
+
 
     // NPCs and Living Entities
 

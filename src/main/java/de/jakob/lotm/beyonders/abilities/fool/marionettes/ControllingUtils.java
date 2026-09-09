@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
@@ -13,6 +14,8 @@ import de.jakob.lotm.network.packets.toServer.RequestControllingSyncPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import de.jakob.lotm.util.helper.AllyUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -56,11 +59,12 @@ public class ControllingUtils {
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
         BeyonderDataTickHandler.invalidateCache(player);
 
-        if(spawnOriginalBody) {
-            ControlBodyDouble controlBodyDouble = ControlBodyDouble.create(level, player);
-            level.addFreshEntity(controlBodyDouble);
-            component.setBodyDouble(controlBodyDouble);
-        }
+        ControlBodyDouble controlBodyDouble = ControlBodyDouble.create(level, player, !spawnOriginalBody);
+        level.addFreshEntity(controlBodyDouble);
+        component.setBodyDouble(controlBodyDouble);
+        player.removeAllEffects();
+
+        AllyUtil.makeAllies(player, controlBodyDouble, false);
 
         component.setControlling(true);
         component.setCanUseOwnAbilities(keepOwnAbilities);
@@ -68,10 +72,16 @@ public class ControllingUtils {
         component.setControlledEntityPathway(BeyonderData.getPathway(target));
         component.setControlledEntitySequence(BeyonderData.getSequence(target));
 
+        component.setActiveToggles(ToggleAbility.getActiveAbilitiesForEntity(player));
+        ToggleAbility.cleanUp(player.serverLevel(), player);
+
         component.setAbilityWheelAbilities(player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
         component.setSelectedAbilityInWheel(player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getSelectedAbility());
         component.setAbilityBarAbilities(player.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities());
 
+        AbilityWheelHelper.setAbilities(player, target.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
+        AbilityWheelHelper.setSelectedAbility(player, target.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getSelectedAbility());
+        AbilityBarHelper.setAbilities(player, target.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities());
 
         syncControllingData(player);
 
@@ -103,11 +113,12 @@ public class ControllingUtils {
             target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(source.getMaxHealth());
         }
 
-        float maxHealth = target.getMaxHealth();
-        float sourceHealth = source.getHealth();
-        float newHealth = Math.min(sourceHealth, maxHealth);
-
-        target.setHealth(newHealth);
+        ServerScheduler.scheduleDelayed(60, () -> {
+            float maxHealth = target.getMaxHealth();
+            float sourceHealth = source.getHealth();
+            float newHealth = Math.min(sourceHealth, maxHealth);
+            target.setHealth(newHealth);
+        });
     }
     public static PathwayData currentlyControlling(Player player) {
         if(player.level().isClientSide()) {
@@ -148,12 +159,14 @@ public class ControllingUtils {
             LivingEntity controlled = component.getControlledEntity();
             if(controlled != null) {
                 controlled.unsetRemoved();
+                controlled.setPos(player.position());
                 level.addFreshEntity(controlled);
                 controlled.setHealth(Math.clamp(player.getHealth(), 1, controlled.getHealth()));
-                controlled.setPos(player.position());
                 if(killPreviousEntity) {
                     controlled.hurt(controlled.damageSources().generic(), Float.MAX_VALUE);
                 }
+
+                AbilityWheelHelper.setAbilitiesForEntity(player, controlled, player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
             }
         }
 
@@ -168,12 +181,15 @@ public class ControllingUtils {
         }
         else {
             copyAttributesAndHealthFrom(controlBodyDouble, player);
+            controlBodyDouble.reapplyHeldEffectsTo(player);
 
-            ServerLevel returnLevel = (ServerLevel) controlBodyDouble.level(); // Should always be the same level but just to be sure
+            if(!controlBodyDouble.renderInvisible()) {
+                ServerLevel returnLevel = (ServerLevel) controlBodyDouble.level(); // Should always be the same level but just to be sure
 
-            player.teleportTo(returnLevel, controlBodyDouble.getX(), controlBodyDouble.getY(), controlBodyDouble.getZ(), Set.of(), controlBodyDouble.getYRot(), controlBodyDouble.getXRot());
-            if(damage > 0) {
-                player.hurt(player.damageSources().generic(), damage);
+                player.teleportTo(returnLevel, controlBodyDouble.getX(), controlBodyDouble.getY(), controlBodyDouble.getZ(), Set.of(), controlBodyDouble.getYRot(), controlBodyDouble.getXRot());
+                if(damage > 0) {
+                    player.hurt(player.damageSources().generic(), damage);
+                }
             }
 
             controlBodyDouble.discard();
@@ -182,6 +198,8 @@ public class ControllingUtils {
         AbilityBarHelper.setAbilities(player, component.getAbilityBarAbilities());
         AbilityWheelHelper.setAbilities(player, component.getAbilityWheelAbilities());
         AbilityWheelHelper.setSelectedAbility(player, component.getSelectedAbilityInWheel());
+
+        component.getActiveToggles().forEach(toggle -> toggle.useAbility(level, player));
 
         component.reset();
     }

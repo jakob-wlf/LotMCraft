@@ -1,6 +1,7 @@
 package de.jakob.lotm.attachments;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,11 +16,7 @@ import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EntityControllingComponent implements INBTSerializable<CompoundTag> {
 
@@ -32,6 +29,8 @@ public class EntityControllingComponent implements INBTSerializable<CompoundTag>
     public LivingEntity controlledEntity = null;
     public ControlBodyDouble bodyDouble = null;
     public boolean canUseOwnAbilities = true;
+
+    private Set<ToggleAbility> activeToggles = new HashSet<>();
 
     private ArrayList<String> abilityWheelAbilities = new ArrayList<>();
     private int selectedAbilityInWheel = 0;
@@ -109,6 +108,14 @@ public class EntityControllingComponent implements INBTSerializable<CompoundTag>
 
     public void setAbilityBarAbilities(ArrayList<String> abilityBarAbilities) {
         this.abilityBarAbilities = new ArrayList<>(abilityBarAbilities);
+    }
+
+    public Set<ToggleAbility> getActiveToggles() {
+        return activeToggles;
+    }
+
+    public void setActiveToggles(Set<ToggleAbility> activeToggles) {
+        this.activeToggles = activeToggles;
     }
 
     public void captureAttributesFrom(LivingEntity entity) {

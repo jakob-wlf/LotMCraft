@@ -34,6 +34,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.Coffin
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
+import de.jakob.lotm.entity.client.murloc.MurlocRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileRenderer;
@@ -71,6 +72,7 @@ import de.jakob.lotm.entity.client.beyonder_npc.BeyonderNPCRenderer;
 import de.jakob.lotm.entity.client.damage_tracker.DamageTrackerRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookRenderer;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenRenderer;
+import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandRenderer;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardRenderer;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesRenderer;
@@ -333,6 +335,8 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPIRIT_BIZARRO_BANE.get(), SpiritBizarroBaneRenderer::new);
             EntityRenderers.register(ModEntities.SPIRIT_BANE.get(), SpiritBaneRenderer::new);
             EntityRenderers.register(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthRenderer::new);
+            EntityRenderers.register(ModEntities.ABSCESSED_HAND.get(), AbscessedHandRenderer::new);
+            EntityRenderers.register(ModEntities.MURLOC.get(), MurlocRenderer::new);
 
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);

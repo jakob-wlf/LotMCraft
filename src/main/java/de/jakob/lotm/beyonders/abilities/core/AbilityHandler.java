@@ -417,7 +417,9 @@ public class AbilityHandler {
     public List<Ability> getAllAbilitiesForEntity(LivingEntity entity) {
         ArrayList<Ability> applicableAbilities = new ArrayList<>();
         for (Ability ability : getAllAbilitiesOrdered()) {
+            System.out.println("Ability: " + ability.getName().getString());
             if (ability.hasAbility(entity, true)) {
+                System.out.println("Has ability: " + ability.getName().getString());
                 applicableAbilities.add(ability);
             }
         }

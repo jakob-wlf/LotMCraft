@@ -949,8 +949,8 @@ public class PacketHandler {
     }
 
     public static void syncBeyonderDataToPlayer(ServerPlayer player) {
-        String pathway = BeyonderData.getPathway(player);
-        int sequence = BeyonderData.getSequence(player);
+        String pathway = BeyonderData.getPathway(player, true);
+        int sequence = BeyonderData.getSequence(player, false, true);
         float spirituality = BeyonderData.getSpirituality(player);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(player);
         float digestionProgress = BeyonderData.getDigestionProgress(player);
@@ -1005,8 +1005,8 @@ public class PacketHandler {
 
     // Helper method to sync to all players (useful for when other players need to see beyonder status)
     public static void syncBeyonderDataToAllPlayers(ServerPlayer targetPlayer) {
-        String pathway = BeyonderData.getPathway(targetPlayer);
-        int sequence = BeyonderData.getSequence(targetPlayer);
+        String pathway = BeyonderData.getPathway(targetPlayer, true);
+        int sequence = BeyonderData.getSequence(targetPlayer, false, true);
         float spirituality = BeyonderData.getSpirituality(targetPlayer);
         boolean griefingEnabled = BeyonderData.isGriefingEnabled(targetPlayer);
         float digestionProgress = BeyonderData.getDigestionProgress(targetPlayer);

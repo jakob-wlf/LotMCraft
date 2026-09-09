@@ -157,8 +157,8 @@ public class PlayerMap extends SavedData {
     public void put(LivingEntity entity) {
         if(!(entity instanceof ServerPlayer)) return;
 
-        String pathway = BeyonderData.getPathway(entity);
-        int sequence = BeyonderData.getSequence(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
         UniquenessComponent uniquenessComponent = entity.getData(ModAttachments.UNIQUENESS_COMPONENT);
         String uniqueness = uniquenessComponent.hasUniqueness() ? uniquenessComponent.getUniquenessPathway() : "none";
@@ -263,8 +263,8 @@ public class PlayerMap extends SavedData {
 
         StoredData data = playerMap.get(entity).get();
 
-        var pathway = BeyonderData.getPathway(entity);
-        var sequence = BeyonderData.getSequence(entity);
+        var pathway = BeyonderData.getPathway(entity, true);
+        var sequence = BeyonderData.getSequence(entity, false, true);
 
         return (!data.pathway().equals(pathway)
                 || !data.sequence().equals(sequence));

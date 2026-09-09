@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
@@ -34,9 +35,9 @@ import net.minecraft.world.entity.player.Player;
 import java.util.*;
 
 public class BeyonderData {
-    private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
-    private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0};
+    private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180, 50};
+    private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0, 1.0};
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -171,6 +172,10 @@ public class BeyonderData {
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence, boolean skipCheck, boolean clearPathwayHistory, boolean addToPathwayHistory, boolean clearCharStack, boolean resetSpirituality, boolean putIntoMap) {
         if(entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
+        }
+
+        if(entity instanceof ServerPlayer player && ControllingUtils.isControlling(player)) {
+            ControllingUtils.cancel(player, 0, true, false);
         }
 
         if(entity instanceof ServerPlayer player) {
@@ -329,6 +334,13 @@ public class BeyonderData {
     }
 
     public static String getPathway(LivingEntity entity) {
+        return getPathway(entity, false);
+    }
+
+    public static String getPathway(LivingEntity entity, boolean ignoreControlling) {
+        if(entity instanceof Player player && ControllingUtils.isControlling(player) && !ignoreControlling) {
+            return ControllingUtils.getControlledPathway(player);
+        }
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getPathway(entity.getUUID());
         }
@@ -338,11 +350,20 @@ public class BeyonderData {
     }
 
     public static int getSequence(LivingEntity entity) {
-        return getSequence(entity, false);
+        return getSequence(entity, false, false);
     }
 
     public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {
+        return getSequence(entity, returnTrueMarionetteLvl, false);
+    }
+
+
+    public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl, boolean ignoreControlling) {
         if(entity == null) return LOTMCraft.NON_BEYONDER_SEQ;
+
+        if(entity instanceof Player player && ControllingUtils.isControlling(player) && !ignoreControlling) {
+            return ControllingUtils.getControlledSequence(player);
+        }
 
         if(entity.level().isClientSide) {
             return ClientBeyonderCache.getSequence(entity.getUUID());
@@ -376,9 +397,9 @@ public class BeyonderData {
             return ClientBeyonderCache.getSpirituality(entity.getUUID());
         }
         if(!(entity instanceof Player))
-            return getMaxSpirituality(getPathway(entity), getSequence(entity));
+            return getMaxSpirituality(getPathway(entity, true), getSequence(entity, false, true));
         float spirituality = entity.getData(ModAttachments.BEYONDER_COMPONENT).getSpirituality();
-        float maxSpirituality = getMaxSpirituality(getPathway(entity), getSequence(entity));
+        float maxSpirituality = getMaxSpirituality(getPathway(entity, true), getSequence(entity, false, true));
 
         if(maxSpirituality <= 0) {
             return 0.0f;
@@ -393,7 +414,7 @@ public class BeyonderData {
         float current = getSpirituality(entity);
         entity.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(Math.max(0, current - amount));
 
-        float maxSpirituality = getMaxSpirituality(getPathway(entity), getSequence(entity));
+        float maxSpirituality = getMaxSpirituality(getPathway(entity, true), getSequence(entity, false, true));
 
         if(maxSpirituality <= 0) {
             return;
@@ -464,7 +485,7 @@ public class BeyonderData {
             return;
 
         float current = getSpirituality(player);
-        float newAmount = Math.min(getMaxSpirituality(getPathway(player), getSequence(player), player), current + amount);
+        float newAmount = Math.min(getMaxSpirituality(getPathway(player, true), getSequence(player, false, true), player), current + amount);
         player.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(newAmount);
 
         // Sync to client if this is server-side
@@ -482,7 +503,7 @@ public class BeyonderData {
     }
 
     public static float getMaxSpirituality(Player player) {
-        return getMaxSpirituality(getPathway(player), getSequence(player), player);
+        return getMaxSpirituality(getPathway(player, true), getSequence(player, false, true), player);
     }
 
     // for getting the spirituality of the main body instead, works on both client and server side

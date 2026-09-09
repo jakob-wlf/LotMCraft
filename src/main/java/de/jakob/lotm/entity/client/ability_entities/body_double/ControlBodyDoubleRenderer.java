@@ -36,6 +36,10 @@ public class ControlBodyDoubleRenderer extends LivingEntityRenderer<ControlBodyD
     public void render(ControlBodyDouble entity, float entityYaw, float partialTicks,
                         PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
 
+        if(entity.renderInvisible()) {
+            return;
+        }
+
         PlayerSkin skin = resolveSkin(entity.getOwnerUUID());
         this.model = skin.model() == PlayerSkin.Model.SLIM ? this.slimModel : this.wideModel;
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);

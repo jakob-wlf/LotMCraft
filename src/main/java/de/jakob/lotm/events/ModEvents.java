@@ -13,6 +13,7 @@ import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
+import de.jakob.lotm.entity.client.murloc.MurlocModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileModel;
@@ -36,6 +37,7 @@ import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.Apprentice
 import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsModel;
 import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
+import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandModel;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneModel;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
@@ -123,6 +125,8 @@ public class ModEvents {
         event.registerLayerDefinition(TradeIndicatorModel.LAYER_LOCATION, TradeIndicatorModel::createBodyLayer);
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
         event.registerLayerDefinition(UnderworldGateModel.LAYER_LOCATION, UnderworldGateModel::createBodyLayer);
+        event.registerLayerDefinition(MurlocModel.LAYER_LOCATION, MurlocModel::createBodyLayer);
+
 
         // Spirits
         event.registerLayerDefinition(SpiritDervishModel.LAYER_LOCATION, SpiritDervishModel::createBodyLayer);
@@ -133,6 +137,7 @@ public class ModEvents {
         event.registerLayerDefinition(SpiritBizarroBaneModel.LAYER_LOCATION, SpiritBizarroBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritBaneModel.LAYER_LOCATION, SpiritBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritMalmouthModel.LAYER_LOCATION, SpiritMalmouthModel::createBodyLayer);
+        event.registerLayerDefinition(AbscessedHandModel.LAYER_LOCATION, AbscessedHandModel::createBodyLayer);
 
         // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
@@ -159,15 +164,17 @@ public class ModEvents {
         event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
         event.put(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDouble.createAttributes().build());
+        event.put(ModEntities.MURLOC.get(), MurlocEntity.createAttributes().build());
 
         event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardEntity.createAttributes().build());
-        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritBubblesEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(), SpiritTranslucentWizardEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_GHOST.get(), SpiritGhostEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BIZARRO_BANE.get(), SpiritBizarroBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BANE.get(), SpiritBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthEntity.createAttributes().build());
+        event.put(ModEntities.ABSCESSED_HAND.get(), AbscessedHandEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -232,6 +239,20 @@ public class ModEvents {
                 ModEntities.SPIRIT_MALMOUTH.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.ABSCESSED_HAND.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.MURLOC.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.OCEAN_FLOOR,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );

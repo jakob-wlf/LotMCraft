@@ -43,7 +43,7 @@ public class SanityComponent {
             amount = virtualPersonas.block(amount);
 
             if (BeyonderData.isBeyonder(entity)) {
-                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity));
+                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity, false, true));
             }
         }
 
@@ -83,7 +83,7 @@ public class SanityComponent {
             amount = virtualPersonas.block(amount );
 
             if (entity instanceof ServerPlayer player && BeyonderData.isBeyonder(player)) {
-                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player));
+                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player, false, true));
             }
         }
 

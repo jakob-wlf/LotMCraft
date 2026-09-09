@@ -125,7 +125,7 @@ public abstract class Ability {
 
         // Digest potion
         if(!doesNotIncreaseDigestion && newUser instanceof Player player) {
-            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player), BeyonderData.getSequence(player)).isEmpty())
+            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player, true), BeyonderData.getSequence(player, false, true)).isEmpty())
                 BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
 
@@ -217,8 +217,8 @@ public abstract class Ability {
     public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
         if(!BeyonderData.isBeyonder(entity)) return false;
 
-        String pathway = BeyonderData.getPathway(entity);
-        int sequence = BeyonderData.getSequence(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
         if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2) && !ignoreCreativeMode) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
@@ -310,13 +310,13 @@ public abstract class Ability {
     }
 
     private float getDigestionProgressForUse(LivingEntity entity) {
-        int sequence = BeyonderData.getSequence(entity);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
-        if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
+        if (!getRequirements().containsKey(BeyonderData.getPathway(entity, true))) {
             return 0f;
         }
 
-        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
+        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity, true));
 
         if (sequence > requiredSequence) {
             return 0f;
@@ -355,7 +355,7 @@ public abstract class Ability {
             return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
         }
 
-        String pathway = BeyonderData.getPathway(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
 
         int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
         return getName().withStyle(ChatFormatting.BOLD).withColor(color);

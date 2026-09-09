@@ -1,0 +1,22 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "minecraft:ocean",
+    "minecraft:deep_ocean",
+    "minecraft:cold_ocean",
+    "minecraft:deep_cold_ocean",
+    "minecraft:frozen_ocean",
+    "minecraft:deep_frozen_ocean",
+    "minecraft:lukewarm_ocean",
+    "minecraft:warm_ocean"
+  ],
+  "spawners": [
+    {
+      "type": "lotmcraft:murloc",
+      "weight": 20,
+      "minCount": 1,
+      "maxCount": 5,
+      "category": "creature"
+    }
+  ]
+}
