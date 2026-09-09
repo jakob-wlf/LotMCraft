@@ -214,14 +214,15 @@ public class BeyonderData {
         if(entity.level() instanceof ServerLevel serverLevel) {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
-
+        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
         if(entity instanceof ServerPlayer player) {
             if(!skipCheck) {
                 if (!playerMap.check(pathway, sequence)) return;
-
-                if (!BeyonderData.getPathway(player).equals(pathway)
-                        || BeyonderData.getSequence(player) < sequence)
-                    playerMap.removeHonorificName(player);
+                if (!controllingDataComponent.isControlling()) {
+                    if (!BeyonderData.getPathway(player).equals(pathway)
+                            || BeyonderData.getSequence(player) < sequence)
+                        playerMap.removeHonorificName(player);
+                }
             }
 
             if(clearCharStack) playerMap.clearStack(player);
@@ -259,7 +260,6 @@ public class BeyonderData {
 
         component.setPathway(pathway);
         component.setSequence(sequence);
-        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
         if (!controllingDataComponent.isControlling()) {
             if(clearCharStack) component.clearCharacteristicStack();
             else component.setCharacteristicStack(0, sequence - 1);

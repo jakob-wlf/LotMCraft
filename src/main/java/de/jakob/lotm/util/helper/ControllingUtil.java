@@ -323,7 +323,7 @@ public class ControllingUtil {
             ActingCapHelper.skipNextCapApplication = true;
             try {
                 BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source),
-                        false, false, false, false, false);
+                        false, false, false, false, false, false);
             } finally {
                 ActingCapHelper.skipNextCapApplication = false;
             }
