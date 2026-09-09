@@ -279,9 +279,6 @@ public class PuppeteeringAbility extends SelectableAbility {
 
             if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target, false) || targetSequence < BeyonderData.getSequence(entity) || (progress >= 0.5f && targetSequence == BeyonderData.getSequence(entity))) {
                 if (target instanceof Mob mob) mob.setTarget(entity);
-                if (target instanceof ServerPlayer targetPlayer) {
-                    targetPlayer.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_warning").withColor(0xa26fc9));
-                }
             }
 
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
