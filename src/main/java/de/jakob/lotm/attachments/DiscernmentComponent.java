@@ -26,6 +26,8 @@ public class DiscernmentComponent {
     private int seq = LOTMCraft.NON_BEYONDER_SEQ;
     private String pathway = "none";
 
+    private boolean hasUniquness = false;
+
     private AbilityWheelComponent previousWheel ;
     private AbilityBarComponent previousBar;
 
@@ -177,6 +179,9 @@ public class DiscernmentComponent {
                                 Pair.of(wheel, bar)
                         ));
                     }
+
+                    component.hasUniquness = tag.getBoolean("has");
+
                     return component;
                 }
 
@@ -213,6 +218,8 @@ public class DiscernmentComponent {
 
                     tag.put(NBT_SAVED, entries);
 
+                    tag.putBoolean("has", component.hasUniquness);
+
                     return tag;
                 }
             };
@@ -231,5 +238,13 @@ public class DiscernmentComponent {
 
     public void setPreviousBar(AbilityBarComponent previousBar) {
         this.previousBar = previousBar;
+    }
+
+    public void setHasUniqueness(boolean value){
+        hasUniquness = value;
+    }
+
+    public boolean getUniqueness(){
+        return hasUniquness;
     }
 }

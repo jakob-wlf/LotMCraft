@@ -23,10 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -44,6 +41,9 @@ public class PureIdealismAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         canAlwaysBeUsed = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 5));
     }
 
     @Override

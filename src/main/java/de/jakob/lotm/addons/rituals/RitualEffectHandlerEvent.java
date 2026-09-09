@@ -32,12 +32,12 @@ public class RitualEffectHandlerEvent {
             var controlling = player.getData(ModAttachments.CONTROLLING_DATA.get());
             var idealism = player.getData(ModAttachments.DISCERNMENT_DATA.get());
 
-            if(controlling.isControlling() || idealism.isDiscerning()){
-                component.setCompleted(false);
-                component.setStage(0);
-            }
-
             if(!timestamp.containsKey(player.getUUID())){
+                if(controlling.isControlling() || idealism.isDiscerning()){
+                    component.setCompleted(false);
+                    component.setStage(0);
+                }
+
                 timestamp.put(player.getUUID(), System.currentTimeMillis());
 
                 player.sendSystemMessage(Component.literal("You have completed the ritual!" +

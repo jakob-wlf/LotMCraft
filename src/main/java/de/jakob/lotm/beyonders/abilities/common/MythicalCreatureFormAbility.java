@@ -51,7 +51,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             sanity.decreaseSanityAndSync(seq == 4 ? 0.01f : 0.005f, entity);
         }
 
-        int range = 200;
+        int range = 100;
 
         // Make all entities lower than you loose control when seeing you
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), range).forEach(e -> {

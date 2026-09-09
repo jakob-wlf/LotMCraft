@@ -22,6 +22,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.joml.Vector3f;
@@ -44,7 +45,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3));
+        dynamicCooldown = new LinkedList<>(List.of(0, 0, 1, 2, 3));
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -128,7 +129,10 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
             StringBuilder affectsResultBuilder = new StringBuilder("Affects:");
             for(var obj : affects){
-                var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj)).get();
+                var dataOp = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj));
+                if(dataOp.isEmpty()) continue;
+
+                var data = dataOp.get();
 
                 String location = "";
                 var targetLoop = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
@@ -370,7 +374,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     @SubscribeEvent
-    public static void onAvatarDeath(LivingDeathEvent event) {
+    public static void onAvatarDeath(EntityLeaveLevelEvent event) {
         if(!(event.getEntity() instanceof AvatarEntity avatar)) return;
         if(!(avatar.level() instanceof ServerLevel level)) return;
         if(!avatar.getPathway().equals("visionary")) return;

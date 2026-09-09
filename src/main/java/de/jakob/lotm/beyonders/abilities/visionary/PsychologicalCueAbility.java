@@ -84,6 +84,7 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
         if(StoryWritingAbility.writingMap.containsKey(entity.getUUID())){
             cancel((ServerLevel) level, entity);
+            return;
         }
 
         map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
