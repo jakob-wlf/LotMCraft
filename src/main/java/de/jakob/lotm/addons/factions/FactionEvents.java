@@ -56,7 +56,7 @@ public class FactionEvents {
             church = churchOP.get();
         }
 
-        int seq = BeyonderData.playerMap.get(player.getUUID()).get().sequence();
+       // int seq = BeyonderData.playerMap.get(player.getUUID()).get().sequence();
 
         if (church == null) {
 //            var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(nation.getLeader())).get();
