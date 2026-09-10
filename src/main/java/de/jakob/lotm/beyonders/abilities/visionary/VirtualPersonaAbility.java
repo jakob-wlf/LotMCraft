@@ -236,7 +236,16 @@ public class VirtualPersonaAbility extends SelectableAbility {
             return;
         }
 
-        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true,
+                    true, true, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true, true);
+        }
+
         if(target == null){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed")
                     .withColor(0xFFff124d));

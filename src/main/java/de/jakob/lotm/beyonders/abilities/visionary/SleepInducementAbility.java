@@ -91,7 +91,15 @@ public class SleepInducementAbility extends SelectableAbility {
     }
 
     private void single(Level level, LivingEntity entity){
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
 
         if(!(level instanceof ServerLevel)) {
             if(target != null) {

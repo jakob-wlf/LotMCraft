@@ -128,7 +128,15 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     private void jump(Level level, LivingEntity entity) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true,
+                    true, true, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true, true);
+        }
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
@@ -180,7 +188,15 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true,
+                    true, true, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true, true);
+        }
 
         if (target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
