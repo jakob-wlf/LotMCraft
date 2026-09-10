@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.sefirah;
 
-import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.block.ModBlocks;
@@ -25,7 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -342,6 +340,9 @@ public class SefirahHandler {
     }
 
     public static int getSefirotProgress(Player player) {
+        if(!(player instanceof ServerPlayer)) {
+            PacketHandler.sendToServer(new RequestSefirotSyncPacket());
+        }
         String sefirot = player instanceof ServerPlayer ? getClaimedSefirot((ServerPlayer) player) : clientSefirotPlayers.get(player.getUUID());
         if(sefirot == null || sefirot.isEmpty() || !Arrays.asList(implementedSefirah).contains(sefirot.toLowerCase())) {
             return 0;
@@ -355,7 +356,7 @@ public class SefirahHandler {
         };
     }
 
-    public static String[] getAdditionalPathwaysForPlays(Player player) {
+    public static String[] getAdditionalPathwaysForPlayer(Player player) {
         if(getSefirotProgress(player) < 3) {
             return new String[]{};
         }

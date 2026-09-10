@@ -254,7 +254,7 @@ public abstract class Ability {
 
         // Check sefirot
         if(entity instanceof Player player) {
-            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlays(player);
+            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlayer(player);
             for (String sefirotPathway : sefirotPathways) {
                 if (getRequirements().containsKey(sefirotPathway) && getRequirements().get(sefirotPathway) >= sequence) {
                     return true;

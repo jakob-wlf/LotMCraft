@@ -342,6 +342,7 @@ public class BeyonderData {
             return ControllingUtils.getControlledPathway(player);
         }
         if(entity.level().isClientSide) {
+            PacketHandler.requestBeyonderSync();
             return ClientBeyonderCache.getPathway(entity.getUUID());
         }
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
@@ -366,6 +367,7 @@ public class BeyonderData {
         }
 
         if(entity.level().isClientSide) {
+            PacketHandler.requestBeyonderSync();
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
 

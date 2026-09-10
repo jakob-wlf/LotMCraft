@@ -13,6 +13,7 @@ import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
+import de.jakob.lotm.entity.client.knowledge_rabbit.RabbitOfKnowledgeModel;
 import de.jakob.lotm.entity.client.murloc.MurlocModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
@@ -126,6 +127,7 @@ public class ModEvents {
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
         event.registerLayerDefinition(UnderworldGateModel.LAYER_LOCATION, UnderworldGateModel::createBodyLayer);
         event.registerLayerDefinition(MurlocModel.LAYER_LOCATION, MurlocModel::createBodyLayer);
+        event.registerLayerDefinition(RabbitOfKnowledgeModel.LAYER_LOCATION, RabbitOfKnowledgeModel::createBodyLayer);
 
 
         // Spirits
@@ -165,6 +167,7 @@ public class ModEvents {
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
         event.put(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDouble.createAttributes().build());
         event.put(ModEntities.MURLOC.get(), MurlocEntity.createAttributes().build());
+        event.put(ModEntities.RABBIT_OF_KNOWLEDGE.get(), RabbitOfKnowledgeEntity.createAttributes().build());
 
         event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardEntity.createAttributes().build());
@@ -253,6 +256,13 @@ public class ModEvents {
                 ModEntities.MURLOC.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.OCEAN_FLOOR,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.RABBIT_OF_KNOWLEDGE.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );

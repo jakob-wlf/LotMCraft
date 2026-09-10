@@ -192,6 +192,7 @@ public class ControllingUtils {
                 }
             }
 
+            AllyUtil.removeAllies(player, controlBodyDouble);
             controlBodyDouble.discard();
         }
 

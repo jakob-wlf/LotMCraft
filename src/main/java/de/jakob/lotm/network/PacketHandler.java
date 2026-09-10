@@ -922,6 +922,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                RequestBeyonderDataSyncPacket.TYPE,
+                RequestBeyonderDataSyncPacket.STREAM_CODEC,
+                RequestBeyonderDataSyncPacket::handle
+        );
+
+        registrar.playToServer(
                 StopDiscernmentPacket.TYPE,
                 StopDiscernmentPacket.STREAM_CODEC,
                 StopDiscernmentPacket::handle
@@ -1018,5 +1024,9 @@ public class PacketHandler {
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);
         });
+    }
+
+    public static void requestBeyonderSync() {
+
     }
 }

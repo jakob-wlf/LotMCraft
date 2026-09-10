@@ -23,6 +23,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
     private ResourceLocation GUI_TEXTURE =
@@ -44,7 +45,7 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
         super.init();
 
         Player player = ClientHandler.getPlayer();
-        allies = player.getData(ModAttachments.ALLY_COMPONENT).allies();
+        allies = player.getData(ModAttachments.ALLY_COMPONENT).allies().stream().filter(AllyComponent.AllyInfo::isPlayer).collect(Collectors.toSet());
 
         GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, getTexturePathForPlayer(player));
 
