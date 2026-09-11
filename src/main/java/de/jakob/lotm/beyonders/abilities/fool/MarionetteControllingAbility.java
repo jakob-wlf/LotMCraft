@@ -301,8 +301,8 @@ public class MarionetteControllingAbility extends SelectableAbility {
         if (transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex() && transformationComponent.isTransformed()) return;
 
         LivingEntity target = getSelectedMarionette(player);
-
         if (target != null) {
+            if (target.level() != player.level()) return;
             ControllingUtil.possess(player, target, true);
         }
     }

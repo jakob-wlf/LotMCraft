@@ -132,21 +132,17 @@ public class DreamWeaveAbility extends SelectableAbility {
             removeMob(target.getUUID(), mob);
         });
 
+        if(!BeyonderData.getPathway(entity).equals("visionary") ||
+                BeyonderData.getSequence(entity) != 3) return;
+
         if(entity instanceof ServerPlayer player) {
             if (target instanceof ServerPlayer targetPlayer) {
-
                 if(!(target.hasEffect(ModEffects.ASLEEP))) return;
 
-                if (!Seq2.map.containsKey(player.getUUID())) {
-                    Seq2.map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
-                } else {
-                    var list = Seq2.map.get(player.getUUID());
-                    if (list.contains(targetPlayer.getUUID()))
-                        return;
+                var component = player.getData(ModAttachments.RITUALS.get());
+                if (component.isCompleted()) return;
 
-                    list.add(targetPlayer.getUUID());
-                    Seq2.map.put(player.getUUID(), list);
-                }
+                component.addTargetUuid(targetPlayer.getUUID());
             }
         }
     }
@@ -192,18 +188,15 @@ public class DreamWeaveAbility extends SelectableAbility {
             removeAllMobs(target.getUUID(), mobs);
         });
 
+        if(!BeyonderData.getPathway(entity).equals("visionary") ||
+                BeyonderData.getSequence(entity) != 3) return;
+
         if(entity instanceof ServerPlayer player) {
             if (target instanceof ServerPlayer targetPlayer) {
-                if (!Seq2.map.containsKey(player.getUUID())) {
-                    Seq2.map.put(player.getUUID(), new LinkedList<>(List.of(targetPlayer.getUUID())));
-                } else {
-                    var list = Seq2.map.get(player.getUUID());
-                    if (list.contains(targetPlayer.getUUID()))
-                        return;
+                var component = player.getData(ModAttachments.RITUALS.get());
+                if (component.isCompleted()) return;
 
-                    list.add(targetPlayer.getUUID());
-                    Seq2.map.put(player.getUUID(), list);
-                }
+                component.addTargetUuid(targetPlayer.getUUID());
             }
         }
     }

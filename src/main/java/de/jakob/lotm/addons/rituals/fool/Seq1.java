@@ -20,9 +20,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq1 {
-    private static final int AMOUNT = 100; // dont forget to sync with puppeteering max
-
-    private static Map<UUID, Integer> timer = new HashMap<>();
+    private static final int AMOUNT = 100;
     private static final int TIME_SEC = 20 * 60 * 120;
 
     @SubscribeEvent
@@ -35,10 +33,6 @@ public class Seq1 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(!timer.containsKey(player.getUUID())){
-            timer.put(player.getUUID(), 0);
-        }
-
         var marionetteList = player.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT.get()).getMarionettes();
         int count = 0;
         var nearby = AbilityUtil.getNearbyEntities(null, level, player.position(), 100);
@@ -48,15 +42,18 @@ public class Seq1 {
         }
 
         if(count >= AMOUNT){
-            timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+            int currentTicks = component.getStage() + 1;
+            component.setStage(currentTicks);
 
-            if(timer.get(player.getUUID()) >= TIME_SEC) {
+            if (currentTicks >= TIME_SEC) {
                 component.setCompleted(true);
-                timer.remove(player.getUUID());
+                component.setStage(0);
             }
         }
         else{
-            timer.remove(player.getUUID());
+            if (component.getStage() != 0) {
+                component.setStage(0);
+            }
         }
     }
 

@@ -18,8 +18,6 @@ import java.util.*;
 )
 public class Seq2 {
     private static final int AMOUNT = 5;
-    private static final float PERCENT = 0.4f;
-    public static final Map<UUID, List<UUID>> map = new HashMap<>();
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -31,12 +29,7 @@ public class Seq2 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(!map.containsKey(player.getUUID())){
-            map.put(player.getUUID(), new LinkedList<>());
-        }
-
-        if(map.get(player.getUUID()).size() >= AMOUNT){
-            map.remove(player.getUUID());
+        if (component.getTargetUuids().size() >= AMOUNT) {
             component.setCompleted(true);
         }
     }

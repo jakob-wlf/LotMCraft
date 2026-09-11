@@ -55,6 +55,7 @@ public class Seq3 {
 
         for (var obj : level.getServer().getPlayerList().getPlayers()) {
             if (obj.equals(player)) continue;
+            if (obj.level() != player.level()) continue;
 
             if (obj.distanceTo(player) <= DISTANCE)
                 component.setStage(0);
@@ -77,6 +78,7 @@ public class Seq3 {
 
         for (var obj : level.getServer().getPlayerList().getPlayers()) {
             if (BeyonderData.getPathway(obj).equals("fool") && BeyonderData.getSequence(obj) == 4) {
+                if (obj.level() != player.level()) continue;
                 if (player.distanceTo(obj) <= DISTANCE) {
                     var component = obj.getData(ModAttachments.RITUALS.get());
                     component.setStage(0);

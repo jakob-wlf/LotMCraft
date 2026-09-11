@@ -39,12 +39,21 @@ public class Seq2 {
                 BeyonderData.getSequence(player) != 3) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
-        if(component.isCompleted()) return;
+        if(component.isCompleted()) {
+            timestamp.remove(player.getUUID());
+            nameMap.remove(player.getUUID());
+            return;
+        }
         if(!timestamp.containsKey(player.getUUID()) || !nameMap.containsKey(player.getUUID())){
             component.setStage(0);
         }
 
         if(component.getStage() == 1){
+            if (!timestamp.containsKey(player.getUUID()) || !nameMap.containsKey(player.getUUID())) {
+                component.setStage(0);
+                return;
+            }
+
             if(System.currentTimeMillis() >= timestamp.get(player.getUUID()) + (FAIL_TIME*1000)){
                 timestamp.remove(player.getUUID());
                 nameMap.remove(player.getUUID());
@@ -66,8 +75,7 @@ public class Seq2 {
 
         var component = player.getData(ModAttachments.RITUALS.get());
 
-        if(component.getStage() != 0) return;
-        if(component.isCompleted()) return;
+        if(component.getStage() != 0 ||component.isCompleted()) return;
 
         String msg = event.getRawText();
         var stream = new TokenStream(msg);
@@ -95,17 +103,15 @@ public class Seq2 {
 
             player.sendSystemMessage(message);
             timestamp.put(player.getUUID(), System.currentTimeMillis());
+            nameMap.put(player.getUUID(), name);
             component.setStage(1);
 
-            nameMap.put(player.getUUID(), name);
             if(player.level() instanceof ServerLevel level) {
-                var victimB = level.getPlayerByUUID(id);
-
-                if(!(victimB instanceof ServerPlayer victim)) return;
-
-                victim.sendSystemMessage(Component.literal(victimMsg).withStyle(ChatFormatting.DARK_RED));
-
-                MetaAwarenessAbility.sendWithMessage(player, victim, "Placed prophecy");
+                ServerPlayer victim = level.getServer().getPlayerList().getPlayer(id);
+                if(victim != null) {
+                    victim.sendSystemMessage(Component.literal(victimMsg).withStyle(ChatFormatting.DARK_RED));
+                    MetaAwarenessAbility.sendWithMessage(player, victim, "Placed prophecy");
+                }
             }
         }
     }
@@ -120,18 +126,18 @@ public class Seq2 {
 
     @SubscribeEvent
     private static void onPlayerDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) {
+        if (!(event.getEntity() instanceof ServerPlayer victim)) {
             return;
         }
-        if(!(player.level() instanceof ServerLevel level)) return;
+        if(!(victim.level() instanceof ServerLevel level)) return;
 
-        String name = player.getName().getString();
+        String name = victim.getName().getString();
 
         List<UUID> buff = new LinkedList<>();
 
         for(var obj : nameMap.entrySet()){
             if(obj.getValue().equals(name)){
-                var target = level.getEntity(obj.getKey());
+                var target = level.getServer().getPlayerList().getPlayer(obj.getKey());
 
                 if(target == null){
                     buff.add(obj.getKey());

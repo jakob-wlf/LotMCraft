@@ -78,11 +78,11 @@ public class PuppeteeringAbility extends Ability {
     private int getMaxPuppetCount(int sequence) {
         return switch (sequence) {
             default -> 3;
-            case 4 -> 20;
+            case 4 -> 25;
             case 3 -> 50;
-            case 2 -> 100;
-            case 1 -> 200;
-            case 0 -> 300;
+            case 2 -> 150;
+            case 1 -> 250;
+            case 0 -> 500;
         };
     }
 

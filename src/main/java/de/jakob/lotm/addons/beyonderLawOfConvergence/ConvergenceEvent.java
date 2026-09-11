@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,10 +17,10 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+
+import static de.jakob.lotm.util.BeyonderData.implementedPathways;
+import static de.jakob.lotm.util.BeyonderData.pathwayInfos;
 
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
@@ -27,6 +28,12 @@ import java.util.UUID;
 public class ConvergenceEvent {
 
     private static Map<UUID, Integer> timer = new HashMap<>();
+
+    static String[][] neighboringPathways = {
+            {"fool", "error", "door"},
+            {"dog", "cat", "rabbit", "hamster", "ferret"},
+            {"red", "green", "blue", "yellow"}
+    };
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -51,6 +58,25 @@ public class ConvergenceEvent {
         }
 
         String path = BeyonderData.getPathway(player);
+
+        PathwayInfos info = pathwayInfos.get(path);
+
+        List<String> validNeighbors = new ArrayList<>();
+        if (info != null && info.neighboringPathways() != null) {
+            for (String neighbor : info.neighboringPathways()) {
+                if (implementedPathways.contains(neighbor)) {
+                    validNeighbors.add(neighbor);
+                }
+            }
+        }
+
+        // 25% chance to get a neighboring pathway
+        if (Math.random() <= 0.25) {
+            if (!validNeighbors.isEmpty()) {
+                path = validNeighbors.get((int)(Math.random() * validNeighbors.size()));
+            }
+        }
+
 
         Random random = new Random();
         double baseChance = 0.0010;

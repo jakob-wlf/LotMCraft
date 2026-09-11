@@ -21,7 +21,6 @@ import java.util.*;
 public class Seq4 {
     public static final int AMOUNT = 9;
     private static final int MIN_AMOUNT_ITEMS = 10;
-    private static Map<UUID, Set<UUID>> map = new HashMap<>();
 
     private static Map<UUID, Integer> inventoryMapInitial = new HashMap<>();
     private static Map<UUID, UUID> lookingAt = new HashMap<>();
@@ -36,22 +35,17 @@ public class Seq4 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(component.getStage() != 0 && !map.containsKey(player.getUUID())){
-            RitualEffectHandlerEvent.removeRitual(player);
-        }
-
         if(component.getStage() >=AMOUNT){
             component.setCompleted(true);
 
-            for(var obj : map.get(player.getUUID())){
+            for(var obj : component.getTargetUuids()){
                 var target = level.getPlayerByUUID(obj);
                 if(target == null) continue;
 
                 target.kill();
             }
 
-            map.remove(player.getUUID());
-
+            component.clearTargetUuids();
             return;
         }
 
@@ -59,9 +53,7 @@ public class Seq4 {
         if(!(target instanceof ServerPlayer targetPlayer)) return;
         if(BeyonderData.getSequence(target) > 6) return;
 
-        if(map.containsKey(player.getUUID())){
-            if(map.get(player.getUUID()).contains(targetPlayer.getUUID())) return;
-        }
+        if (component.getTargetUuids().contains(targetPlayer.getUUID())) return;
 
         if(lookingAt.containsKey(player.getUUID())){
             if(!lookingAt.get(player.getUUID()).equals(targetPlayer.getUUID())){
@@ -79,15 +71,8 @@ public class Seq4 {
         else{
             if(occupied == 0 && inventoryMapInitial.get(player.getUUID()) >= MIN_AMOUNT_ITEMS){
                 component.setStage(component.getStage() + 1);
-
-                if(!map.containsKey(player.getUUID())){
-                    map.put(player.getUUID(), new HashSet<>(Set.of(targetPlayer.getUUID())));
-                }
-                else{
-                    var set = map.get(player.getUUID());
-                    set.add(targetPlayer.getUUID());
-                    map.put(player.getUUID(), set);
-                }
+                component.addTargetUuid(targetPlayer.getUUID());
+                inventoryMapInitial.remove(player.getUUID());
             }
         }
 

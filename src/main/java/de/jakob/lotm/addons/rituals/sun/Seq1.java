@@ -22,7 +22,7 @@ import java.util.UUID;
 public class Seq1 {
     private static final Integer AMOUNT = 300;
     private static final HashMap<UUID, Long> timestamp = new HashMap<>();
-    public static final int FAIL_TIME = 2600;
+    public static final int FAIL_TIME = 60 * 60 * 24; // 24 hours
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -36,6 +36,7 @@ public class Seq1 {
 
        if(component.getStage() >= AMOUNT){
            component.setCompleted(true);
+           timestamp.remove(player.getUUID());
        }
 
        if(!timestamp.containsKey(player.getUUID())){
@@ -48,6 +49,23 @@ public class Seq1 {
                component.setStage(0);
            }
        }
+
+        if (component.getStage() > 0) {
+            long currentTime = System.currentTimeMillis();
+
+            if (!timestamp.containsKey(player.getUUID())) {
+                timestamp.put(player.getUUID(), currentTime);
+            } else {
+                long startTime = timestamp.get(player.getUUID());
+
+                if (currentTime >= startTime + (FAIL_TIME * 1000)) {
+                    component.setStage(0);
+                    timestamp.remove(player.getUUID());
+                }
+            }
+        } else {
+            timestamp.remove(player.getUUID());
+        }
     }
 
 }

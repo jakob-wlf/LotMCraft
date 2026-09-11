@@ -10,6 +10,8 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -22,7 +24,7 @@ import java.util.*;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq3 {
-    private static int NEEDED = 20 * 60 * 60;
+    private static int NEEDED = 20 * 60 * 30;
     private static Map<UUID, Integer> timer = new HashMap<>();
     private static Map<UUID, UUID> self = new HashMap<>();
 
@@ -41,7 +43,14 @@ public class Seq3 {
             self.remove(player.getUUID());
         }
 
-        if(self.containsKey(player.getUUID())) return;
+        if(self.containsKey(player.getUUID())) {
+            Entity npc = level.getEntity(self.get(player.getUUID()));
+            if (npc == null || !npc.isAlive()) {
+                self.remove(player.getUUID());
+            } else {
+                return;
+            }
+        }
 
         if(!timer.containsKey(player.getUUID())){
             timer.put(player.getUUID(), 0);

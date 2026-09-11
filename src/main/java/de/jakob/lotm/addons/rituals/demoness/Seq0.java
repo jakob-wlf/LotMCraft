@@ -21,7 +21,6 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq0 {
-    private static Map<UUID, Integer> timer = new HashMap<>();
     private static final int TIME_SEC = 20 * 60 * 60 * 2;
 
     @SubscribeEvent
@@ -32,10 +31,7 @@ public class Seq0 {
         if(!BeyonderData.hasUniqueness(player)) return;
 
         var component = player.getData(ModAttachments.RITUALS.get());
-
-        if(!timer.containsKey(player.getUUID())){
-            timer.put(player.getUUID(), 0);
-        }
+        if (component.isCompleted()) return;
 
         boolean haveSun = false;
         boolean haveVis = false;
@@ -54,15 +50,14 @@ public class Seq0 {
         }
 
         if (haveTyrant && haveSun && haveVis) {
-            timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+            component.setStage(component.getStage() + 1);
 
-            if(timer.get(player.getUUID()) >= TIME_SEC) {
+            if (component.getStage() >= TIME_SEC) {
                 component.setCompleted(true);
-                timer.remove(player.getUUID());
             }
         } else {
+            component.setStage(0);
             RitualEffectHandlerEvent.removeRitual(player);
-            timer.remove(player.getUUID());
         }
     }
 }
