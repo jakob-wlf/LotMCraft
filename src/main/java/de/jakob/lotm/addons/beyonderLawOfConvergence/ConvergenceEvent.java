@@ -29,12 +29,6 @@ public class ConvergenceEvent {
 
     private static Map<UUID, Integer> timer = new HashMap<>();
 
-    static String[][] neighboringPathways = {
-            {"fool", "error", "door"},
-            {"dog", "cat", "rabbit", "hamster", "ferret"},
-            {"red", "green", "blue", "yellow"}
-    };
-
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
         if(!(event.getEntity() instanceof ServerPlayer player)) return;

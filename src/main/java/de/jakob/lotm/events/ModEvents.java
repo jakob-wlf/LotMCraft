@@ -257,6 +257,7 @@ public class ModEvents {
         FactionAdminCommand.register(event.getDispatcher());
         AnchoringCommand.register(event.getDispatcher());
         RitualCommand.register(event.getDispatcher());
+        CopiedAbilitiesCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

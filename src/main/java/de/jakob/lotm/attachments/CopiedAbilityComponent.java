@@ -52,6 +52,11 @@ public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
         }
     }
 
+    public void removeAbility(String abilityId) {
+        abilities.removeIf(data -> data.abilityId().equalsIgnoreCase(abilityId));
+    }
+
+
     public CopiedAbilityData getAbility(int index) {
         if (index >= 0 && index < abilities.size()) {
             return abilities.get(index);

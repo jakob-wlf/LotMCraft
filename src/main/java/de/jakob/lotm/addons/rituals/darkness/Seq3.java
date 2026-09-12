@@ -43,7 +43,7 @@ public class Seq3 {
             int currentTicks = timer.get(player.getUUID()) + 1;
             timer.put(player.getUUID(), currentTicks);
 
-            if (currentTicks >= 15 * 20) {
+            if (currentTicks >= 30 * 20) {
                 RitualEffectHandlerEvent.removeRitualWithMessage(player);
                 timer.remove(player.getUUID());
             }

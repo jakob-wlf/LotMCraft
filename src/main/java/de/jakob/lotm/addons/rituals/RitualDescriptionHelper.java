@@ -11,7 +11,7 @@ public class RitualDescriptionHelper {
 
     static {
         Map<Integer, String> wof = new HashMap<>();
-        wof.put(5, "Survive a full week without any fortune");
+        wof.put(5, "Survive a full week with terrible luck");
         wof.put(4, "Meet a calamity or an angel while being at your lowest luck");
         wof.put(3, "Set a prophecy on sequence 3+ player and make it true in one day, no matter what\n" +
                 "(To make a prophecy type in chat - \"Nickname_of_target will die\")");
