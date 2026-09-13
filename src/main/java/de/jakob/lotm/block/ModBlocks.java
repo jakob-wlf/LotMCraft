@@ -35,6 +35,14 @@ public class ModBlocks {
                     .sound(SoundType.POWDER_SNOW)
             ));
 
+    public static final DeferredBlock<Block> BREEDING_BLOCK = registerBlock("breeding_block",
+            () -> new BreedingBlock(BlockBehaviour.Properties.of()
+                    .strength(-1)
+                    .noOcclusion()
+                    .sound(SoundType.POWDER_SNOW)
+            ));
+
+
     public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
             () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
                     .strength(3.0f)

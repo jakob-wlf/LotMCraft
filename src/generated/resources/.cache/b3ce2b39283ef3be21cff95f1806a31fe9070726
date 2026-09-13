@@ -1,4 +1,4 @@
-// 1.21.1	2026-09-08T11:45:52.5063091	Item Models: lotmcraft
+// 1.21.1	2026-09-12T15:34:53.8859141	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 ff1f40acc559743c518a78f4d8d99df759005e37 assets/lotmcraft/models/item/agate_peacock_egg.json
@@ -277,6 +277,7 @@ b6fde8a1f9aa8b1badc66efc8e72c1ea21702132 assets/lotmcraft/models/item/monster_po
 24261c6d0868cadc2cd8723d3f2ec38741343c29 assets/lotmcraft/models/item/moon.json
 2fbfa7f3bc26a477e385dff9c0ce8f9d7cf9e946 assets/lotmcraft/models/item/mother_uniqueness.json
 f1caa54d29eca7a72716c885546fb828c3eb35d3 assets/lotmcraft/models/item/murloc_bladder.json
+6f4384a35873299a07dc8e510a00c805f0e3a001 assets/lotmcraft/models/item/mysterious_silver_plate.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/naturewalker.json
 e90ee5d776f7b0a3fc4cb8dcd0e2d7c499dbff4b assets/lotmcraft/models/item/naturewalker_characteristic.json
 688c92b018dd8919f0feba241fa07f33f5d8c334 assets/lotmcraft/models/item/naturewalker_potion.json

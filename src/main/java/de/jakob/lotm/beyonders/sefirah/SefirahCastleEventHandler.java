@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -20,6 +21,7 @@ import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -56,6 +58,17 @@ public class SefirahCastleEventHandler {
                         !BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("door") &&
                         !BeyonderData.getPathway(event.getPlayer()).equalsIgnoreCase("error"))) {
             AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.wrong_pathway").withColor(0x942de3));
+            return;
+        }
+
+        // Check for item requirement
+        if(!event.getPlayer().getInventory().hasAnyOf(Set.of(ModItems.MYSTERIOUS_SILVER_PLATE.asItem()))) {
+            AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.something_missing").withColor(0x942de3));
+            return;
+        }
+
+        if (SefirahHandler.hasSefirot(event.getPlayer())) {
+            AbilityUtil.sendActionBar(event.getPlayer(), Component.translatable("lotm.sefirot.conflicting_sefirah").withColor(0x942de3));
             return;
         }
 

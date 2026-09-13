@@ -1,6 +1,7 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -36,6 +37,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('D', Items.DIAMOND)
                 .define('N', Items.NETHERITE_SCRAP)
                 .unlockedBy("has_diamond", has(Items.DIAMOND))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MYSTERIOUS_SILVER_PLATE.get())
+                .pattern("IPI")
+                .pattern("MNA")
+                .pattern("IPI")
+                .define('P', Items.PRISMARINE_SHARD)
+                .define('I', Items.IRON_INGOT)
+                .define('N', Items.NETHERITE_INGOT)
+                .define('A', ModIngredients.ANCIENT_WRAITH_DUST)
+                .define('M', ModIngredients.MIST_WATCHER_CRYSTAL)
+                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GUIDING_BOOK.get())

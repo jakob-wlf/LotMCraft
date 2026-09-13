@@ -88,12 +88,10 @@ public class ClientBeyonderCache {
     }
 
     public static void clearCache() {
-        System.out.println("Clearing ClientBeyonderCache");
         dataCache.clear();
     }
 
     public static void removePlayer(UUID playerUUID) {
-        System.out.println("Removing player " + playerUUID + " from ClientBeyonderCache");
         dataCache.remove(playerUUID);
     }
 

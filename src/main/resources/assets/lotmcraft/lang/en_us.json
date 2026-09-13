@@ -1,5 +1,6 @@
 {
   "item.lotmcraft.fool_card": "Fool Card",
+  "item.lotmcraft.mysterious_silver_plate": "Mysterious Silver Plate",
   "item.lotmcraft.crystal_ball": "Crystal Ball",
   "item.lotmcraft.cane": "Cane",
   "item.lotmcraft.guiding_book": "Guiding Book",
@@ -1934,13 +1935,20 @@
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
   "lotm.sefirot.in_combat": "You are in combat",
   "lotm.sefirot.sefirah_castle_already_occupied": "Sefirah Castle is occupied already",
+  "lotm.sefirot.brood_hive_already_occupied": "The Brood Hive is occupied already",
   "lotm.sefirot.wrong_pathway": "Your Pathway does not align with the Sefirot",
+  "lotm.sefirot.something_missing": "You feel a reaction but something is missing.",
+  "lotm.sefirot.conflicting_sefirah": "Your already occupied Sefirot conflicts with a second one",
   "lotm.sefirot.not_in_sefirot": "You are not in a Sefirot",
   "lotm.sefirot.cannot_reach_player": "That player can't be reached",
   "lotm.sefirot.invited": "You have been invited to the %s. (Click to join)",
   "lotm.sefirot.target_not_in_sefirot": "That player is not in a Sefirot",
   "lotm.sefirot.invite_sent": "Invite sent to %s",
   "lotm.sefirot.sefirah_castle": "Sefirah Castle",
+  "lotm.sefirot.brood_hive": "Brood Hive",
+  "lotm.sefirot.brood_hive_calling": "You feel like you are called by a realm of procreation, but something is missing",
+  "lotm.sefirot.brood_hive_reaction": "You feel a vivid reaction, but your pathway does not align with the Brood Hive",
+  "lotm.sefirot.not_strong_enough": "You are not strong enough yet.",
 
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",
@@ -2369,5 +2377,6 @@
   "ritual.lotmcraft.min_sequence": "Min. Sequence: ",
   "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity",
   "block.lotmcraft.sefirah_block": "Sephirot",
+  "block.lotmcraft.breeding_block": "Breeding Block",
   "lotm.marionette.cycle_hint": "Press %s to cycle marionettes"
 }

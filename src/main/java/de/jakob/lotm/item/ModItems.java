@@ -29,6 +29,7 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
 
     public static final DeferredItem<Item> FOOL_Card = ITEMS.registerItem("fool_card", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> MYSTERIOUS_SILVER_PLATE = ITEMS.registerItem("mysterious_silver_plate", Item::new, new Item.Properties());
     public static final DeferredItem<Item> ONE_POUND = ITEMS.registerItem("one_pound", Item::new, new Item.Properties());
     public static final DeferredItem<Item> ONE_SOLI = ITEMS.registerItem("one_soli", Item::new, new Item.Properties());
     public static final DeferredItem<Item> CRYSTAL_BALL = ITEMS.registerItem("crystal_ball", Item::new, new Item.Properties().stacksTo(1));

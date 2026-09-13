@@ -22,6 +22,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("sefirah_block_be", () -> BlockEntityType.Builder.of(
                     SefirahBlockEntity::new, ModBlocks.SEFIRAH_BLOCK.get()).build(null));
 
+    public static final Supplier<BlockEntityType<BreedingBlockEntity>> BREEDING_BLOCK_BE =
+            BLOCK_ENTITIES.register("breeding_block_be", () -> BlockEntityType.Builder.of(
+                    BreedingBlockEntity::new, ModBlocks.BREEDING_BLOCK.get()).build(null));
+
     public static final Supplier<BlockEntityType<RitualisticTableBlockEntity>> RITUALISTIC_TABLE_BE =
             BLOCK_ENTITIES.register("ritualistic_table_be", () -> BlockEntityType.Builder.of(
                     RitualisticTableBlockEntity::new, ModBlocks.RITUALISTIC_TABLE.get()).build(null));
