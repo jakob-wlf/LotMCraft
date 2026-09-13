@@ -242,8 +242,9 @@ public class LOTMCraft
     private void commonSetup(final FMLCommonSetupEvent event) {
         if (ModList.get().isLoaded("tessellate")){
             LOGGER.debug("registering tesselate exceptions");
-            TessellateApi.registerMainThreadEntity(ModEntities.EXILE_DOORS.get());
-            TessellateApi.registerMainThreadEntity(ModEntities.CONCEALED_DOMAIN.get());
+            // If needed exceptions can be added to tessellate temporarialy so it does not fallback to serial ticks. below are examples of how to do so
+            //TessellateApi.registerMainThreadEntity(ModEntities.EXILE_DOORS.get());
+            //TessellateApi.registerMainThreadEntity(ModEntities.CONCEALED_DOMAIN.get());
         }
     }
 
