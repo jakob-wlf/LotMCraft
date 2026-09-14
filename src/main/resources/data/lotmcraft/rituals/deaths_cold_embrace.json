@@ -22,7 +22,7 @@
     "type": "potion_effect",
     "params": {
       "effects": [
-        { "id": "minecraft:wither", "duration_ticks": 100, "amplifier": 1, "target": "nearest", "max_distance": 8 }
+        { "id": "minecraft:wither", "duration_ticks": 200, "amplifier": 3, "target": "nearby", "max_distance": 8 }
       ]
     }
   }

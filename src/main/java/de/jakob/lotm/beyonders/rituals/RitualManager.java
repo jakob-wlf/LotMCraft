@@ -89,6 +89,9 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
 
     private static ItemStack createBookItemStack(RitualRecipe ritual) {
         String bookTitle = Component.translatable("ritual.lotmcraft." + ritual.discoveredFrom().split(":")[1]).getString();
+        if(bookTitle.length() > 30) {
+            bookTitle = bookTitle.substring(0, 30);
+        }
         String candleName = BuiltInRegistries.ITEM.get(ResourceLocation.parse(ritual.candle())).getDescription().getString();
         List<String> sacrificeNames = ritual.sacrifices().stream()
                 .map(sacrifice -> {

@@ -22,6 +22,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.HashMap;
@@ -101,6 +102,19 @@ public class BroodHiveEventHandler {
             DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
             component.disableAbilityUsageForTime("sefirah_castle", 20 * 20, entity);
         }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerBreakBlock(BlockEvent.BreakEvent event) {
+        if(!(event.getPlayer().level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+
+        if (!serverLevel.dimension().equals(ModDimensions.BROOD_HIVE_DIMENSION_KEY)) {
+            return;
+        }
+
+        event.setCanceled(true);
     }
 
 }
