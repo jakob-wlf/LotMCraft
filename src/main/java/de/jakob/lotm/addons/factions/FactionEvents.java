@@ -39,7 +39,7 @@ public class FactionEvents {
     public static Map<ChunkPos, List<String>> posToPlayerMap = new ConcurrentHashMap<>();
     public static Map<String, ChunkPos> playerToPosMap = new ConcurrentHashMap<>();
 
-    private static boolean shouldFail(ServerPlayer player, ChunkPos pos) {
+    public static boolean shouldFail(ServerPlayer player, ChunkPos pos) {
         var factions = BeyonderData.factionStorage.getFaction(pos);
 
         if (factions.isEmpty()) return false;

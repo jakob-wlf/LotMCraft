@@ -52,13 +52,13 @@ public class GraftingAbility extends SelectableAbility {
 
 
     public GraftingAbility(String id) {
-        super(id, 1);
+        super(id, 0.1f);
 
         canBeUsedByNPC = false;
         canBeShared = false;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(35000f, 15000f));
+        dynamicSpirituality = new LinkedList<>(List.of(17500f,75000f));
     }
 
     @Override

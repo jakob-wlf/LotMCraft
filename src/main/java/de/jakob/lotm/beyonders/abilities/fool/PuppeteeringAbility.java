@@ -43,6 +43,9 @@ public class PuppeteeringAbility extends Ability {
 
     private final HashMap<UUID, LivingEntity> entitiesBeingManipulated = new HashMap<>();
 
+    private final DustParticleOptions particleOptions = new DustParticleOptions(new Vector3f(.4f, .4f, .4f), 1.35f);
+
+
     public PuppeteeringAbility(String id) {
         super(id, 1);
         canBeUsedByNPC = false;
@@ -174,6 +177,13 @@ public class PuppeteeringAbility extends Ability {
             }
         }
 
+        Vec3 startTemp = entity.getEyePosition().add(entity.getLookAngle().normalize());
+        Vec3 endTemp = target.getEyePosition();
+
+        final Vec3 perp1 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
+        final Vec3 perp2 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
+        final Vec3 perp3 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
+
         AtomicDouble health = new AtomicDouble(target.getHealth());
         AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
         AtomicDouble elapsedTicks = new AtomicDouble(0.0);
@@ -226,6 +236,23 @@ public class PuppeteeringAbility extends Ability {
             Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
             Vec3 end = target.getEyePosition();
 
+            for(int i = 0; i < 3; i++) {
+                double right = i == 0 ? -2 : (i == 1 ? 1.4 : 2.2);
+                double up = i == 2 ? -.2 : (i == 1 ? 0 : 1.2);
+                Vec3 perp = i == 0 ? perp1 : (i == 1 ? perp2 : perp3);
+                Vec3 startLoc = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, right, up);
+
+                float distance = (float) end.distanceTo(startLoc);
+                float bezierSteps = .025f;
+
+                int maxPoints = Math.max(2, Math.min(10, (int) Math.ceil(distance * 1.5)));
+
+                List<Vec3> points = VectorUtil.createBezierCurve(startLoc, end, perp, bezierSteps, random.nextInt(1, maxPoints + 1));
+
+                for(Vec3 point : points) {
+                    ParticleUtil.spawnParticles((ServerLevel) level, particleOptions, point, 1, 0, 0, 0, 0);
+                }
+            }
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 4, false, false, false));
             if (progress >= 0.20f) {
                 target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 5, false, false, false));

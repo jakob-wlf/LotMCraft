@@ -258,6 +258,7 @@ public class ModEvents {
         AnchoringCommand.register(event.getDispatcher());
         RitualCommand.register(event.getDispatcher());
         CopiedAbilitiesCommand.register(event.getDispatcher());
+        ResetPlayerShapeCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

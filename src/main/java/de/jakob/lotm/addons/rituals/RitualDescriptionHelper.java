@@ -43,8 +43,7 @@ public class RitualDescriptionHelper {
         Map<Integer, String> sun = new HashMap<>();
         sun.put(5, "Drink the potion in pure darkness and buried in packed ice");
         sun.put(4, "Drink the potion in a very unstable mental state");
-        sun.put(3, "Kill at least " + de.jakob.lotm.addons.rituals.sun.Seq3.AMOUNT
-        + " demigods from darker pathways while following your justice");
+        sun.put(3, "Kill at least 3 demigods from darker and evil pathways while following your justice");
         sun.put(2, "Find an item with at least an Angel-rank authority and a deep connection to the Sun in mysticism");
         sun.put(1, "Hear a lot of prayers and become worshipped");
         sun.put(0, "Immerse into deep void while enveiled with true darkness that symbolizes the destination of all things.\n" +
@@ -73,7 +72,7 @@ public class RitualDescriptionHelper {
         fool.put(5, "Drink potion while under effect of buffing siren song");
         fool.put(4, "Orchestrate a grand performance before many spectators (8 or more) to kill " +
                 "a Beyonder player at the level of a demigod or higher");
-        fool.put(3, "Be separated from reality, unwanted by any factions, isolated from all life and communication as far as the eye can see for half a month");
+        fool.put(3, "Be separated from reality, unwanted by any factions, isolated from all life and communication as far as the eye can see for a nearly 8 days");
         fool.put(2, "Bring back an ancient race from a gentler and warmer time back from extinction, help them flourish and increase their members pass critically endangered levels");
         fool.put(1, "Near the full might of your marionettest prowess, re-enact the daily life of a desolate town, with only your marionettes, and spend a weeks living among them");
         fool.put(0, "Fool time or fate once");
@@ -111,7 +110,7 @@ public class RitualDescriptionHelper {
         darkness.put(5, "Find a way to enter Spirit World and explore it");
         darkness.put(4, "Collect bloodline characteristics of Demigods' descendants");
         darkness.put(3, "Drink the potion in near true death state, mentally and physically");
-        darkness.put(2, "Be born in Darkness, moulded by it, alone and isolated from all life, leave all connections and factions in the light and stay absorbed in darkness for nearly an entire month (Nothing within 16 chunks extending out from you)");
+        darkness.put(2, "Be born in Darkness, moulded by it, alone and isolated from all life, leave all connections and factions in the light and stay absorbed in darkness for more than 10 days (Nothing within 16 chunks extending out from you)");
         darkness.put(1, "Bring Misfortune to a weakened Archangel");
         darkness.put(0, "Induce eternal slumber upon A True Deity");
         description.put("darkness", darkness);

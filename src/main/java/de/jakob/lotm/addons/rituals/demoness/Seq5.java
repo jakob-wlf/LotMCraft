@@ -3,6 +3,8 @@ package de.jakob.lotm.addons.rituals.demoness;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -29,6 +31,9 @@ public class Seq5 {
         }
 
         if(!player.isOnFire()){
+            if (component.getStage() > 0) {
+                player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+            }
             component.setStage(0);
         }
     }

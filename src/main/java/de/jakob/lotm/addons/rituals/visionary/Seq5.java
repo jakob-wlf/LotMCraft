@@ -5,6 +5,8 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -54,6 +56,9 @@ public class Seq5 {
             }
             else{
                 wakeUp.remove(player.getUUID());
+                if (component.getStage() > 0) {
+                    player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                }
                 component.setStage(0);
                 player.kill();
             }

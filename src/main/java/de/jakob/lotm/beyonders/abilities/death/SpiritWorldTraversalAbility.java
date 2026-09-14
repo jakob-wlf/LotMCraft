@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.death;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.factions.FactionEvents;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
@@ -74,7 +75,9 @@ public class SpiritWorldTraversalAbility extends Ability {
             }
             BlockPos below = pos.below();
             if (targetLevel.getBlockState(below).isAir()) {
-                targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+                if (!FactionEvents.shouldFail(player, player.chunkPosition())) {
+                    targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+                }
             }
             player.teleportTo(targetLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
         }

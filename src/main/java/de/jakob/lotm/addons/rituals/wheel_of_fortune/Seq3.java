@@ -44,11 +44,17 @@ public class Seq3 {
             return;
         }
         if(!timestamp.containsKey(player.getUUID()) || !nameMap.containsKey(player.getUUID())){
+            if (component.getStage() > 0) {
+                player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+            }
             component.setStage(0);
         }
 
         if(component.getStage() == 1){
             if (!timestamp.containsKey(player.getUUID()) || !nameMap.containsKey(player.getUUID())) {
+                if (component.getStage() > 0) {
+                    player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                }
                 component.setStage(0);
                 return;
             }
@@ -56,6 +62,9 @@ public class Seq3 {
             if(System.currentTimeMillis() >= timestamp.get(player.getUUID()) + (FAIL_TIME*1000)){
                 timestamp.remove(player.getUUID());
                 nameMap.remove(player.getUUID());
+                if (component.getStage() > 0) {
+                    player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                }
                 component.setStage(0);
             }
         }

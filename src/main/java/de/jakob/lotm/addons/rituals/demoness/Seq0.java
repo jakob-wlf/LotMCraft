@@ -7,6 +7,8 @@ import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.item.custom.MoonItem;
 import de.jakob.lotm.item.custom.SunItem;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -56,6 +58,9 @@ public class Seq0 {
                 component.setCompleted(true);
             }
         } else {
+            if (component.getStage() > 0) {
+                player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+            }
             component.setStage(0);
             RitualEffectHandlerEvent.removeRitual(player);
         }

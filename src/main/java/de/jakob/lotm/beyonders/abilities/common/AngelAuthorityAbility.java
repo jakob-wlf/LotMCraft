@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.factions.FactionEvents;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
@@ -62,9 +63,9 @@ public class AngelAuthorityAbility extends SelectableAbility {
     }
 
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.angel_authority.spirit_world_passage",
+        return new String[]{"ability.lotmcraft.angel_authority.flight",
                 "ability.lotmcraft.angel_authority.artifact_shattering",
-                "ability.lotmcraft.angel_authority.flight"
+                "ability.lotmcraft.angel_authority.spirit_world_passage"
         };
     }
 
@@ -72,7 +73,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
             switch (abilityIndex) {
                 case 0:
-                    this.spiritWorldPassage(player);
+                    flight(player, (ServerLevel) level);
                     break;
 
                 case 1:
@@ -80,7 +81,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
                     break;
 
                 case 2:
-                    flight(player, (ServerLevel) level);
+                    this.spiritWorldPassage(player);
                     break;
 
             }
@@ -161,7 +162,9 @@ public class AngelAuthorityAbility extends SelectableAbility {
             }
             BlockPos below = pos.below();
             if (targetLevel.getBlockState(below).isAir()) {
-                targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+                if (!FactionEvents.shouldFail(player, player.chunkPosition())) {
+                    targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
+                }
             }
             player.teleportTo(targetLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
         }

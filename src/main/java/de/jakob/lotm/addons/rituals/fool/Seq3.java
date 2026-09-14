@@ -28,7 +28,7 @@ import java.util.UUID;
 public class Seq3 {
     private static final int DISTANCE = 150;
     private static final int SECONDS_PER_STAGE = 320;
-    private static final int STAGES = 50;
+    private static final int STAGES = 30;
     private static final int MAX_LEVEL_IN_FACTION = 5;
 
     @SubscribeEvent
@@ -42,6 +42,9 @@ public class Seq3 {
         if (component.isCompleted()) return;
 
         if (level.dimension() != ServerLevel.OVERWORLD) {
+            if (component.getStage() > 0) {
+                player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+            }
             component.setStage(0);
             return;
         }
@@ -57,8 +60,12 @@ public class Seq3 {
             if (obj.equals(player)) continue;
             if (obj.level() != player.level()) continue;
 
-            if (obj.distanceTo(player) <= DISTANCE)
+            if (obj.distanceTo(player) <= DISTANCE) {
+                if (component.getStage() > 0) {
+                    player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                }
                 component.setStage(0);
+            }
         }
 
         if (player.tickCount % (20 * SECONDS_PER_STAGE) == 0) {
@@ -81,6 +88,9 @@ public class Seq3 {
                 if (obj.level() != player.level()) continue;
                 if (player.distanceTo(obj) <= DISTANCE) {
                     var component = obj.getData(ModAttachments.RITUALS.get());
+                    if (component.getStage() > 0) {
+                        player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                    }
                     component.setStage(0);
                 }
             }

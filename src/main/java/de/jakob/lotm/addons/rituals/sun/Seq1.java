@@ -6,6 +6,8 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.item.custom.SunItem;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -46,6 +48,9 @@ public class Seq1 {
            var saved = timestamp.get(player.getUUID());
 
            if(System.currentTimeMillis() >= saved + (FAIL_TIME*1000)){
+               if (component.getStage() > 0) {
+                   player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+               }
                component.setStage(0);
            }
        }
@@ -59,6 +64,9 @@ public class Seq1 {
                 long startTime = timestamp.get(player.getUUID());
 
                 if (currentTime >= startTime + (FAIL_TIME * 1000)) {
+                    if (component.getStage() > 0) {
+                        player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                    }
                     component.setStage(0);
                     timestamp.remove(player.getUUID());
                 }

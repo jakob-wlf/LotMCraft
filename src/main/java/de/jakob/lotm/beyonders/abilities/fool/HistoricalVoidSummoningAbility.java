@@ -71,7 +71,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     private static final Map<BlockPos, PlacedBlockData> placedBlocks = new ConcurrentHashMap<>();
 
     public enum SummonType {
-        ITEM, ENTITY, HEALTH, SPIRITUALITY, CLEANSED_STATE, SEQUENCE
+        ITEM, ENTITY, HEALTH, SPIRITUALITY, CLEANSED_STATE, SEQUENCE, EFFECT
     }
 
     private static class PlacedBlockData {

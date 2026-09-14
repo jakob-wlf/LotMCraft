@@ -5,6 +5,8 @@ import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.animal.sniffer.Sniffer;
@@ -52,6 +54,9 @@ public class Seq1 {
         }
         else{
             if (component.getStage() != 0) {
+                if (component.getStage() > 0) {
+                    player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                }
                 component.setStage(0);
             }
         }

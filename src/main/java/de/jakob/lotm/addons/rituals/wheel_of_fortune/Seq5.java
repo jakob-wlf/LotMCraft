@@ -35,8 +35,6 @@ public class Seq5 {
 
         var luck = player.getData(ModAttachments.LUCK_COMPONENT.get());
         if(luck.getLuck() > -100){
-            component.setStage(0);
-            component.setCompleted(false);
             timer.remove(player.getUUID());
         }
         else{
