@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -50,6 +52,11 @@ public class MarionetteMovementGoal extends Goal {
 
         switch (component.getCurrentMode()) {
             case FOLLOW -> {
+                LivingEntity followTarget = controller;
+                if(ControllingUtils.isControlling(controller)) {
+                    followTarget = controller.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).bodyDouble;
+                }
+                if(followTarget == null) return;
                 double distance = marionette.distanceTo(controller);
 
                 if (distance > 6.0) {

@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
 import com.mojang.authlib.GameProfile;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
@@ -28,7 +29,10 @@ import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -37,6 +41,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ControlBodyDouble extends Mob {
 
     @Nullable
@@ -110,6 +115,13 @@ public class ControlBodyDouble extends Mob {
             serverLevel.setChunkForced(this.forcedChunkPos.x, this.forcedChunkPos.z, false);
         }
         this.forcedChunkPos = null;
+    }
+
+    @SubscribeEvent
+    public static void onDimensionChange(EntityTravelToDimensionEvent event) {
+        if(event.getEntity() instanceof ControlBodyDouble) {
+            event.setCanceled(true);
+        }
     }
 
     @Override

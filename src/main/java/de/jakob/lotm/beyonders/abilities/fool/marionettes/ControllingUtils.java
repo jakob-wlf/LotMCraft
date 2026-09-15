@@ -28,6 +28,8 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -192,7 +194,7 @@ public class ControllingUtils {
                 }
             }
 
-            AllyUtil.removeAllies(player, controlBodyDouble);
+            AllyUtil.removeAllies(player, controlBodyDouble, false);
             controlBodyDouble.discard();
         }
 
@@ -242,7 +244,19 @@ public class ControllingUtils {
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
         if(event.getAmount() < player.getHealth()) return;
-        cancel(player, 0, true, true);
+        if(isControlling(player)) {
+            event.setCanceled(true);
+            cancel(player, 0, true, true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDeath(LivingDeathEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if(isControlling(player)) {
+            event.setCanceled(true);
+            cancel(player, 0, true, true);
+        }
     }
 
     @SubscribeEvent
@@ -250,6 +264,7 @@ public class ControllingUtils {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if(!isControlling(player)) return;
+        System.out.println("Pathway: " + BeyonderData.getPathway(player) + " - Sequence" + BeyonderData.getSequence(player) + " - Controlled Sequence: " + getControlledSequence(player));
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;

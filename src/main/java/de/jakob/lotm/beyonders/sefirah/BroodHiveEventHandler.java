@@ -98,9 +98,9 @@ public class BroodHiveEventHandler {
         }
 
         // Disable ability use
-        if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("sefirah_castle")) {
+        if(!(entity instanceof ServerPlayer player) || !SefirahHandler.getClaimedSefirot(player).equalsIgnoreCase("brood_hive")) {
             DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("sefirah_castle", 20 * 20, entity);
+            component.disableAbilityUsageForTime("brood_hive", 20 * 20, entity);
         }
     }
 

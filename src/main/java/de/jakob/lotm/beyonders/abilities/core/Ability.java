@@ -215,6 +215,15 @@ public abstract class Ability {
     }
 
     public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
+        if(entity.getData(ModAttachments.MARIONETTE_COMPONENT).isMarionette() && entity.getData(ModAttachments.MARIONETTE_COMPONENT).hasWorm()) {
+            if(entity.level() instanceof ServerLevel serverLevel) {
+                Player controller = serverLevel.getPlayerByUUID(UUID.fromString(entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID()));
+                if(controller != null && hasAbility(controller, ignoreCreativeMode)) {
+                    return true;
+                }
+            }
+        }
+
         if(!BeyonderData.isBeyonder(entity)) return false;
 
         String pathway = BeyonderData.getPathway(entity, true);
@@ -283,7 +292,7 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(BeyonderData.getSpirituality(entity) < getSpiritualityCost()) return false;
+        if((BeyonderData.getSpirituality(entity) < getSpiritualityCost()) && doesConsumeSpirituality) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 

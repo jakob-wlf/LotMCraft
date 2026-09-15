@@ -55,7 +55,7 @@ public class ModBlocks {
             BLOCKS.register("ritualistic_table_part", () ->
                     new RitualisticTablePartBlock(BlockBehaviour.Properties.of()
                             .noOcclusion()
-                            .strength(-1.0F, 3600000.0F)
+                            .strength(3.0f)
                             .noLootTable()));
 
     public static final DeferredBlock<Block> VOID = registerBlock("void_block",

@@ -18,11 +18,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MythicalCreatureFormAbility extends ToggleAbility {
 
     private static final HashMap<UUID, Double> previousScale = new HashMap<>();
@@ -100,7 +104,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         }
         transformationComponent.setAdditionalDataAndSync(additionalData, entity);
 
-        if(additionalData.equals("visionary")){
+        if(additionalData.equals("visionary")) {
             if(entity instanceof Player player) {
                 player.getAbilities().mayfly = true;
                 player.getAbilities().flying = true;
@@ -136,6 +140,17 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                 player.onUpdateAbilities();
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onDimensionChange(EntityTravelToDimensionEvent event) {
+        if(!(event.getEntity() instanceof LivingEntity livingEntity)) return;
+        if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) return;
+
+        MythicalCreatureFormAbility ability = ((MythicalCreatureFormAbility) LOTMCraft.abilityHandler.getById("mythical_creature_form_ability"));
+        if(!ability.isActiveForEntity(livingEntity)) return;
+
+        ability.cancel(serverLevel, livingEntity);
     }
 
     @Override

@@ -371,24 +371,24 @@ public class BeyonderData {
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
 
-        if (!returnTrueMarionetteLvl) {
-            MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
-            if(marionetteComponent.isMarionette()) {
-                UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
-                Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
-                if(owner instanceof LivingEntity ownerLiving) {
-                    int ownerSequence = getSequence(ownerLiving);
-
-                    BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
-                    int entitySequence = component.getSequence();
-
-                    if (entitySequence < 0 || entitySequence == LOTMCraft.NON_BEYONDER_SEQ) {
-                        return ownerSequence;
-                    }
-                    return Math.max(entitySequence, ownerSequence);
-                }
-            }
-        }
+//        if (!returnTrueMarionetteLvl) {
+//            MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+//            if(marionetteComponent.isMarionette()) {
+//                UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
+//                Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
+//                if(owner instanceof LivingEntity ownerLiving) {
+//                    int ownerSequence = getSequence(ownerLiving);
+//
+//                    BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+//                    int entitySequence = component.getSequence();
+//
+//                    if (entitySequence < 0 || entitySequence == LOTMCraft.NON_BEYONDER_SEQ) {
+//                        return ownerSequence;
+//                    }
+//                    return Math.max(entitySequence, ownerSequence);
+//                }
+//            }
+//        }
 
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         return component.getSequence();

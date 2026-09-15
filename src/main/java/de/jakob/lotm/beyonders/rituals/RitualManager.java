@@ -100,28 +100,33 @@ public class RitualManager extends SimpleJsonResourceReloadListener {
                 .toList();
         List<String> honorificLines = ritual.honorific().lines();
 
+        ChatFormatting color = ChatFormatting.getByName(ritual.bookColor());
+        if (color == null) {
+            color = ChatFormatting.WHITE;
+        }
+
         Component generalDescription = Component.translatable("ritual.lotmcraft.general_description")
-                .withStyle(ChatFormatting.ITALIC, ChatFormatting.valueOf(ritual.bookColor()));
+                .withStyle(ChatFormatting.ITALIC, color);
 
         Component candles = Component.literal("")
                 .append(Component.translatable("ritual.lotmcraft.candles")
-                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                        .withStyle(ChatFormatting.BOLD, color))
                 .append(Component.literal(candleName));
 
         Component sacrifices = Component.literal("")
                 .append(Component.translatable("ritual.lotmcraft.sacrifices")
-                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                        .withStyle(ChatFormatting.BOLD, color))
                 .append(Component.literal(String.join(", ", sacrificeNames)));
 
         Component honorifics = Component.literal("")
                 .append(Component.translatable("ritual.lotmcraft.honorifics")
-                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                        .withStyle(ChatFormatting.BOLD, color))
                 .append(Component.literal("\n"))
                 .append(Component.literal(String.join("\n", honorificLines.stream().map(s -> " - " + s).toList())));
 
         Component minSequence = Component.literal("")
                 .append(Component.translatable("ritual.lotmcraft.min_sequence")
-                        .withStyle(ChatFormatting.BOLD, ChatFormatting.valueOf(ritual.bookColor())))
+                        .withStyle(ChatFormatting.BOLD, color))
                 .append(Component.literal(String.valueOf(ritual.conditions().minSequence() > 9 ? "none" : ritual.conditions().minSequence())));
 
         Component pageOne = Component.literal("")

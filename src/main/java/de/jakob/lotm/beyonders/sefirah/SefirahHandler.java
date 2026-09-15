@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.network.PacketHandler;
@@ -83,6 +84,12 @@ public class SefirahHandler {
         invitedPlayer.sendSystemMessage(message);
 
         player.sendSystemMessage(Component.translatable("lotm.sefirot.invite_sent", invitedPlayer.getName().getString()).withStyle(ChatFormatting.GREEN));
+    }
+
+    public static boolean isInSefirot(ServerPlayer player, String sefirot) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        return sefirotData.isInSefirot(player, sefirot);
     }
 
     public static void kickOutOfSefirot(ServerPlayer player, ServerPlayer kickedPlayer) {

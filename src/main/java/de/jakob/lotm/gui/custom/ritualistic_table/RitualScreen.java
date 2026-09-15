@@ -76,6 +76,7 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
     protected void renderLabels(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
     }
 
+
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -114,9 +115,9 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
-        if (field1.isFocused() && field1.keyPressed(keyCode, scanCode, modifiers)) return true;
-        if (field2.isFocused() && field2.keyPressed(keyCode, scanCode, modifiers)) return true;
-        if (field3.isFocused() && field3.keyPressed(keyCode, scanCode, modifiers)) return true;
+        if (field1.isFocused() && field1.isVisible()) return true;
+        if (field2.isFocused() && field2.isVisible()) return true;
+        if (field3.isFocused() && field3.isVisible()) return true;
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
