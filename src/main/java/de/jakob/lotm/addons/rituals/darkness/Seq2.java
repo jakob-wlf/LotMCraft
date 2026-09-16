@@ -50,11 +50,13 @@ public class Seq2 {
         for(var obj : level.getServer().getPlayerList().getPlayers()){
             if(obj.equals(player)) continue;
             if (obj.level() != player.level()) continue;
-            if(obj.distanceTo(player) <= DISTANCE)
+            if(obj.distanceTo(player) <= DISTANCE) {
                 if (component.getStage() > 0) {
                     player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
                 }
-            component.setStage(0);
+                component.setStage(0);
+            }
+
         }
 
         if(player.tickCount % (20 * SECONDS_PER_STAGE) == 0){

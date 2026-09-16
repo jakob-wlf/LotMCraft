@@ -85,15 +85,15 @@ public class SpiritVisionOverlayRenderer {
             }
             maxHealth = getEntityMaxHealth(entityType);
             health = getEntityMaxHealth(entityType);
-        }
 
-        if ((ClientBeyonderCache.getPathway(mc.player.getUUID()).equals("fool") && ClientBeyonderCache.getSequence(mc.player.getUUID()) < ClientBeyonderCache.getSequence(entity.getUUID()))
-                || (ClientBeyonderCache.getPathway(mc.player.getUUID()).equals("visionary") && ClientBeyonderCache.getSequence(mc.player.getUUID()) < ClientBeyonderCache.getSequence(entity.getUUID()))
-                || AbilityUtil.isTargetSignificantlyStronger(ClientBeyonderCache.getSequence(entity.getUUID()), ClientBeyonderCache.getSequence(mc.player.getUUID()))) {
+            if ((ClientBeyonderCache.getPathway(mc.player.getUUID()).equals("fool") && ClientBeyonderCache.getSequence(mc.player.getUUID()) < ClientBeyonderCache.getSequence(entity.getUUID()))
+                    || (ClientBeyonderCache.getPathway(mc.player.getUUID()).equals("visionary") && ClientBeyonderCache.getSequence(mc.player.getUUID()) < ClientBeyonderCache.getSequence(entity.getUUID()))
+                    || AbilityUtil.isTargetSignificantlyStronger(ClientBeyonderCache.getSequence(entity.getUUID()), ClientBeyonderCache.getSequence(mc.player.getUUID()))) {
 
-            name = name + " (Shape Shifting)";
-            maxHealth = entity.getMaxHealth();
-            health = entity.getHealth();
+                name = name + " (Shape Shifting)";
+                maxHealth = entity.getMaxHealth();
+                health = entity.getHealth();
+            }
         }
 
         if (!VisionaryHandler.shouldStayInvisible(ClientBeyonderCache.getSequence(mc.player.getUUID()), entity)){
