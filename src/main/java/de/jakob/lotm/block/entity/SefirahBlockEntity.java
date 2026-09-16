@@ -5,6 +5,7 @@ import com.lowdragmc.photon.client.fx.FX;
 import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.ModBlockEntities;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.gui.custom.sefirah.SefirahMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -64,7 +65,7 @@ public class SefirahBlockEntity extends BlockEntity implements MenuProvider {
 
     public void tick(Level level, BlockPos blockPos, BlockState blockState) {
         if (level.isClientSide() && fxExecutor == null) {
-            FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_particles"));
+            FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, getEffectPath(level)));
             if (fx != null) {
                 fxExecutor = new BlockEffectExecutor(fx, level, blockPos);
                 fxExecutor.setOffset(0, -.5, 0);
@@ -73,6 +74,16 @@ public class SefirahBlockEntity extends BlockEntity implements MenuProvider {
                 fxExecutor.start();
             }
         }
+    }
+
+    private String getEffectPath(Level level) {
+        if(level.dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY)) {
+            return "sefirah_castle_particles";
+        } else if(level.dimension().equals(ModDimensions.BROOD_HIVE_DIMENSION_KEY)) {
+            return "brood_hive_particles";
+        }
+
+        return "sefirah_castle_particles";
     }
 
     @Override

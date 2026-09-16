@@ -70,7 +70,7 @@ public record AbilityId(String baseId, int subIndex, boolean copied) {
     /** Mirrors the check used when pruning a player's wheel/bar of stale entries. */
     public boolean isUsableBy(LivingEntity entity) {
         Ability ability = resolve();
-        return ability != null && ability.hasAbility(entity);
+        return ability != null && ability.hasAbility(entity, false);
     }
 
     public AbilityId withCopied(boolean newCopied) {

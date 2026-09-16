@@ -8,7 +8,9 @@ import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.*;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
@@ -18,6 +20,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.UUID;
@@ -116,6 +119,24 @@ public class MarionetteUtils {
 
         SanityComponent sanityComponent = entity.getData(ModAttachments.SANITY_COMPONENT);
         sanityComponent.setSanity(1.0f);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if(!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        for(Entity entity : player.serverLevel().getAllEntities()) {
+            if(!(entity instanceof LivingEntity)) continue;
+
+            if(!isMarionette((LivingEntity) entity)) continue;
+
+            String ownerUUID = entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
+            if(ownerUUID.equals(player.getStringUUID())) {
+                player.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT).addMarionette(entity.getUUID());
+            }
+        }
     }
 
     @SubscribeEvent

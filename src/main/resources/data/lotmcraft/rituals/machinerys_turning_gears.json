@@ -1,0 +1,29 @@
+{
+  "id": "lotm:machinerys_turning_gears",
+  "discovered_from": "lotm:clockmakers_manual",
+  "candle": "minecraft:cyan_candle",
+  "sacrifices": [
+    { "item": "minecraft:iron_nugget", "count": 6 },
+    { "item": "minecraft:redstone", "count": 3 },
+    { "item": "minecraft:clock", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Engine that never tires and never misses its beat",
+      "Architect of gears that turn beneath the world's skin",
+      "Quicken my hands to match your endless rhythm."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.6, "g": 0.6, "b": 0.6 },
+  "book_color": "GRAY",
+  "duration_ticks": 200,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:haste", "duration_ticks": 4800, "amplifier": 1, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

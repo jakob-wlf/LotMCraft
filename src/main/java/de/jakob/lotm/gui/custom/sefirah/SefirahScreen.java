@@ -4,10 +4,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.HandleSefirotGuestPacket;
-import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -23,8 +25,9 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
-    private static final ResourceLocation GUI_TEXTURE =
+    private ResourceLocation GUI_TEXTURE =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/sefirah/sefirah_castle/sefirah_castle_gui.png");
+
 
     Set<AllyComponent.AllyInfo> allies;
     private AllyList allyList;
@@ -43,13 +46,15 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
         Player player = ClientHandler.getPlayer();
         allies = player.getData(ModAttachments.ALLY_COMPONENT).allies();
 
+        GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, getTexturePathForPlayer(player));
+
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 
         int listX = x + 8;
         int listY = y + 20;
         int listWidth = imageWidth - 16;
-        int listHeight = imageHeight - 110;
+        int listHeight = imageHeight - 125;
 
         allyList = new AllyList(listX, listY, listWidth, listHeight, this::onInviteClicked, this::onKickClicked);
         allyList.setAllies(allies);
@@ -93,6 +98,24 @@ public class SefirahScreen extends AbstractContainerScreen<SefirahMenu> {
                 (height - imageHeight) / 2 + 8,
                 0xFFFFFF
         );
+
+        guiGraphics.drawString(
+                ClientHandler.getMinecraftInstance().font,
+                Component.literal("Sefirot Control: " + SefirahHandler.getSefirotProgress(ClientHandler.getPlayer())).withStyle(ChatFormatting.BOLD),
+                (width - imageWidth) / 2 + 8,
+                (height - imageHeight) / 2 + 20 + imageHeight - 120,
+                0xFFFFFF
+        );
+    }
+
+    private String getTexturePathForPlayer(Player player) {
+        if(player.level().dimension().equals(ModDimensions.SEFIRAH_CASTLE_DIMENSION_KEY)) {
+            return "textures/gui/sefirah/sefirah_castle/sefirah_castle_gui.png";
+        } else if(player.level().dimension().equals(ModDimensions.BROOD_HIVE_DIMENSION_KEY)) {
+            return "textures/gui/sefirah/brood_hive/brood_hive_gui.png";
+        }
+
+        return "textures/gui/sefirah/sefirah_castle/sefirah_castle_gui.png";
     }
 
     @Override

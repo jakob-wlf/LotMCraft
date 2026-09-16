@@ -644,43 +644,43 @@ public class PotionRecipes {
                 (BeyonderPotion) PotionItemHandler.MONSTER_POTION.get(),
                 new ItemStack(Items.POPPY, 1),
                 new ItemStack(Items.OAK_LEAVES, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 9)))
+                new ItemStack(ModIngredients.SILVER_FOUR_LEAF_CLOVER.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.ROBOT_POTION.get(),
                 new ItemStack(Items.BOOK, 1),
                 new ItemStack(Items.FEATHER, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 8)))
+                new ItemStack(ModIngredients.CRYSTAL_OF_A_YOUNG_UNICORN.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.LUCKY_ONE_POTION.get(),
                 new ItemStack(Items.WATER_BUCKET, 1),
                 new ItemStack(Items.GOLD_INGOT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 7)))
+                new ItemStack(ModIngredients.DIVINE_BLESSED_CRYSTAL.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CALAMITY_PRIEST_POTION.get(),
                 new ItemStack(Items.LAVA_BUCKET, 1),
                 new ItemStack(Items.OBSIDIAN, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 6)))
+                new ItemStack(ModIngredients.CRYSTAL_CORE_OF_THE_CALAMITY_PHOENIX.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.WINNER_POTION.get(),
                 new ItemStack(Items.GOLDEN_CARROT, 1),
                 new ItemStack(Items.DIAMOND_PICKAXE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 5)))
+                new ItemStack(ModIngredients.HEART_OF_A_BLUE_SPOTTED_FIREBIRD.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.MISFORTUNE_MAGE_POTION.get(),
                 new ItemStack(Items.PRISMARINE_CRYSTALS, 1),
                 new ItemStack(Items.CALCITE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 4)))
+                new ItemStack(ModIngredients.FLOWER_OF_GOOD_FORTUNE.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CHAOSWALKER_POTION.get(),
                 new ItemStack(Items.LAVA_BUCKET, 1),
                 new ItemStack(Items.CHORUS_FRUIT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("wheel_of_fortune", 3)))
+                new ItemStack(ModIngredients.BRAIN_OF_A_FOUR_EARED_GIANT_APE.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.SOOTHSAYER_POTION.get(),
@@ -818,43 +818,43 @@ public class PotionRecipes {
                 (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),
                 new ItemStack(Items.ROTTEN_FLESH, 1),
                 new ItemStack(Items.BONE, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 9)))
+                new ItemStack(ModIngredients.CLOTH_WRAPPED_PERSONS_CRYSTAL.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.GRAVEDIGGER_POTION.get(),
                 new ItemStack(Items.BONE_MEAL, 1),
                 new ItemStack(Items.DIRT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 8)))
+                new ItemStack(ModIngredients.DEATH_CALLING_CROWS_EYEBALL.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.SPIRIT_MEDIUM_POTION.get(),
                 new ItemStack(Items.COAL, 1),
                 new ItemStack(Items.AMETHYST_SHARD, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 7)))
+                new ItemStack(ModIngredients.SPIRIT_WORLD_CRYSTAL.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.SPIRIT_GUIDE_POTION.get(),
                 new ItemStack(Items.CRYING_OBSIDIAN, 1),
                 new ItemStack(Items.IRON_INGOT, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 6)))
+                new ItemStack(ModIngredients.SOUL_OF_A_PALE_LICH.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.GATEKEEPER_POTION.get(),
                 new ItemStack(Items.OBSIDIAN, 1),
                 new ItemStack(Items.FLINT_AND_STEEL, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 5)))
+                new ItemStack(ModIngredients.CRYSTAL_CORE_OF_THOUSAND_ARMED_WRAITH.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.UNDYING_POTION.get(),
                 new ItemStack(Items.GOLDEN_APPLE, 1),
                 new ItemStack(Items.LAVA_BUCKET, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 4)))
+                new ItemStack(ModIngredients.BRAIN_OF_AN_ADULT_FEATHERED_SERPENT.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.FERRYMAN_POTION.get(),
                 new ItemStack(Items.OAK_BOAT, 1),
                 new ItemStack(Items.SOUL_SOIL, 1),
-                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 3)))
+                new ItemStack(ModIngredients.MOLT_OF_THE_IMMORTAL_CICADA.get())
         ));
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.DEATH_CONSUL_POTION.get(),

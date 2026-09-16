@@ -214,13 +214,13 @@ public abstract class Ability {
         return true;
     }
 
-    public boolean hasAbility(LivingEntity entity) {
+    public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
         if(!BeyonderData.isBeyonder(entity)) return false;
 
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
-        if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
+        if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2) && !ignoreCreativeMode) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
@@ -270,7 +270,7 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
-        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) return false;
+        if(!hasAbility(entity, false) && hasToHaveAbility && !isCopied) return false;
 
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {

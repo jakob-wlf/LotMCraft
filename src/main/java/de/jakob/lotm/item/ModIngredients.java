@@ -74,6 +74,23 @@ public class ModIngredients {
     public static final DeferredItem<Item> SUCCUBUS_EYES = ITEMS.registerItem("succubus_eyes", (properties) -> new PotionIngredient(properties, 6, true, "demoness"), new Item.Properties());
     public static final DeferredItem<Item> SHADOW_LIZARD_SCALES = ITEMS.registerItem("shadow_lizard_scales", (properties) -> new PotionIngredient(properties, 5, true, "demoness"), new Item.Properties());
 
+    public static final DeferredItem<Item> SILVER_FOUR_LEAF_CLOVER = ITEMS.registerItem("silver_four_leaf_clover", (properties) -> new PotionIngredient(properties, 9, true, "wheel_of_fortune"), new Item.Properties());
+    public static final DeferredItem<Item> CRYSTAL_OF_A_YOUNG_UNICORN = ITEMS.registerItem("crystal_of_a_young_unicorn", (properties) -> new PotionIngredient(properties, 8, true, "wheel_of_fortune"), new Item.Properties());
+    public static final DeferredItem<Item> DIVINE_BLESSED_CRYSTAL = ITEMS.registerItem("divine_blessed_crystal", (properties) -> new PotionIngredient(properties, 7, true, "wheel_of_fortune"), new Item.Properties());
+    public static final DeferredItem<Item> CRYSTAL_CORE_OF_THE_CALAMITY_PHOENIX = ITEMS.registerItem("crystal_core_of_the_calamity_phoenix", (properties) -> new PotionIngredient(properties, 6, true, "wheel_of_fortune"), new Item.Properties());
+    public static final DeferredItem<Item> HEART_OF_A_BLUE_SPOTTED_FIREBIRD = ITEMS.registerItem("heart_of_a_blue_spotted_firebird", (properties) -> new PotionIngredient(properties, 5, true, "wheel_of_fortune"), new Item.Properties());
+    public static final DeferredItem<Item> FLOWER_OF_GOOD_FORTUNE = ITEMS.registerItem("flower_of_good_fortune", (properties) -> new PotionIngredient(properties, 4, true, "wheel_of_fortune"), new Item.Properties());
+    public static final DeferredItem<Item> BRAIN_OF_A_FOUR_EARED_GIANT_APE = ITEMS.registerItem("brain_of_a_four_eared_giant_ape", (properties) -> new PotionIngredient(properties, 3, true, "wheel_of_fortune"), new Item.Properties());
+
+
+    public static final DeferredItem<Item> CLOTH_WRAPPED_PERSONS_CRYSTAL = ITEMS.registerItem("cloth_wrapped_persons_crystal", (properties) -> new PotionIngredient(properties, 9, true, "death"), new Item.Properties());
+    public static final DeferredItem<Item> DEATH_CALLING_CROWS_EYEBALL = ITEMS.registerItem("death_calling_crows_eyeball", (properties) -> new PotionIngredient(properties, 8, true, "death"), new Item.Properties());
+    public static final DeferredItem<Item> SPIRIT_WORLD_CRYSTAL = ITEMS.registerItem("spirit_world_crystal", (properties) -> new PotionIngredient(properties, 7, true, "death"), new Item.Properties());
+    public static final DeferredItem<Item> SOUL_OF_A_PALE_LICH = ITEMS.registerItem("soul_of_a_pale_lich", (properties) -> new PotionIngredient(properties, 6, true, "death"), new Item.Properties());
+    public static final DeferredItem<Item> CRYSTAL_CORE_OF_THOUSAND_ARMED_WRAITH = ITEMS.registerItem("crystal_core_of_thousand_armed_wraith", (properties) -> new PotionIngredient(properties, 5, true, "death"), new Item.Properties());
+    public static final DeferredItem<Item> BRAIN_OF_AN_ADULT_FEATHERED_SERPENT = ITEMS.registerItem("brain_of_an_adult_feathered_serpent", (properties) -> new PotionIngredient(properties, 4, true, "death"), new Item.Properties());
+    public static final DeferredItem<Item> MOLT_OF_THE_IMMORTAL_CICADA = ITEMS.registerItem("molt_of_the_immortal_cicada", (properties) -> new PotionIngredient(properties, 3, true, "death"), new Item.Properties());
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
