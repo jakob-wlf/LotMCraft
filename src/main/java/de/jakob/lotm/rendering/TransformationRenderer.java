@@ -526,7 +526,7 @@ public class TransformationRenderer {
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
         poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
 
-        poseStack.scale(2.4F, -2.4F, 2.4F);
+        poseStack.scale(2.4F, 2.4F, 2.4F);
 
         VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(motherMythicalCreatureTexture));
 

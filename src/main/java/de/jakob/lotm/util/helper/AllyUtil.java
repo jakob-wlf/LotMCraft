@@ -47,6 +47,10 @@ public class AllyUtil {
     }
 
     public static void removeAllies(LivingEntity entity1, LivingEntity entity2) {
+        removeAllies(entity1, entity2, true);
+    }
+
+    public static void removeAllies(LivingEntity entity1, LivingEntity entity2, boolean sendMessage) {
         if (entity1 == null || entity2 == null) return;
 
         AllyComponent comp1 = entity1.getData(ModAttachments.ALLY_COMPONENT.get());
@@ -58,11 +62,13 @@ public class AllyUtil {
         // Sync to clients if they're players
         if (entity1 instanceof ServerPlayer player1) {
             syncAllyData(player1);
-            player1.sendSystemMessage(Component.translatable("lotm.ally.removed", entity2.getName()).withColor(0xFF9800));
+            if(sendMessage)
+                player1.sendSystemMessage(Component.translatable("lotm.ally.removed", entity2.getName()).withColor(0xFF9800));
         }
         if (entity2 instanceof ServerPlayer player2) {
             syncAllyData(player2);
-            player2.sendSystemMessage(Component.translatable("lotm.ally.removed", entity1.getName()).withColor(0xFF9800));
+            if(sendMessage)
+                player2.sendSystemMessage(Component.translatable("lotm.ally.removed", entity1.getName()).withColor(0xFF9800));
         }
     }
 

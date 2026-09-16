@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 
@@ -70,6 +71,19 @@ public class AbilityWheelHelper {
         syncToClient(player);
     }
 
+    public static void setAbilitiesForEntity(ServerPlayer player, LivingEntity entity, ArrayList<String> abilities) {
+        AbilityWheelComponent component = entity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        component.setAbilities(abilities);
+
+        // Adjust selected ability if needed
+        int selected = component.getSelectedAbility();
+        if (selected >= abilities.size()) {
+            component.setSelectedAbility(Math.max(0, abilities.size() - 1));
+        }
+
+        syncToClient(player, entity);
+    }
+
     /**
      * Clears all abilities from the player's wheel and syncs to client.
      * @param player The player to clear abilities for
@@ -116,7 +130,11 @@ public class AbilityWheelHelper {
      * @param player The player to sync to
      */
     public static void syncToClient(ServerPlayer player) {
-        AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        syncToClient(player, player);
+    }
+
+    public static void syncToClient(ServerPlayer player, LivingEntity entity) {
+        AbilityWheelComponent component = entity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         PacketHandler.sendToPlayer(
                 player,
                 new SyncAbilityWheelPacket(component.getAbilities(), component.getSelectedAbility())

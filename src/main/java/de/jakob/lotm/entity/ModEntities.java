@@ -325,6 +325,7 @@ public class ModEntities {
             ENTITY_TYPES.register("lightning_branch", () -> EntityType.Builder.<LightningBranchEntity>of(LightningBranchEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
                     .clientTrackingRange(64)
+                    .clientTrackingRange(64)
                     .updateInterval(1)
                     .build("lightning_branch"));
 
@@ -381,6 +382,18 @@ public class ModEntities {
     public static final Supplier<EntityType<SpiritMalmouthEntity>> SPIRIT_MALMOUTH =
             ENTITY_TYPES.register("spirit_malmouth", () -> EntityType.Builder.of(SpiritMalmouthEntity::new, MobCategory.MONSTER)
                     .sized(1.3f, 1.3f).build("spirit_malmouth"));
+
+    public static final Supplier<EntityType<AbscessedHandEntity>> ABSCESSED_HAND =
+            ENTITY_TYPES.register("abscessed_hand", () -> EntityType.Builder.of(AbscessedHandEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("abscessed_hand"));
+
+    public static final Supplier<EntityType<MurlocEntity>> MURLOC =
+            ENTITY_TYPES.register("murloc", () -> EntityType.Builder.of(MurlocEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("murloc"));
+
+    public static final Supplier<EntityType<RabbitOfKnowledgeEntity>> RABBIT_OF_KNOWLEDGE =
+            ENTITY_TYPES.register("rabbit_of_knowledge", () -> EntityType.Builder.of(RabbitOfKnowledgeEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("rabbit_of_knowledge"));
 
 
     // NPCs and Living Entities

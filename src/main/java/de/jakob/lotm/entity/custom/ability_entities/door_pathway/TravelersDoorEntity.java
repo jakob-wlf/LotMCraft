@@ -18,6 +18,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -198,6 +200,7 @@ public class TravelersDoorEntity extends Entity {
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
 
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;

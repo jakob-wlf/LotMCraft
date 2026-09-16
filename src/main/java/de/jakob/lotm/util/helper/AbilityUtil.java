@@ -621,7 +621,6 @@ public class AbilityUtil {
                         .toList();
 
                 if (!nearbyEntities.isEmpty()) {
-                    System.out.println("Found nearby entity: " + nearbyEntities.get(0).getName().getString());
                     Entity target = nearbyEntities.get(0);
                     Vec3 location = getEntityTargetPosition(target, positionAtEntityFeet);
                     return fireTargetLocationEvent(entity, radius, entityDetectionRadius, positionAtEntityFeet, allowAllies, location);

@@ -4,6 +4,7 @@ package de.jakob.lotm.rendering.models.visionary;// Made with Blockbench 5.1.4
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.rendering.models.mother.MotherMythicalCreatureAnimations;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -114,6 +115,7 @@ public class VisionaryMythicalCreatureModel<T extends Entity> extends Hierarchic
 	private final ModelPart bone10;
 
 	private AnimationState idleAnimationState = new AnimationState();
+	private AnimationState flyingAnimationState = new AnimationState();
 	private AnimationState walkAnimationState = new AnimationState();
 
 
@@ -940,65 +942,30 @@ public class VisionaryMythicalCreatureModel<T extends Entity> extends Hierarchic
 		return LayerDefinition.create(meshdefinition, 256, 256);
 	}
 
-	private float walkBlend = 0.0F;
-	private static final float BLEND_SPEED = 0.1F;
-
-	// Pre-allocate to avoid per-frame garbage
-	private float[] idlePose;
-	private float[] walkPose;
-	private static final int FLOATS_PER_PART = 6; // x, y, z, xRot, yRot, zRot
-
-	private void capturePoseInto(float[] buffer) {
-		int i = 0;
-		for (var part : (Iterable<ModelPart>) this.root().getAllParts()::iterator) {
-			buffer[i++] = part.x;    buffer[i++] = part.y;    buffer[i++] = part.z;
-			buffer[i++] = part.xRot; buffer[i++] = part.yRot; buffer[i++] = part.zRot;
-		}
-	}
-
-	private void applyBlendedPose(float[] from, float[] to, float blend) {
-		int i = 0;
-		for (var part : (Iterable<ModelPart>) this.root().getAllParts()::iterator) {
-			part.x    = Mth.lerp(blend, from[i], to[i]); i++;
-			part.y    = Mth.lerp(blend, from[i], to[i]); i++;
-			part.z    = Mth.lerp(blend, from[i], to[i]); i++;
-			part.xRot = Mth.lerp(blend, from[i], to[i]); i++;
-			part.yRot = Mth.lerp(blend, from[i], to[i]); i++;
-			part.zRot = Mth.lerp(blend, from[i], to[i]); i++;
-		}
-	}
-
 	@Override
 	public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount,
 	                      float ageInTicks, float netHeadYaw, float headPitch) {
 
-		// Lazy-init buffers once we know part count
-		if (this.idlePose == null) {
-			int partCount = (int) this.root().getAllParts().count();
-			this.idlePose = new float[partCount * FLOATS_PER_PART];
-			this.walkPose = new float[partCount * FLOATS_PER_PART];
-		}
+		this.root().getAllParts().forEach(ModelPart::resetPose);
 
-		if (entity instanceof LivingEntity living) {
-			boolean isWalking = limbSwingAmount > 0.01F;
-			this.walkBlend = Mth.lerp(BLEND_SPEED, this.walkBlend, isWalking ? 1.0F : 0.0F);
+		boolean isWalking = limbSwingAmount > 0.01F && entity.onGround();
+		boolean isFlying = !entity.onGround();
 
-			// Keep both states running so their internal timers don't reset
-			if (!this.idleAnimationState.isStarted()) this.idleAnimationState.start((int) ageInTicks);
-			if (!this.walkAnimationState.isStarted()) this.walkAnimationState.start((int) ageInTicks);
-
-			// Sample idle into snapshot
-			this.root().getAllParts().forEach(ModelPart::resetPose);
-			this.animate(this.idleAnimationState, VisionaryMythicalCreatureAnimations.idle, ageInTicks, 1.0F);
-			capturePoseInto(this.idlePose);
-
-			// Sample walk into snapshot
-			this.root().getAllParts().forEach(ModelPart::resetPose);
+		if (isWalking) {
+			this.idleAnimationState.stop();
+			this.flyingAnimationState.stop();
+			this.walkAnimationState.startIfStopped((int) ageInTicks);
 			this.animate(this.walkAnimationState, VisionaryMythicalCreatureAnimations.Walk, ageInTicks, 1.0F);
-			capturePoseInto(this.walkPose);
-
-			// Write the lerped result
-			applyBlendedPose(this.idlePose, this.walkPose, this.walkBlend);
+		} else if (isFlying) {
+			this.idleAnimationState.stop();
+			this.walkAnimationState.stop();
+			this.flyingAnimationState.startIfStopped((int) ageInTicks);
+			this.animate(this.flyingAnimationState, VisionaryMythicalCreatureAnimations.Flying, ageInTicks, 1.0F);
+		} else {
+			this.walkAnimationState.stop();
+			this.flyingAnimationState.stop();
+			this.idleAnimationState.startIfStopped((int) ageInTicks);
+			this.animate(this.idleAnimationState, VisionaryMythicalCreatureAnimations.idle, ageInTicks, 1.0F);
 		}
 	}
 

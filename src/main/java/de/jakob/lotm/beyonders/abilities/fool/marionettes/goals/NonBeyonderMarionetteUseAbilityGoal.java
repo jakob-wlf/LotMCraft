@@ -1,9 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.fool.passives.PuppeteeringEnhancementsAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.MarionetteComponent;
@@ -18,11 +16,11 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-public class MarionetteUseAbilityGoal extends TargetGoal {
+public class NonBeyonderMarionetteUseAbilityGoal extends TargetGoal {
     private final Mob marionette;
     private Player controller;
 
-    public MarionetteUseAbilityGoal(Mob marionette) {
+    public NonBeyonderMarionetteUseAbilityGoal(Mob marionette) {
         super(marionette, false);
         this.marionette = marionette;
         this.setFlags(EnumSet.noneOf(Goal.Flag.class));
@@ -52,7 +50,8 @@ public class MarionetteUseAbilityGoal extends TargetGoal {
         if(random.nextInt(100) >= 40) {
             List<Ability> abilityItems = usableAbilities();
             if (!abilityItems.isEmpty()) {
-                abilityItems.get(random.nextInt(abilityItems.size())).useAbility((ServerLevel) marionette.level(), marionette);
+                Ability ability = abilityItems.get(random.nextInt(abilityItems.size()));
+                ability.useAbility((ServerLevel) marionette.level(), marionette, false, false, false, false);
             }
         }
     }

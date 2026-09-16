@@ -61,7 +61,7 @@ public class MarionetteUtils {
             mob.goalSelector.addGoal(0, new MarionetteMovementGoal(mob));
             mob.goalSelector.addGoal(0, new EntityLoadChunksGoal(mob));
             mob.goalSelector.addGoal(1, new MarionetteMovementGoal(mob));
-            mob.goalSelector.addGoal(1, new MarionetteUseAbilityGoal(mob));
+            mob.goalSelector.addGoal(1, new NonBeyonderMarionetteUseAbilityGoal(mob));
             mob.targetSelector.addGoal(0, new MarionetteTargetGoal(mob));
             mob.goalSelector.addGoal(10, new MarionetteMaxDistanceGoal(mob));
             mob.setTarget(null);

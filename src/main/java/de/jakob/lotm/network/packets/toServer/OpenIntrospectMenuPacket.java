@@ -44,8 +44,8 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
-                int sequence = BeyonderData.getSequence(player);
-                String pathway = BeyonderData.getPathway(player);
+                int sequence = BeyonderData.getSequence(player, false, true);
+                String pathway = BeyonderData.getPathway(player, true);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);

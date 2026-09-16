@@ -4,8 +4,8 @@
   "candle": "minecraft:white_candle",
   "sacrifices": [
     { "item": "minecraft:bread", "count": 3 },
-    { "item": "minecraft:milk_bucket", "count": 2 },
-    { "item": "minecraft:honey_bottle", "count": 2 }
+    { "item": "minecraft:milk_bucket", "count": 1 },
+    { "item": "minecraft:honey_bottle", "count": 1 }
   ],
   "honorific": {
     "lines": [

@@ -16,7 +16,7 @@
   },
   "conditions": { "min_sequence": 10 },
   "particle_color": { "r": 1.0, "g": 0.8, "b": 0.4 },
-  "book_color": "ORANGE",
+  "book_color": "GOLD",
   "duration_ticks": 300,
   "result": {
     "type": "area_effect",
@@ -25,7 +25,7 @@
         {
           "effect": "illuminate",
           "target": "self",
-          "max_distance": -1,
+          "max_distance": 4,
           "power": 4
         }
       ]

@@ -125,7 +125,7 @@ public abstract class Ability {
 
         // Digest potion
         if(!doesNotIncreaseDigestion && newUser instanceof Player player) {
-            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player), BeyonderData.getSequence(player)).isEmpty())
+            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player, true), BeyonderData.getSequence(player, false, true)).isEmpty())
                 BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
 
@@ -215,10 +215,19 @@ public abstract class Ability {
     }
 
     public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
+        if(entity.getData(ModAttachments.MARIONETTE_COMPONENT).isMarionette() && entity.getData(ModAttachments.MARIONETTE_COMPONENT).hasWorm()) {
+            if(entity.level() instanceof ServerLevel serverLevel) {
+                Player controller = serverLevel.getPlayerByUUID(UUID.fromString(entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID()));
+                if(controller != null && hasAbility(controller, ignoreCreativeMode)) {
+                    return true;
+                }
+            }
+        }
+
         if(!BeyonderData.isBeyonder(entity)) return false;
 
-        String pathway = BeyonderData.getPathway(entity);
-        int sequence = BeyonderData.getSequence(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
         if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2) && !ignoreCreativeMode) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
@@ -254,7 +263,7 @@ public abstract class Ability {
 
         // Check sefirot
         if(entity instanceof Player player) {
-            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlays(player);
+            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlayer(player);
             for (String sefirotPathway : sefirotPathways) {
                 if (getRequirements().containsKey(sefirotPathway) && getRequirements().get(sefirotPathway) >= sequence) {
                     return true;
@@ -283,7 +292,7 @@ public abstract class Ability {
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
         if(component.isOnCooldown(id)) return false;
 
-        if(BeyonderData.getSpirituality(entity) < getSpiritualityCost()) return false;
+        if((BeyonderData.getSpirituality(entity) < getSpiritualityCost()) && doesConsumeSpirituality) return false;
 
         if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
 
@@ -310,13 +319,13 @@ public abstract class Ability {
     }
 
     private float getDigestionProgressForUse(LivingEntity entity) {
-        int sequence = BeyonderData.getSequence(entity);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
-        if (!getRequirements().containsKey(BeyonderData.getPathway(entity))) {
+        if (!getRequirements().containsKey(BeyonderData.getPathway(entity, true))) {
             return 0f;
         }
 
-        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity));
+        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity, true));
 
         if (sequence > requiredSequence) {
             return 0f;
@@ -355,7 +364,7 @@ public abstract class Ability {
             return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
         }
 
-        String pathway = BeyonderData.getPathway(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
 
         int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
         return getName().withStyle(ChatFormatting.BOLD).withColor(color);

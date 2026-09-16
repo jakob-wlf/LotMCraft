@@ -33,18 +33,18 @@ public class AdvancementsEventHandler {
         if (BeyonderData.isBeyonder(player)) {
             grantAdvancement(player, "become_beyonder");
 
-            if (BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)) != null) {
-                String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)).getRawSequenceName(BeyonderData.getSequence(player));
+            if (BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player, true)) != null) {
+                String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player, true)).getRawSequenceName(BeyonderData.getSequence(player, false, true));
                 grantAdvancement(player, "become_" + sequenceName.toLowerCase());
             } else {
                 LOTMCraft.LOGGER.error("Advancement Error: Missing PathwayInfo for player '{}'. Pathway: '{}', Sequence: {}",
                         player.getName().getString(),
-                        BeyonderData.getPathway(player),
-                        BeyonderData.getSequence(player)
+                        BeyonderData.getPathway(player, true),
+                        BeyonderData.getSequence(player, false, true)
                 );
             }
 
-            int sequence = BeyonderData.getSequence(player);
+            int sequence = BeyonderData.getSequence(player, false, true);
             if (sequence <= 5) grantAdvancement(player, "reach_sequence_5");
             if (sequence <= 3) grantAdvancement(player, "reach_sequence_3");
             if (sequence <= 1) grantAdvancement(player, "reach_sequence_1");

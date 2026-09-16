@@ -34,13 +34,13 @@ public record RemoveAllyPacket(UUID allyUUID, String allyName) implements Custom
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
 
-            Player target = player.serverLevel().getPlayerByUUID(packet.allyUUID());
+            Player target = player.server.getPlayerList().getPlayerByName(packet.allyName());
             if(target == null) {
                 player.sendSystemMessage(Component.translatable("lotm.ally.remove.not_found", packet.allyName()).withStyle(style -> style.withColor(0xF44336)));
                 return;
             }
 
-            AllyUtil.removeAllies(player, target);
+            AllyUtil.removeAllies(player, target, false);
             target.sendSystemMessage(Component.translatable("lotm.ally.removed", player.getName()).withStyle(style -> style.withColor(0xF44336)));
             player.sendSystemMessage(Component.translatable("lotm.ally.removed", target.getName()).withStyle(style -> style.withColor(0xF44336)));
         });

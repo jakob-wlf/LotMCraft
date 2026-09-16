@@ -63,7 +63,8 @@ public class AbilityIconRenderer {
             return;
         }
 
-        PacketHandler.sendToServer(new RequestActiveStatusOfAbilityPacket(selectedAbilityId.split(":")[0]));
+        if(mc.player.tickCount % 10 == 0)
+            PacketHandler.sendToServer(new RequestActiveStatusOfAbilityPacket(selectedAbilityId.split(":")[0]));
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
 
