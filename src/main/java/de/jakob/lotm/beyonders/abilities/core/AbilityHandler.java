@@ -420,7 +420,7 @@ public class AbilityHandler {
     public List<Ability> getAllAbilitiesForEntity(LivingEntity entity) {
         ArrayList<Ability> applicableAbilities = new ArrayList<>();
         for (Ability ability : getAllAbilitiesOrdered()) {
-            if (ability.hasAbility(entity)) {
+            if (ability.hasAbility(entity, true)) {
                 applicableAbilities.add(ability);
             }
         }

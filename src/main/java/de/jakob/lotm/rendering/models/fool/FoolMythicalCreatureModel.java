@@ -6,7 +6,6 @@ package de.jakob.lotm.rendering.models.fool;// Made with Blockbench 5.1.1
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureAnimations;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;

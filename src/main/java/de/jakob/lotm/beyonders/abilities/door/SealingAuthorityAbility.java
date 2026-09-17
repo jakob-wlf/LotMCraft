@@ -48,6 +48,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -56,6 +58,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -343,31 +346,73 @@ public class SealingAuthorityAbility extends SelectableAbility {
         });
     }
 
+//    // Tracks all currently-existing trap item entities, across all dimensions.
+//    private static final Set<ItemEntity> trapItems = ConcurrentHashMap.newKeySet();
+//
+//    private static boolean isTrapItem(ItemEntity item) {
+//        return item.getItem().getOrDefault(ModDataComponents.IS_TRAP, false);
+//    }
+//
+//    @SubscribeEvent
+//    public static void onItemJoinLevel(EntityJoinLevelEvent event) {
+//        if (event.getLevel().isClientSide()) return;
+//        if (event.getEntity() instanceof ItemEntity itemEntity && isTrapItem(itemEntity)) {
+//            trapItems.add(itemEntity);
+//        }
+//    }
+//
+//    @SubscribeEvent
+//    public static void onItemLeaveLevel(EntityLeaveLevelEvent event) {
+//        if (event.getEntity() instanceof ItemEntity itemEntity) {
+//            trapItems.remove(itemEntity);
+//        }
+//    }
+//
 //    @SubscribeEvent
 //    public static void onEntityTick(EntityTickEvent.Post event) {
-//        if(!(event.getEntity() instanceof LivingEntity entity)) return;
-//
-//        if(entity.level().isClientSide()) return;
-//
-//        if(BeyonderData.getSequence(entity) <= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
-//
-//        List<ItemEntity> nearbyTraps = AbilityUtil.getAllNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 2.5).stream()
-//                .filter(e -> e instanceof net.minecraft.world.entity.item.ItemEntity)
-//                .map(e -> ((net.minecraft.world.entity.item.ItemEntity) e))
-//                .filter(s -> s.getItem().getOrDefault(ModDataComponents.IS_TRAP, false))
-//                .toList();
+//        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+//        if (entity.level().isClientSide()) return;
+//        if (BeyonderData.getSequence(entity) <= 0 && BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
 //
 //        boolean hasTrap = false;
-//        for (ItemStack item : entity.getAllSlots()) if (item.getOrDefault(ModDataComponents.IS_TRAP, false)) {
-//            hasTrap = true;
-//            break;
+//        for (ItemStack item : entity.getAllSlots()) {
+//            if (item.getOrDefault(ModDataComponents.IS_TRAP, false)) {
+//                hasTrap = true;
+//                break;
+//            }
 //        }
 //
-//        if(!hasTrap && nearbyTraps.isEmpty()) {
+//        List<ItemEntity> nearbyTraps = null;
+//        if (!trapItems.isEmpty()) {
+//            final double radiusSq = 2.5 * 2.5;
+//            Vec3 pos = entity.position();
+//            Level level = entity.level();
+//
+//            for (Iterator<ItemEntity> it = trapItems.iterator(); it.hasNext(); ) {
+//                ItemEntity trap = it.next();
+//
+//                if (!trap.isAlive() || trap.isRemoved() || !isTrapItem(trap)) {
+//                    it.remove();
+//                    continue;
+//                }
+//                if (trap.level() != level) continue;
+//                if (trap.position().distanceToSqr(pos) <= radiusSq) {
+//                    if (nearbyTraps == null) nearbyTraps = new ArrayList<>();
+//                    nearbyTraps.add(trap);
+//                }
+//            }
+//        }
+//
+//        if (!hasTrap && (nearbyTraps == null || nearbyTraps.isEmpty())) {
 //            return;
 //        }
 //
-//        nearbyTraps.forEach(Entity::discard);
+//        if (nearbyTraps != null) {
+//            for (ItemEntity trap : nearbyTraps) {
+//                trapItems.remove(trap);
+//                trap.discard();
+//            }
+//        }
 //        clearItemsWithComponent(entity, ModDataComponents.IS_TRAP.get());
 //
 //        ResourceKey<Level> spaceDimension = ResourceKey.create(Registries.DIMENSION,
@@ -397,7 +442,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
 //
 //        int duration = getSealingDurationBySequence(BeyonderData.getSequence(entity));
 //        ServerScheduler.scheduleDelayed(duration, () -> {
-//            if(entity.isAlive()) {
+//            if (entity.isAlive()) {
 //                entity.teleportTo(previousLevel,
 //                        previousPos.x,
 //                        previousPos.y,

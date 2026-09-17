@@ -231,6 +231,7 @@ public class DangerPremonitionAbility extends PassiveAbility {
 
     @SubscribeEvent
     public static void onAbilityTrigger(AbilityUsedEvent event) {
+        if(event.getEntity() == null) return;
         List<LivingEntity> entities = AbilityUtil.getNearbyEntities(event.getEntity(), event.getLevel(), event.getEntity().position(), 33, true);
         for (LivingEntity entity : entities) {
 

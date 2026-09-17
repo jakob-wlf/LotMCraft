@@ -83,6 +83,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDERMAN_TELEPORT, entity.getSoundSource(), 1, 1);
 
         ServerLevel banishLevel = selectRandomLevel(level);
+        if(banishLevel == null) return;
         Vec3 banishLoc = generateRandomLocationInLevel(banishLevel);
 
         for(int i = 0; i < 20; i++) {
@@ -122,7 +123,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
     private ServerLevel selectRandomLevel(ServerLevel level) {
          return switch (level.random.nextInt(3)) {
             case 0 -> level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
-                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile")));
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space")));
             case 1 -> level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
                         ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world")));
             default -> level;

@@ -12,6 +12,7 @@ import de.jakob.lotm.attachments.SacrificeRevertComponent;
 import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
@@ -20,6 +21,7 @@ import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.network.packets.toClient.SyncPlayerSefirotPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -113,6 +115,8 @@ public class PlayerEvents {
             if(player instanceof ServerPlayer serverPlayer) {
                 AllyUtil.syncAllyData(serverPlayer);
             }
+
+            PacketHandler.sendToPlayer(player, new SyncPlayerSefirotPacket(SefirahHandler.getSefirot(player)));
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {

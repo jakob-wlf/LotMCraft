@@ -24,7 +24,7 @@ public class FeatherFallAbility extends PassiveAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(entity.fallDistance > 3)
+        if(entity.fallDistance > 2)
             entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 30, 1, false, false, false));
     }
 

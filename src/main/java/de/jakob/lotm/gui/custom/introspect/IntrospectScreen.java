@@ -693,7 +693,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        renderPassiveAbilities(guiGraphics, mouseX, mouseY);
+        int x = (this.width - this.imageWidth) / 2;
+        int y = (this.height - this.imageHeight) / 2;
+        renderPassiveAbilities(guiGraphics, x, y, mouseX, mouseY);
 
         if (showQuests) {
             renderQuestPanel(guiGraphics);
@@ -730,8 +732,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
-    private void renderPassiveAbilities(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        int passivesY = 195;
+    private void renderPassiveAbilities(@NotNull GuiGraphics guiGraphics, int x, int y, int mouseX, int mouseY) {
+        int passivesY = y + 175;
         int passivesX = this.leftPos + 7;
 
         for(int i = 0; i < Math.min(passiveAbilities.size(), 9); i++) {

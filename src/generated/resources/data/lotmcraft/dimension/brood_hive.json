@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:brood_hive",
+  "generator": {
+    "type": "lotmcraft:brood_hive",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:brood_hive_biome"
+    }
+  }
+}

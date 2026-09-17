@@ -15,7 +15,7 @@ public class SefirahCastleDimensionEffects{
     @SubscribeEvent
     public static void registerDimensionEffects(RegisterDimensionSpecialEffectsEvent event) {
         event.register(
-                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"),
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"),
                 new SefirahCastleEffects()
         );
     }

@@ -21,19 +21,23 @@ public class ModBlockEntities {
 //            BLOCK_ENTITIES.register("sefirah_block_be", () -> BlockEntityType.Builder.of(
 //                    SefirahBlockEntity::new, ModBlocks.SEFIRAH_BLOCK.get()).build(null));
 //
-//    public static final Supplier<BlockEntityType<RitualisticTableBlockEntity>> RITUALISTIC_TABLE_BE =
-//            BLOCK_ENTITIES.register("ritualistic_table_be", () -> BlockEntityType.Builder.of(
-//                    RitualisticTableBlockEntity::new, ModBlocks.RITUALISTIC_TABLE.get()).build(null));
-//
+//    public static final Supplier<BlockEntityType<BreedingBlockEntity>> BREEDING_BLOCK_BE =
+//            BLOCK_ENTITIES.register("breeding_block_be", () -> BlockEntityType.Builder.of(
+//                    BreedingBlockEntity::new, ModBlocks.BREEDING_BLOCK.get()).build(null));
+
+    public static final Supplier<BlockEntityType<RitualisticTableBlockEntity>> RITUALISTIC_TABLE_BE =
+            BLOCK_ENTITIES.register("ritualistic_table_be", () -> BlockEntityType.Builder.of(
+                    RitualisticTableBlockEntity::new, ModBlocks.RITUALISTIC_TABLE.get()).build(null));
+
 //    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<MysticalRingBlockEntity>> MYSTICAL_RING_BE =
 //            BLOCK_ENTITIES.register("mystical_ring_be", () ->
 //                    BlockEntityType.Builder.of(MysticalRingBlockEntity::new,
 //                            ModBlocks.MYSTICAL_RING.get()).build(null));
-//
-//    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RitualisticTablePartBlockEntity>> RITUALISTIC_TABLE_PART_BE =
-//            BLOCK_ENTITIES.register("ritualistic_table_part_be", () ->
-//                    BlockEntityType.Builder.of(RitualisticTablePartBlockEntity::new,
-//                            ModBlocks.RITUALISTIC_TABLE_PART.get()).build(null));
+
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RitualisticTablePartBlockEntity>> RITUALISTIC_TABLE_PART_BE =
+            BLOCK_ENTITIES.register("ritualistic_table_part_be", () ->
+                    BlockEntityType.Builder.of(RitualisticTablePartBlockEntity::new,
+                            ModBlocks.RITUALISTIC_TABLE_PART.get()).build(null));
 
     public static void register(IEventBus eventBus) {
         BLOCK_ENTITIES.register(eventBus);

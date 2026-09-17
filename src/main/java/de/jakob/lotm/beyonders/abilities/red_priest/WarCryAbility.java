@@ -69,6 +69,8 @@ public class WarCryAbility extends Ability {
 
         BeyonderData.addModifierWithTimeLimit(entity, "war_cry", 1.05, (long) (20 * 5));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 5), 4, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 5), 3, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, (int) (20 * 5), 0, false, false, false));
 
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos.add(0, 1, 0), 600, .75, .75, .75, .15);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos, 600, 7, .2, 7, .005);
@@ -93,13 +95,13 @@ public class WarCryAbility extends Ability {
         Vec3 vectorFromCenter = new Vec3(b.getX() + 0.5 - startPos.x, 0, b.getZ() + 0.5 - startPos.z).normalize();
         Vec3 movement = (new Vec3(vectorFromCenter.x, 1, vectorFromCenter.z)).normalize().scale(.75);
 
-//        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
-//        block.setDeltaMovement(movement);
-//        if(!griefing)
-//            block.disableDrop();
-//        else {
-//            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-//        }
-//        block.hurtMarked = true;
+        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
+        block.setDeltaMovement(movement);
+        if(!griefing)
+            block.disableDrop();
+        else {
+            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
+        }
+        block.hurtMarked = true;
     }
 }

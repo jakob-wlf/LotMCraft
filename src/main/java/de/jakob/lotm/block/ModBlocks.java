@@ -38,20 +38,28 @@ public class ModBlocks {
 //                    .sound(SoundType.POWDER_SNOW)
 //            ));
 //
-//    public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
-//            () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
-//                    .strength(3.0f)
+//    public static final DeferredBlock<Block> BREEDING_BLOCK = registerBlock("breeding_block",
+//            () -> new BreedingBlock(BlockBehaviour.Properties.of()
+//                    .strength(-1)
 //                    .noOcclusion()
-//                    .lightLevel(state -> 12)
-//                    .sound(SoundType.WOOD)
+//                    .sound(SoundType.POWDER_SNOW)
 //            ));
-//
-//    public static final DeferredHolder<Block, RitualisticTablePartBlock> RITUALISTIC_TABLE_PART =
-//            BLOCKS.register("ritualistic_table_part", () ->
-//                    new RitualisticTablePartBlock(BlockBehaviour.Properties.of()
-//                            .noOcclusion()
-//                            .strength(-1.0F, 3600000.0F)
-//                            .noLootTable()));
+
+
+    public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
+            () -> new RitualisticTableBlock(BlockBehaviour.Properties.of()
+                    .strength(3.0f)
+                    .noOcclusion()
+                    .lightLevel(state -> 12)
+                    .sound(SoundType.WOOD)
+            ));
+
+    public static final DeferredHolder<Block, RitualisticTablePartBlock> RITUALISTIC_TABLE_PART =
+            BLOCKS.register("ritualistic_table_part", () ->
+                    new RitualisticTablePartBlock(BlockBehaviour.Properties.of()
+                            .noOcclusion()
+                            .strength(3.0f)
+                            .noLootTable()));
 
     public static final DeferredBlock<Block> VOID = registerBlock("void_block",
             () -> new VoidBlock(BlockBehaviour.Properties.of()

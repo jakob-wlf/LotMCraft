@@ -13,6 +13,8 @@ import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
+import de.jakob.lotm.entity.client.knowledge_rabbit.RabbitOfKnowledgeModel;
+import de.jakob.lotm.entity.client.murloc.MurlocModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileModel;
@@ -36,6 +38,7 @@ import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.Apprentice
 import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.misfortune_words.MisfortuneWordsModel;
 import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
+import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandModel;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneModel;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
@@ -50,10 +53,17 @@ import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimage
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
+import de.jakob.lotm.rendering.models.darkness.DarknessMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.death.DeathMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.demoness.DemonessMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.error.ErrorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.justiciar.JusticiarMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.mother.MotherMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -126,6 +136,9 @@ public class ModEvents {
         event.registerLayerDefinition(TradeIndicatorModel.LAYER_LOCATION, TradeIndicatorModel::createBodyLayer);
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
         event.registerLayerDefinition(UnderworldGateModel.LAYER_LOCATION, UnderworldGateModel::createBodyLayer);
+        event.registerLayerDefinition(MurlocModel.LAYER_LOCATION, MurlocModel::createBodyLayer);
+        event.registerLayerDefinition(RabbitOfKnowledgeModel.LAYER_LOCATION, RabbitOfKnowledgeModel::createBodyLayer);
+
 
         // Spirits
         event.registerLayerDefinition(SpiritDervishModel.LAYER_LOCATION, SpiritDervishModel::createBodyLayer);
@@ -136,6 +149,7 @@ public class ModEvents {
         event.registerLayerDefinition(SpiritBizarroBaneModel.LAYER_LOCATION, SpiritBizarroBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritBaneModel.LAYER_LOCATION, SpiritBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritMalmouthModel.LAYER_LOCATION, SpiritMalmouthModel::createBodyLayer);
+        event.registerLayerDefinition(AbscessedHandModel.LAYER_LOCATION, AbscessedHandModel::createBodyLayer);
 
         // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
@@ -145,6 +159,13 @@ public class ModEvents {
         event.registerLayerDefinition(RedPriestMythicalCreatureModel.LAYER_LOCATION, RedPriestMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(SunMythicalCreatureModel.LAYER_LOCATION, SunMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(DoorHighMythicalCreatureModel.LAYER_LOCATION, DoorHighMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(MotherMythicalCreatureModel.LAYER_LOCATION, MotherMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DarknessMythicalCreatureModel.LAYER_LOCATION, DarknessMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DeathMythicalCreatureModel.LAYER_LOCATION, DeathMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(ErrorMythicalCreatureModel.LAYER_LOCATION, ErrorMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(JusticiarMythicalCreatureModel.LAYER_LOCATION, JusticiarMythicalCreatureModel::createBodyLayer);;
+        event.registerLayerDefinition(VisionaryMythicalCreatureModel.LAYER_LOCATION, VisionaryMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DemonessMythicalCreatureModel.LAYER_LOCATION, DemonessMythicalCreatureModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -155,15 +176,18 @@ public class ModEvents {
         event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
         event.put(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDouble.createAttributes().build());
+        event.put(ModEntities.MURLOC.get(), MurlocEntity.createAttributes().build());
+        event.put(ModEntities.RABBIT_OF_KNOWLEDGE.get(), RabbitOfKnowledgeEntity.createAttributes().build());
 
         event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardEntity.createAttributes().build());
-        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritBubblesEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(), SpiritTranslucentWizardEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_GHOST.get(), SpiritGhostEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BIZARRO_BANE.get(), SpiritBizarroBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BANE.get(), SpiritBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthEntity.createAttributes().build());
+        event.put(ModEntities.ABSCESSED_HAND.get(), AbscessedHandEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -226,6 +250,27 @@ public class ModEvents {
         );
         event.register(
                 ModEntities.SPIRIT_MALMOUTH.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.ABSCESSED_HAND.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.MURLOC.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.OCEAN_FLOOR,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.RABBIT_OF_KNOWLEDGE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,

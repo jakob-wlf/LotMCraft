@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.addons.anchoring.AnchoringStorage;
 import de.jakob.lotm.addons.factions.FactionStorage;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
@@ -214,6 +215,10 @@ public class BeyonderData {
             callPassiveEffectsOnRemoved(entity, serverLevel);
         }
 
+        if(entity instanceof ServerPlayer player && ControllingUtils.isControlling(player)) {
+            ControllingUtils.cancel(player, 0, true, false);
+        }
+
         if(entity instanceof ServerPlayer player) {
             if(!skipCheck) {
                 if (!playerMap.check(pathway, sequence)) return;
@@ -378,7 +383,15 @@ public class BeyonderData {
     }
 
     public static String getPathway(LivingEntity entity) {
+        return getPathway(entity, false);
+    }
+
+    public static String getPathway(LivingEntity entity, boolean ignoreControlling) {
+        if(entity instanceof Player player && ControllingUtils.isControlling(player) && !ignoreControlling) {
+            return ControllingUtils.getControlledPathway(player);
+        }
         if(entity.level().isClientSide) {
+            PacketHandler.requestBeyonderSync();
             return ClientBeyonderCache.getPathway(entity.getUUID());
         }
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
@@ -387,34 +400,44 @@ public class BeyonderData {
     }
 
     public static int getSequence(LivingEntity entity) {
-        return getSequence(entity, false);
+        return getSequence(entity, false, false);
     }
 
     public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {
+        return getSequence(entity, returnTrueMarionetteLvl, false);
+    }
+
+
+    public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl, boolean ignoreControlling) {
         if(entity == null) return LOTMCraft.NON_BEYONDER_SEQ;
 
+        if(entity instanceof Player player && ControllingUtils.isControlling(player) && !ignoreControlling) {
+            return ControllingUtils.getControlledSequence(player);
+        }
+
         if(entity.level().isClientSide) {
+            PacketHandler.requestBeyonderSync();
             return ClientBeyonderCache.getSequence(entity.getUUID());
         }
 
-        if (!returnTrueMarionetteLvl) {
-            MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
-            if(marionetteComponent.isMarionette()) {
-                UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
-                Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
-                if(owner instanceof LivingEntity ownerLiving) {
-                    int ownerSequence = getSequence(ownerLiving);
-
-                    BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
-                    int entitySequence = component.getSequence();
-
-                    if (entitySequence < 0 || entitySequence == LOTMCraft.NON_BEYONDER_SEQ) {
-                        return ownerSequence;
-                    }
-                    return Math.max(entitySequence, ownerSequence);
-                }
-            }
-        }
+//        if (!returnTrueMarionetteLvl) {
+//            MarionetteComponent marionetteComponent = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+//            if(marionetteComponent.isMarionette()) {
+//                UUID controllerUUID = UUID.fromString(marionetteComponent.getControllerUUID());
+//                Entity owner = ((ServerLevel) entity.level()).getEntity(controllerUUID);
+//                if(owner instanceof LivingEntity ownerLiving) {
+//                    int ownerSequence = getSequence(ownerLiving);
+//
+//                    BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+//                    int entitySequence = component.getSequence();
+//
+//                    if (entitySequence < 0 || entitySequence == LOTMCraft.NON_BEYONDER_SEQ) {
+//                        return ownerSequence;
+//                    }
+//                    return Math.max(entitySequence, ownerSequence);
+//                }
+//            }
+//        }
 
         BeyonderComponent component = entity.getData(ModAttachments.BEYONDER_COMPONENT);
         return component.getSequence();
@@ -425,9 +448,9 @@ public class BeyonderData {
             return ClientBeyonderCache.getSpirituality(entity.getUUID());
         }
         if(!(entity instanceof Player))
-            return getMaxSpirituality(getPathway(entity), getSequence(entity));
+            return getMaxSpirituality(getPathway(entity, true), getSequence(entity, false, true));
         float spirituality = entity.getData(ModAttachments.BEYONDER_COMPONENT).getSpirituality();
-        float maxSpirituality = getMaxSpirituality(getPathway(entity), getSequence(entity));
+        float maxSpirituality = getMaxSpirituality(getPathway(entity, true), getSequence(entity, false, true));
 
         if(maxSpirituality <= 0) {
             return 0.0f;
@@ -441,7 +464,7 @@ public class BeyonderData {
         float current = getSpirituality(entity);
         entity.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(Math.max(0, current - amount));
 
-        float maxSpirituality = getMaxSpirituality(getPathway(entity), getSequence(entity));
+        float maxSpirituality = getMaxSpirituality(getPathway(entity, true), getSequence(entity, false, true));
 
         if(maxSpirituality <= 0) {
             return;
@@ -512,7 +535,7 @@ public class BeyonderData {
             return;
 
         float current = getSpirituality(player);
-        float newAmount = Math.min(getMaxSpirituality(getPathway(player), getSequence(player), player), current + amount);
+        float newAmount = Math.min(getMaxSpirituality(getPathway(player, true), getSequence(player, false, true), player), current + amount);
         player.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(newAmount);
 
         // Sync to client if this is server-side
@@ -530,7 +553,7 @@ public class BeyonderData {
     }
 
     public static float getMaxSpirituality(Player player) {
-        return getMaxSpirituality(getPathway(player), getSequence(player), player);
+        return getMaxSpirituality(getPathway(player, true), getSequence(player, false, true), player);
     }
 
     // for getting the spirituality of the main body instead, works on both client and server side
@@ -873,8 +896,8 @@ public class BeyonderData {
             case 6 -> 1.0105f;
             case 5 -> 1.015f;
             case 4 -> 1.03f;
-            case 3 -> 1.075f;
-            case 2 -> 1.1f;
+            case 3 -> 1.1f;
+            case 2 -> 1.15f;
             case 1 -> 1.0f + (float) stacks/7 ;
             default -> 0.0f;
         };

@@ -1,10 +1,12 @@
 //package de.jakob.lotm.block.custom;
 //
 //import com.mojang.serialization.MapCodec;
+//import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 //import de.jakob.lotm.block.ModBlockEntities;
 //import de.jakob.lotm.block.entity.SefirahBlockEntity;
 //import net.minecraft.core.BlockPos;
 //import net.minecraft.network.chat.Component;
+//import net.minecraft.server.level.ServerPlayer;
 //import net.minecraft.world.InteractionHand;
 //import net.minecraft.world.ItemInteractionResult;
 //import net.minecraft.world.SimpleMenuProvider;
@@ -52,10 +54,12 @@
 //            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 //        }
 //
-//        if (!pLevel.isClientSide()) {
+//        if (!pLevel.isClientSide() && pPlayer instanceof ServerPlayer serverPlayer) {
 //            BlockEntity entity = pLevel.getBlockEntity(pPos);
 //            if(entity instanceof SefirahBlockEntity sefirahBlockEntity) {
-//                pPlayer.openMenu(new SimpleMenuProvider(sefirahBlockEntity, Component.literal("Sefirah")), pPos);
+//                if(SefirahHandler.hasSefirot(serverPlayer) && SefirahHandler.isInSefirot(serverPlayer, SefirahHandler.getSefirot(serverPlayer))) {
+//                    pPlayer.openMenu(new SimpleMenuProvider(sefirahBlockEntity, Component.literal("Sefirah")), pPos);
+//                }
 //            } else {
 //                throw new IllegalStateException("Our Container provider is missing!");
 //            }

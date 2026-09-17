@@ -58,7 +58,7 @@ public class UseSkillAction extends ActionBase {
             }catch (NumberFormatException ignored) {}
 
             selectableAbility.setSelectedAbility((ServerPlayer) entity, option);
-            selectableAbility.onAbilityUse(serverLevel, entity);
+            selectableAbility.useAbility(serverLevel, entity, false, false, false, false);
             return;
         }
 

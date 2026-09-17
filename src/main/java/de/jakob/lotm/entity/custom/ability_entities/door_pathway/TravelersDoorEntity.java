@@ -22,6 +22,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.parsing.packrat.Atom;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -256,6 +258,7 @@ public class TravelersDoorEntity extends Entity {
                     stopped.set(true);
                 }
 
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;

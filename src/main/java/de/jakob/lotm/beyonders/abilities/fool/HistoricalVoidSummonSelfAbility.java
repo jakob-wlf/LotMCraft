@@ -187,7 +187,7 @@ public class HistoricalVoidSummonSelfAbility extends Ability {
                 return;
             }
 
-            player.teleportTo(historicalVoid, player.getX(), HistoricalVoidHidingAbility.findSafeY(historicalVoid, (int) player.getX(), (int) player.getZ()), player.getZ(), Set.of(), player.getYRot(), player.getXRot());
+            LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").useAbility(player.serverLevel(), player, false, false, false, false);
             player.playSound(SoundEvents.ENDER_CHEST_OPEN);
         }
     }

@@ -337,8 +337,6 @@ public class BeyonderEventHandler {
 
             player.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
 
-            SefirahHandler.unclaimSefirot(player);
-
             if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());
             } else
@@ -417,6 +415,153 @@ public class BeyonderEventHandler {
 
             container.broadcastChanges();
         });
+    }
+
+    @SubscribeEvent
+    public static void onSunHitDigestion(LivingDamageEvent.Post event) {
+        if (event.getEntity().level().isClientSide()) return;
+
+        // Attacker must be a Sun Pathway Beyonder at seq 3 or stronger
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+        if (!BeyonderData.isBeyonder(attacker)) return;
+
+        int attackerSeq;
+        if (BeyonderData.getPathway(attacker).equals("sun")) {
+            attackerSeq = BeyonderData.getSequence(attacker);
+            if (attackerSeq > 3) return;
+        } else {
+            // Allow shared Sun abilities: attacker must have a Sun team member (seq <= 3) who contributed an ability.
+            if (!(attacker instanceof ServerPlayer attackerPlayer)) return;
+            attackerSeq = getSunContributorSeq(attackerPlayer);
+            if (attackerSeq < 0) return;
+        }
+
+        // Victim must be a Beyonder Player with digestion
+        LivingEntity victim = event.getEntity();
+        if (!(victim instanceof Player victimPlayer)) return;
+        if (!BeyonderData.isBeyonder(victim)) return;
+        if (victim.level().isClientSide()) return;
+
+        // Sacrifice ability protects the victim from digestion drain and regression while active
+        if (victim instanceof ServerPlayer victimSp
+                && victimSp.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT).isActive()) return;
+
+        int victimSeq = BeyonderData.getSequence(victim);
+
+        // Indirect = ticking AoEs (PURIFICATION_INDIRECT). Everything else — melee, projectiles,
+        // spawned entities — counts as direct (PURIFICATION or any other damage type).
+        boolean isDirect = !event.getSource().is(ModDamageTypes.PURIFICATION);
+
+        // seqDiff > 0 means attacker is stronger (lower seq number), < 0 means weaker
+
+        if (victimSeq <= 2) return;
+
+        int seqDiff = victimSeq - attackerSeq;
+
+        float digestionDrain;
+        if (isDirect) {
+            // Base 0.3%, +0.1% per level attacker is stronger, -0.1% per level attacker is weaker, floor 0.1%
+            digestionDrain = Math.max(0.001f, 0.003f + seqDiff * 0.001f);
+        } else {
+            // Base 0.05%, +0.01% per level attacker is stronger, -0.001% per level attacker is weaker, floor 0.01%
+            digestionDrain = Math.max(0.0001f, 0.0005f + seqDiff * 0.0001f);
+        }
+
+        float currentDigestion = BeyonderData.getDigestionProgress(victimPlayer);
+        float newDigestion = Math.max(0f, currentDigestion - digestionDrain);
+        BeyonderData.setDigestionProgress(victimPlayer, newDigestion);
+        if (victim instanceof ServerPlayer sp) {
+            PacketHandler.syncBeyonderDataToPlayer(sp);
+        }
+
+        // If digestion is fully drained, 10% chance to regress victim and reward attacker
+        if (newDigestion <= 0f && new Random().nextFloat() < 0.01f) {
+            // Capture pathway before regression changes it — the dropped characteristic belongs to the old pathway/seq
+            String pathwayBeforeRegress = BeyonderData.getPathway(victim);
+            // Check if victim has a characteristic stack at their current sequence
+            boolean hasStack = BeyonderData.getCurrentCharStack(victim) > 0;
+
+            if (hasStack) {
+                // Consume one stack instead of desequencing
+                BeyonderData.setCharStack(victim, BeyonderData.getCurrentCharStack(victim) - 1, getSequence(victim), true);
+            } else {
+                // No stack — desequence the victim, using regressSeq so domain-switched players restore to their previous pathway
+                if (victim instanceof ServerPlayer sp && BeyonderData.playerMap.get(sp).isPresent()) {
+                    StoredData regressed = BeyonderData.playerMap.get(sp).get().regressSeq();
+                    BeyonderData.playerMap.put(sp, regressed);
+                    BeyonderData.setBeyonder(victim, regressed.pathway(), regressed.sequence());
+                } else {
+                    BeyonderData.setBeyonder(victim, BeyonderData.getPathway(victim), victimSeq + 1);
+                }
+            }
+
+            // Always give the attacker the corresponding characteristic item (not for void-summoned puppets or players possessing one)
+            if (!victim.getPersistentData().getBoolean("VoidSummoned")) {
+                BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
+                        .selectCharacteristicOfPathwayAndSequence(pathwayBeforeRegress, victimSeq);
+                if (charItem != null && attacker instanceof Player attackerPlayer) {
+                    attackerPlayer.getInventory().add(new ItemStack(charItem.asItem()));
+                }
+            }
+
+            // Either way, reset digestion to full so the victim isn't immediately vulnerable again
+            victimPlayer.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(1);
+            if (victim instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
+        }
+    }
+
+    private static float getDigestionDrain(int victimSeq, int attackerSeq, boolean isDirect) {
+        int seqDiff = victimSeq - attackerSeq;
+
+        float digestionDrain;
+        if (isDirect) {
+            // Base 3%, +1% per level attacker is stronger, -1% per level attacker is weaker, floor 1%
+            digestionDrain = Math.max(0.01f, 0.03f + seqDiff * 0.01f);
+        } else {
+            // Base 0.5%, +0.1% per level attacker is stronger, -0.1% per level attacker is weaker, floor 0.1%
+            digestionDrain = Math.max(0.001f, 0.005f + seqDiff * 0.001f);
+        }
+        return digestionDrain;
+    }
+
+    /**
+     * Returns the sequence of the strongest Sun contributor (seq <= 3) sharing abilities with the given player,
+     * or -1 if no such contributor exists.
+     */
+    private static int getSunContributorSeq(ServerPlayer player) {
+        if (player.getServer() == null) return -1;
+        TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
+
+        // Collect all member UUIDs to check — if player is a team member, check other members + leader;
+        // if player is the leader, check their members.
+        java.util.List<String> toCheck = new java.util.ArrayList<>();
+        if (team.isInTeam()) {
+            // player is a member — the leader UUID and other members contributed abilities accessible to the leader
+            toCheck.add(team.leaderUUID());
+            ServerPlayer leader = player.getServer().getPlayerList().getPlayer(
+                    java.util.UUID.fromString(team.leaderUUID()));
+            if (leader != null) {
+                toCheck.addAll(leader.getData(ModAttachments.TEAM_COMPONENT.get()).memberUUIDs());
+            }
+        } else {
+            toCheck.addAll(team.memberUUIDs());
+        }
+
+        int best = -1;
+        for (String uuid : toCheck) {
+            ServerPlayer member = player.getServer().getPlayerList().getPlayer(java.util.UUID.fromString(uuid));
+            if (member == null) continue;
+            if (!BeyonderData.isBeyonder(member)) continue;
+            if (!BeyonderData.getPathway(member).equals("sun")) continue;
+            int seq = BeyonderData.getSequence(member);
+            if (seq > 3) continue;
+            // Check that this member has actually contributed at least one ability to the team
+            SharedAbilitiesComponent shared = member.getData(ModAttachments.SHARED_ABILITIES_COMPONENT.get());
+            String leaderUUID = team.isInTeam() ? team.leaderUUID() : player.getStringUUID();
+            if (shared.getContributions(leaderUUID).isEmpty()) continue;
+            if (best < 0 || seq < best) best = seq;
+        }
+        return best;
     }
 
     @SubscribeEvent
