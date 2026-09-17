@@ -104,6 +104,8 @@ public class PlayerMap extends SavedData {
     }
 
     public void addProphecy(UUID entity, Prophecy prophecy){
+        if(!map.containsKey(entity)) map.put(entity, StoredData.builder.build());
+
         var list = map.get(entity).prophecies();
         list.add(prophecy);
 
@@ -144,7 +146,10 @@ public class PlayerMap extends SavedData {
         String name = player.getGameProfile().getName();
 
         UUID inMapId = getKeyByName(name);
-        if(inMapId == null) return;
+        if(inMapId == null){
+            put(player);
+            return;
+        }
 
         if(!inMapId.equals(player.getUUID())){
             var data = map.get(inMapId);
@@ -373,7 +378,8 @@ public class PlayerMap extends SavedData {
 
     public static PlayerMap get(ServerLevel level) {
         LOTMCraft.LOGGER.info("Loading beyonderMap");
-        return level.getServer().overworld().getDataStorage().computeIfAbsent(FACTORY, NBT_BEYONDER_MAP_CLASS);
+        return level.getServer().overworld()
+                .getDataStorage().computeIfAbsent(FACTORY, NBT_BEYONDER_MAP_CLASS);
     }
 
     public void setLevel(ServerLevel level){

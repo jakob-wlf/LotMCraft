@@ -29,22 +29,33 @@ public class Seq2 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
+        if (component.getStage() == 2) {
+            component.setCompleted(true);
+        }
+
         String name = player.getName().getString();
         var factions = BeyonderData.factionStorage.getPartOfFaction(name);
 
         for(var obj : factions){
+            int currentWins = obj.getTotalWins();
+
             if(!previous.containsKey(obj.getId())){
-                if(obj.getTotalWins() > 1) {
-                    component.setCompleted(true);
-                    return;
-                }
+                previous.put(obj.getId(), currentWins);
+                continue;
             }
-            else{
-                int previousValue = previous.get(obj.getId());
-                if(obj.getTotalWins() > previousValue + 1){
+
+            int previousWins = previous.get(obj.getId());
+
+            if (currentWins > previousWins) {
+                int newWins = currentWins - previousWins;
+
+                previous.put(obj.getId(), currentWins);
+                component.setStage(component.getStage() + newWins);
+
+                if (component.getStage() >= 2) {
                     component.setCompleted(true);
-                    return;
                 }
+                return;
             }
         }
     }
@@ -54,8 +65,7 @@ public class Seq2 {
         var factions = BeyonderData.factionStorage.getAllFactions();
 
         for(var faction : factions){
-            previous.put(faction.getKey(),
-                    faction.getValue().getTotalWins());
+            previous.put(faction.getKey(), faction.getValue().getTotalWins());
         }
     }
 

@@ -6,6 +6,9 @@
     "EntityAccessor",
     "MixinIngredient"
   ],
+  "client": [
+    "EntityGlowMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

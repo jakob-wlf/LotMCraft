@@ -45,6 +45,8 @@ public class PureIdealismUtil {
         component.setPreviousWheel(wheelData.copy());
         component.setPreviousBar(barData.copy());
 
+        component.setHasUniqueness(BeyonderData.hasUniqueness(player));
+
         var pair = component.getAbilitiesInBars(path, sequence);
         AbilityWheelComponent savedWheelData = pair.getFirst();
         AbilityBarComponent savedBarData = pair.getSecond();
@@ -115,6 +117,13 @@ public class PureIdealismUtil {
         if(shouldDie) {
             entity.kill();
             died.put(entity.getUUID(), path);
+            return;
+        }
+
+        if(component.getUniqueness()){
+            var uniqueness = player.getData(ModAttachments.UNIQUENESS_COMPONENT.get());
+            uniqueness.setHasUniqueness(true);
+            uniqueness.setUniquenessPathway("visionary");
         }
     }
 

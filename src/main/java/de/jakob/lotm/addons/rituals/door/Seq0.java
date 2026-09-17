@@ -5,6 +5,8 @@ import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -41,6 +43,9 @@ public class Seq0 {
                     == ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY) {
                 component.setStage(1);
             } else {
+                if (component.getStage() > 0) {
+                    player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
+                }
                 component.setStage(0);
             }
         }
@@ -50,6 +55,7 @@ public class Seq0 {
             component.setStage(2);
         }
         else if(!disabled.isAbilityUsageDisabled()){
+            player.sendSystemMessage(Component.literal("You lost your ritual progress!").withStyle(ChatFormatting.RED));
             component.setStage(0);
         }
 

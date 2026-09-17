@@ -44,6 +44,4 @@ public class Seq1 {
             map.remove(player.getUUID());
         }
     }
-
-
 }

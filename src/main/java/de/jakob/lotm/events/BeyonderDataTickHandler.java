@@ -11,6 +11,7 @@ import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAb
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.effect.FoolingEffect;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.network.packets.toClient.SyncBeyonderDataPacket;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import de.jakob.lotm.item.ModItems;
@@ -34,6 +35,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+
+import static de.jakob.lotm.util.BeyonderData.getMaxWormAmount;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderDataTickHandler {
@@ -156,6 +159,11 @@ public class BeyonderDataTickHandler {
                 toggleAbility.prepareTick(livingEntity.level(), livingEntity);
                 PacketHandler.sendToTrackingAndSelf(livingEntity, new SyncToggleAbilityPacket(livingEntity.getId(), toggleAbility.getId(), SyncToggleAbilityPacket.Action.TICK.getValue()));
             });
+        }
+        if(entity.tickCount % 20 == 0) {
+            BeyonderComponent beyonderComponent = entity.getData(ModAttachments.BEYONDER_COMPONENT);
+            SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), BeyonderData.getPathway(livingEntity), BeyonderData.getSequence(livingEntity), beyonderComponent.getSpirituality(), false, 0.0f, beyonderComponent.getPathwayHistory(), beyonderComponent.getCharacteristicStack(), getMaxWormAmount(BeyonderData.getSequence(livingEntity)));
+            PacketHandler.sendToTrackingAndSelf(entity, packet);
         }
     }
 

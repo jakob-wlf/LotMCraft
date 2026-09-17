@@ -14,7 +14,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq4 {
-    private static final int NEED_AMOUNT = 2500;
+    private static final int NEED_AMOUNT = 1000;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -41,7 +41,7 @@ public class Seq4 {
 
         int value = 1;
         if(livingEntity instanceof ServerPlayer){
-            value = 10;
+            value = 20;
         }
 
         var component = player.getData(ModAttachments.RITUALS.get());

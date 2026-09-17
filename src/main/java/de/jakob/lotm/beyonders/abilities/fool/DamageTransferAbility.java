@@ -21,7 +21,7 @@ public class DamageTransferAbility extends SelectableAbility {
         super(id, 90);
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(60, 65, 70, 75, 80, 85, 87, 90));
+        dynamicCooldown = new LinkedList<>(List.of(25, 40, 50, 60, 70, 80, 85, 90));
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(70000f, 24000f, 11600f, 5800f, 4550f, 2200f, 1365f));

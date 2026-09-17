@@ -95,7 +95,7 @@ public class AnchoringEvents {
     public static void onServerTick(ServerTickEvent.Post event) {
         tickCounter++;
 
-        if(tickCounter % 20 == 0){
+        if(tickCounter % (20) == 0){
             BeyonderData.anchoringStorage.recalculateAvatars(event.getServer().overworld());
         }
     }

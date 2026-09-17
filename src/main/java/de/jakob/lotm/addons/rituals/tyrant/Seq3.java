@@ -25,7 +25,6 @@ import java.util.*;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq3 {
-    private static final Map<UUID, Vec3> posMap = new HashMap<>();
     public static final String message = "I declare this sea as my property";
     private static final int NEED_AMOUNT = 4500;
     private static final int DISTANCE = 500;
@@ -41,7 +40,7 @@ public class Seq3 {
 
         if(component.getStage() >= NEED_AMOUNT){
             component.setCompleted(true);
-            posMap.remove(player.getUUID());
+            component.setPos(null);
         }
     }
 
@@ -59,7 +58,7 @@ public class Seq3 {
         String msg = event.getRawText();
 
         if(message.equals(msg)){
-            if(posMap.containsKey(player.getUUID())){
+            if(component.getPos() != null){
                 player.sendSystemMessage(Component.literal("You already declared your territory\n")
                         .withStyle(ChatFormatting.DARK_RED));
                 return;
@@ -72,7 +71,7 @@ public class Seq3 {
                 return;
             }
 
-            posMap.put(player.getUUID(), player.position());
+            component.setPos(player.position());
             component.setStage(1);
             player.sendSystemMessage(Component.literal("You have declared this part of the ocean as your domain")
                     .withStyle(ChatFormatting.GREEN));
@@ -84,17 +83,20 @@ public class Seq3 {
         var entity = event.getEntity();
         var sourceEntity = event.getSource().getEntity();
 
-        if(sourceEntity == null) return;
+        if (!(sourceEntity instanceof ServerPlayer player)) return;
 
-        if(!posMap.containsKey(sourceEntity.getUUID())) return;
+        if (!BeyonderData.getPathway(player).equals("tyrant") ||
+                BeyonderData.getSequence(player) != 4) return;
 
-        if(entity.distanceToSqr(posMap.get(sourceEntity.getUUID())) <= DISTANCE * DISTANCE){
+        var component = player.getData(ModAttachments.RITUALS.get());
+        if(component.getPos() == null) return;
+
+        if(entity.distanceToSqr(component.getPos()) <= DISTANCE * DISTANCE){
             int value = 1;
             if(entity instanceof ServerPlayer){
                 value = 100;
             }
 
-            var component = sourceEntity.getData(ModAttachments.RITUALS.get());
             component.setStage(component.getStage() + value);
         }
     }

@@ -52,13 +52,13 @@ public class GraftingAbility extends SelectableAbility {
 
 
     public GraftingAbility(String id) {
-        super(id, 1);
+        super(id, 0.5f);
 
         canBeUsedByNPC = false;
         canBeShared = false;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(35000f, 15000f));
+        dynamicSpirituality = new LinkedList<>(List.of(20000f,10000f));
     }
 
     @Override
@@ -218,7 +218,8 @@ public class GraftingAbility extends SelectableAbility {
 
         LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2);
         if(targetEntity == null) {
-            targetEntity = entity;
+            return;
+            //targetEntity = entity;
         }
 
         if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
@@ -243,15 +244,16 @@ public class GraftingAbility extends SelectableAbility {
 
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.selected", targetEntity.getName().getString()).withColor(color));
 
-        if(!graftingDamageEntities.containsKey(entity.getUUID())) {
-            graftingDamageEntities.put(entity.getUUID(), targetEntity);
-            return;
-        }
+//        if(!graftingDamageEntities.containsKey(entity.getUUID())) {
+//            graftingDamageEntities.put(entity.getUUID(), targetEntity);
+//            return;
+//        }
+//
+//        LivingEntity graftingStartEntity = graftingDamageEntities.get(entity.getUUID());
 
-        LivingEntity graftingStartEntity = graftingDamageEntities.get(entity.getUUID());
-
+        LivingEntity graftingStartEntity = entity;
         if(targetUUID == graftingStartEntity.getUUID()) {
-            graftingDamageEntities.remove(entity.getUUID());
+            //graftingDamageEntities.remove(entity.getUUID());
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.same_entity", targetEntity.getName().getString()).withColor(color));
             return;
         }
@@ -259,9 +261,10 @@ public class GraftingAbility extends SelectableAbility {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         // Check if the source entity (graftingStartEntity) can resist the graft
-        double failureChance = AbilityUtil.getSequenceFailureChance(entitySeq, BeyonderData.getSequence(graftingStartEntity));
+        //double failureChance = AbilityUtil.getSequenceFailureChance(entitySeq, BeyonderData.getSequence(graftingStartEntity));
+        double failureChance = AbilityUtil.getSequenceFailureChance(entitySeq, BeyonderData.getSequence(targetEntity));
         if (ThreadLocalRandom.current().nextDouble() < failureChance) {
-            graftingDamageEntities.remove(entity.getUUID());
+            //graftingDamageEntities.remove(entity.getUUID());
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.resisted").withColor(color));
             return;
         }
@@ -270,7 +273,7 @@ public class GraftingAbility extends SelectableAbility {
         graftingDamagePairs.add(new Pair<>(startUUID, targetEntity.getUUID()));
         graftingDamageCasters.put(startUUID, entity.getUUID());
 
-        graftingDamageEntities.remove(entity.getUUID());
+        //graftingDamageEntities.remove(entity.getUUID());
 
         ServerScheduler.scheduleDelayed(20 * 10, () -> {
             graftingDamagePairs.removeIf(pair -> startUUID.equals(pair.getA()) && targetUUID.equals(pair.getB()));

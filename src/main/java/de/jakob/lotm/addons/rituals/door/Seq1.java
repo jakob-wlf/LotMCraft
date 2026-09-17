@@ -43,10 +43,10 @@ public class Seq1 {
         boolean haveMoon = false;
         for (ItemStack stack : player.getInventory().items) {
 
-            if (stack.getItem() instanceof SunItem sunItem) {
+            if (stack.getItem() instanceof SunItem) {
                 haveSun = true;
             }
-            if (stack.getItem() instanceof MoonItem moon) {
+            if (stack.getItem() instanceof MoonItem) {
                 haveMoon = true;
             }
         }

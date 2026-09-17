@@ -359,7 +359,6 @@ public class MarionetteControllingAbility extends SelectableAbility {
         }
 
         LivingEntity target = getSelectedMarionette(player);
-
         if (target != null) {
             ControllingUtils.startControlling(player, target, target.getData(ModAttachments.MARIONETTE_COMPONENT.get()).hasWorm(), true);
         }

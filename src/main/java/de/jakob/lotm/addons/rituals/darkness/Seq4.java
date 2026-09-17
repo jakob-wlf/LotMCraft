@@ -16,8 +16,7 @@ import java.util.*;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq4 {
-    private static Map<UUID, Set<UUID>> map = new HashMap<>();
-    private static int NEEDED = 5;
+    private static int NEEDED = 6;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -28,12 +27,7 @@ public class Seq4 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(!map.containsKey(player.getUUID())){
-            map.put(player.getUUID(), new HashSet<>());
-        }
-
-        var set = map.get(player.getUUID());
-        if(set.size() >= NEEDED){
+        if(component.getStage() >= NEEDED){
             component.setCompleted(true);
         }
     }
@@ -47,6 +41,9 @@ public class Seq4 {
         if(!(event.getEntity() instanceof ServerPlayer target)) return;
         if(BeyonderData.getSequence(target) > 7) return;
 
+        var component = player.getData(ModAttachments.RITUALS.get());
+        if(component.isCompleted()) return;
+
         var factions = BeyonderData.factionStorage.getPartOfFaction(target.getName().getString());
         for(var faction : factions){
             var id = BeyonderData.playerMap.getKeyByName(faction.getLeader());
@@ -56,10 +53,8 @@ public class Seq4 {
             if(data.isEmpty()) continue;
 
             int seq = data.get().sequence();
-            if(seq <= 2){
-                var set = map.get(player.getUUID());
-                set.add(target.getUUID());
-                map.put(player.getUUID(), set);
+            if(seq <= 4){
+                component.setStage(component.getStage() + 1);
                 return;
             }
         }

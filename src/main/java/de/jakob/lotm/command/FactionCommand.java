@@ -1,5 +1,6 @@
 package de.jakob.lotm.command;
 
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -11,6 +12,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -21,10 +23,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class FactionCommand {
 
@@ -985,7 +984,7 @@ public class FactionCommand {
     private static LiteralArgumentBuilder<CommandSourceStack> kick() {
         return Commands.literal("kick")
                 .then(Commands.literal("nation")
-                        .then(Commands.argument("target", EntityArgument.entity())
+                        .then(Commands.argument("target", GameProfileArgument.gameProfile())
                                 .executes(context -> {
                                             CommandSourceStack source = context.getSource();
                                             var player = source.getPlayer();
@@ -1008,40 +1007,52 @@ public class FactionCommand {
                                                 return 0;
                                             }
 
-                                            var target = EntityArgument.getEntity(context, "target");
-                                            if (!(target instanceof ServerPlayer)) {
+                                            Collection<GameProfile> profiles =
+                                                    GameProfileArgument.getGameProfiles(context, "target");
+                                            if (profiles.isEmpty()) {
                                                 source.sendFailure(Component.literal("Target must be a player!"));
                                                 return 0;
                                             }
+                                            GameProfile profile = profiles.iterator().next();
+                                            String targetName = profile.getName();
 
-                                            if (!faction.isPartOfFaction(target.getName().getString())) {
+                                            if (targetName.equals(name)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.isPartOfFaction(targetName)) {
                                                 source.sendFailure(Component.literal("Target must be part of faction!"));
                                                 return 0;
                                             }
 
-                                            int targetLevel = faction.getPlayerLevel(target.getName().getString());
+                                            int targetLevel = faction.getPlayerLevel(targetName);
                                             if (targetLevel == 9 || targetLevel >= level) {
                                                 source.sendFailure(Component.literal("You can't kick target!"));
                                                 return 0;
                                             }
 
-                                            if (target.equals(player)) {
-                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
-                                                return 0;
+                                            BeyonderData.factionStorage.leave(faction.getId(), targetName);
+
+                                            source.sendSystemMessage(Component.literal(
+                                                            "Successfully kicked " + targetName + "\n")
+                                                    .withStyle(ChatFormatting.GREEN));
+
+                                            ServerPlayer onlineTarget = source.getServer()
+                                                    .getPlayerList().getPlayerByName(targetName);
+                                            if (onlineTarget != null) {
+                                                onlineTarget.sendSystemMessage(
+                                                        Component.literal("You were kicked from \""
+                                                                        + faction.getName() + "\"\n")
+                                                                .withStyle(ChatFormatting.RED));
                                             }
-
-                                            BeyonderData.factionStorage.leave(faction.getId(), target.getName().getString());
-
-                                            source.sendSystemMessage(Component.literal("Successfully kicked " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
-
-                                            target.sendSystemMessage(Component.literal("You were kicked from \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.RED));
 
                                             return 1;
                                         }
                                 ))
                 )
                 .then(Commands.literal("church")
-                        .then(Commands.argument("target", EntityArgument.entity())
+                        .then(Commands.argument("target", GameProfileArgument.gameProfile())
                                 .executes(context -> {
                                             CommandSourceStack source = context.getSource();
                                             var player = source.getPlayer();
@@ -1064,34 +1075,45 @@ public class FactionCommand {
                                                 return 0;
                                             }
 
-                                            var target = EntityArgument.getEntity(context, "target");
-                                            if (!(target instanceof ServerPlayer)) {
+                                            Collection<GameProfile> profiles =
+                                                    GameProfileArgument.getGameProfiles(context, "target");
+                                            if (profiles.isEmpty()) {
                                                 source.sendFailure(Component.literal("Target must be a player!"));
                                                 return 0;
                                             }
+                                            GameProfile profile = profiles.iterator().next();
+                                            String targetName = profile.getName();
 
-                                            if (!faction.isPartOfFaction(target.getName().getString())) {
+                                            if (targetName.equals(name)) {
+                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
+                                                return 0;
+                                            }
+
+                                            if (!faction.isPartOfFaction(targetName)) {
                                                 source.sendFailure(Component.literal("Target must be part of faction!"));
                                                 return 0;
                                             }
 
-                                            int targetLevel = faction.getPlayerLevel(target.getName().getString());
+                                            int targetLevel = faction.getPlayerLevel(targetName);
                                             if (targetLevel == 9 || targetLevel >= level) {
                                                 source.sendFailure(Component.literal("You can't kick target!"));
                                                 return 0;
                                             }
 
-                                            if (target.equals(player)) {
-                                                source.sendFailure(Component.literal("You can't perform this operation on yourself!"));
-                                                return 0;
+                                            BeyonderData.factionStorage.leave(faction.getId(), targetName);
+
+                                            source.sendSystemMessage(Component.literal(
+                                                            "Successfully kicked " + targetName + "\n")
+                                                    .withStyle(ChatFormatting.GREEN));
+
+                                            ServerPlayer onlineTarget = source.getServer()
+                                                    .getPlayerList().getPlayerByName(targetName);
+                                            if (onlineTarget != null) {
+                                                onlineTarget.sendSystemMessage(
+                                                        Component.literal("You were kicked from \""
+                                                                        + faction.getName() + "\"\n")
+                                                                .withStyle(ChatFormatting.RED));
                                             }
-
-                                            BeyonderData.factionStorage.leave(faction.getId(), target.getName().getString());
-
-                                            source.sendSystemMessage(Component.literal("Successfully kicked " + target.getName().getString() + "\n").withStyle(ChatFormatting.GREEN));
-
-                                            target.sendSystemMessage(Component.literal("You were kicked from \"" + faction.getName() + "\"\n").withStyle(ChatFormatting.RED));
-
 
                                             return 1;
                                         }

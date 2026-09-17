@@ -26,7 +26,7 @@ import java.util.UUID;
 )
 public class Seq2 {
     private static final int AMOUNT = 255;
-    private static int actualAmount = 0;
+    private static final Set<UUID> TRACKED_SNIFFERS = new HashSet<>();
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -37,7 +37,7 @@ public class Seq2 {
 
         var component = player.getData(ModAttachments.RITUALS.get());
 
-        if(actualAmount >= AMOUNT){
+        if(TRACKED_SNIFFERS.size() >= AMOUNT){
             component.setCompleted(true);
         }
         else{
@@ -49,18 +49,17 @@ public class Seq2 {
 
     @SubscribeEvent
     public static void onEntityJoin(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof Sniffer obj){
-            if(!(obj.level() instanceof ServerLevel level)) return;
-            if(level.dimension() == Level.OVERWORLD)
-                actualAmount++;
+        if (event.getEntity() instanceof Sniffer sniffer && event.getLevel() instanceof ServerLevel level) {
+            if (level.dimension() == Level.OVERWORLD) {
+                TRACKED_SNIFFERS.add(sniffer.getUUID());
+            }
         }
-
     }
 
+    @SubscribeEvent
     private static void onDeath(LivingDeathEvent event){
-        if(!(event.getEntity() instanceof Sniffer)) return;
-        if(!(event.getEntity().level() instanceof ServerLevel level)) return;
-
-        actualAmount--;
+        if (event.getEntity() instanceof Sniffer sniffer) {
+            TRACKED_SNIFFERS.remove(sniffer.getUUID());
+        }
     }
 }

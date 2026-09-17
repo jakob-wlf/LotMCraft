@@ -11,10 +11,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID
 )
 public class Seq3 {
+    private static Map<UUID, Integer> timer = new HashMap<>();
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -26,14 +31,22 @@ public class Seq3 {
         var component = player.getData(ModAttachments.RITUALS.get());
         var sanity = player.getData(ModAttachments.SANITY_COMPONENT.get());
 
-        if(player.hasEffect(ModEffects.LOOSING_CONTROL)
+        if(!component.isCompleted() && player.hasEffect(ModEffects.LOOSING_CONTROL)
                 && player.getHealth() <= player.getMaxHealth() * 0.2f
-                && sanity.getSanity() <= 0.5f
-        )
+                && sanity.getSanity() <= 0.6f)
+        {
             component.setCompleted(true);
-        else if(component.isCompleted()){
-            RitualEffectHandlerEvent.removeRitualWithMessage(player);
+            timer.put(player.getUUID(), 0);
+        }
+
+        if (component.isCompleted() && timer.containsKey(player.getUUID())) {
+            int currentTicks = timer.get(player.getUUID()) + 1;
+            timer.put(player.getUUID(), currentTicks);
+
+            if (currentTicks >= 30 * 20) {
+                RitualEffectHandlerEvent.removeRitualWithMessage(player);
+                timer.remove(player.getUUID());
+            }
         }
     }
-
 }

@@ -41,102 +41,52 @@ public class Seq5 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        if(player.level().dimension() == Level.OVERWORLD) {
-            WorldBorder border = level.getWorldBorder();
+        boolean isOverworld = level.dimension() == Level.OVERWORLD;
+        boolean isNether = level.dimension() == Level.NETHER;
 
-            double minX = border.getMinX();
-            double maxX = border.getMaxX();
-            double minZ = border.getMinZ();
-            double maxZ = border.getMaxZ();
+        if (!isOverworld && !isNether) return;
 
-            double x = player.getX();
-            double z = player.getZ();
+        WorldBorder border = level.getWorldBorder();
 
-            double distanceWest = Math.abs(x - minX);
-            double distanceEast = Math.abs(x - maxX);
-            double distanceNorth = Math.abs(z - minZ);
-            double distanceSouth = Math.abs(z - maxZ);
+        double minX = border.getMinX();
+        double maxX = border.getMaxX();
+        double minZ = border.getMinZ();
+        double maxZ = border.getMaxZ();
 
-            double distance = Math.min(
-                    Math.min(distanceWest, distanceEast),
-                    Math.min(distanceNorth, distanceSouth)
-            );
+        double x = player.getX();
+        double z = player.getZ();
 
-            if (!map.containsKey(player.getUUID())) {
-                map.put(player.getUUID(), new HashSet<>());
+        double distanceWest = Math.abs(x - minX);
+        double distanceEast = Math.abs(x - maxX);
+        double distanceNorth = Math.abs(z - minZ);
+        double distanceSouth = Math.abs(z - maxZ);
+
+        double distance = Math.min(
+                Math.min(distanceWest, distanceEast),
+                Math.min(distanceNorth, distanceSouth)
+        );
+
+        if (distance <= 1.0) {
+            int borderId = 0;
+
+            if (distanceWest == distance) {
+                borderId = isOverworld ? WEST : WEST_N;
+            } else if (distanceEast == distance) {
+                borderId = isOverworld ? EAST : EAST_N;
+            } else if (distanceNorth == distance) {
+                borderId = isOverworld ? NORTH : NORTH_N;
+            } else {
+                borderId = isOverworld ? SOUTH : SOUTH_N;
             }
 
-            if (distance <= 1.0) {
-                if (distanceWest == distance) {
-                    var set = map.get(player.getUUID());
-                    set.add(WEST);
-                    map.put(player.getUUID(), set);
-                } else if (distanceEast == distance) {
-                    var set = map.get(player.getUUID());
-                    set.add(EAST);
-                    map.put(player.getUUID(), set);
-                } else if (distanceNorth == distance) {
-                    var set = map.get(player.getUUID());
-                    set.add(NORTH);
-                    map.put(player.getUUID(), set);
-                } else {
-                    var set = map.get(player.getUUID());
-                    set.add(SOUTH);
-                    map.put(player.getUUID(), set);
-                }
-            }
-        }
-        else if(player.level().dimension() == Level.NETHER) {
-            WorldBorder border = level.getWorldBorder();
-
-            double minX = border.getMinX();
-            double maxX = border.getMaxX();
-            double minZ = border.getMinZ();
-            double maxZ = border.getMaxZ();
-
-            double x = player.getX();
-            double z = player.getZ();
-
-            double distanceWest = Math.abs(x - minX);
-            double distanceEast = Math.abs(x - maxX);
-            double distanceNorth = Math.abs(z - minZ);
-            double distanceSouth = Math.abs(z - maxZ);
-
-            double distance = Math.min(
-                    Math.min(distanceWest, distanceEast),
-                    Math.min(distanceNorth, distanceSouth)
-            );
-
-            if (!map.containsKey(player.getUUID())) {
-                map.put(player.getUUID(), new HashSet<>());
-            }
-
-            if (distance <= 1.0) {
-                if (distanceWest == distance) {
-                    var set = map.get(player.getUUID());
-                    set.add(WEST_N);
-                    map.put(player.getUUID(), set);
-                } else if (distanceEast == distance) {
-                    var set = map.get(player.getUUID());
-                    set.add(EAST_N);
-                    map.put(player.getUUID(), set);
-                } else if (distanceNorth == distance) {
-                    var set = map.get(player.getUUID());
-                    set.add(NORTH_N);
-                    map.put(player.getUUID(), set);
-                } else {
-                    var set = map.get(player.getUUID());
-                    set.add(SOUTH_N);
-                    map.put(player.getUUID(), set);
-                }
+            if (borderId != 0) {
+                component.addVisitedBorder(borderId);
             }
         }
 
-        if(map.get(player.getUUID()).size() >= 8){
+        if (component.getVisitedBorders().size() >= 8) {
             component.setCompleted(true);
-            map.remove(player.getUUID());
+            component.clearVisitedBorders();
         }
     }
-
-
 }

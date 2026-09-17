@@ -264,7 +264,7 @@ public class MiracleHandler {
     private static void summonVolcano(ServerLevel level, LivingEntity caster) {
         MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        float damage = ability.baseDamage * 2.5f;
+        float damage = ability.baseDamage * 5.0f;
         Vec3 targetPos = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2);
 
         EffectManager.playEffect(EffectIds.MIRACLE, targetPos.x, targetPos.y, targetPos.z, level);

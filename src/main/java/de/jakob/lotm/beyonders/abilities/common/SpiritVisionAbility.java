@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
+import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -9,9 +10,12 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -22,6 +26,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -67,11 +73,13 @@ public class SpiritVisionAbility extends ToggleAbility {
         if (!level.isClientSide) {
             if (entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, -1));
+                AllyUtil.syncAllyData(player);
             }
             return;
         }
 
         entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(255, 255, 255), 2f);
@@ -95,18 +103,21 @@ public class SpiritVisionAbility extends ToggleAbility {
         }
 
         PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+        AllyComponent allyComponent = entity.getData(ModAttachments.ALLY_COMPONENT);
 
         if (lookedAt != null) {
-            if (shouldLooseControl(entity, lookedAt)) {
-                VisionaryLoosingControlHandler.applyEffect(lookedAt, entity, this);
-                return;
+            if (!allyComponent.isAlly(lookedAt.getUUID())) {
+                if (shouldLooseControl(entity, lookedAt)) {
+                    VisionaryLoosingControlHandler.applyEffect(lookedAt, entity, this);
+                    return;
+                }
             }
         }
 
         entity.addEffect(new MobEffectInstance(
                 MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
 
-        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
+        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30, false, true)
                 .stream()
                 .filter(nearbyEntity -> {
                     return !VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), nearbyEntity);

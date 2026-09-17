@@ -44,7 +44,7 @@ import java.util.*;
 @EventBusSubscriber
 public class HistoricalVoidBorrowingAbility extends SelectableAbility {
     public HistoricalVoidBorrowingAbility(String id) {
-        super(id, 1);
+        super(id, 5);
 
         canBeUsedByNPC = false;
         cannotBeStolen = true;
@@ -52,6 +52,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
         canBeShared = false;
         canBeCopied = false;
         canBeReplicated = false;
+
+        dynamicCooldown = new LinkedList<>(List.of(2, 5, 10, 20));
     }
 
     @Override
@@ -70,7 +72,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 "ability.lotmcraft.historical_void_borrowing.borrow_health",
                 "ability.lotmcraft.historical_void_borrowing.borrow_spirituality",
                 "ability.lotmcraft.historical_void_borrowing.borrow_cleansed_state",
-                "ability.lotmcraft.historical_void_borrowing.borrow_sequence",
+                //"ability.lotmcraft.historical_void_borrowing.borrow_sequence",
                 "ability.lotmcraft.historical_void_borrowing.borrow_effects",
                 "ability.lotmcraft.historical_void_borrowing.return_all_borrows"
         };
@@ -82,9 +84,9 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             return;
         }
 
-        if(abilityIndex == 0 || abilityIndex == 2 || abilityIndex == 3 || abilityIndex == 4) {
-            if(BeyonderData.getSpirituality(entity) < 3000) return;
-            BeyonderData.reduceSpirituality(entity, 3000);
+        if(abilityIndex == 0 || abilityIndex == 2 || abilityIndex == 3) {
+            if(BeyonderData.getSpirituality(entity) < 5000) return;
+            BeyonderData.reduceSpirituality(entity, 5000);
         }
 
         switch(abilityIndex) {
@@ -97,13 +99,13 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             case 2:
                 historicalVoidBorrowCleansedState(player, serverLevel);
                 break;
+//            case 3:
+//                historicalVoidBorrowSequence(player, serverLevel);
+//                break;
             case 3:
-                historicalVoidBorrowSequence(player, serverLevel);
-                break;
-            case 4:
                 historicalVoidBorrowEffects(player, serverLevel);
                 break;
-            case 5:
+            case 4:
                 returnAllBorrows(player);
                 break;
         }
@@ -486,7 +488,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
         HistoricalVoidComponent historicalVoidComponentDataBigName = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT);
 
-        int amplifier = Math.min(newEffect.getAmplifier(), 5);
+        int amplifier = Math.min(newEffect.getAmplifier(), 20);
         int duration = newEffect.getDuration();
 
         // check if effect already exists in saved list

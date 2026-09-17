@@ -303,6 +303,8 @@ public class ModEvents {
         FactionAdminCommand.register(event.getDispatcher());
         AnchoringCommand.register(event.getDispatcher());
         RitualCommand.register(event.getDispatcher());
+        CopiedAbilitiesCommand.register(event.getDispatcher());
+        ResetPlayerShapeCommand.register(event.getDispatcher());
         event.getDispatcher().register(
                 Commands.literal("accept_sefirot_invite")
                             .executes(ctx -> {

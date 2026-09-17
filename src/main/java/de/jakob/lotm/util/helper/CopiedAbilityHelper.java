@@ -29,6 +29,15 @@ public class CopiedAbilityHelper {
             syncToClient(serverPlayer);
     }
 
+    public static void removeAbility(LivingEntity entity, String abilityId) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        component.removeAbility(abilityId);
+
+        if (entity instanceof ServerPlayer serverPlayer) {
+            syncToClient(serverPlayer);
+        }
+    }
+
 
     public static void clearAbilities(LivingEntity player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);

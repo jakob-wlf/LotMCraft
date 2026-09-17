@@ -26,7 +26,7 @@ import java.util.UUID;
         modid = LOTMCraft.MOD_ID
 )
 public class Seq5 {
-    private static final int NEED_AMOUNT = 2000;
+    private static final int NEED_AMOUNT = 1500;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -45,15 +45,20 @@ public class Seq5 {
     @SubscribeEvent
     private static void onLivingDeath(LivingDeathEvent event) {
         LivingEntity livingEntity = event.getEntity();
-        if(BeyonderData.isBeyonder(livingEntity)) return;
 
         if (!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
         if (!BeyonderData.getPathway(player).equals("mother") ||
                 BeyonderData.getSequence(player) != 6) return;
 
         int value = 1;
-        if(livingEntity instanceof ServerPlayer){
+        if((livingEntity instanceof ServerPlayer) && !BeyonderData.isBeyonder(livingEntity)){
             value = 10;
+        }
+        if(!(livingEntity instanceof ServerPlayer) && BeyonderData.isBeyonder(livingEntity)){
+            value = 20;
+        }
+        if((livingEntity instanceof ServerPlayer) && BeyonderData.isBeyonder(livingEntity)){
+            value = 30;
         }
 
         var component = player.getData(ModAttachments.RITUALS.get());

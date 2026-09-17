@@ -33,17 +33,20 @@ public class Seq3 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if(component.isCompleted()) return;
 
-        for(var target : level.getServer().getPlayerList().getPlayers()){
-            if((target.isSleeping() || target.hasEffect(ModEffects.ASLEEP))
-            && BeyonderData.getSequence(target) <= 7)
-                set.add(target.getUUID());
-            else
-                set.remove(target.getUUID());
+        var targetUuids = component.getTargetUuids();
+
+        for (var target : level.getServer().getPlayerList().getPlayers()) {
+            if ((target.isSleeping() || target.hasEffect(ModEffects.ASLEEP))
+                    && BeyonderData.getSequence(target) <= 7) {
+                targetUuids.add(target.getUUID());
+            } else {
+                targetUuids.remove(target.getUUID());
+            }
         }
 
         int online = level.players().size();
 
-        if(set.size() >= AMOUNT && set.size() >= (online * PERCENT)){
+        if (targetUuids.size() >= AMOUNT && targetUuids.size() >= (online * PERCENT)) {
             component.setCompleted(true);
         }
     }
