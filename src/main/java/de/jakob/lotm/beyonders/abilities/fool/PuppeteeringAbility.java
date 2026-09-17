@@ -290,6 +290,9 @@ public class PuppeteeringAbility extends Ability {
     private void turnIntoMarionette(LivingEntity target, Player player) {
         if(target instanceof Player) {
             Vec3 pos = target.position();
+
+            boolean pureIdealism = target.getData(ModAttachments.DISCERNMENT_DATA.get()).isDiscerning();
+
             if(BeyonderData.isBeyonder(target)) {
                 int sequence = BeyonderData.getSequence(target);
                 String pathway = BeyonderData.getPathway(target);
@@ -300,6 +303,9 @@ public class PuppeteeringAbility extends Ability {
                 target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, "none", 10);
             }
+
+            if(pureIdealism)
+                return;
 
             target.setPos(pos);
             target.level().addFreshEntity(target);

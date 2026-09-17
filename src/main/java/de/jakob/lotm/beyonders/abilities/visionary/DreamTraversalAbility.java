@@ -51,6 +51,9 @@ public class DreamTraversalAbility extends SelectableAbility {
         this.autoClear = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
+        canBeCopied = false;
+        cannotBeStolen = true;
+        canBeReplicated = false;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3, 4));
@@ -130,12 +133,11 @@ public class DreamTraversalAbility extends SelectableAbility {
     private void jump(Level level, LivingEntity entity) {
         LivingEntity target = null;
 
-        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true,
+        if (DiscernmentAbility.discerning.contains(entity.getUUID())) {
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true,
                     true, true, true);
-        }
-        else{
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true, true);
+        } else {
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
         }
 
         if (target == null) {
@@ -190,12 +192,11 @@ public class DreamTraversalAbility extends SelectableAbility {
 
         LivingEntity target = null;
 
-        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true,
+        if (DiscernmentAbility.discerning.contains(entity.getUUID())) {
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true,
                     true, true, true);
-        }
-        else{
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true, true);
+        } else {
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
         }
 
         if (target == null) {
@@ -291,7 +292,7 @@ public class DreamTraversalAbility extends SelectableAbility {
     }
 
     public void hideWithJump(ServerPlayer player, LivingEntity target) {
-        if(hideMap.containsKey(player.getUUID())){
+        if (hideMap.containsKey(player.getUUID())) {
             cancelHide((ServerLevel) player.level(), player);
         }
 
@@ -380,20 +381,20 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     @SubscribeEvent
     public static void onEntityChangedDimension(EntityTravelToDimensionEvent event) {
-        if(!(event.getEntity() instanceof LivingEntity entity)) return;
-        if(!(event.getEntity().level() instanceof ServerLevel level)) return;
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        if (!(event.getEntity().level() instanceof ServerLevel level)) return;
 
         var component = entity.getData(ModAttachments.PARASITE_COMPONENT.get());
-        if(!component.isParasited()) return;
+        if (!component.isParasited()) return;
 
         var parasiteId = component.getParasiteUUID();
-        if(parasiteId == null){
+        if (parasiteId == null) {
             component.setParasited(false);
             return;
         }
 
         var parasite = level.getEntity(parasiteId);
-        if(parasite == null){
+        if (parasite == null) {
             component.setParasited(false);
             return;
         }

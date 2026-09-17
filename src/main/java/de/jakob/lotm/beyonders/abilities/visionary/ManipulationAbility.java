@@ -41,6 +41,9 @@ public class ManipulationAbility extends SelectableAbility {
     public ManipulationAbility(String id) {
         super(id, 5);
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 3, 5));
@@ -208,7 +211,16 @@ public class ManipulationAbility extends SelectableAbility {
         }
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
+
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));

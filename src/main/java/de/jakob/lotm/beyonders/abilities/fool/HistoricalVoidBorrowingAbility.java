@@ -454,10 +454,10 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
     private static int getMaxHistoricalBorrowingCount(ServerPlayer serverPlayer){
         return switch (BeyonderData.getSequence(serverPlayer)){
-            case 0 -> 50;
-            case 1 -> 20;
-            case 2 -> 10;
-            default -> 5;
+            case 0 -> 24;
+            case 1 -> 12;
+            case 2 -> 6;
+            default -> 3;
         };
     }
 

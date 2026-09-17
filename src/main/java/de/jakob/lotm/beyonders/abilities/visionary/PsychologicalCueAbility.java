@@ -48,9 +48,13 @@ public class PsychologicalCueAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
-
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
+
+        map.put(entity.getUUID(), entitySeq);
 
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
             AbilityUtil.sendActionBar(entity,
@@ -69,6 +73,9 @@ public class PsychologicalCueAbility extends ToggleAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
 
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
             AbilityUtil.sendActionBar(entity,
@@ -87,7 +94,7 @@ public class PsychologicalCueAbility extends ToggleAbility {
             return;
         }
 
-        map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+        map.put(entity.getUUID(), entitySeq);
     }
 
     @Override

@@ -37,6 +37,11 @@ public class SpectatingAbility extends ToggleAbility {
         canBeUsedByNPC = false;
         autoClear = false;
         canBeShared = false;
+
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeCopied = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -79,7 +84,7 @@ public class SpectatingAbility extends ToggleAbility {
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(lookedAt != null) {
-            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+            if (VisionaryHandler.shouldStayInvisibleVisOnly(seq, lookedAt)){
                 return;
             }
             else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){

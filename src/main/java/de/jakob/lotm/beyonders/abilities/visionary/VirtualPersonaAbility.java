@@ -239,11 +239,11 @@ public class VirtualPersonaAbility extends SelectableAbility {
         LivingEntity target = null;
 
         if(DiscernmentAbility.discerning.contains(entity.getUUID())){
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true,
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true,
                     true, true, true);
         }
         else{
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.5f, true, true);
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
         }
 
         if(target == null){
