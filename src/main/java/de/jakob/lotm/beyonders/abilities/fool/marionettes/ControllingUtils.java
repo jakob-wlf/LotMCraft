@@ -108,20 +108,23 @@ public class ControllingUtils {
 
             if (sourceInstance != null && targetInstance != null) {
                 targetInstance.setBaseValue(sourceInstance.getBaseValue());
+
+                // clear then copy all modifiers as well, to avoid health not updating and to avoid scheduling as well
+                for (AttributeModifier modifier : targetInstance.getModifiers()) {
+                    targetInstance.removeModifier(modifier);
+                }
+
+                for (AttributeModifier modifier : sourceInstance.getModifiers()) {
+                    targetInstance.addTransientModifier(modifier);
+                }
             }
         }
 
-        if(source.getAttribute(Attributes.MAX_HEALTH) == null && target.getAttribute(Attributes.MAX_HEALTH) != null) {
-            target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(source.getMaxHealth());
-        }
-
-        ServerScheduler.scheduleDelayed(60, () -> {
-            float maxHealth = target.getMaxHealth();
-            float sourceHealth = source.getHealth();
-            float newHealth = Math.min(sourceHealth, maxHealth);
-            target.setHealth(newHealth);
-        });
+        float maxHealth = target.getMaxHealth();
+        float sourceHealth = source.getHealth();
+        target.setHealth(Math.min(sourceHealth, maxHealth));
     }
+
     public static PathwayData currentlyControlling(Player player) {
         if(player.level().isClientSide()) {
             PacketHandler.sendToServer(new RequestControllingSyncPacket());
