@@ -6,7 +6,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 
+import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
+import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
@@ -47,6 +50,30 @@ public class LOTMJeiPlugin implements IModPlugin {
         registration.addGuiContainerHandler(ArtifactWheelScreen.class, new IGuiContainerHandler<ArtifactWheelScreen>() {
             @Override
             public List<Rect2i> getGuiExtraAreas(ArtifactWheelScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
+        registration.addGuiContainerHandler(MarionetteControlScreen.class, new IGuiContainerHandler<MarionetteControlScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(MarionetteControlScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
+        registration.addGuiContainerHandler(MassPuppeteeringScreen.class, new IGuiContainerHandler<MassPuppeteeringScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(MassPuppeteeringScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
+        registration.addGuiContainerHandler(FlamingJumpScreen.class, new IGuiContainerHandler<FlamingJumpScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(FlamingJumpScreen screen) {
                 // Return a rectangle covering the entire screen to hide JEI completely
                 return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
             }

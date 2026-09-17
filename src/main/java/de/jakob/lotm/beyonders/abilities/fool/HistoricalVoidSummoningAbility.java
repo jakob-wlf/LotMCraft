@@ -475,19 +475,38 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
             if (entityData.contains("EntityNBT")) {
                 CompoundTag entityNBT = entityData.getCompound("EntityNBT");
-                CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
+                CompoundTag attachments = entityNBT.getCompound("neoforge:attachments");
+                CompoundTag beyonderAttachment = attachments.getCompound("lotmcraft:beyonder_component");
 
-                if (nfd.contains("pathway") && BeyonderData.pathwayInfos.get(nfd.get("pathway")) != null) {
-                    boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
-                    displayItem.set(
-                            DataComponents.LORE,
-                            new ItemLore(List.of(
-                                    Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
-                                    Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(nfd.getString("pathway")).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                    Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(nfd.getInt("sequence") + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                    Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(isMarionette + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
-                            )));
+                String pathway = "None Beyonder";
+                int sequence = 10;
+                boolean isMarionette = false;
+                boolean hasWorm = false;
+
+                if (beyonderAttachment.contains("pathway")) {
+                    pathway = BeyonderData.pathwayInfos.get(beyonderAttachment.getString("pathway")).getSequenceName(9);
                 }
+
+                if (beyonderAttachment.contains("sequence")) {
+                    sequence = beyonderAttachment.getInt("sequence");
+                }
+
+                if (attachments.contains("lotmcraft:marionette_component")) {
+                    isMarionette = attachments.getCompound("lotmcraft:marionette_component")
+                            .getBoolean("isMarionette");
+                    hasWorm = attachments.getCompound("lotmcraft:marionette_component")
+                            .getBoolean("hasWorm");
+                }
+
+                displayItem.set(
+                        DataComponents.LORE,
+                        new ItemLore(List.of(
+                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
+                                Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(pathway)).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(String.valueOf(sequence))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(String.valueOf(isMarionette))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.worm").append(Component.literal(": ")).append(Component.literal(String.valueOf(hasWorm))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
+                        )));
             }
             entityContainer.setItem(i + 1, displayItem);
         }

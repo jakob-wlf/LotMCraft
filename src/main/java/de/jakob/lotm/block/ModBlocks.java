@@ -31,19 +31,19 @@ public class ModBlocks {
                     .sound(SoundType.METAL)
             ));
 
-//    public static final DeferredBlock<Block> SEFIRAH_BLOCK = registerBlock("sefirah_block",
-//            () -> new SefirahBlock(BlockBehaviour.Properties.of()
-//                    .strength(-1)
-//                    .noOcclusion()
-//                    .sound(SoundType.POWDER_SNOW)
-//            ));
-//
-//    public static final DeferredBlock<Block> BREEDING_BLOCK = registerBlock("breeding_block",
-//            () -> new BreedingBlock(BlockBehaviour.Properties.of()
-//                    .strength(-1)
-//                    .noOcclusion()
-//                    .sound(SoundType.POWDER_SNOW)
-//            ));
+    public static final DeferredBlock<Block> SEFIRAH_BLOCK = registerBlock("sefirah_block",
+            () -> new SefirahBlock(BlockBehaviour.Properties.of()
+                    .strength(-1)
+                    .noOcclusion()
+                    .sound(SoundType.POWDER_SNOW)
+            ));
+
+    public static final DeferredBlock<Block> BREEDING_BLOCK = registerBlock("breeding_block",
+            () -> new BreedingBlock(BlockBehaviour.Properties.of()
+                    .strength(-1)
+                    .noOcclusion()
+                    .sound(SoundType.POWDER_SNOW)
+            ));
 
 
     public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",
@@ -71,16 +71,16 @@ public class ModBlocks {
                     .strength(-1.0f, 3600000.0F)
             ));
 
-//    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
-//            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
-//                    .strength(0.1f)
-//                    .sound(SoundType.WOOL)
-//                    .noOcclusion()
-//                    .lightLevel(state -> 7)
-//                    .isViewBlocking((state, level, pos) -> false)
-//                    .isSuffocating((state, level, pos) -> false)
-//            )
-//    );
+    public static final DeferredBlock<MysticalRingBlock> MYSTICAL_RING = BLOCKS.register("mystical_ring",
+            () -> new MysticalRingBlock(BlockBehaviour.Properties.of()
+                    .strength(0.1f)
+                    .sound(SoundType.WOOL)
+                    .noOcclusion()
+                    .lightLevel(state -> 7)
+                    .isViewBlocking((state, level, pos) -> false)
+                    .isSuffocating((state, level, pos) -> false)
+            )
+    );
 
     public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
             () -> new RealityPortalBlock(BlockBehaviour.Properties.of()

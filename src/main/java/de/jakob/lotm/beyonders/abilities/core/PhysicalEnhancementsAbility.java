@@ -100,13 +100,26 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
         updateEnhancementBoosts(entity);
     }
 
+    public static void recalculateAllEnhancementsForEntity(LivingEntity entity) {
+        for (PassiveAbility passiveAbility : PassiveAbilityHandler.passiveAbilities) {
+            if (passiveAbility instanceof PhysicalEnhancementsAbility pe) {
+                pe.recalculateEnhancements(entity, true);
+            }
+        }
+    }
     private void recalculateEnhancements(LivingEntity entity) {
+        recalculateEnhancements(entity, false);
+    }
+    private void recalculateEnhancements(LivingEntity entity, boolean forceRecanculate) {
         int sequenceLevel = getCurrentSequenceLevel(entity);
 
-        Integer cached = lastKnownSequence.get(entity.getUUID());
-        if (cached != null && cached == sequenceLevel) {
-            return;
+        if (!forceRecanculate) {
+            Integer cached = lastKnownSequence.get(entity.getUUID());
+            if (cached != null && cached == sequenceLevel) {
+                return;
+            }
         }
+
         lastKnownSequence.put(entity.getUUID(), sequenceLevel);
 
         List<PhysicalEnhancement> currentEnhancements = getEnhancementsForSequence(sequenceLevel, entity);

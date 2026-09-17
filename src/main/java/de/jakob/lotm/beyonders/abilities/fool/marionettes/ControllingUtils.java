@@ -5,7 +5,6 @@ import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.network.PacketHandler;
@@ -15,27 +14,22 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Collection;
 import java.util.Set;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -59,7 +53,6 @@ public class ControllingUtils {
         component.captureAttributesFrom(player);
 
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
-        BeyonderDataTickHandler.invalidateCache(player);
 
         ControlBodyDouble controlBodyDouble = ControlBodyDouble.create(level, player, !spawnOriginalBody);
         level.addFreshEntity(controlBodyDouble);
@@ -108,20 +101,27 @@ public class ControllingUtils {
 
             if (sourceInstance != null && targetInstance != null) {
                 targetInstance.setBaseValue(sourceInstance.getBaseValue());
+
+                // clear then copy all modifiers as well, to avoid health not updating and to avoid scheduling as well
+                for (AttributeModifier modifier : targetInstance.getModifiers()) {
+                    targetInstance.removeModifier(modifier);
+                }
+
+                for (AttributeModifier modifier : sourceInstance.getModifiers()) {
+                    targetInstance.addTransientModifier(modifier);
+                }
             }
         }
 
-        if(source.getAttribute(Attributes.MAX_HEALTH) == null && target.getAttribute(Attributes.MAX_HEALTH) != null) {
-            target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(source.getMaxHealth());
-        }
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(target);
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(source);
 
-        ServerScheduler.scheduleDelayed(60, () -> {
-            float maxHealth = target.getMaxHealth();
-            float sourceHealth = source.getHealth();
-            float newHealth = Math.min(sourceHealth, maxHealth);
-            target.setHealth(newHealth);
-        });
+
+        float maxHealth = target.getMaxHealth();
+        float sourceHealth = source.getHealth();
+        target.setHealth(Math.min(sourceHealth, maxHealth));
     }
+
     public static PathwayData currentlyControlling(Player player) {
         if(player.level().isClientSide()) {
             PacketHandler.sendToServer(new RequestControllingSyncPacket());
@@ -175,7 +175,6 @@ public class ControllingUtils {
         ShapeShiftingUtil.resetShape(player);
         BeyonderDataTickHandler.invalidateCache(player);
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
-
 
         ControlBodyDouble controlBodyDouble = component.getBodyDouble();
         if(controlBodyDouble == null || !controlBodyDouble.isAlive()) {
@@ -264,7 +263,6 @@ public class ControllingUtils {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if(!isControlling(player)) return;
-        System.out.println("Pathway: " + BeyonderData.getPathway(player) + " - Sequence" + BeyonderData.getSequence(player) + " - Controlled Sequence: " + getControlledSequence(player));
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;

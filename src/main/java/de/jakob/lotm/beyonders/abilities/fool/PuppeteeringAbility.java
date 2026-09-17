@@ -417,7 +417,7 @@ public class PuppeteeringAbility extends SelectableAbility {
     }
 
     private int getManipulationTimeBySequenceAndSequenceDifference(int sequence, int targetSequence) {
-        if (sequence == 5) {
+        if (sequence >= 5) {
             if (targetSequence < 5) return -1;
             int targetClamped = Math.min(targetSequence, 10);
             return 2400 - (20 * 20) * (targetClamped - 5);
