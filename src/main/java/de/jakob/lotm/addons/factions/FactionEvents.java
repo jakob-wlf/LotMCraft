@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FactionEvents {
     private static int ticks = 0;
 
-    public static Map<ChunkPos, Tuple<Integer, Integer>> warProgress = new HashMap<>();
-
     public static Map<ChunkPos, List<String>> posToPlayerMap = new ConcurrentHashMap<>();
     public static Map<String, ChunkPos> playerToPosMap = new ConcurrentHashMap<>();
 
@@ -254,37 +252,29 @@ public class FactionEvents {
                     if (claimedAmount == 8) break;
 
                     if (ticks % (20 * 10 * BeyonderData.factionStorage.getClaimLevel(entry.getKey(), type)) == 0) {
-                        Tuple<Integer, Integer> pair;
+                        int progress = factionObj.getWarProgress(entry.getKey());
+                        progress++;
+                        factionObj.setWarProgress(entry.getKey(), progress);
 
-                        if (warProgress.containsKey(entry.getKey())) {
-                            pair = warProgress.get(entry.getKey());
-                        } else {
-                            pair = new Tuple<>(type, 0);
-                        }
-
-                        pair.setA(attackers); //amount of attacks
-                        pair.setB(pair.getB() + 1); //progress
-
-                        warProgress.put(entry.getKey(), pair);
-
-                        if (pair.getB() == 100) {
+                        if (progress >= 100) {
                             var blockpos = entry.getKey().getWorldPosition();
                             BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
                                     Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] was lost").withStyle(ChatFormatting.RED));
 
                             messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] was conquered").withStyle(ChatFormatting.DARK_GREEN));
+                            factionObj.removeWarProgress(entry.getKey());
                             BeyonderData.factionStorage.unclaim(faction, entry.getKey());
                         } else {
-                            if (pair.getB() % 25 == 0 || pair.getB() == 1) {
+                            if (progress % 25 == 0 || progress == 1) {
                                 var blockpos = entry.getKey().getWorldPosition();
                                 BeyonderData.factionStorage.messageEveryoneInFaction(event.getServer().overworld(), faction,
-                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] is under attack - " + pair.getB() + "%").withStyle(ChatFormatting.RED));
+                                        Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] is under attack - " + progress + "%").withStyle(ChatFormatting.RED));
 
-                                messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] - " + pair.getB() + "%").withStyle(ChatFormatting.DARK_GREEN));
+                                messageAll(attackersList, Component.literal("Chunk [x=" + blockpos.getX() + ", z=" + blockpos.getZ() + "] - " + progress + "%").withStyle(ChatFormatting.DARK_GREEN));
                             }
                         }
 
-                        if (factionObj.getCore().equals(entry.getKey()) && pair.getB() == 100) {
+                        if (factionObj.getCore().equals(entry.getKey()) && progress >= 100) {
                             BeyonderData.factionStorage.winWar(factionObj.getAllAtWar(), faction, event.getServer().overworld());
                         }
                     }
@@ -312,12 +302,6 @@ public class FactionEvents {
 //        for(var obj : toDisband){
 //            BeyonderData.factionStorage.disband(obj);
 //        }
-
-        for (var obj : warProgress.entrySet()) {
-            if (obj.getValue().getA() == 0) {
-                warProgress.remove(obj.getKey());
-            }
-        }
     }
 
     @SubscribeEvent

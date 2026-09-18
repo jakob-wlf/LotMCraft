@@ -46,6 +46,9 @@ public class StoryWritingAbility extends ToggleAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
 
         if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
             AbilityUtil.sendActionBar(entity,
@@ -55,7 +58,7 @@ public class StoryWritingAbility extends ToggleAbility {
             return;
         }
 
-        writingMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+        writingMap.put(entity.getUUID(), entitySeq);
     }
 
     @Override
@@ -72,6 +75,9 @@ public class StoryWritingAbility extends ToggleAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
 
         if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
             AbilityUtil.sendActionBar(entity,
@@ -85,7 +91,7 @@ public class StoryWritingAbility extends ToggleAbility {
             return;
         }
 
-        writingMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+        writingMap.put(entity.getUUID(), entitySeq);
     }
 
     @Override

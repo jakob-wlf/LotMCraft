@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -184,6 +185,27 @@ public class PureIdealismUtil {
 
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(component.getPreviosSeq())){
             PureIdealismUtil.stopDiscernment(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDamage(LivingIncomingDamageEvent event){
+        var entity = event.getEntity();
+
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(!component.isDiscerning()) return;
+
+        float max = player.getMaxHealth();
+        float current = player.getHealth();
+        float damage = event.getAmount();
+
+        if(damage >= current || damage >= max){
+            PureIdealismUtil.stopDiscernment(player);
+
+            event.setAmount(0);
+            event.setCanceled(true);
         }
     }
 

@@ -171,11 +171,11 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         return switch (seq) {
             case 6 -> 1;
             case 5 -> 2;
-            case 4 -> 10;
-            case 3 -> 15;
-            case 2 -> 25;
-            case 1 -> 40;
-            case 0 -> 80;
+            case 4 -> 4;
+            case 3 -> 5;
+            case 2 -> 7;
+            case 1 -> 9;
+            case 0 -> 12;
             default -> 1;
         };
     }

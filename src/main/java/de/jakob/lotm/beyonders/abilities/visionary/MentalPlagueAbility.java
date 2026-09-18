@@ -33,6 +33,9 @@ public class MentalPlagueAbility extends SelectableAbility {
     public MentalPlagueAbility(String id) {
         super(id, 10, "plague");
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 10, 10, 10, 10, 10, 10));
@@ -103,6 +106,9 @@ public class MentalPlagueAbility extends SelectableAbility {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
+        }
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
         }
 
         Location targetLoc = new Location(target.position(), level);

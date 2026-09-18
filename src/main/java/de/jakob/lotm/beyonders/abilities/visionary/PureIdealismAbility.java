@@ -90,11 +90,11 @@ public class PureIdealismAbility extends SelectableAbility {
         LivingEntity target = null;
 
         if(DiscernmentAbility.discerning.contains(entity.getUUID())){
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.6f, true,
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.6f, true,
                     true, false, true);
         }
         else{
-            target = AbilityUtil.getTargetEntity(entity, baseDistance, 0.6f, true, true);
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.6f, true, true);
         }
 
         if (target == null) return;

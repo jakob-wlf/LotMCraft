@@ -33,7 +33,7 @@ public class AirBulletAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5200f, 2000f, 1400f, 875f, 800f, 475f, 420f, 390f));
 
-        baseDamage = 9;
+        baseDamage = 15;
     }
 
     @Override

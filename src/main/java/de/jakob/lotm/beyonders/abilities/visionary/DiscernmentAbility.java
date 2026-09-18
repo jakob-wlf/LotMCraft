@@ -30,6 +30,9 @@ public class DiscernmentAbility extends ToggleAbility {
         canBeShared = false;
         canBeUsedInArtifact = false;
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override
@@ -65,15 +68,15 @@ public class DiscernmentAbility extends ToggleAbility {
 
 
         if(DiscernmentAbility.discerning.contains(entity.getUUID())){
-            lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 0.3f, true,
+            lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 1.3f, true,
                     true, false, true);
         }
         else{
-            lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 0.3f, true, true);
+            lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 1.3f, true, true);
         }
 
         if(lookedAt != null) {
-            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+            if (VisionaryHandler.shouldStayInvisibleVisOnly(seq, lookedAt)){
                 return;
             }
             else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){

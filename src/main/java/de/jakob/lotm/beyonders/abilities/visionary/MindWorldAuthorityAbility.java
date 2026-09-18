@@ -207,7 +207,7 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
 
         var component = entity.getData(ModAttachments.ENVISION_SPLIT.get());
 
-        var target = AbilityUtil.getTargetEntity(entity, 30, 1f, true);
+        var target = AbilityUtil.getTargetEntity(entity, 30, 1f, true, true);
         if(target == null){
             StringBuilder resultBuilder = new StringBuilder("List of granted players:");
             for(var obj : component.names){
