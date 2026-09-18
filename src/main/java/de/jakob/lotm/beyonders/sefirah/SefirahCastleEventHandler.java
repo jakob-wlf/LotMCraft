@@ -8,13 +8,11 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.item.custom.MysteriousTabletItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
-import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.EntityLocation;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.data.PathwayInfos;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
@@ -36,9 +34,6 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Set;
-import java.util.UUID;
 import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)

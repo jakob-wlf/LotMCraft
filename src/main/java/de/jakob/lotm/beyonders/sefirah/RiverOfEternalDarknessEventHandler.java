@@ -9,11 +9,9 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
-
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.EntityLocation;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.data.PathwayInfos;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.DustParticleOptions;

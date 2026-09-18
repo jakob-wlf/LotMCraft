@@ -1,9 +1,8 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.NightDomainAbility;
@@ -14,7 +13,6 @@ import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;

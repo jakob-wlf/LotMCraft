@@ -1,9 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.LuckManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 

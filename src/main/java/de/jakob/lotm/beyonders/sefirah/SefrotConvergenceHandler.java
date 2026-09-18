@@ -3,11 +3,7 @@ package de.jakob.lotm.beyonders.sefirah;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.BlasphemySlateData;
 import de.jakob.lotm.attachments.MysteriousTabletData;
-import de.jakob.lotm.item.custom.BlasphemyCardItem;
-import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
-import de.jakob.lotm.item.custom.BlasphemySlateItem;
-import de.jakob.lotm.item.custom.MysteriousTabletFragmentItem;
-import de.jakob.lotm.item.custom.MysteriousTabletItem;
+import de.jakob.lotm.item.custom.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -19,14 +15,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public final class SefrotConvergenceHandler {

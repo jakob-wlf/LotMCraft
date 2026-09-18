@@ -1,8 +1,6 @@
 package de.jakob.lotm.beyonders.rituals.impl;
 
 import com.google.gson.JsonElement;
-import com.google.gson.annotations.SerializedName;
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.beyonders.rituals.RitualResultHandler;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
@@ -16,7 +14,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
 import java.util.Map;
 
 public class RitualMagicOpenPortal implements RitualResultHandler {

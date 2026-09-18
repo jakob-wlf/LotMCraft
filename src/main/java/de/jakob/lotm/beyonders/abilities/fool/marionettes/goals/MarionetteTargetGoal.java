@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;

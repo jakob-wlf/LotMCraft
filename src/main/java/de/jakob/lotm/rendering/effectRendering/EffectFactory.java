@@ -1,7 +1,6 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import de.jakob.lotm.util.data.EntityLocation;
-import de.jakob.lotm.rendering.effectRendering.impl.*;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Minecraft;

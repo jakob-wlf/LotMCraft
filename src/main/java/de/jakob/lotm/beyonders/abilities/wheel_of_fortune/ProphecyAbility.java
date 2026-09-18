@@ -15,7 +15,6 @@ import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.beyonders.sefirah.SefrotConvergenceHandler;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
-import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.LuckManager;
@@ -43,12 +42,7 @@ import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

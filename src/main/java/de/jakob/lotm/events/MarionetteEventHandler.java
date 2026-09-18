@@ -1,11 +1,14 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.*;
-import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMaxDistanceGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMovementGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteTargetGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.NonBeyonderMarionetteUseAbilityGoal;
 import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;

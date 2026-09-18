@@ -1,7 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
-import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.handlers.GlassScanJob;
 import de.jakob.lotm.dimension.MirrorGateManager;

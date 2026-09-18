@@ -2,15 +2,11 @@ package de.jakob.lotm.entity.client.spirits.abscessed_hand;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishModel;
 import de.jakob.lotm.entity.custom.spirits.AbscessedHandEntity;
-import de.jakob.lotm.entity.custom.spirits.SpiritDervishEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
-
-import java.util.Random;
 
 public class AbscessedHandRenderer extends MobRenderer<AbscessedHandEntity, AbscessedHandModel<AbscessedHandEntity>> {
     public AbscessedHandRenderer(EntityRendererProvider.Context context) {

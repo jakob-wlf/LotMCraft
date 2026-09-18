@@ -4,7 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DreamMazeData;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.DreamMazeData;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.dimension.DreamMazeEventHandler;
 import de.jakob.lotm.dimension.ModDimensions;

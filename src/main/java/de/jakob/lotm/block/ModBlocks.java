@@ -1,19 +1,13 @@
 package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.block.custom.BrewingCauldronBlock;
-import de.jakob.lotm.block.custom.KeyOfLightStatueBlock;
-import de.jakob.lotm.block.custom.MysticalRingBlock;
-import de.jakob.lotm.block.custom.RealityPortalBlock;
-import de.jakob.lotm.block.custom.VoidBlock;
-import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.block.custom.*;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;

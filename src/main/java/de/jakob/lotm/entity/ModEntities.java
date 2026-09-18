@@ -30,7 +30,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {

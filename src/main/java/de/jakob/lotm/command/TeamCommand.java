@@ -5,7 +5,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
 import de.jakob.lotm.util.helper.TeamUtils;

@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.quest.impl;
 
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.beyonders.quest.Quest;
 import de.jakob.lotm.beyonders.quest.QuestManager;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

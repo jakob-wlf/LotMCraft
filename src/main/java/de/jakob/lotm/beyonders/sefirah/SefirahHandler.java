@@ -2,22 +2,19 @@ package de.jakob.lotm.beyonders.sefirah;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DeathImprintData;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
-import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.network.packets.toServer.RequestSefirotSyncPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.rendering.effectRendering.EffectRegistry;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ServerLocation;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
-import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -34,7 +31,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
-import java.util.UUID;
 import java.util.HashMap;
 import java.util.UUID;
 

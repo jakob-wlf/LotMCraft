@@ -11,7 +11,6 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class MarionetteOwnerComponent {
     private HashSet<UUID> marionettes = new HashSet<>();

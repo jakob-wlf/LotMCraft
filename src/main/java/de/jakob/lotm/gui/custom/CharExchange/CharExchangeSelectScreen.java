@@ -1,9 +1,9 @@
 package de.jakob.lotm.gui.custom.CharExchange;
 
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.RequestCharExchangePacket;
 import de.jakob.lotm.network.packets.toServer.RequestCharPathExchangePacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;

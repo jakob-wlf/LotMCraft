@@ -2,7 +2,6 @@ package de.jakob.lotm.loottables;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.LuckManager;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

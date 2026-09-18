@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
@@ -15,7 +16,6 @@ import de.jakob.lotm.events.custom.TargetLocationEvent;
 import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

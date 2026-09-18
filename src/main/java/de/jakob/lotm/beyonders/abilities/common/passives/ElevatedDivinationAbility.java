@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.common.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
-import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

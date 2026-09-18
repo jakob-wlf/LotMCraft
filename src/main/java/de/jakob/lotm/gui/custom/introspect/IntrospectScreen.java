@@ -2,27 +2,25 @@ package de.jakob.lotm.gui.custom.introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.beyonders.acting.ActingTask;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.BlessingManager;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import de.jakob.lotm.util.data.ClientQuestData;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.data.ClientUniquenessCache;
-import de.jakob.lotm.util.data.*;
 import de.jakob.lotm.util.helper.AbilityId;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import de.jakob.lotm.util.playerMap.Characteristic;
@@ -40,12 +38,8 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.UUID;
 
 public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private final ResourceLocation containerBackground;

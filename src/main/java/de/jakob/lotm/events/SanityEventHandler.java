@@ -18,7 +18,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.Random;
-import java.util.UUID;
 
 @EventBusSubscriber
 public class SanityEventHandler {

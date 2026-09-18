@@ -3,9 +3,7 @@ package de.jakob.lotm.util;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ClientGameruleCache;
 import de.jakob.lotm.util.playerMap.Characteristic;
-import de.jakob.lotm.util.playerMap.Characteristic;
 
-import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.UUID;
