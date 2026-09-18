@@ -28,13 +28,13 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         basicItem(ModItems.PAPER_FIGURINE_SUBSTITUTE.get());
         basicItem(ModItems.MIRROR.get());
-        basicItem(ModItems.MARIONETTE_CONTROLLER.get());
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
         basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
         basicItem(ModItems.SUN_ITEM.get());
         basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
         basicItem(ModItems.CRYSTAL_BALL.get());
+        basicItem(ModItems.MYSTERIOUS_SILVER_PLATE.get());
         basicItem(ModItems.ONE_POUND.get());
         basicItem(ModItems.ONE_SOLI.get());
         basicItem(ModItems.UNIQUENESS_MAP.get());
@@ -103,7 +103,6 @@ public class ModItemModelProvider extends ItemModelProvider {
                 itemWithCustomDisplay(i.get());
             }
         });
-
         itemWithCustomDisplay(ModItems.FOOL_Card.get());
         basicItem(ModItems.MOD_ICON.get());
 

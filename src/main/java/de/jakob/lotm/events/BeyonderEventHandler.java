@@ -390,7 +390,11 @@ public class BeyonderEventHandler {
             BeyonderData.setDigestionProgress(player, 1.0f);
             SefirahHandler.unclaimSefirot(player);
 
-            if (Objects.equals(regressed.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
+            BeyonderData.recalculateCharStackModifiers(player);
+
+            player.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
+
+            if (Objects.equals(data.sequence(), LOTMCraft.NON_BEYONDER_SEQ)) {
                 ClientBeyonderCache.removePlayer(player.getUUID());
             } else {
                 ClientBeyonderCache.updateData(player.getUUID(), regressed.pathway(), regressed.sequence(),
@@ -479,13 +483,6 @@ public class BeyonderEventHandler {
         });
     }
 
-    /**
-     * Sun Pathway seq ≤ 3: hits reduce the victim's digestion.
-     * Direct hit (attacker == direct entity): 3% base, ±1% per sequence difference.
-     * Indirect hit (projectile / AoE): 0.5% flat.
-     * If digestion hits 0, each hit has a 10% chance to regress the victim by 1 sequence
-     * and give the attacker the corresponding characteristic item.
-     */
     @SubscribeEvent
     public static void onSunHitDigestion(LivingDamageEvent.Post event) {
         if (event.getEntity().level().isClientSide()) return;

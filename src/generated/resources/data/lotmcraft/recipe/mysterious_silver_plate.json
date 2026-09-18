@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "lotmcraft:ancient_wraith_dust"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "M": {
+      "item": "lotmcraft:mist_watcher_crystal"
+    },
+    "N": {
+      "item": "minecraft:netherite_ingot"
+    },
+    "P": {
+      "item": "minecraft:prismarine_shard"
+    }
+  },
+  "pattern": [
+    "IPI",
+    "MNA",
+    "IPI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "lotmcraft:mysterious_silver_plate"
+  }
+}

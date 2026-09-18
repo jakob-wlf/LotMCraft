@@ -26,7 +26,8 @@ public class SefirotData extends SavedData {
 
     private final HashMap<UUID, String> claimedSefirah = new HashMap<>();
     private final HashMap<UUID, LocationWithLevelKey> returnLocations = new HashMap<>();
-    private final HashSet<UUID> isInSefirot = new HashSet<>();
+    private final HashMap<UUID, String> isInSefirot = new HashMap<>();
+    private final HashMap<UUID, String> invitedToSefirot = new HashMap<>();
     private BlockPos keyOfLightShrinePos;
 
     // -- Mental Imprint --------------------------------------------------------
@@ -78,6 +79,20 @@ public class SefirotData extends SavedData {
         setDirty();
     }
 
+    public void inviteToSefirot(UUID inviter, UUID invited, String sefirot) {
+        invitedToSefirot.put(invited, sefirot);
+        setDirty();
+    }
+
+    public void acceptInvite(UUID invited) {
+        invitedToSefirot.remove(invited);
+        setDirty();
+    }
+
+    public String getInvitedSefirot(UUID invited) {
+        return invitedToSefirot.getOrDefault(invited, null);
+    }
+
     public void unclaimAllByString(String sefirot){
         var buff = new LinkedList<UUID>();
 
@@ -110,19 +125,23 @@ public class SefirotData extends SavedData {
         setDirty();
     }
 
-    public void setIsInSefirot(UUID uuid, boolean inSefirot) {
+    public void setIsInSefirot(UUID uuid, boolean inSefirot, String sefirot) {
         if(!inSefirot) {
             isInSefirot.remove(uuid);
         }
         else {
-            isInSefirot.add(uuid);
+            isInSefirot.put(uuid, sefirot);
         }
 
         setDirty();
     }
 
     public boolean isInSefirot(ServerPlayer player) {
-        return isInSefirot.contains(player.getUUID());
+        return isInSefirot.containsKey(player.getUUID());
+    }
+
+    public boolean isInSefirot(ServerPlayer player, String sefirot) {
+        return isInSefirot.containsKey(player.getUUID()) && isInSefirot.get(player.getUUID()).equals(sefirot);
     }
 
     public void setLastReturnLocation(ServerPlayer player) {
@@ -388,9 +407,10 @@ public class SefirotData extends SavedData {
         tag.put("returnLocations", returnLocationsList);
 
         ListTag playersInSefirotList = new ListTag();
-        for (UUID uuid : isInSefirot) {
+        for (Map.Entry<UUID, String> entry : isInSefirot.entrySet()) {
             CompoundTag entryTag = new CompoundTag();
-            entryTag.putUUID("UUID", uuid);
+            entryTag.putUUID("UUID", entry.getKey());
+            entryTag.putString("Sefirot", entry.getValue());
             playersInSefirotList.add(entryTag);
         }
         tag.put("playersInSefirot", playersInSefirotList);
@@ -501,7 +521,8 @@ public class SefirotData extends SavedData {
         for (int i = 0; i < playersInSefirotList.size(); i++) {
             CompoundTag entryTag = playersInSefirotList.getCompound(i);
             UUID uuid = entryTag.getUUID("UUID");
-            data.isInSefirot.add(uuid);
+            String sefirot = entryTag.getString("Sefirot");
+            data.isInSefirot.put(uuid, sefirot);
         }
 
         if (tag.contains("keyOfLightShrinePos")) {

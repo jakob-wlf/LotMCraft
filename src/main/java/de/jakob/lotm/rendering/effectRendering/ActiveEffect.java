@@ -1,74 +1,83 @@
 package de.jakob.lotm.rendering.effectRendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import de.jakob.lotm.util.data.Location;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.UUID;
 import java.util.function.Supplier;
 
 public abstract class ActiveEffect {
-    public final double x;
-    public final double y;
-    public final double z;
 
-    /**
-     * Accumulated scaled ticks. Stored as a double so fractional advances
-     * from time multipliers < 1 are accumulated smoothly rather than
-     * being truncated. All threshold comparisons are against this value.
-     */
-    protected float currentTick = 0;
+    private UUID id = UUID.randomUUID();
+    protected Location location;
+    protected float[] params = EffectParams.defaultParamsArray();
     protected int maxDuration;
+    protected boolean infinite;
 
-    /**
-     * Queried every tick to determine how much scaled time to advance.
-     * Defaults to {@code () -> 1.0} (normal speed).
-     * <p>
-     * Set via {@link #setTimeMultiplier} — individual subclasses never need
-     * to know about this.
-     */
+    protected float currentTick = 0;
+
     private Supplier<Double> timeMultiplier = () -> 1.0;
+    private boolean cancelled = false;
 
-    public ActiveEffect(double x, double y, double z, int maxDuration) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    protected ActiveEffect(Location location, int maxDuration) {
+        this(location, maxDuration, false);
+    }
+
+    protected ActiveEffect(Location location, int maxDuration, boolean infinite) {
+        this.location = location;
         this.maxDuration = maxDuration;
+        this.infinite = infinite;
     }
 
-    // -------------------------------------------------------------------------
-    // Time multiplier
-    // -------------------------------------------------------------------------
 
-    /**
-     * Override the time multiplier for this effect. Called by
-     * {@link EffectFactory} when an entity is provided so that the effect
-     * automatically slows or speeds up based on the entity's position inside
-     * a {@code TimeChangeEntity} area.
-     * <p>
-     * Example: {@code effect.setTimeMultiplier(
-     *     () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level))
-     * )}
-     */
-    public void setTimeMultiplier(Supplier<Double> timeMultiplier) {
-        this.timeMultiplier = timeMultiplier;
+    public UUID getId() { return id; }
+    void setId(UUID id) { this.id = id; }
+
+
+    public void setMaxDuration(int maxDuration) { this.maxDuration = maxDuration; }
+    public int getMaxDuration() { return maxDuration; }
+
+    public void setInfinite(boolean infinite) { this.infinite = infinite; }
+    public boolean isInfinite() { return infinite; }
+
+    public void setParams(float[] params) { this.params = params; }
+    public float[] getParams() { return params; }
+
+    public void setTimeMultiplier(Supplier<Double> timeMultiplier) { this.timeMultiplier = timeMultiplier; }
+
+
+    public Location getLocation() { return location; }
+    public void setLocation(Location location) { this.location = location; }
+    public void setPosition(Vec3 pos) { location.setPosition(pos); }
+    public void setPosition(double x, double y, double z) { location.setPosition(new Vec3(x, y, z)); }
+
+    public double getX() { return location.getPosition().x; }
+    public double getY() { return location.getPosition().y; }
+    public double getZ() { return location.getPosition().z; }
+
+
+    public Vec3 getStartPos() {
+        return new Vec3(params[EffectParams.START_X], params[EffectParams.START_Y], params[EffectParams.START_Z]);
     }
 
-    // -------------------------------------------------------------------------
-    // Lifecycle
-    // -------------------------------------------------------------------------
+    public Vec3 getEndPos() {
+        return new Vec3(params[EffectParams.END_X], params[EffectParams.END_Y], params[EffectParams.END_Z]);
+    }
+
+    protected Vec3 getDirection() { return getEndPos().subtract(getStartPos()).normalize(); }
+    protected double getSegmentDistance() { return getStartPos().distanceTo(getEndPos()); }
+
+    protected Vec3 getInterpolatedPosition(float progress) {
+        Vec3 start = getStartPos(), end = getEndPos();
+        return start.lerp(end, progress);
+    }
+
 
     public void update(PoseStack poseStack, float partialTick) {
-        // Cast to float for subclass rendering; partialTick is already in [0,1]
-        float interpolatedTick = (float) currentTick + partialTick;
-        render(poseStack, interpolatedTick);
+        render(poseStack, currentTick + partialTick);
     }
 
-    /**
-     * Advances scaled time by the current multiplier.
-     * <ul>
-     *   <li>Multiplier > 1 → effect finishes faster (time compressed)</li>
-     *   <li>Multiplier < 1 → effect finishes slower (time stretched)</li>
-     *   <li>Multiplier = 0 → effect is frozen</li>
-     * </ul>
-     */
     public void tick() {
         currentTick += (float) Math.max(0.0, timeMultiplier.get());
     }
@@ -76,24 +85,18 @@ public abstract class ActiveEffect {
     protected abstract void render(PoseStack poseStack, float tick);
 
     public boolean isFinished() {
-        return currentTick >= maxDuration || cancelled;
+        if (cancelled) return true;
+        if (infinite) return false;
+        return currentTick >= maxDuration;
     }
 
-    private boolean cancelled = false;
-
-    public void cancel() {
-        cancelled = true;
-    }
-
-    // -------------------------------------------------------------------------
-    // Accessors
-    // -------------------------------------------------------------------------
-
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getZ() { return z; }
+    public void cancel() { cancelled = true; }
 
     protected float getProgress() {
-        return (float) (currentTick / maxDuration);
+        int loopLength = maxDuration > 0 ? maxDuration : 100;
+        if (infinite) return (currentTick % loopLength) / loopLength;
+        return currentTick / maxDuration;
     }
+
+    public float getCurrentTick() { return currentTick; }
 }

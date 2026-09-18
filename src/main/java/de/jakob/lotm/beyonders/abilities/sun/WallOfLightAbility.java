@@ -47,7 +47,7 @@ public class WallOfLightAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 12* (int) multiplier(entity), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 1.4f);
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 
@@ -66,7 +66,7 @@ public class WallOfLightAbility extends Ability {
             }
         }
 
-        ServerScheduler.scheduleForDuration(0, 7, 20 * 15* (int) multiplier(entity), () -> {
+        ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 15* multiplier(entity)), () -> {
             for(BlockPos pos : blocks) {
                 if(random.nextBoolean())
                     ParticleUtil.spawnParticles((ServerLevel) level, random.nextBoolean() ? dust : ParticleTypes.END_ROD, pos.getCenter(), 1, 0.5, 0.02);

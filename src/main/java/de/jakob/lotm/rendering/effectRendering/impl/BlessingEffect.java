@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -30,30 +31,30 @@ public class BlessingEffect extends ActiveEffect {
     private float blessingIntensity = 0f;
     private float spiralRotation = 0f;
 
-    public BlessingEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 2); // 8 seconds duration
+    public BlessingEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Create multiple ascending spirals
+
         for (int i = 0; i < 6; i++) {
             spirals.add(new AscendingSpiral(i));
         }
 
-        // Create blessing particles that rise upward
+
         for (int i = 0; i < 150; i++) {
             particles.add(new LuckParticle());
         }
 
-        // Create floating blessing runes
+
         for (int i = 0; i < 10; i++) {
             runes.add(new BlessingRune());
         }
 
-        // Create radiant light rays
+
         for (int i = 0; i < 12; i++) {
             lightRays.add(new LightRay(i));
         }
 
-        // Create fortune orbs that circle
+
         for (int i = 0; i < 8; i++) {
             fortuneOrbs.add(new FortuneOrb(i));
         }
@@ -66,7 +67,7 @@ public class BlessingEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Blessing builds up, sustains, then fades
+
         if (progress < 0.15f) {
             blessingIntensity = progress / 0.15f;
         } else if (progress > 0.85f) {
@@ -78,11 +79,11 @@ public class BlessingEffect extends ActiveEffect {
         spiralRotation += 0.06f;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render in order for proper blending
+
         renderLightBeam(poseStack, bufferSource, progress);
         renderLightRays(poseStack, bufferSource, progress);
         renderSpirals(poseStack, bufferSource, progress);
@@ -100,7 +101,7 @@ public class BlessingEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Central pillar of light
+
         float beamRadius = 0.6f + Mth.sin(currentTick * 0.08f) * 0.1f;
         int segments = 24;
 
@@ -115,7 +116,7 @@ public class BlessingEffect extends ActiveEffect {
 
             float alpha = 0.5f * blessingIntensity;
 
-            // Bottom to top gradient
+
             addVertex(consumer, matrix, x1, -1f, z1,
                     PRIMARY_R * 0.7f, PRIMARY_G * 0.7f, PRIMARY_B * 0.7f, alpha * 0.3f);
             addVertex(consumer, matrix, x2, -1f, z2,
@@ -136,7 +137,7 @@ public class BlessingEffect extends ActiveEffect {
 
             if (spiral.alpha <= 0f) continue;
 
-            // Draw spiral as connected segments
+
             for (int i = 0; i < spiral.points.size() - 1; i++) {
                 Vec3 p1 = spiral.points.get(i);
                 Vec3 p2 = spiral.points.get(i + 1);
@@ -147,7 +148,7 @@ public class BlessingEffect extends ActiveEffect {
                 float t = i / (float) spiral.points.size();
                 float segmentAlpha = spiral.alpha * blessingIntensity * (0.6f + t * 0.4f);
 
-                // Gradient from blue to white
+
                 float brightness = 0.5f + t * 0.5f;
                 float r = PRIMARY_R + (1f - PRIMARY_R) * brightness;
                 float g = PRIMARY_G + (1f - PRIMARY_G) * brightness;
@@ -195,8 +196,8 @@ public class BlessingEffect extends ActiveEffect {
             float size = rune.size;
             float alpha = rune.alpha * blessingIntensity;
 
-            // Draw rune as a star/cross pattern
-            // Vertical line
+
+
             addVertex(consumer, matrix, rune.x - size * 0.08f, rune.y - size, rune.z,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B, alpha);
             addVertex(consumer, matrix, rune.x + size * 0.08f, rune.y - size, rune.z,
@@ -206,7 +207,7 @@ public class BlessingEffect extends ActiveEffect {
             addVertex(consumer, matrix, rune.x - size * 0.08f, rune.y + size, rune.z,
                     1f, 1f, 1f, alpha);
 
-            // Horizontal line
+
             addVertex(consumer, matrix, rune.x - size, rune.y - size * 0.08f, rune.z,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B, alpha);
             addVertex(consumer, matrix, rune.x + size, rune.y - size * 0.08f, rune.z,
@@ -216,7 +217,7 @@ public class BlessingEffect extends ActiveEffect {
             addVertex(consumer, matrix, rune.x - size, rune.y + size * 0.08f, rune.z,
                     1f, 1f, 1f, alpha);
 
-            // Diagonal lines for star effect
+
             float diagSize = size * 0.7f;
             addVertex(consumer, matrix, rune.x - diagSize * 0.08f, rune.y - diagSize, rune.z,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B, alpha * 0.7f);
@@ -270,7 +271,7 @@ public class BlessingEffect extends ActiveEffect {
 
             if (orb.alpha <= 0f) continue;
 
-            // Render orb as a glowing sphere (simplified as billboard)
+
             float brightness = 0.8f + 0.2f * Mth.sin(currentTick * 0.15f + orb.phaseOffset);
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, orb.size,
                     PRIMARY_R + (1f - PRIMARY_R) * brightness,
@@ -278,7 +279,7 @@ public class BlessingEffect extends ActiveEffect {
                     PRIMARY_B + (1f - PRIMARY_B) * brightness,
                     orb.alpha * blessingIntensity);
 
-            // Render orb glow
+
             renderBillboardQuad(consumer, matrix, orb.x, orb.y, orb.z, orb.size * 1.5f,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B,
                     orb.alpha * blessingIntensity * 0.4f);
@@ -289,7 +290,7 @@ public class BlessingEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Gentle aura at the base
+
         int segments = 20;
         float auraRadius = 2.8f + Mth.sin(currentTick * 0.06f) * 0.3f;
 
@@ -320,7 +321,7 @@ public class BlessingEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Rising blessing rings
+
         int ringCount = 4;
         for (int r = 0; r < ringCount; r++) {
             float ringOffset = r * 0.25f;
@@ -358,7 +359,7 @@ public class BlessingEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Shimmering sparkles around the effect
+
         int sparkleCount = 30;
         for (int i = 0; i < sparkleCount; i++) {
             float angle = (float) (i * Math.PI * 2 / sparkleCount);
@@ -390,9 +391,9 @@ public class BlessingEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-                cameraPos.x - (this.x + x),
-                cameraPos.y - (this.y + y),
-                cameraPos.z - (this.z + z)
+                cameraPos.x - (getX() + x),
+                cameraPos.y - (getY() + y),
+                cameraPos.z - (getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);
@@ -437,10 +438,10 @@ public class BlessingEffect extends ActiveEffect {
 
             for (int i = 0; i < numPoints; i++) {
                 float t = i / (float) numPoints;
-                float angle = t * Mth.TWO_PI * 2.5f; // 2.5 full rotations
-                float height = t * 4.5f - 1.5f; // Ascends from bottom to top
+                float angle = t * Mth.TWO_PI * 2.5f;
+                float height = t * 4.5f - 1.5f;
 
-                float radius = orbitRadius * (1f - t * 0.2f); // Slightly tightens as it rises
+                float radius = orbitRadius * (1f - t * 0.2f);
                 float x = Mth.cos(angle + angleOffset) * radius;
                 float z = Mth.sin(angle + angleOffset) * radius;
 
@@ -449,7 +450,7 @@ public class BlessingEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity, float rotation) {
-            // Rotate the entire spiral upward
+
             for (int i = 0; i < points.size(); i++) {
                 Vec3 p = points.get(i);
                 float rotAmount = spiralSpeed * 0.04f;
@@ -483,18 +484,18 @@ public class BlessingEffect extends ActiveEffect {
             this.y = -1f + random.nextFloat() * 0.5f;
             this.z = Mth.sin(angle) * dist;
 
-            // Spiraling upward motion
+
             float tangentAngle = angle + Mth.HALF_PI;
             
             this.vx = Mth.cos(tangentAngle) * 0.015f - x * 0.008f;
-            this.vy = 0.025f + random.nextFloat() * 0.015f; // Rising
+            this.vy = 0.025f + random.nextFloat() * 0.015f;
             this.vz = Mth.sin(tangentAngle) * 0.015f - z * 0.008f;
 
             this.size = 0.04f + random.nextFloat() * 0.05f;
             this.lifetime = 70f + random.nextFloat() * 50f;
             this.age = 0f;
 
-            // Bright variants of the primary color
+
             float brightness = 0.8f + random.nextFloat() * 0.2f;
             this.r = PRIMARY_R + (1f - PRIMARY_R) * (random.nextFloat() * 0.3f);
             this.g = PRIMARY_G + (1f - PRIMARY_G) * (random.nextFloat() * 0.3f);
@@ -507,10 +508,10 @@ public class BlessingEffect extends ActiveEffect {
             this.z += vz;
             this.age++;
 
-            // Gentle sparkle effect
+
             float sparkle = Mth.sin(age * 0.3f) * 0.3f + 0.7f;
 
-            // Fade in and out
+
             float lifetimeProgress = age / lifetime;
             if (lifetimeProgress < 0.2f) {
                 this.alpha = lifetimeProgress / 0.2f * 0.9f * sparkle;
@@ -520,7 +521,7 @@ public class BlessingEffect extends ActiveEffect {
                 this.alpha = 0.9f * sparkle;
             }
 
-            // Respawn if too old or out of bounds
+
             if (age >= lifetime || y > 4f) {
                 respawn();
             }

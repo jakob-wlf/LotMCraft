@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -19,7 +20,6 @@ import java.util.Random;
 
 public class SpaceTearingEffect extends ActiveEffect {
 
-    private static final int   DURATION_TICKS  = 140;
     private static final float CRACK_RADIUS    = 5.0f;
     private static final float STORM_RADIUS    = 76.0f;
     private static final int   MAX_DEPTH       = 6;
@@ -31,10 +31,10 @@ public class SpaceTearingEffect extends ActiveEffect {
     private final List<SpiralArm>     spiralArms   = new ArrayList<>();
     private final List<StormParticle> stormParticles = new ArrayList<>();
 
-    public SpaceTearingEffect(double x, double y, double z) {
-        super(x, y, z, DURATION_TICKS);
+    public SpaceTearingEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        Random rng = new Random(Double.doubleToLongBits(x * 31 + z));
+        Random rng = new Random(Double.doubleToLongBits(getX() * 31 + getZ()));
 
         int rootCount = 10 + rng.nextInt(5);
         for (int i = 0; i < rootCount; i++) {
@@ -121,7 +121,7 @@ public class SpaceTearingEffect extends ActiveEffect {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
 
-        float progress = Math.min(tick / (float) DURATION_TICKS, 1.0f);
+        float progress = Math.min(tick / (float) getMaxDuration(), 1.0f);
         float alpha    = progress < 0.72f ? 1.0f : 1.0f - ((progress - 0.72f) / 0.28f);
 
         poseStack.pushPose();

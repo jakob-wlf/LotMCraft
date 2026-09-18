@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.visionary.handlers;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.MindWorldAuthorityEnvisioningAbility;
-import de.jakob.lotm.gui.custom.Envisioning.EnvisioningScreen;
+import de.jakob.lotm.gui.custom.envisioning.EnvisioningScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.level.GameType;

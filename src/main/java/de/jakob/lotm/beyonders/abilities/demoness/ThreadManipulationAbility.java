@@ -182,7 +182,7 @@ public class ThreadManipulationAbility extends SelectableAbility {
 
         boundEntities.add(targetEntity.getUUID());
         float multiplier_target = multiplier(targetEntity);
-        int duration = (int) (20 * 15*multiplier(entity)/  (int) multiplier_target);
+        int duration = (int) (20 * 15*multiplier(entity)/  multiplier_target);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);

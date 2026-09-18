@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -12,18 +13,17 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Packet to sync ally data from server to client
- */
 
-public record SyncAllyDataPacket(Set<String> allies) implements CustomPacketPayload {
-    
-    public static final CustomPacketPayload.Type<SyncAllyDataPacket> TYPE = 
+public record SyncAllyDataPacket(Set<AllyComponent.AllyInfo> allies, Set<AllyComponent.AllyInfo> requests) implements CustomPacketPayload {
+
+    public static final CustomPacketPayload.Type<SyncAllyDataPacket> TYPE =
             new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_ally_data"));
 
     public static final StreamCodec<ByteBuf, SyncAllyDataPacket> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.STRING_UTF8),
+            ByteBufCodecs.collection(HashSet::new, AllyComponent.AllyInfo.STREAM_CODEC),
             SyncAllyDataPacket::allies,
+            ByteBufCodecs.collection(HashSet::new, AllyComponent.AllyInfo.STREAM_CODEC),
+            SyncAllyDataPacket::requests,
             SyncAllyDataPacket::new
     );
 

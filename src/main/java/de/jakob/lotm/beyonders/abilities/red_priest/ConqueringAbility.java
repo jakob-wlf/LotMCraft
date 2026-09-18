@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -44,7 +45,7 @@ public class ConqueringAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
-        EffectManager.playEffect(EffectManager.Effect.CONQUERING, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
+        EffectManager.playEffect(EffectIds.CONQUERING, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 

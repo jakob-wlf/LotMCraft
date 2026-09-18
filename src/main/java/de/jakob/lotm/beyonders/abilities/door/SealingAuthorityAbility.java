@@ -13,6 +13,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -50,6 +51,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -58,6 +61,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -119,11 +123,11 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         List<BlockPos> barrierBlocks = AbilityUtil.getBlocksInEllipsoid(serverLevel, entity.position(), 60*multiplier(entity), 13*multiplier(entity), false, false, false);
 
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel, 20 * 60* (int)multiplier(entity), entity.getUUID(), 60*(int)multiplier(entity), 0.00001f);
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), serverLevel,  (int) (20 * 60* multiplier(entity)), entity.getUUID(), (int) (60*multiplier(entity)), 0.00001f);
         serverLevel.addFreshEntity(timeChangeEntity);
         timeChangeEntity.setPos(entity.position().add(0, 0, 0));
 
-        currentlySealedLocation = new SealedLocation(entity.getUUID(), new Location(entity.position(), serverLevel), 60*(int)multiplier(entity), 20 * 60 * (int)multiplier(entity), barrierBlocks, timeChangeEntity);
+        currentlySealedLocation = new SealedLocation(entity.getUUID(), new Location(entity.position(), serverLevel), (int) (60*multiplier(entity)), (int) (20 * 60 * multiplier(entity)), barrierBlocks, timeChangeEntity);
 
 
         serverLevel.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.5f, 0.6f);
@@ -175,7 +179,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
             return;
         }
 
-        data.activate(20 * 60 * 8+ (int)multiplier(entity), level.dimension().location().toString());
+        data.activate((int) (20 * 60 * 8+ multiplier(entity)), level.dimension().location().toString());
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.sealing_authority.dimension_sealed").withColor(BeyonderData.pathwayInfos.get("door").color()));
     }
 
@@ -201,7 +205,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
     private void sealTarget(ServerLevel level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30*(int)multiplier(entity), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 2);
         if(target == null || sealedEntities.contains(target.getUUID())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;
@@ -212,7 +216,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1f, 1f);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1f, 1f);
 
-        EffectManager.playEffect(EffectManager.Effect.ROTATING_RINGS, targetLoc.x, targetLoc.y, targetLoc.z, level);
+        EffectManager.playEffect(EffectIds.ROTATING_RINGS, targetLoc.x, targetLoc.y, targetLoc.z, level);
 
         sealedEntities.add(target.getUUID());
 
@@ -347,31 +351,73 @@ public class SealingAuthorityAbility extends SelectableAbility {
         });
     }
 
+    // Tracks all currently-existing trap item entities, across all dimensions.
+    private static final Set<ItemEntity> trapItems = ConcurrentHashMap.newKeySet();
+
+    private static boolean isTrapItem(ItemEntity item) {
+        return item.getItem().getOrDefault(ModDataComponents.IS_TRAP, false);
+    }
+
+    @SubscribeEvent
+    public static void onItemJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide()) return;
+        if (event.getEntity() instanceof ItemEntity itemEntity && isTrapItem(itemEntity)) {
+            trapItems.add(itemEntity);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onItemLeaveLevel(EntityLeaveLevelEvent event) {
+        if (event.getEntity() instanceof ItemEntity itemEntity) {
+            trapItems.remove(itemEntity);
+        }
+    }
+
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Post event) {
-        if(!(event.getEntity() instanceof LivingEntity entity)) return;
-
-        if(entity.level().isClientSide()) return;
-
-        if(BeyonderData.getSequence(entity) >= 0 || !BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
-
-        List<ItemEntity> nearbyTraps = AbilityUtil.getAllNearbyEntities(null, (ServerLevel) entity.level(), entity.position(), 2.5).stream()
-                .filter(e -> e instanceof net.minecraft.world.entity.item.ItemEntity)
-                .map(e -> ((net.minecraft.world.entity.item.ItemEntity) e))
-                .filter(s -> s.getItem().getOrDefault(ModDataComponents.IS_TRAP, false))
-                .toList();
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        if (entity.level().isClientSide()) return;
+        if (BeyonderData.getSequence(entity) >= 0 || !BeyonderData.getPathway(entity).equalsIgnoreCase("door")) return;
 
         boolean hasTrap = false;
-        for (ItemStack item : entity.getAllSlots()) if (item.getOrDefault(ModDataComponents.IS_TRAP, false)) {
-            hasTrap = true;
-            break;
+        for (ItemStack item : entity.getAllSlots()) {
+            if (item.getOrDefault(ModDataComponents.IS_TRAP, false)) {
+                hasTrap = true;
+                break;
+            }
         }
 
-        if(!hasTrap && nearbyTraps.isEmpty()) {
+        List<ItemEntity> nearbyTraps = null;
+        if (!trapItems.isEmpty()) {
+            final double radiusSq = 2.5 * 2.5;
+            Vec3 pos = entity.position();
+            Level level = entity.level();
+
+            for (Iterator<ItemEntity> it = trapItems.iterator(); it.hasNext(); ) {
+                ItemEntity trap = it.next();
+
+                if (!trap.isAlive() || trap.isRemoved() || !isTrapItem(trap)) {
+                    it.remove();
+                    continue;
+                }
+                if (trap.level() != level) continue;
+                if (trap.position().distanceToSqr(pos) <= radiusSq) {
+                    if (nearbyTraps == null) nearbyTraps = new ArrayList<>();
+                    nearbyTraps.add(trap);
+                }
+            }
+        }
+
+        if (!hasTrap && (nearbyTraps == null || nearbyTraps.isEmpty())) {
             return;
         }
 
-        nearbyTraps.forEach(Entity::discard);
+        if (nearbyTraps != null) {
+            for (ItemEntity trap : nearbyTraps) {
+                trapItems.remove(trap);
+                trap.discard();
+            }
+        }
         clearItemsWithComponent(entity, ModDataComponents.IS_TRAP.get());
 
         ResourceKey<Level> spaceDimension = ResourceKey.create(Registries.DIMENSION,
@@ -401,7 +447,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
 
         int duration = getSealingDurationBySequence(BeyonderData.getSequence(entity));
         ServerScheduler.scheduleDelayed(duration, () -> {
-            if(entity.isAlive()) {
+            if (entity.isAlive()) {
                 entity.teleportTo(previousLevel,
                         previousPos.x,
                         previousPos.y,

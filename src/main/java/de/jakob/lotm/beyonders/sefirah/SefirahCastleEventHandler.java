@@ -9,6 +9,9 @@ import de.jakob.lotm.item.custom.MysteriousTabletItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
 import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -34,6 +37,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
+import java.util.HashMap;
+import java.util.Set;
+import java.util.UUID;
 import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -87,7 +93,6 @@ public class SefirahCastleEventHandler {
         startRitual(player, tabletId);
         event.setCanceled(true);
     }
-
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) {
@@ -113,7 +118,6 @@ public class SefirahCastleEventHandler {
             return;
         }
 
-        tickRitual(player, serverLevel);
     }
 
     @SubscribeEvent
@@ -129,9 +133,8 @@ public class SefirahCastleEventHandler {
             return;
         }
 
-        event.setCanceled(true);
-        player.sendSystemMessage(Component.translatable("lotm.sefirot.command_blocked"));
-    }
+        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
+        return false;
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {

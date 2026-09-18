@@ -1,5 +1,9 @@
 package de.jakob.lotm.network.packets.handlers;
 
+import com.lowdragmc.photon.client.fx.BlockEffectExecutor;
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AllyComponent;
@@ -13,24 +17,26 @@ import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.WheelOfFortuneAbilityM
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.acting.ActingHelper;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.gui.custom.coordinate_input.CoordinateInputScreen;
 import de.jakob.lotm.gui.custom.AbilitySeal.AbilitySealScreen;
 import de.jakob.lotm.gui.custom.AboveSeqAuthority.AboveSeqAuthorityScreen;
 import de.jakob.lotm.gui.custom.AnchorCutting.AnchorCuttingScreen;
 import de.jakob.lotm.gui.custom.CharSlotRoll.CharSlotRollScreen;
 import de.jakob.lotm.gui.custom.ConnectionManager.ConnectionManagerScreen;
-import de.jakob.lotm.gui.custom.CoordinateInput.CoordinateInputScreen;
+import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.InternalUnderworld.InternalUnderworldAbilityScreen;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
-import de.jakob.lotm.gui.custom.Quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.selection_gui.*;
 import de.jakob.lotm.gui.custom.ProbabilityManipulation.ProbabilityManipulationScreen;
-import de.jakob.lotm.gui.custom.SelectionGui.*;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.ConsumeCharacteristicPacket;
-import de.jakob.lotm.quest.Quest;
-import de.jakob.lotm.quest.QuestRegistry;
+import de.jakob.lotm.network.packets.toServer.ShapeShiftingPlayerModelPacket;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.*;
-import de.jakob.lotm.rendering.effectRendering.impl.VFXRenderer;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
+import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientData;
@@ -45,12 +51,16 @@ import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
@@ -118,6 +128,14 @@ public class ClientHandler {
                     0
             );
         }
+    }
+
+    public static void closeGUI() {
+        Minecraft.getInstance().setScreen(null);
+    }
+
+    public static Minecraft getMinecraftInstance() {
+        return Minecraft.getInstance();
     }
 
     public static void handleSyncPlayerData(SyncPlayerActingDataPayload payload, IPayloadContext context) {
@@ -246,20 +264,13 @@ public class ClientHandler {
                     new MarionetteOverlayRenderer.MarionetteInfos(
                             packet.name(),
                             packet.health(),
-                            packet.maxHealth()
+                            packet.maxHealth(),
+                            packet.hasWorm()
                     )
             );
         }
         else {
             MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
-        }
-    }
-
-    public static void handleMirrorWorldPacket(SyncMirrorWorldPacket packet) {
-        Player player = Minecraft.getInstance().player;
-        if (player != null) {
-            player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get())
-                    .setInMirrorWorld(packet.inMirrorWorld());
         }
     }
 
@@ -320,42 +331,27 @@ public class ClientHandler {
         entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
     }
 
-    public static void addEffect(int index, double x, double y, double z, int entityId) {
-        if (entityId == AddEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveEffect(index, x, y, z);
-        } else {
-            VFXRenderer.addActiveEffect(index, x, y, z, entityId);
+    public static void addEffect(AddEffectPacket packet) {
+        LivingEntity entity = null;
+        if (packet.entityId() != AddEffectPacket.NO_ENTITY && Minecraft.getInstance().level != null) {
+            var raw = Minecraft.getInstance().level.getEntity(packet.entityId());
+            if (raw instanceof LivingEntity le) entity = le;
         }
+
+        Integer duration = packet.duration() == AddEffectPacket.NO_DURATION_OVERRIDE ? null : packet.duration();
+        Boolean infinite = packet.infiniteOverridden() ? packet.infinite() : null;
+        EffectParams overrides = new EffectParams(duration, infinite, packet.params());
+
+        VFXRenderer.addActiveEffect(packet.effectId(), packet.index(),
+                packet.x(), packet.y(), packet.z(), entity, packet.followEntity(), overrides);
     }
 
-    public static void addDirectionalEffect(int index,
-                                            double startX, double startY, double startZ,
-                                            double endX, double endY, double endZ,
-                                            int duration, int entityId) {
-        if (entityId == AddDirectionalEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration);
-        } else {
-            VFXRenderer.addActiveDirectionalEffect(index, startX, startY, startZ, endX, endY, endZ, duration, entityId);
-        }
+    public static void updateEffectPosition(UUID effectId, double x, double y, double z) {
+        VFXRenderer.updateEffectPosition(effectId, x, y, z);
     }
 
-    public static void addMovableEffect(UUID effectId, int index,
-                                        double x, double y, double z,
-                                        int duration, boolean infinite,
-                                        int entityId) {
-        if (entityId == AddMovableEffectPacket.NO_ENTITY) {
-            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite);
-        } else {
-            VFXRenderer.addActiveMovableEffect(effectId, index, x, y, z, duration, infinite, entityId);
-        }
-    }
-
-    public static void updateMovableEffectPosition(UUID effectId, double x, double y, double z) {
-        VFXRenderer.updateMovableEffectPosition(effectId, x, y, z);
-    }
-
-    public static void removeMovableEffect(UUID effectId) {
-        VFXRenderer.removeMovableEffect(effectId);
+    public static void cancelEffect(UUID effectId) {
+        VFXRenderer.cancelEffect(effectId);
     }
 
     public static void cancelEffectsNear(double x, double y, double z, double radius) {
@@ -426,7 +422,7 @@ public class ClientHandler {
 
     public static void handleAllyPacket(SyncAllyDataPacket packet) {
         if (Minecraft.getInstance().player != null) {
-            AllyComponent newComponent = new AllyComponent(packet.allies());
+            AllyComponent newComponent = new AllyComponent(packet.allies(), packet.requests());
             Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
         }
     }
@@ -494,7 +490,7 @@ public class ClientHandler {
         ability.onAbilityUse(level, living);
     }
 
-    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataPacket packet) {
+    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataToIntrospectPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityWheelSlots(packet.abilityIds());
@@ -592,18 +588,6 @@ public class ClientHandler {
         Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
     }
 
-    public static void handleHistoricalVoidBorrowingScreenPacket(OpenHistoricalVoidBorrowingScreenPacket packet) {
-        Minecraft.getInstance().setScreen(new HistoricalVoidBorrowingSelectionGui(packet.options()));
-    }
-
-    public static void handleOriginalBodyOwnerSyncPacket(SyncOriginalBodyOwnerPacket packet) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level != null && mc.level.getEntity(packet.entityId()) instanceof OriginalBodyEntity body) {
-            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerUUID(packet.ownerUUID());
-            body.getData(ModAttachments.CONTROLLING_DATA).setOwnerName(packet.ownerName());
-        }
-    }
-
     public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) return;
@@ -659,19 +643,18 @@ public class ClientHandler {
         }
     }
 
-    public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
-        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
-        if(entity == null) {
-            return;
-        }
-        entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
-        entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
-
-        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
-            screen.refreshAvailableAbilities();
-        }
+public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
+    Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+    if(entity == null) {
+        return;
     }
+    entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
+    entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
 
+    if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+        screen.refreshAvailableAbilities();
+    }
+}
     public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if(entity == null) {
@@ -719,6 +702,36 @@ public class ClientHandler {
             screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity(), packet.corruption());
             screen.refreshAvailableAbilities();
         }
+    }
+
+    public static void syncDangerArrowsOverlay(SyncDangerArrowsOverlayPacket packet) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        DangerArrowsOverlay.show(packet.direction(), packet.duration());
+    }
+
+    public static void isPlayerModel(String entityType, boolean sequenceRestrict) {
+        boolean isPlayerModel = false;
+
+        Level level = Minecraft.getInstance().level;
+        if (level != null) {
+            String cleanEntityType = entityType;
+            if (entityType.indexOf(':') != entityType.lastIndexOf(':')) {
+                cleanEntityType = entityType.substring(0, entityType.lastIndexOf(':'));
+            }
+            EntityType<?> shapeEntity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(cleanEntityType));
+            Entity dummyEntity = shapeEntity.create(level);
+
+            if (dummyEntity instanceof LivingEntity livingEntity) {
+                var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity);
+
+                if (renderer instanceof LivingEntityRenderer livingRenderer) {
+                    isPlayerModel = livingRenderer.getModel() instanceof PlayerModel;
+                }
+            }
+        }
+        PacketHandler.sendToServer(new ShapeShiftingPlayerModelPacket(entityType, isPlayerModel, sequenceRestrict));
     }
 
     public static void handleActingCapPacket(SyncActingCapPacket packet) {
@@ -798,95 +811,147 @@ public class ClientHandler {
         if (player == null) return;
         selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
     }
+public static void openCharSlotRollScreen(OpenCharSlotRollPacket packet) {
+    Minecraft mc = Minecraft.getInstance();
+    // If a CharSlotRollScreen is already open (server responding to a reroll), update
+    // it in-place instead of creating a new one — this preserves Konami bonus rerolls
+    // and the konamiUsed counter which would otherwise reset to 0 on the new screen.
+    if (mc.screen instanceof CharSlotRollScreen existing) {
+        existing.serverAcknowledgedReroll(packet.rerollsLeft());
+    } else {
+        mc.setScreen(new CharSlotRollScreen(packet.pathways(), packet.charNames(), packet.rerollsLeft()));
+    }
+}
 
-    public static void openCharSlotRollScreen(OpenCharSlotRollPacket packet) {
-        Minecraft mc = Minecraft.getInstance();
-        // If a CharSlotRollScreen is already open (server responding to a reroll), update
-        // it in-place instead of creating a new one — this preserves Konami bonus rerolls
-        // and the konamiUsed counter which would otherwise reset to 0 on the new screen.
-        if (mc.screen instanceof CharSlotRollScreen existing) {
-            existing.serverAcknowledgedReroll(packet.rerollsLeft());
-        } else {
-            mc.setScreen(new CharSlotRollScreen(packet.pathways(), packet.charNames(), packet.rerollsLeft()));
+public static void openAbilitySealScreen(OpenAbilitySealScreenPacket packet) {
+    Minecraft.getInstance().setScreen(
+            new AbilitySealScreen(
+                    packet.targetUUIDStr(),
+                    packet.targetName(),
+                    packet.abilityIds(),
+                    packet.abilityNames(),
+                    packet.currentlySealed()));
+}
+
+public static void openConnectionManagerScreen(OpenConnectionManagerPacket packet) {
+    Minecraft.getInstance().setScreen(new ConnectionManagerScreen(packet.connections()));
+}
+
+public static void openAnchorCuttingScreen(OpenAnchorCuttingScreenPacket packet) {
+    Minecraft.getInstance().setScreen(new AnchorCuttingScreen(packet.anchors()));
+}
+
+public static void openProbabilityManipulationScreen(OpenProbabilityManipulationPacket packet) {
+    Minecraft.getInstance().setScreen(new ProbabilityManipulationScreen(packet));
+}
+
+public static void openAboveSeqAuthorityScreen() {
+    Minecraft.getInstance().setScreen(new AboveSeqAuthorityScreen());
+}
+
+public static void openDailySpinScreen(de.jakob.lotm.network.packets.toClient.OpenDailySpinScreenPacket packet) {
+    Minecraft.getInstance().setScreen(
+            new de.jakob.lotm.gui.custom.DailySpin.DailySpinScreen(
+                    packet.reelNames(), packet.landingIndex(), packet.canSpin()));
+}
+
+public static void openSellYourSoulScreen(de.jakob.lotm.network.packets.toClient.OpenSellYourSoulScreenPacket packet) {
+    Minecraft.getInstance().setScreen(
+            new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulScreen(
+                    packet.outcome(), packet.rewardName()));
+}
+
+public static void openSellYourSoulGateScreen(de.jakob.lotm.network.packets.toClient.OpenSellYourSoulGatePacket packet) {
+    Minecraft.getInstance().setScreen(
+            new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulGateScreen(packet.cooldownEndMillis()));
+}
+
+public static void openCharExchangeWheelScreen(de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket packet) {
+    Minecraft.getInstance().setScreen(
+            new de.jakob.lotm.gui.custom.CharExchange.CharExchangeWheelScreen(
+                    packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName(), packet.title()));
+}
+
+public static void handleOpenRiverVaultScreen(de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket packet) {
+    Minecraft mc = Minecraft.getInstance();
+    if (mc.player != null) {
+        mc.setScreen(new de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen(
+                packet.vaultItems(), packet.iuItems(),
+                packet.maxIU(), packet.vaultCapacity()));
+    }
+}
+
+public static void openCharacteristicSplittingScreen() {
+    Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.CharacteristicSplittingScreen());
+}
+
+public static void openSlateHalfPathwayScreen(de.jakob.lotm.item.custom.BlasphemySlateHalfItem.HalfType halfType) {
+    Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.BlasphemySlate.SlateHalfPathwayScreen(halfType));
+}
+
+public static void openCharacteristicConfirmation(InteractionHand hand) {
+    Minecraft.getInstance().setScreen(new ConfirmScreen(
+            (confirmed) -> {
+                if (confirmed) {
+                    de.jakob.lotm.network.PacketHandler.sendToServer(new ConsumeCharacteristicPacket(hand));
+                }
+                Minecraft.getInstance().setScreen(null);
+            },
+            Component.translatable("lotm.confirm_consumption.title"),
+            Component.translatable("lotm.confirm_consumption.description")
+    ));
+}
+
+public static void handleSyncHistoricalVoidSummoningCountPacket(SyncHistoricalVoidSummoningCountPacket packet) {
+    getPlayer().getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedCount = packet.amount();
+}
+
+public static Entity getById(int entityId) {
+    ClientLevel level = Minecraft.getInstance().level;
+    if (level == null) return null;
+
+    return level.getEntity(entityId);
+}
+
+public static void playPhotonBlockEffect(PlayPhotonBlockEffectPacket packet) {
+    FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath()));
+    if (fx != null) {
+        BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
+        fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+        fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+        if(packet.rot() != null) {
+            fxExecutor.setRotation(packet.rot());
         }
+        fxExecutor.setCheckState(packet.checkState());
+        fxExecutor.setAllowMulti(packet.allowMulti());
+        fxExecutor.start();
     }
 
-    public static void openAbilitySealScreen(OpenAbilitySealScreenPacket packet) {
-        Minecraft.getInstance().setScreen(
-                new AbilitySealScreen(
-                        packet.targetUUIDStr(),
-                        packet.targetName(),
-                        packet.abilityIds(),
-                        packet.abilityNames(),
-                        packet.currentlySealed()));
-    }
+}
 
-    public static void openConnectionManagerScreen(OpenConnectionManagerPacket packet) {
-        Minecraft.getInstance().setScreen(new ConnectionManagerScreen(packet.connections()));
-    }
+public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
+    ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
+    FX fx = FXHelper.getFX(id);
 
-    public static void openAnchorCuttingScreen(OpenAnchorCuttingScreenPacket packet) {
-        Minecraft.getInstance().setScreen(new AnchorCuttingScreen(packet.anchors()));
-    }
+    Entity entity = getById(packet.entityId());
+    if(entity == null) return;
 
-    public static void openProbabilityManipulationScreen(OpenProbabilityManipulationPacket packet) {
-        Minecraft.getInstance().setScreen(new ProbabilityManipulationScreen(packet));
-    }
+    EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+    executor.setScale(packet.scale(), packet.scale(), packet.scale());
+    executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+    if(packet.rot() != null)  executor.setRotation(packet.rot());
+    executor.setAllowMulti(packet.allowMulti());
 
-    public static void openAboveSeqAuthorityScreen() {
-        Minecraft.getInstance().setScreen(new AboveSeqAuthorityScreen());
-    }
+    executor.start();
+}
 
-    public static void openDailySpinScreen(de.jakob.lotm.network.packets.toClient.OpenDailySpinScreenPacket packet) {
-        Minecraft.getInstance().setScreen(
-                new de.jakob.lotm.gui.custom.DailySpin.DailySpinScreen(
-                        packet.reelNames(), packet.landingIndex(), packet.canSpin()));
-    }
+public static void handleControllingSync(SyncControllingPacket packet) {
+    Player player = getPlayer();
+    if(player == null) return;
 
-    public static void openSellYourSoulScreen(de.jakob.lotm.network.packets.toClient.OpenSellYourSoulScreenPacket packet) {
-        Minecraft.getInstance().setScreen(
-                new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulScreen(
-                        packet.outcome(), packet.rewardName()));
-    }
-
-    public static void openSellYourSoulGateScreen(de.jakob.lotm.network.packets.toClient.OpenSellYourSoulGatePacket packet) {
-        Minecraft.getInstance().setScreen(
-                new de.jakob.lotm.gui.custom.SellYourSoul.SellYourSoulGateScreen(packet.cooldownEndMillis()));
-    }
-
-    public static void openCharExchangeWheelScreen(de.jakob.lotm.network.packets.toClient.OpenCharExchangeWheelPacket packet) {
-        Minecraft.getInstance().setScreen(
-                new de.jakob.lotm.gui.custom.CharExchange.CharExchangeWheelScreen(
-                        packet.reelNames(), packet.landingIndex(), packet.outcome(), packet.rewardName(), packet.title()));
-    }
-
-    public static void handleOpenRiverVaultScreen(de.jakob.lotm.network.packets.toClient.OpenRiverVaultScreenPacket packet) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null) {
-            mc.setScreen(new de.jakob.lotm.gui.custom.RiverVault.RiverVaultScreen(
-                    packet.vaultItems(), packet.iuItems(),
-                    packet.maxIU(), packet.vaultCapacity()));
-        }
-    }
-
-    public static void openCharacteristicSplittingScreen() {
-        Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.CharacteristicSplittingScreen());
-    }
-
-    public static void openSlateHalfPathwayScreen(de.jakob.lotm.item.custom.BlasphemySlateHalfItem.HalfType halfType) {
-        Minecraft.getInstance().setScreen(new de.jakob.lotm.gui.custom.BlasphemySlate.SlateHalfPathwayScreen(halfType));
-    }
-
-    public static void openCharacteristicConfirmation(InteractionHand hand) {
-        Minecraft.getInstance().setScreen(new ConfirmScreen(
-                (confirmed) -> {
-                    if (confirmed) {
-                        de.jakob.lotm.network.PacketHandler.sendToServer(new ConsumeCharacteristicPacket(hand));
-                    }
-                    Minecraft.getInstance().setScreen(null);
-                },
-                Component.translatable("lotm.confirm_consumption.title"),
-                Component.translatable("lotm.confirm_consumption.description")
-        ));
-    }
+    player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlling(packet.isControlling());
+    player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntityPathway(packet.controlledEntityPathway());
+    player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
+    player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
+}
 }

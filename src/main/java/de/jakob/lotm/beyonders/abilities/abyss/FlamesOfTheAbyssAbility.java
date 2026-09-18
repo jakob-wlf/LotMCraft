@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -136,7 +137,7 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
             int delay = i * 2;
 
             ServerScheduler.scheduleDelayed(delay, () -> {
-                EffectManager.playEffect(EffectManager.Effect.ABYSS_PILLAR, pos.x, pos.y, pos.z, serverLevel);
+                EffectManager.playEffect(EffectIds.ACID_SWAMP, pos.x, pos.y, pos.z, serverLevel);
             }, serverLevel);
 
             ServerScheduler.scheduleForDuration(delay, 4, 20 * 7, () -> {

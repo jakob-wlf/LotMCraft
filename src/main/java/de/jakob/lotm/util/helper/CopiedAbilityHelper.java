@@ -1,16 +1,11 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncCopiedAbilitiesPacket;
-import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 
 
 import java.util.ArrayList;
@@ -56,6 +51,21 @@ public class CopiedAbilityHelper {
                 AbilityWheelHelper.removeUnusableAbilities(player);
             syncToClient((ServerPlayer) entity);
         }
+    }
+
+    public static int getRemainingUses(LivingEntity entity, String abilityId) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        return component.getAbilities().stream()
+                .filter(data -> data.abilityId().equals(abilityId))
+                .map(CopiedAbilityComponent.CopiedAbilityData::remainingUses)
+                .findFirst()
+                .orElse(-1);
+    }
+
+    public static boolean hasCopiedAbility(LivingEntity entity, String abilityId) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        return component.getAbilities().stream()
+                .anyMatch(data -> data.abilityId().equals(abilityId));
     }
 
     private static boolean shouldReduceUsesForType(String copyType) {

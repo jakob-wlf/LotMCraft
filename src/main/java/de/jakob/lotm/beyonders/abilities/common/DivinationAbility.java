@@ -227,6 +227,7 @@ public class DivinationAbility extends SelectableAbility {
             .map(holder -> holder.key().location())
             .filter(DivinationAbility::isStructureDivinable)
             .map(ResourceLocation::toString)
+                .filter(id -> !id.contains("brood_hive"))
                 .sorted()
                 .toList();
 

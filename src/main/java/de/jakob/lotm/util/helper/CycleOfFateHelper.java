@@ -1,5 +1,6 @@
 package de.jakob.lotm.util.helper;
 
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import net.minecraft.core.BlockPos;
@@ -44,7 +45,7 @@ public class CycleOfFateHelper {
 
         AbilityUtil.getNearbyEntities(null, level, pos.getCenter(), 55, true, true).forEach(e -> {
             if(e instanceof ServerPlayer serverPlayer) {
-                ControllingUtil.reset(serverPlayer, serverPlayer.serverLevel(), true);
+                ControllingUtils.cancel(serverPlayer, 0, true, false);
             }
         });
 

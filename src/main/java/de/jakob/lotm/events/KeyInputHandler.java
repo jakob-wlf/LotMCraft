@@ -5,12 +5,12 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
+import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.item.custom.BlasphemySlateHalfItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -86,11 +86,11 @@ public class KeyInputHandler {
 
             // if no return was triggered, run the normal code
             if(ClientBeyonderCache.isBeyonder(player.getUUID())) {
-                if(ClientData.getSelectedAbility() < 0 || ClientData.getSelectedAbility() >= ClientData.getAbilityWheelAbilities().size()) {
+                if(AbilityWheelClientData.getSelectedAbility() < 0 || AbilityWheelClientData.getSelectedAbility() >= AbilityWheelClientData.getAbilityWheelAbilities().size()) {
                     return;
                 }
 
-                String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
+                String abilityId = AbilityWheelClientData.getAbilityWheelAbilities().get(AbilityWheelClientData.getSelectedAbility());
                 String baseId = abilityId.split(":")[0];
                 int subIndex = getIndex(abilityId);
                 if(subIndex > 0) return;
@@ -129,11 +129,11 @@ public class KeyInputHandler {
 
             // if no return was triggered, run the normal code
             if(ClientBeyonderCache.isBeyonder(player.getUUID())) {
-                if(ClientData.getSelectedAbility() < 0 || ClientData.getSelectedAbility() >= ClientData.getAbilityWheelAbilities().size()) {
+                if(AbilityWheelClientData.getSelectedAbility() < 0 || AbilityWheelClientData.getSelectedAbility() >= AbilityWheelClientData.getAbilityWheelAbilities().size()) {
                     return;
                 }
 
-                String abilityId = ClientData.getAbilityWheelAbilities().get(ClientData.getSelectedAbility());
+                String abilityId = AbilityWheelClientData.getAbilityWheelAbilities().get(AbilityWheelClientData.getSelectedAbility());
                 String baseId = abilityId.split(":")[0];
                 int subIndex = getIndex(abilityId);
                 if(subIndex >= 0) return;
@@ -169,8 +169,8 @@ public class KeyInputHandler {
 
         // Use selected shared ability
         if (LOTMCraft.useSharedAbilityKey != null && LOTMCraft.useSharedAbilityKey.consumeClick()) {
-            List<String> sharedWheel = ClientData.getSharedWheelAbilities();
-            int idx = ClientData.getSelectedSharedAbility();
+            List<String> sharedWheel = AbilityWheelClientData.getSharedWheelAbilities();
+            int idx = AbilityWheelClientData.getSelectedSharedAbility();
             if (!sharedWheel.isEmpty() && idx >= 0 && idx < sharedWheel.size()) {
                 PacketHandler.sendToServer(new UseSharedAbilityPacket(sharedWheel.get(idx)));
             }
@@ -180,8 +180,8 @@ public class KeyInputHandler {
         if (LOTMCraft.nextSharedAbilityKey != null && LOTMCraft.nextSharedAbilityKey.consumeClick()) {
             Player player = mc.player;
             if (player != null) {
-                List<String> sharedWheel = ClientData.getSharedWheelAbilities();
-                int idx = ClientData.getSelectedSharedAbility();
+                List<String> sharedWheel = AbilityWheelClientData.getSharedWheelAbilities();
+                int idx = AbilityWheelClientData.getSelectedSharedAbility();
                 if (!sharedWheel.isEmpty() && idx >= 0 && idx < sharedWheel.size()) {
                     Ability sharedAbility = LOTMCraft.abilityHandler.getById(sharedWheel.get(idx));
                     if (sharedAbility instanceof SelectableAbility selectableShared) {
@@ -197,8 +197,8 @@ public class KeyInputHandler {
         if (LOTMCraft.previousSharedAbilityKey != null && LOTMCraft.previousSharedAbilityKey.consumeClick()) {
             Player player = mc.player;
             if (player != null) {
-                List<String> sharedWheel = ClientData.getSharedWheelAbilities();
-                int idx = ClientData.getSelectedSharedAbility();
+                List<String> sharedWheel = AbilityWheelClientData.getSharedWheelAbilities();
+                int idx = AbilityWheelClientData.getSelectedSharedAbility();
                 if (!sharedWheel.isEmpty() && idx >= 0 && idx < sharedWheel.size()) {
                     Ability sharedAbility = LOTMCraft.abilityHandler.getById(sharedWheel.get(idx));
                     if (sharedAbility instanceof SelectableAbility selectableShared) {
@@ -255,6 +255,12 @@ public class KeyInputHandler {
         }
         if(LOTMCraft.nextArtifactAbilityKey != null && LOTMCraft.nextArtifactAbilityKey.consumeClick()) {
             PacketHandler.sendToServer(new NextArtifactAbilityPacket());
+        }
+        if(LOTMCraft.openMarionetteMenuKey != null && LOTMCraft.openMarionetteMenuKey.consumeClick()) {
+            PacketHandler.sendToServer(new RequestOpenMarionetteMenuPacket());
+        }
+        if(LOTMCraft.nextMarionetteKey != null && LOTMCraft.nextMarionetteKey.consumeClick()) {
+            PacketHandler.sendToServer(new NextMarionettePacket());
         }
     }
 
@@ -318,7 +324,7 @@ public class KeyInputHandler {
             return;
         }
 
-        if((number - 1) >= ClientData.getAbilityWheelAbilities().size()) {
+        if((number - 1) >= AbilityWheelClientData.getAbilityWheelAbilities().size()) {
             return;
         }
 
@@ -330,8 +336,8 @@ public class KeyInputHandler {
         }
 
         PacketHandler.sendToServer(new UpdateSelectedAbilityPacket(number - 1));
-        ClientData.setAbilityWheelData(
-                new ArrayList<>(ClientData.getAbilityWheelAbilities()),
+        AbilityWheelClientData.setAbilityWheelData(
+                new ArrayList<>(AbilityWheelClientData.getAbilityWheelAbilities()),
                 number - 1
         );
         PacketHandler.sendToServer(new CloseAbilityWheelPacket());
@@ -347,20 +353,20 @@ public class KeyInputHandler {
             return;
         }
 
-        List<String> sharedAbilities = ClientData.getSharedWheelAbilities();
+        List<String> sharedAbilities = AbilityWheelClientData.getSharedWheelAbilities();
         if (sharedAbilities.isEmpty()) {
             mc.player.displayClientMessage(
                     Component.literal("No abilities have been added to the shared wheel yet.").withStyle(ChatFormatting.YELLOW), true);
             return;
         }
 
-        ClientData.sharedAbilityMode = true;
+        AbilityWheelClientData.sharedAbilityMode = true;
         PacketHandler.sendToServer(new OpenAbilityWheelPacket());
     }
 
     private static void openAbilityWheel() {
         Minecraft mc = Minecraft.getInstance();
-        if (ClientData.getAbilityWheelAbilities().isEmpty()) {
+        if (AbilityWheelClientData.getAbilityWheelAbilities().isEmpty()) {
             mc.player.displayClientMessage(Component.translatable("lotm.ability_wheel.no_abilities"), true);
         } else {
             PacketHandler.sendToServer(new OpenAbilityWheelPacket());

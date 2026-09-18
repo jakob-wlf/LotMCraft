@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -24,15 +25,15 @@ public class ThunderExplosionEffect extends ActiveEffect {
     private final List<LightningChain> lightningChains = new ArrayList<>();
     private final List<EnergyParticle> energyParticles = new ArrayList<>();
 
-    public ThunderExplosionEffect(double x, double y, double z) {
-        super(x, y, z, 60); // 80 ticks = 4 seconds
+    public ThunderExplosionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Initialize lightning chains
+
         for (int i = 0; i < 32; i++) {
             lightningChains.add(new LightningChain());
         }
 
-        // Initialize energy particles
+
         for (int i = 0; i < 100; i++) {
             energyParticles.add(new EnergyParticle());
         }
@@ -44,15 +45,15 @@ public class ThunderExplosionEffect extends ActiveEffect {
         Level level = mc.level;
         if (level == null) return;
 
-        // Update animation state
+
         float progress = getProgress();
         expansionProgress = Mth.clamp(progress * 1.1f, 0f, 1f);
         flashIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.4));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
-        // Render all effect layers
+
         renderMainSphere(poseStack, expansionProgress, flashIntensity);
         renderInnerCore(poseStack, expansionProgress, flashIntensity);
         renderSecondaryShell(poseStack, expansionProgress, flashIntensity);
@@ -77,15 +78,15 @@ public class ThunderExplosionEffect extends ActiveEffect {
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        float radius = 3f + expansion * 20f; // Increased from 2f + 12f
-        int segments = 32; // More segments for smoother look
+        float radius = 3f + expansion * 20f;
+        int segments = 32;
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // 3 solid layers for more opaque purple
+
         for (int layer = 0; layer < 3; layer++) {
             float layerRadius = radius * (1f + layer * 0.08f);
-            float layerAlpha = intensity * (1f - layer * 0.25f) * 0.75f; // Much higher alpha
+            float layerAlpha = intensity * (1f - layer * 0.25f) * 0.75f;
 
             Tesselator tesselator = Tesselator.getInstance();
 
@@ -101,13 +102,13 @@ public class ThunderExplosionEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(layerRadius, theta1, phi);
                     Vec3 v2 = spherePoint(layerRadius, theta2, phi);
 
-                    // Solid deep purple color
+
                     float r = 0.35f + intensity * 0.15f;
                     float g = 0.15f + intensity * 0.2f;
                     float b = 0.85f + intensity * 0.1f;
                     float a = layerAlpha;
 
-                    // Rare electric flashes
+
                     if (random.nextFloat() < 0.03f) {
                         r = 0.65f;
                         g = 0.5f;
@@ -138,8 +139,8 @@ public class ThunderExplosionEffect extends ActiveEffect {
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        float radius = 4f + expansion * 22f; // Increased from 3f + 15f
-        int segments = 24; // More segments
+        float radius = 4f + expansion * 22f;
+        int segments = 24;
 
         Matrix4f matrix = poseStack.last().pose();
         Tesselator tesselator = Tesselator.getInstance();
@@ -156,9 +157,9 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 Vec3 v1 = spherePoint(radius, theta1, phi);
                 Vec3 v2 = spherePoint(radius, theta2, phi);
 
-                float a = intensity * 0.55f * (1f - expansion * 0.5f); // More opaque
+                float a = intensity * 0.55f * (1f - expansion * 0.5f);
 
-                // Solid purple outer shell
+
                 buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.45f, 0.25f, 0.9f, a);
                 buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(0.45f, 0.25f, 0.9f, a);
             }
@@ -181,12 +182,12 @@ public class ThunderExplosionEffect extends ActiveEffect {
         RenderSystem.disableCull();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        float radius = 2f + expansion * 6f; // Increased from 1.2f + 4f
-        float pulseRadius = radius + (float) Math.sin(currentTick * 0.5f) * 0.5f; // Bigger pulse
+        float radius = 2f + expansion * 6f;
+        float pulseRadius = radius + (float) Math.sin(currentTick * 0.5f) * 0.5f;
         Matrix4f matrix = poseStack.last().pose();
 
         Tesselator tesselator = Tesselator.getInstance();
-        int segments = 20; // More segments
+        int segments = 20;
 
         for (int lat = 0; lat < segments; lat++) {
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -200,8 +201,8 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 Vec3 v1 = spherePoint(pulseRadius, theta1, phi);
                 Vec3 v2 = spherePoint(pulseRadius, theta2, phi);
 
-                // Solid purple core
-                float a = intensity * intensity * 0.65f; // More opaque
+
+                float a = intensity * intensity * 0.65f;
                 a = Mth.clamp(a, 0f, 1f);
 
                 buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(0.7f, 0.5f, 0.95f, a);
@@ -224,16 +225,16 @@ public class ThunderExplosionEffect extends ActiveEffect {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = poseStack.last().pose();
-        float radius = 4f + expansion * 22f; // Increased from 3f + 15f
+        float radius = 4f + expansion * 22f;
 
-        // 50 lightning bolts (increased from 40)
+
         for (int i = 0; i < 50; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
             float angle = (float) (i * Math.PI * 2 / 50);
-            float verticalAngle = (float) ((i % 10) * Math.PI / 5 - Math.PI / 2); // More variation
-            float width = 0.15f + intensity * 0.12f; // Slightly thicker
+            float verticalAngle = (float) ((i % 10) * Math.PI / 5 - Math.PI / 2);
+            float width = 0.15f + intensity * 0.12f;
 
             Vec3 start = Vec3.ZERO;
             Vec3 direction = new Vec3(
@@ -260,7 +261,7 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 float alpha1 = intensity * (1f - segProgress * 0.4f) * 0.5f;
                 float alpha2 = intensity * (1f - (segProgress + 1f / segments) * 0.4f) * 0.5f;
 
-                // Deep purple lightning
+
                 float r = 0.5f + random.nextFloat() * 0.2f;
                 float g = 0.3f + random.nextFloat() * 0.2f;
                 float b = 0.95f + random.nextFloat() * 0.05f;
@@ -321,9 +322,9 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 Vec3 dir = next.subtract(current).normalize();
                 Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.12f);
 
-                float alpha = chain.alpha * (1f - (float) i / chain.points.size()) * 0.6f; // Reduced
+                float alpha = chain.alpha * (1f - (float) i / chain.points.size()) * 0.6f;
 
-                // More purple tint
+
                 buffer.addVertex(matrix,
                                 (float)(current.x + perp.x),
                                 (float)(current.y + perp.y),
@@ -366,14 +367,14 @@ public class ThunderExplosionEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Multiple expanding rings
+
         for (int ring = 0; ring < 3; ring++) {
             float ringProgress = expansion - ring * 0.15f;
             if (ringProgress < 0) continue;
 
-            float innerRadius = ringProgress * 24f; // Increased from 16f
-            float outerRadius = innerRadius + 3f; // Thicker rings
-            int segments = 64; // More segments for smoother look
+            float innerRadius = ringProgress * 24f;
+            float outerRadius = innerRadius + 3f;
+            int segments = 64;
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -388,9 +389,9 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 float x2 = cos * outerRadius;
                 float z2 = sin * outerRadius;
 
-                float alpha = intensity * (1f - ringProgress) * 0.6f; // Reduced
+                float alpha = intensity * (1f - ringProgress) * 0.6f;
 
-                // Add purple tint
+
                 buffer.addVertex(matrix, x1, 0.1f, z1).setColor(0.5f, 0.7f, 1f, alpha);
                 buffer.addVertex(matrix, x2, 0.1f, z2).setColor(0.5f, 0.7f, 1f, 0f);
             }
@@ -414,24 +415,24 @@ public class ThunderExplosionEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Radial cracks on the ground - more cracks
-        for (int i = 0; i < 24; i++) { // Increased from 16
+
+        for (int i = 0; i < 24; i++) {
             float angle = (float) (i * Math.PI * 2 / 24);
-            float length = expansion * 18f; // Longer cracks
+            float length = expansion * 18f;
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
             float cos = (float) Math.cos(angle);
             float sin = (float) Math.sin(angle);
-            float width = 0.2f; // Wider cracks
+            float width = 0.2f;
 
             float perpX = -sin * width;
             float perpZ = cos * width;
 
-            float alpha = intensity * 0.5f; // Reduced
+            float alpha = intensity * 0.5f;
 
-            // More purple
+
             buffer.addVertex(matrix, perpX, 0.05f, perpZ).setColor(0.6f, 0.75f, 1f, alpha);
             buffer.addVertex(matrix, -perpX, 0.05f, -perpZ).setColor(0.6f, 0.75f, 1f, alpha);
             buffer.addVertex(matrix, cos * length - perpX, 0.05f, sin * length - perpZ).setColor(0.6f, 0.75f, 1f, 0f);
@@ -454,10 +455,10 @@ public class ThunderExplosionEffect extends ActiveEffect {
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
         Matrix4f matrix = poseStack.last().pose();
-        float radius = 3f + expansion * 16f; // Increased from 2f + 10f
+        float radius = 3f + expansion * 16f;
 
-        // More arcs between points
-        for (int i = 0; i < 32; i++) { // Increased from 24
+
+        for (int i = 0; i < 32; i++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
@@ -484,9 +485,9 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 Vec3 dir = next.subtract(current).normalize();
                 Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.1f);
 
-                float alpha = intensity * 0.6f; // Reduced
+                float alpha = intensity * 0.6f;
 
-                // More purple
+
                 buffer.addVertex(matrix,
                                 (float)(current.x + perp.x),
                                 (float)(current.y + perp.y),
@@ -528,16 +529,16 @@ public class ThunderExplosionEffect extends ActiveEffect {
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        // More rings at different angles
-        for (int ring = 0; ring < 7; ring++) { // Increased from 5
+
+        for (int ring = 0; ring < 7; ring++) {
             poseStack.pushPose();
 
-            float angle = currentTick * 4f + ring * 51.4f; // Adjusted for 7 rings
+            float angle = currentTick * 4f + ring * 51.4f;
             poseStack.mulPose(Axis.YP.rotationDegrees(angle));
             poseStack.mulPose(Axis.XP.rotationDegrees(45f + 25f * ring));
 
-            float radius = 4f + expansion * 12f; // Larger rings
-            int segments = 64; // More segments
+            float radius = 4f + expansion * 12f;
+            int segments = 64;
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
@@ -553,10 +554,10 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 float x = cos * radius;
                 float y = sin * radius;
 
-                float alpha = intensity * 0.55f * (float) Math.sin(t * Math.PI); // More opaque
+                float alpha = intensity * 0.55f * (float) Math.sin(t * Math.PI);
 
-                // Solid purple rings
-                buffer.addVertex(ringMatrix, x, y - 0.2f, 0).setColor(0.55f, 0.35f, 0.95f, alpha); // Thicker
+
+                buffer.addVertex(ringMatrix, x, y - 0.2f, 0).setColor(0.55f, 0.35f, 0.95f, alpha);
                 buffer.addVertex(ringMatrix, x, y + 0.2f, 0).setColor(0.55f, 0.35f, 0.95f, alpha);
             }
 
@@ -587,7 +588,7 @@ public class ThunderExplosionEffect extends ActiveEffect {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            // Billboard quad with more purple
+
             buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y - size), (float)(particle.pos.z - size))
                     .setColor(0.65f, 0.8f, 1f, particle.alpha);
             buffer.addVertex(matrix, (float)(particle.pos.x - size), (float)(particle.pos.y + size), (float)(particle.pos.z + size))
@@ -614,11 +615,11 @@ public class ThunderExplosionEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Pulsing purple energy waves - solid and vibrant
-        for (int wave = 0; wave < 5; wave++) { // More waves
+
+        for (int wave = 0; wave < 5; wave++) {
             float waveProgress = (expansion + wave * 0.18f) % 1f;
-            float radius = 3f + waveProgress * 18f; // Larger waves
-            int segments = 40; // More segments
+            float radius = 3f + waveProgress * 18f;
+            int segments = 40;
 
             Tesselator tesselator = Tesselator.getInstance();
 
@@ -634,11 +635,11 @@ public class ThunderExplosionEffect extends ActiveEffect {
                     Vec3 v1 = spherePoint(radius, theta1, phi);
                     Vec3 v2 = spherePoint(radius, theta2, phi);
 
-                    // Deep vibrant purple - more opaque
+
                     float r = 0.75f;
                     float g = 0.2f + waveProgress * 0.15f;
                     float b = 0.95f;
-                    float a = intensity * (1f - waveProgress) * 0.6f; // More opaque
+                    float a = intensity * (1f - waveProgress) * 0.6f;
 
                     buffer.addVertex(matrix, (float) v1.x, (float) v1.y, (float) v1.z).setColor(r, g, b, a);
                     buffer.addVertex(matrix, (float) v2.x, (float) v2.y, (float) v2.z).setColor(r, g, b, a);
@@ -662,13 +663,13 @@ public class ThunderExplosionEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Spiraling energy streams
-        for (int spiral = 0; spiral < 8; spiral++) { // More spirals
+
+        for (int spiral = 0; spiral < 8; spiral++) {
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
-            float startAngle = spiral * 45f; // Adjusted for 8 spirals
-            int points = 80; // More points for longer spirals
+            float startAngle = spiral * 45f;
+            int points = 80;
 
             for (int i = 0; i < points - 1; i++) {
                 float t = (float) i / points;
@@ -677,9 +678,9 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 float angle1 = (float) Math.toRadians(startAngle + t * 720f + currentTick * 8f);
                 float angle2 = (float) Math.toRadians(startAngle + nextT * 720f + currentTick * 8f);
 
-                float radius1 = (0.8f + t * expansion * 15f); // Larger spiral radius
+                float radius1 = (0.8f + t * expansion * 15f);
                 float radius2 = (0.8f + nextT * expansion * 15f);
-                float height1 = (t - 0.5f) * expansion * 12f; // Taller spirals
+                float height1 = (t - 0.5f) * expansion * 12f;
                 float height2 = (nextT - 0.5f) * expansion * 12f;
 
                 Vec3 pos1 = new Vec3(
@@ -695,11 +696,11 @@ public class ThunderExplosionEffect extends ActiveEffect {
                 );
 
                 Vec3 dir = pos2.subtract(pos1).normalize();
-                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.18f); // Thicker spirals
+                Vec3 perp = new Vec3(-dir.z, 0, dir.x).normalize().scale(0.18f);
 
-                float alpha = intensity * (1f - t * 0.5f) * 0.6f; // Reduced
+                float alpha = intensity * (1f - t * 0.5f) * 0.6f;
 
-                // More purple in spirals
+
                 buffer.addVertex(matrix,
                                 (float)(pos1.x + perp.x),
                                 (float)(pos1.y + perp.y),
@@ -743,10 +744,10 @@ public class ThunderExplosionEffect extends ActiveEffect {
 
         Matrix4f matrix = poseStack.last().pose();
 
-        // Corona flares radiating outward
-        for (int i = 0; i < 48; i++) { // More corona flares
+
+        for (int i = 0; i < 48; i++) {
             float angle = (float) (i * Math.PI * 2 / 48);
-            float length = (3f + expansion * 14f) * (1f + (float) Math.sin(currentTick * 0.3f + i) * 0.4f); // Longer flares
+            float length = (3f + expansion * 14f) * (1f + (float) Math.sin(currentTick * 0.3f + i) * 0.4f);
 
             Tesselator tesselator = Tesselator.getInstance();
             BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -754,16 +755,16 @@ public class ThunderExplosionEffect extends ActiveEffect {
             float cos = (float) Math.cos(angle);
             float sin = (float) Math.sin(angle);
 
-            float width = 0.28f * intensity; // Wider corona
+            float width = 0.28f * intensity;
             float perpX = -sin * width;
             float perpZ = cos * width;
 
-            float startDist = 1.5f; // Start further out
+            float startDist = 1.5f;
 
             float alpha1 = intensity * 0.5f;
             float alpha2 = 0f;
 
-            // Purple corona
+
             buffer.addVertex(matrix, cos * startDist + perpX, 0, sin * startDist + perpZ)
                     .setColor(0.75f, 0.5f, 1f, alpha1);
             buffer.addVertex(matrix, cos * startDist - perpX, 0, sin * startDist - perpZ)
@@ -788,7 +789,7 @@ public class ThunderExplosionEffect extends ActiveEffect {
         return new Vec3(x, y, z);
     }
 
-    // Helper classes for animated elements
+
     private class LightningChain {
         List<Vec3> points = new ArrayList<>();
         float alpha = 0f;
@@ -884,7 +885,7 @@ public class ThunderExplosionEffect extends ActiveEffect {
             pos = pos.add(velocity.scale(expansion * 0.5));
             velocity = velocity.add(pos.normalize().scale(-0.02));
 
-            alpha = intensity * (float) Math.sin(progress * Math.PI) * 0.6f; // Reduced from 0.8
+            alpha = intensity * (float) Math.sin(progress * Math.PI) * 0.6f;
         }
     }
 }

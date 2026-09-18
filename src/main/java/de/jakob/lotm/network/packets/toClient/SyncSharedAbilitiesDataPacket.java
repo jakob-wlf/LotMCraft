@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -89,21 +89,21 @@ public record SyncSharedAbilitiesDataPacket(
             ClientTeamData.update(packet);
             if (packet.leaderUUID().isEmpty()) {
                 // No team — clear the shared wheel entirely
-                ClientData.setSharedWheelAbilities(new java.util.ArrayList<>());
-                ClientData.setSelectedSharedAbility(0);
+                AbilityWheelClientData.setSharedWheelAbilities(new java.util.ArrayList<>());
+                AbilityWheelClientData.setSelectedSharedAbility(0);
             } else {
                 // Team updated — prune wheel entries that are no longer in the pool
                 java.util.Set<String> pooled = new java.util.HashSet<>();
                 for (java.util.List<String> contributions : packet.contributions().values()) {
                     pooled.addAll(contributions);
                 }
-                java.util.List<String> pruned = new java.util.ArrayList<>(ClientData.getSharedWheelAbilities());
+                java.util.List<String> pruned = new java.util.ArrayList<>(AbilityWheelClientData.getSharedWheelAbilities());
                 pruned.removeIf(id -> !pooled.contains(id));
-                ClientData.setSharedWheelAbilities(pruned);
+                AbilityWheelClientData.setSharedWheelAbilities(pruned);
                 // Clamp selected index so the HUD doesn't go out of bounds
-                int sel = ClientData.getSelectedSharedAbility();
+                int sel = AbilityWheelClientData.getSelectedSharedAbility();
                 if (sel >= pruned.size()) {
-                    ClientData.setSelectedSharedAbility(Math.max(0, pruned.size() - 1));
+                    AbilityWheelClientData.setSelectedSharedAbility(Math.max(0, pruned.size() - 1));
                 }
             }
         });

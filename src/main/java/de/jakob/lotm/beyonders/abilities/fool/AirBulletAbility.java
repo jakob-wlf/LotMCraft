@@ -41,7 +41,7 @@ public class AirBulletAbility extends Ability {
             return;
         float multiplier = multiplier(entity);
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10*(int) multiplier, 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (20 * multiplier), 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 

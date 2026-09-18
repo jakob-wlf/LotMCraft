@@ -3,7 +3,6 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
@@ -32,8 +31,8 @@ public class BanishEffect extends ActiveEffect {
     private static final float START_RADIUS = 10.0f;
     private static final float END_RADIUS = 0.5f;
 
-    public BanishEffect(double x, double y, double z) {
-        super(x, y, z, 30);
+    public BanishEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         rings[0] = new BanishRing(1.4f,  0.09f,  0.062f,  0.034f);
         rings[1] = new BanishRing(1.0f, -0.064f,  0.048f, -0.022f);

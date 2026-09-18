@@ -103,7 +103,7 @@ public class PoisonousFlameAbility extends Ability {
         AbilityUtil.damageNearbyEntities(
                 (ServerLevel) level,
                 entity,
-                2.75* (int) multiplier(entity),
+                2.75* multiplier(entity),
                 DamageLookup.lookupDamage(8, .9) *
                         multiplier(entity),
                 startPos,

@@ -8,12 +8,14 @@ import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.Gathering.GatheringMenu;
 import de.jakob.lotm.gui.custom.HonorificNames.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.Introspect.IntrospectMenu;
+import de.jakob.lotm.gui.custom.Marionettes.MarionetteMenu;
+import de.jakob.lotm.gui.custom.MassPuppeteering.MassPuppeteeringMenu;
 import de.jakob.lotm.gui.custom.Recipe.RecipeMenu;
-import de.jakob.lotm.gui.custom.RiverAuthority.RiverAuthorityMenu;
-import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingMenu;
-import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
-import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
+import de.jakob.lotm.gui.custom.RitualisticTable.RitualMenu;
+import de.jakob.lotm.gui.custom.Sefirah.SefirahMenu;
 import de.jakob.lotm.gui.custom.Trades.BeyonderTradeMenu;
+import de.jakob.lotm.gui.custom.HistoricalVoid.HistoricalVoidMenu;
+import de.jakob.lotm.gui.custom.FlamingJump.FlamingJumpMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
@@ -30,6 +32,10 @@ public class ModMenuTypes {
             MENU_TYPES.register("introspect_menu", () ->
                     IMenuTypeExtension.create(IntrospectMenu::new));
 
+    public static final DeferredHolder<MenuType<?>, MenuType<MarionetteMenu>> MARIONETTE_MENU =
+            MENU_TYPES.register("marionette_menu", () ->
+                    IMenuTypeExtension.create(MarionetteMenu::new));
+
     public static final DeferredHolder<MenuType<?>, MenuType<BeyonderTradeMenu>> BEYONDER_TRADE_MENU = MENU_TYPES.register(
             "beyonder_trade_menu",
             () -> IMenuTypeExtension.create((windowId, inv, data) -> {
@@ -37,6 +43,14 @@ public class ModMenuTypes {
                 return new BeyonderTradeMenu(windowId, inv, npcEntityId);
             })
     );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RitualMenu>> RITUAL_MENU =
+            MENU_TYPES.register("ritual_menu", () ->
+                    IMenuTypeExtension.create(RitualMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<SefirahMenu>> SEFIRAH_MENU =
+            MENU_TYPES.register("sefirah_menu", () ->
+                    IMenuTypeExtension.create(SefirahMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeMenu>> RECIPE_MENU =
             MENU_TYPES.register("recipe_menu", () ->
@@ -58,6 +72,18 @@ public class ModMenuTypes {
             "ability_wheel_menu",
             () -> new MenuType<>(AbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
     );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<HistoricalVoidMenu>> HISTORICAL_VOID_MENU =
+            MENU_TYPES.register("historical_void_menu",
+                    () -> IMenuTypeExtension.create((containerId, inv, buf) -> new HistoricalVoidMenu(containerId, inv)));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FlamingJumpMenu>> FLAMING_JUMP_MENU =
+            MENU_TYPES.register("flaming_jump_menu", () ->
+                    IMenuTypeExtension.create(FlamingJumpMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<MassPuppeteeringMenu>> MASS_PUPPETEERING_MENU =
+            MENU_TYPES.register("mass_puppeteering_menu", () ->
+                    IMenuTypeExtension.create(MassPuppeteeringMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(
             "artifact_wheel_menu",

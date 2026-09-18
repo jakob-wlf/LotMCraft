@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Axis;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -25,9 +26,8 @@ public class FoolingEffect extends ActiveEffect {
     private final List<FloatingParticle> floatingParticles = new ArrayList<>();
     private final List<PulseWave> pulseWaves = new ArrayList<>();
 
-    public FoolingEffect(double x, double y, double z) {
-        super(x, y, z, 40);
-
+    public FoolingEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         for (int i = 0; i < 40; i++) {
             energyChains.add(new EnergyChain());
         }
@@ -52,7 +52,7 @@ public class FoolingEffect extends ActiveEffect {
         fadeIntensity = (float) Math.max(0f, 1f - Math.pow(progress, 0.35));
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         renderInnerSphere(poseStack, expansionProgress, fadeIntensity);
         renderOuterSphere(poseStack, expansionProgress, fadeIntensity);

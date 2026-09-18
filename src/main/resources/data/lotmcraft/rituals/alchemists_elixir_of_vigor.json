@@ -1,0 +1,30 @@
+{
+  "id": "lotm:alchemists_elixir_of_vigor",
+  "discovered_from": "lotm:alchemical_compendium",
+  "candle": "minecraft:lime_candle",
+  "sacrifices": [
+    { "item": "minecraft:redstone", "count": 3 },
+    { "item": "minecraft:glass_bottle", "count": 2 },
+    { "item": "minecraft:nether_wart", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Brewer of potions that blur the line of life and death",
+      "Hand that measures ruin and remedy in equal parts",
+      "Distill your vigor into my failing body."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.6, "g": 0.9, "b": 0.2 },
+  "book_color": "LIME",
+  "duration_ticks": 250,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:regeneration", "duration_ticks": 150, "amplifier": 0, "target": "self", "max_distance": -1 },
+        { "id": "minecraft:haste", "duration_ticks": 2400, "amplifier": 0, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

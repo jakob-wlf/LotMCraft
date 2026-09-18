@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsDoorAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsDoorAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDoorAbility(String id) {
+        super(id);
     }
 
     @Override

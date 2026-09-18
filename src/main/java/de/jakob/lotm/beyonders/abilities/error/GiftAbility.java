@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.LuckManager;
@@ -177,7 +178,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
+        EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         int giftedLuck = LuckManager.getLuck(entity);
         if (giftedLuck < 0) {
@@ -218,7 +219,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
+        EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         float base = 0.25f;
         float actual = BeyonderData.getDigestionProgress(player) - base < 0 ? (base + (BeyonderData.getDigestionProgress(player) - base)) : base;
@@ -250,7 +251,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
+        EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         target.setHealth(target.getHealth() + healthToGift);
         entity.setHealth(currentHealth - healthToGift);
@@ -285,7 +286,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
+        EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         MundaneConceptualTheft.stolenDistanceMap.put(entity.getUUID(), storedDistance - distance);
 
@@ -335,7 +336,7 @@ public class GiftAbility extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
+        EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         if(!isItemWithEffect(offHandItem)) {
             var capability = target.getCapability(Capabilities.ItemHandler.ENTITY);

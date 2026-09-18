@@ -9,8 +9,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsSunAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsSunAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsSunAbility(String id) {
+        super(id);
     }
 
     @Override

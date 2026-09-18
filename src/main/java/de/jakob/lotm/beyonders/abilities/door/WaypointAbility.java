@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.WaypointComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenWaypointSelectionScreenPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -79,6 +80,6 @@ public class WaypointAbility extends SelectableAbility {
         waypointComponent.createWaypoint(entity.getX(), entity.getY(), entity.getZ(), serverLevel);
 
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.waypoint.created").withColor(0x91f6ff));
-        EffectManager.playEffect(EffectManager.Effect.WAYPOINT, entity.getX(), entity.getY() + 1, entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.WAYPOINT, entity.getX(), entity.getY() + 1, entity.getZ(), serverLevel);
     }
 }

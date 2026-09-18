@@ -2,7 +2,7 @@ package de.jakob.lotm.beyonders.abilities.demoness.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class BloodLossAbility extends PassiveAbilityItem {
-    public BloodLossAbility(Properties properties) {
-        super(properties);
+public class BloodLossAbility extends PassiveAbility {
+    public BloodLossAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class BloodLossAbility extends PassiveAbilityItem {
             return;
         }
 
-        if(!((BloodLossAbility) PassiveAbilityHandler.BLOOD_LOSS.get()).shouldApplyTo(entity)) {
+        if(!PassiveAbilityHandler.getById("blood_loss_ability").shouldApplyTo(entity)) {
             return;
         }
 

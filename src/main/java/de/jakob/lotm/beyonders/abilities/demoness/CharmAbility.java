@@ -12,7 +12,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;

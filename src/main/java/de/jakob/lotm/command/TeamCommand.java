@@ -2,9 +2,9 @@ package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
 import de.jakob.lotm.util.helper.TeamUtils;
@@ -125,7 +125,7 @@ public class TeamCommand {
         }
 
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
-        
+
         int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
                 .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
                 .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)

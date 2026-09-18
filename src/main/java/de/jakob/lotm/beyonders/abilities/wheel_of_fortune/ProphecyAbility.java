@@ -15,6 +15,7 @@ import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.beyonders.sefirah.SefrotConvergenceHandler;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.LuckManager;
@@ -351,7 +352,6 @@ public class ProphecyAbility extends ToggleAbility {
             if (amount < requiredLuck) {
                 return new TargetProphecy(target, 0, EffectTier.HIGH, requiredLuck, false, false);
             }
-
             float successChance;
             if (sefirotOwner && higherSequence) {
                 successChance = 0.05f;

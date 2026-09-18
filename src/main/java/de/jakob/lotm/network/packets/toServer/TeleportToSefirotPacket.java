@@ -27,7 +27,6 @@ public record TeleportToSefirotPacket() implements CustomPacketPayload {
     }
 
 
-    // TODO: Claiming here is temporary, add proper ritual for claiming
     public static void handle(TeleportToSefirotPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isServer() && context.player() instanceof ServerPlayer serverPlayer) {
@@ -50,6 +49,7 @@ public record TeleportToSefirotPacket() implements CustomPacketPayload {
                 }
 
                 SefirahHandler.teleportToSefirot(serverPlayer, true);
+                SefirahHandler.handleSefirotKey(serverPlayer);
             }
         });
     }

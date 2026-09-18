@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -33,7 +33,7 @@ public record SyncCopiedAbilitiesPacket(List<String> abilityIds, List<String> co
 
     public static void handle(SyncCopiedAbilitiesPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            ClientData.setCopiedAbilityData(
+            AbilityWheelClientData.setCopiedAbilityData(
                     new ArrayList<>(packet.abilityIds()),
                     new ArrayList<>(packet.copyTypes()),
                     new ArrayList<>(packet.remainingUses())
