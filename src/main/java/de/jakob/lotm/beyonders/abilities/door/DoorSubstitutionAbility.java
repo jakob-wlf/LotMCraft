@@ -64,9 +64,6 @@ public class DoorSubstitutionAbility extends Ability {
             return;
         }
 
-        if(figurineNumbers.containsKey(entity.getUUID()) && figurineNumbers.get(entity.getUUID()) >= 5)
-            return;
-
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         if(!figurineNumbers.containsKey(entity.getUUID())) {
@@ -153,5 +150,9 @@ public class DoorSubstitutionAbility extends Ability {
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ARMOR_STAND_HIT, SoundSource.BLOCKS, 3, 1);
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .6f, 1);
 
+    }
+
+    public static void setFigurineNumber(UUID uuid, int number) {
+        figurineNumbers.put(uuid, number);
     }
 }

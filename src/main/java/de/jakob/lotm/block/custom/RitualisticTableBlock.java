@@ -41,12 +41,8 @@ public class RitualisticTableBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
 
     private static final List<BlockPos> OCCUPIED_OFFSETS_NORTH = List.of(
-            new BlockPos(-1, 0, 0),
-            new BlockPos(1, 0, 0),
-            new BlockPos(-1, 0, 1),
-            new BlockPos(0, 0, 1),
-            new BlockPos(1, 0, 1)
-            // NOTE: (0,0,0) is the anchor/main block itself - don't include it here.
+            new BlockPos(-1, 0, 0), // Spawns 1 block to the left
+            new BlockPos(1, 0, 0)   // Spawns 1 block to the right
     );
 
     public RitualisticTableBlock(Properties properties) {
@@ -66,7 +62,7 @@ public class RitualisticTableBlock extends BaseEntityBlock {
         }
 
         if(!be.itemHandler.getStackInSlot(RitualMenu.CANDLE_SLOT).isEmpty()) {
-             return 12;
+            return 12;
         }
         return 5;
     }

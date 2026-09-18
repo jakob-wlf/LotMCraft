@@ -17,6 +17,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -91,7 +92,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override
@@ -484,7 +484,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 boolean hasWorm = false;
 
                 if (beyonderAttachment.contains("pathway")) {
-                    pathway = BeyonderData.pathwayInfos.get(beyonderAttachment.getString("pathway")).getSequenceName(9);
+                    if (BeyonderData.pathwayInfos.containsKey(beyonderAttachment.getString("pathway"))) {
+                        pathway = BeyonderData.pathwayInfos.get(beyonderAttachment.getString("pathway")).getSequenceName(9);
+                    } else {
+                        pathway = "None Beyonder";
+                    }
                 }
 
                 if (beyonderAttachment.contains("sequence")) {
@@ -814,30 +818,20 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private void markEntity(ServerLevel level, ServerPlayer player) {
-        // Find nearby entities
-        AABB searchBox = player.getBoundingBox().inflate(10);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, searchBox,
-                e -> e != player && e.isAlive());
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true, true);
 
-        if(nearbyEntities.isEmpty()) {
+        if(target == null){
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.no_nearby_entities").withStyle(ChatFormatting.RED));
             return;
         }
 
-        // Get closest entity
-        LivingEntity closest = nearbyEntities.stream()
-                .min(Comparator.comparingDouble(e -> e.distanceToSqr(player)))
-                .orElse(null);
-
-        if(closest == null) return;
-
         // Save entity data
         CompoundTag entityData = new CompoundTag();
-        entityData.putString("EntityType", EntityType.getKey(closest.getType()).toString());
-        entityData.putString("CustomName", closest.hasCustomName() ? closest.getCustomName().getString() : closest.getName().getString());
+        entityData.putString("EntityType", EntityType.getKey(target.getType()).toString());
+        entityData.putString("CustomName", target.hasCustomName() ? target.getCustomName().getString() : target.getName().getString());
 
         CompoundTag entityNBT = new CompoundTag();
-        closest.saveWithoutId(entityNBT);
+        target.saveWithoutId(entityNBT);
         entityData.put("EntityNBT", entityNBT);
 
         String entityTypeId = entityData.getString("EntityType");
@@ -849,7 +843,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         }
 
         // Special handling for BeyonderNPCEntity
-        if(closest instanceof BeyonderNPCEntity beyonderNPC) {
+        if(target instanceof BeyonderNPCEntity beyonderNPC) {
             entityData.putBoolean("IsBeyonderNPC", true);
             entityData.putString("BeyonderSkin", beyonderNPC.getSkinName());
             entityData.putBoolean("BeyonderHostile", beyonderNPC.isHostile());
@@ -859,7 +853,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         addMarkedEntity(player, entityData);
 
-        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.marked_entity", closest.getName().getString()).withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.marked_entity", target.getName().getString()).withStyle(ChatFormatting.GREEN));
     }
 
 

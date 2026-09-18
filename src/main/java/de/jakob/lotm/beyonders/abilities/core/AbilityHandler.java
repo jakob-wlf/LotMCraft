@@ -181,7 +181,7 @@ public class AbilityHandler {
         abilities.add(new CharmAbility("charm_ability"));
         abilities.add(new DiseaseAbility("disease_ability"));
         abilities.add(new PlagueAbility("plague_ability"));
-        //abilities.add(new MirrorWorldTraversalAbility("mirror_world_traversal_ability"));
+        abilities.add(new MirrorWorldTraversalAbility("mirror_world_traversal_ability"));
         abilities.add(new CurseAbility("curse_ability"));
         abilities.add(new PetrificationAbility("petrification_ability"));
         abilities.add(new DisasterManifestationAbility("disaster_manifestation_ability"));

@@ -44,7 +44,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.UNIQUENESS_MAP);
                         output.accept(ModItems.CITY_MAP);
                         output.accept(ModBlocks.RITUALISTIC_TABLE);
-//                        output.accept(ModItems.MYSTERIOUS_SILVER_PLATE);
+                        output.accept(ModItems.MYSTERIOUS_SILVER_PLATE);
                     })
                     .build());
 

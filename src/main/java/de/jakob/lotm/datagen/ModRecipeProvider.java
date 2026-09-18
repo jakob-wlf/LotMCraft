@@ -77,14 +77,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
 
-//        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUALISTIC_TABLE.asItem())
-//                .pattern("   ")
-//                .pattern("GCG")
-//                .pattern("W W")
-//                .define('G', Items.GOLD_INGOT)
-//                .define('C', Items.PURPLE_CARPET)
-//                .define('W', Ingredient.of(ItemTags.PLANKS))
-//                .unlockedBy("has_planks", has(ItemTags.PLANKS))
-//                .save(recipeOutput);
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUALISTIC_TABLE.asItem())
+                .pattern("   ")
+                .pattern("GCG")
+                .pattern("W W")
+                .define('G', Items.GOLD_INGOT)
+                .define('C', Items.PURPLE_CARPET)
+                .define('W', Ingredient.of(ItemTags.PLANKS))
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
+                .save(recipeOutput);
     }
 }

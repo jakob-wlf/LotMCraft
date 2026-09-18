@@ -170,6 +170,13 @@ public class PlayerEvents {
 
     }
 
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            AllyUtil.syncAllyData(serverPlayer);
+        }
+    }
+
     private static final Random random = new Random();
 
     private static final DustParticleOptions dust = new DustParticleOptions(

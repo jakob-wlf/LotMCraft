@@ -10,13 +10,13 @@ import java.util.List;
 @Mixin(ClientSuggestionProvider.class)
 public class ClientSuggestionProviderMixin {
 
-    @Overwrite
-    public Collection<String> getOnlinePlayerNames() {
-        return List.of();
-    }
-
-    @Overwrite
-    public Collection<String> getSelectedEntities() {
-        return List.of();
-    }
+//    @Overwrite
+//    public Collection<String> getOnlinePlayerNames() {
+//        return List.of();
+//    }
+//
+//    @Overwrite
+//    public Collection<String> getSelectedEntities() {
+//        return List.of();
+//    }
 }
