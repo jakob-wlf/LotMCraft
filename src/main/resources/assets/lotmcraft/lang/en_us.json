@@ -2497,9 +2497,7 @@
   "ritual.lotmcraft.general_description": "This seems to be a description of Ritualistic Magic pointed towards a specific entity",
   "block.lotmcraft.sefirah_block": "Sephirot",
   "block.lotmcraft.breeding_block": "Breeding Block",
-  "lotm.marionette.cycle_hint": "Press %s to cycle marionettes"
-  "lotmcraft.honorific_praying_use_skill_desc": "Will use one of your abilities for/against the prayer"
-,
+  "lotm.marionette.cycle_hint": "Press %s to cycle marionettes",
 
   "item.lotmcraft.garbage": "Garbage",
   "item.lotmcraft.characteristics_exchange_tablet": "Characteristics Exchange Tablet",
