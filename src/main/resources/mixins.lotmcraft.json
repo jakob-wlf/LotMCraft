@@ -6,8 +6,7 @@
     "ContainerCraftingListenerMixin",
     "EntityAccessor",
     "EntityTeamColorMixin",
-    "MixinIngredient",
-    "ServerGamePacketListenerImplMixin"
+    "MixinIngredient"
   ],
   "injectors": {
     "defaultRequire": 1
