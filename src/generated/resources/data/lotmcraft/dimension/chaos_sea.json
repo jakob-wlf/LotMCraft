@@ -1,7 +1,7 @@
 {
   "type": "lotmcraft:chaos_sea",
   "generator": {
-    "type": "lotmcraft:pregenerated",
+    "type": "lotmcraft:chaos_sea",
     "region_path": "data/lotmcraft/dimension_data/chaos_sea/",
     "biome_source": {
       "type": "minecraft:fixed",

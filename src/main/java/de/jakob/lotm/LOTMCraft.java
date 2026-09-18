@@ -235,6 +235,7 @@ public class LOTMCraft
         ModAttachments.register(modEventBus);
         ModDimensions.register(modEventBus);
         ModGameRules.register();
+        PassiveAbilityHandler.registerPassiveAbility();
 
         PotionItemHandler.registerPotions(modEventBus);
 
