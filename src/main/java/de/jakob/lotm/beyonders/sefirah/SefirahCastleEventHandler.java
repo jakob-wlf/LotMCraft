@@ -135,6 +135,7 @@ public class SefirahCastleEventHandler {
 
         EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
         return false;
+        }
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {

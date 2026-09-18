@@ -286,7 +286,7 @@ public class PuppeteeringAbility extends SelectableAbility {
                     return;
                 }
             }
-            }
+
 
             double currentTick = elapsedTicks.addAndGet(1.0);
             float progress = (float) currentTick / time;
@@ -346,7 +346,7 @@ public class PuppeteeringAbility extends SelectableAbility {
             } else {
                 entitiesBeingManipulated.remove(entity.getUUID());
             }
-            }
+
             if (entity instanceof ServerPlayer serverPlayer) {
                 EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), level, serverPlayer, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
             }

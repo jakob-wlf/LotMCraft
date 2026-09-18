@@ -108,8 +108,6 @@ public class AbilityWheelHelper {
                 component.getAbilities().remove(raw);
             }
         }
-            }
-        }
         int selected = component.getSelectedAbility();
         if (selected >= component.getAbilities().size()) {
             component.setSelectedAbility(Math.max(0, component.getAbilities().size() - 1));
