@@ -345,7 +345,15 @@ public class FactionCommand {
                     StringBuilder builder = new StringBuilder("Claimed by:\n");
 
                     for (var faction : result) {
-                        builder.append(faction.getShortInfo()).append("\n--------\n");
+                        builder.append(faction.getShortInfo()).append("\n");
+
+                        int warType = BeyonderData.factionStorage.isAtWar(player.getName().getString(), pos);
+                        if (warType != 0) {
+                            int progress = faction.getWarProgress(pos);
+                            builder.append("At war! Progress: ").append(progress).append("%\n");
+                        }
+
+                        builder.append("--------\n");
                     }
 
                     source.sendSystemMessage(Component.literal(

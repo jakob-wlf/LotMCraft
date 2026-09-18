@@ -31,6 +31,7 @@ public class FactionCore {
     private List<WarInfo> atWar;
     private int totalWins;
     private int totalWinsAggressor;
+    private Map<ChunkPos, Integer> warProgress;
 
     private List<Integer> defeatedLevels;
 
@@ -54,6 +55,7 @@ public class FactionCore {
         atWar = new LinkedList<>();
         totalWins = 0;
         totalWinsAggressor = 0;
+        warProgress = new HashMap<>();
 
         defeatedLevels = new LinkedList<>();
     }
@@ -186,6 +188,18 @@ public class FactionCore {
 
     public boolean isCitizen(String name){
         return citizens.contains(name);
+    }
+
+    public int getWarProgress(ChunkPos pos) {
+        return warProgress.getOrDefault(pos, 0);
+    }
+
+    public void setWarProgress(ChunkPos pos, int progress) {
+        warProgress.put(pos, progress);
+    }
+
+    public void removeWarProgress(ChunkPos pos) {
+        warProgress.remove(pos);
     }
 
     public void setCreatedBy(String name) {createdBy = name;}
@@ -552,6 +566,16 @@ public class FactionCore {
 
         tag.putString("created_by", createdBy);
 
+        ListTag warProgressList = new ListTag();
+        for (var entry : warProgress.entrySet()) {
+            CompoundTag obj = new CompoundTag();
+            obj.putInt("x", entry.getKey().x);
+            obj.putInt("z", entry.getKey().z);
+            obj.putInt("progress", entry.getValue());
+            warProgressList.add(obj);
+        }
+        tag.put("war_progress", warProgressList);
+
         return tag;
     }
 
@@ -620,6 +644,15 @@ public class FactionCore {
         }
 
         faction.createdBy = tag.getString("created_by");
+
+        ListTag warProgressList = tag.getList("war_progress", Tag.TAG_COMPOUND);
+        for (Tag t : warProgressList) {
+            CompoundTag obj = (CompoundTag) t;
+            int chunkX = obj.getInt("x");
+            int chunkZ = obj.getInt("z");
+            int progress = obj.getInt("progress");
+            faction.warProgress.put(new ChunkPos(chunkX , chunkZ ), progress);
+        }
 
         return faction;
     }
