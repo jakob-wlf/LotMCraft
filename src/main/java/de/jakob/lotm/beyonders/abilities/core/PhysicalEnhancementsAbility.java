@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.effect.ModEffects;
@@ -138,9 +139,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
             if(dataOp.isPresent()) {
                 var data = dataOp.get();
 
-                ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
+                EntityControllingComponent controllingData = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
                 List<Characteristic> charList = data.chars();
-                if (!charList.isEmpty() && controllingData.getTargetUUID() == null && !controllingData.isControlling()) {
+                if (!charList.isEmpty() && !controllingData.isControlling()) {
 
                     if (sequenceLevel < 9) {
                         currentEnhancements = currentEnhancements.stream()

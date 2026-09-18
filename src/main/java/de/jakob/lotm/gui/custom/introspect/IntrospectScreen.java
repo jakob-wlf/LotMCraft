@@ -2,7 +2,7 @@ package de.jakob.lotm.gui.custom.introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
@@ -19,7 +19,6 @@ import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.BlessingManager;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.data.ClientQuestData;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.data.ClientUniquenessCache;
@@ -208,7 +207,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
+            EntityControllingComponent controllingDataComponent = minecraft.player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
             if (controllingDataComponent.isControlling()) {
                 ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
                 availableAbilities.addAll(controllerPathwayAbilities);
@@ -253,7 +252,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         // Add sefirot authority unlocked cross-path abilities
-        for (String sefirotId : de.jakob.lotm.util.data.ClientData.getSefirotUnlockedAbilityIds()) {
+        for (String sefirotId : AbilityWheelClientData.getSefirotUnlockedAbilityIds()) {
             Ability sefirotAbility = LOTMCraft.abilityHandler.getById(sefirotId);
             if (sefirotAbility != null) {
                 availableAbilities.add(sefirotAbility);
@@ -261,7 +260,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
 
         // Add the sefirot_authority_ability itself when the player owns a sefirot
-        if (de.jakob.lotm.util.data.ClientData.isOwningSefirot()) {
+        if (AbilityWheelClientData.isOwningSefirot()) {
             Ability sefirotAuth = LOTMCraft.abilityHandler.getById("sefirot_authority_ability");
             if (sefirotAuth != null) availableAbilities.add(sefirotAuth);
         }
@@ -279,7 +278,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         availableAbilities.addAll(unique);
 
         availableAbilities.removeIf(Ability::getShouldBeHidden);
-        if (de.jakob.lotm.util.data.ClientData.isOwningSefirot()) {
+        if (AbilityWheelClientData.isOwningSefirot()) {
             availableAbilities.removeIf(ability -> ability.getId().equals("sefrot_invasion_ability"));
         }
 
@@ -454,7 +453,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (ownSeq != 0) return false;
 
         // 2. Must have one seq-1 characteristic from every other pathway in the sefirot domain
-        String sefirot = ClientData.getClaimedSefirot();
+        String sefirot = AbilityWheelClientData.getClaimedSefirot();
         java.util.List<String> neighbors = de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager.neighboringPaths
                 .getOrDefault(sefirot, java.util.Collections.emptyList());
         for (String neighborPath : neighbors) {
@@ -662,7 +661,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         // Add "Transcend Sequence" button at the bottom of the GUI spanning its full width
         if (menu.getSequence() == 0
-                && ClientData.isOwningSefirot()
+                && AbilityWheelClientData.isOwningSefirot()
                 && GOO_ELIGIBLE_PATHWAYS.contains(menu.getPathway())) {
 
             boolean canTranscend = clientMeetsTranscendConditions();
@@ -1687,7 +1686,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         Component label = Component.literal("Your Anchors").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, label, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
 
-        Map<UUID, Float> anchors = ClientData.getAnchors();
+        Map<UUID, Float> anchors = AbilityWheelClientData.getAnchors();
         if (anchors.isEmpty()) {
             guiGraphics.drawString(this.font, "No anchors yet.", panelX + 5, panelY + 20, 0xFFAAAAAA, false);
             return;
@@ -2236,7 +2235,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            Map<UUID, Float> anchors = ClientData.getAnchors();
+            Map<UUID, Float> anchors = AbilityWheelClientData.getAnchors();
             List<Map.Entry<UUID, Float>> anchorList = new ArrayList<>(anchors.entrySet());
             int listY = panelY + 20;
             int lineHeight = this.font.lineHeight + 2;

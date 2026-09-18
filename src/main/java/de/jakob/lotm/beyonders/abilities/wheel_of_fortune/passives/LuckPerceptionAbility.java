@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncLuckPerceptionPacket;
@@ -14,9 +14,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LuckPerceptionAbility extends PassiveAbilityItem {
-    public LuckPerceptionAbility(Properties properties) {
-        super(properties);
+public class LuckPerceptionAbility extends PassiveAbility {
+    public LuckPerceptionAbility(String id) {
+        super(id);
     }
 
     @Override

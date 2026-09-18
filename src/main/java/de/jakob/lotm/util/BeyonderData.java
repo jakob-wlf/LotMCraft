@@ -6,9 +6,9 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ProphecyAbility;
-import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
@@ -738,11 +738,10 @@ public class BeyonderData {
 
     // for getting the spirituality of the main body instead, works on both client and server side
     public static float getMaxSpirituality(String path, int seq, Player player){
-        ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
+        EntityControllingComponent data = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         float sp = 1;
         if (data.isControlling()) {
-            CompoundTag bodyData = data.getBodyEntity().getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
-            return getMaxSpirituality(bodyData.getString("pathway"), bodyData.getInt("sequence"));
+            return getMaxSpirituality(data.getControlledEntityPathway(), data.getControlledEntitySequence());
         }
         for(int i = 0; i < BeyonderData.pathways.size(); i++){
             sp += getMaxSpirituality(path, BeyonderData.getCharList(player).stream().filter(c -> c.pathway().equals(path)).mapToInt(Characteristic::sequence).max().orElse(0));

@@ -94,7 +94,7 @@ public record GatheringActionPacket(int action, String targetUUIDStr) implements
                             SefirotData sefirotData = SefirotData.get(owner.server);
                             if (!owner.level().dimension().equals(castleDim) && !sefirotData.isInSefirot(owner)) {
                                 sefirotData.setLastReturnLocation(owner);
-                                sefirotData.setIsInSefirot(owner.getUUID(), true);
+                                sefirotData.setIsInSefirot(owner.getUUID(), true, "sefirah_castle");
                             }
                             owner.teleportTo(castleLevel,
                                     GatheringData.OWNER_POSITION[0],

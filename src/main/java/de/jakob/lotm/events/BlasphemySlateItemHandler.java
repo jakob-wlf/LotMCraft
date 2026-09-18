@@ -97,7 +97,7 @@ BlasphemySlateItemHandler {
         // from its slots back to the player's inventory (or drop them if inventory is full).
         AbstractContainerMenu menu = player.containerMenu;
         boolean isAllowedMenu = menu instanceof InventoryMenu
-                || menu instanceof de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu
+                || menu instanceof de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu
                 || menu instanceof net.minecraft.world.inventory.CraftingMenu;
         if (!isAllowedMenu) {
             for (Slot slot : new java.util.ArrayList<>(menu.slots)) {
@@ -146,7 +146,7 @@ BlasphemySlateItemHandler {
                     }
                 }
                 // 3. Check open container slots (cauldron recipe slot, etc.)
-                if (!found && player.containerMenu instanceof de.jakob.lotm.gui.custom.BrewingCauldron.BrewingCauldronMenu cauldronMenu
+                if (!found && player.containerMenu instanceof de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu cauldronMenu
                         && cauldronMenu.blockEntity != null) {
                     ItemStack s = cauldronMenu.blockEntity.itemHandler.getStackInSlot(4);
                     if (!s.isEmpty() && s.getItem() instanceof BlasphemyCardItem card
@@ -157,8 +157,8 @@ BlasphemySlateItemHandler {
                 }
                 if (!found) {
                     // Also check any loaded cauldron instances (fallback)
-                    for (de.jakob.lotm.block.custom.BrewingCauldronBlockEntity cauldron :
-                            new java.util.ArrayList<>(de.jakob.lotm.block.custom.BrewingCauldronBlockEntity.INSTANCES)) {
+                    for (de.jakob.lotm.block.entity.BrewingCauldronBlockEntity cauldron :
+                            new java.util.ArrayList<>(de.jakob.lotm.block.entity.BrewingCauldronBlockEntity.INSTANCES)) {
                         ItemStack s = cauldron.itemHandler.getStackInSlot(4);
                         if (!s.isEmpty() && s.getItem() instanceof BlasphemyCardItem c
                                 && c.getPathway().equals(pathway)
@@ -243,8 +243,8 @@ BlasphemySlateItemHandler {
         // We deliberately do NOT call syncStack here — syncCard would delete cards whose pathway
         // is restricted (e.g. Chaos Sea owner with left/right-half cards). The isCardPresent()
         // check above already prevents clearCard() from firing while the card is in the cauldron.
-        for (de.jakob.lotm.block.custom.BrewingCauldronBlockEntity cauldron :
-                new java.util.ArrayList<>(de.jakob.lotm.block.custom.BrewingCauldronBlockEntity.INSTANCES)) {
+        for (de.jakob.lotm.block.entity.BrewingCauldronBlockEntity cauldron :
+                new java.util.ArrayList<>(de.jakob.lotm.block.entity.BrewingCauldronBlockEntity.INSTANCES)) {
             if (cauldron.isRemoved()) continue;
             ItemStack recipeStack = cauldron.itemHandler.getStackInSlot(4);
             if (recipeStack.isEmpty()) continue;
@@ -262,7 +262,7 @@ BlasphemySlateItemHandler {
         for (ServerLevel lvl : event.getServer().getAllLevels()) {
             for (LevelChunk chunk : getLoadedChunks(lvl)) {
                 for (BlockEntity be : new java.util.ArrayList<>(chunk.getBlockEntities().values())) {
-                    if (be instanceof de.jakob.lotm.block.custom.BrewingCauldronBlockEntity) continue;
+                    if (be instanceof de.jakob.lotm.block.entity.BrewingCauldronBlockEntity) continue;
                     if (isCorpseModBlockEntity(be)) continue;
                     if (!(be instanceof Container container)) continue;
                     // Skip if any player currently has this container open
@@ -335,8 +335,8 @@ BlasphemySlateItemHandler {
                     && c.getPathway().equals(pathway) && id.equals(BlasphemyCardItem.getCardId(carried))) return true;
         }
         // Brewing Cauldron recipe slots (slot index 4)
-        for (de.jakob.lotm.block.custom.BrewingCauldronBlockEntity cauldron :
-                new java.util.ArrayList<>(de.jakob.lotm.block.custom.BrewingCauldronBlockEntity.INSTANCES)) {
+        for (de.jakob.lotm.block.entity.BrewingCauldronBlockEntity cauldron :
+                new java.util.ArrayList<>(de.jakob.lotm.block.entity.BrewingCauldronBlockEntity.INSTANCES)) {
             ItemStack s = cauldron.itemHandler.getStackInSlot(4);
             if (s.getItem() instanceof BlasphemyCardItem c && c.getPathway().equals(pathway)
                     && id.equals(BlasphemyCardItem.getCardId(s))) return true;

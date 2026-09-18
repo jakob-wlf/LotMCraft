@@ -4,8 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.gui.custom.introspect.IntrospectMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataToIntrospectPacket;
@@ -48,8 +46,8 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
-                int sequence = BeyonderData.getHighestSequence(player, false, true);
-                String pathway = BeyonderData.getHighestPathway(player, true);
+                int sequence = BeyonderData.getHighestSequence(player);
+                String pathway = BeyonderData.getHighestPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);

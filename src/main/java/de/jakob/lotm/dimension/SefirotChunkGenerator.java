@@ -48,8 +48,22 @@ public class SefirotChunkGenerator extends ChunkGenerator {
     public static final MapCodec<SefirotChunkGenerator> BROOD_HIVE_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
-                    Codec.STRING.fieldOf("region_path").forGetter(gen -> gen.regionPath)
-            ).apply(instance, bs -> new SefirotChunkGenerator(bs, "brood_hive"))
+                    Codec.STRING.fieldOf("region_path").forGetter(gen -> gen.REGION_PATH)
+            ).apply(instance, (bs, path) -> new SefirotChunkGenerator(bs, "brood_hive"))
+    );
+
+    public static final MapCodec<SefirotChunkGenerator> CHAOS_SEA_CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(
+                    BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
+                    Codec.STRING.fieldOf("region_path").forGetter(gen -> gen.REGION_PATH)
+            ).apply(instance, (bs, path) -> new SefirotChunkGenerator(bs, "chaos_sea"))
+    );
+
+    public static final MapCodec<SefirotChunkGenerator> RIVER_OF_ETERNAL_DARKNESS_CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(
+                    BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
+                    Codec.STRING.fieldOf("region_path").forGetter(gen -> gen.REGION_PATH)
+            ).apply(instance, (bs, path) -> new SefirotChunkGenerator(bs, "river_of_eternal_darkness"))
     );
 
     private final Map<ChunkPos, CompoundTag> chunkCache = new HashMap<>();
@@ -65,6 +79,8 @@ this.REGION_PATH = getRegionPath();
 private String getRegionPath() {
     return switch (sefirot) {
         case "brood_hive" -> "data/lotmcraft/dimension_data/brood_hive/";
+        case "chaos_sea" -> "data/lotmcraft/dimension_data/chaos_sea/";
+        case "river_of_eternal_darkness" -> RIVER_REGION_PATH;
         default -> "data/lotmcraft/dimension_data/sefirah_castle/";
     };
     }
@@ -73,6 +89,8 @@ private String getRegionPath() {
     protected MapCodec<? extends ChunkGenerator> codec() {
         return switch (sefirot) {
             case "brood_hive" -> BROOD_HIVE_CODEC;
+            case "chaos_sea" -> CHAOS_SEA_CODEC;
+            case "river_of_eternal_darkness" -> RIVER_OF_ETERNAL_DARKNESS_CODEC;
             default -> SEFIRAH_CASTLE_CODEC;
         };
     }
@@ -153,7 +171,7 @@ private String getRegionPath() {
 
         try {
             InputStream stream = getClass().getClassLoader()
-                    .getResourceAsStream(regionPath + regionFileName);
+                    .getResourceAsStream(REGION_PATH + regionFileName);
 
             if (stream != null) {
                 CompoundTag data = loadChunkFromRegion(stream, pos.x & 31, pos.z & 31);
@@ -275,7 +293,7 @@ private String getRegionPath() {
             for (int j = 0; j < palette.size(); j++) {
                 CompoundTag blockTag = palette.getCompound(j);
                 String blockName = blockTag.getString("Name");
-                BlockState state = RIVER_REGION_PATH.equals(regionPath) && "minecraft:water".equals(blockName)
+                BlockState state = RIVER_REGION_PATH.equals(REGION_PATH) && "minecraft:water".equals(blockName)
                         ? ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get().defaultFluidState().createLegacyBlock()
                         : parseBlockState(blockName, blockTag);
                 paletteArray[j] = state != null ? state : Blocks.AIR.defaultBlockState();

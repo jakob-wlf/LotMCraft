@@ -38,13 +38,13 @@ public class AboveTheSequenceAuthorityAbility extends Ability {
         return 0f;
     }
 
-    /** Only Great Old Ones (Sequence -1). */
-    @Override
-    public boolean hasAbility(LivingEntity entity) {
-        if (entity.level().isClientSide()) return false;
-        if (!(entity instanceof ServerPlayer player)) return false;
-        return GreatOldOneManager.isGreatOldOne(player);
-    }
+    ///** Only Great Old Ones (Sequence -1). */
+    //@Override
+    //public boolean hasAbility(LivingEntity entity) {
+    //    if (entity.level().isClientSide()) return false;
+    //    if (!(entity instanceof ServerPlayer player)) return false;
+    //    return GreatOldOneManager.isGreatOldOne(player);
+    //}
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {

@@ -3,7 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -22,7 +22,7 @@ import org.joml.Vector3f;
  * the beam. Color smooth-cycles between Fool (purple), Error (blue), and
  * Door (cyan) every 6 seconds.
  */
-public class SefirahSkyBeamEffect extends ActiveMovableEffect {
+public class SefirahSkyBeamEffect extends ActiveEffect {
 
     // ── Pathway colors: fool=purple, error=blue, door=cyan ───────────────────
     private static final float[][] PATH_COLORS = {

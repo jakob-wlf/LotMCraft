@@ -202,10 +202,11 @@ public class TravelersDoorEntity extends Entity {
 
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
+            Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize().scale(glideSpeed);
 
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
                 ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
-                Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
+                Vec3 nextPos = currentEntityPos[0].add(dir);
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
 

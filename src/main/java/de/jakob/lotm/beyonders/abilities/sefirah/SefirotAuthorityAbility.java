@@ -40,11 +40,11 @@ public class SefirotAuthorityAbility extends Ability {
     }
 
     /** Granted to anyone who currently holds a sefirot — not pathway/sequence based. */
-    @Override
-    public boolean hasAbility(LivingEntity entity) {
-        if (!(entity instanceof ServerPlayer player)) return false;
-        return SefirahHandler.hasSefirot(player);
-    }
+    //@Override
+    //public boolean hasAbility(LivingEntity entity) {
+    //    if (!(entity instanceof ServerPlayer player)) return false;
+    //    return SefirahHandler.hasSefirot(player);
+    //}
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {

@@ -288,12 +288,12 @@ public class PuppeteeringAbility extends SelectableAbility {
             }
 
 
-            double currentTick = elapsedTicks.addAndGet(1.0);
+            double currentTick = elapsedTicks.addAndGet(1);
             float progress = (float) currentTick / time;
 
             if (!target.isAlive() || target.isRemoved() || target.level() != level || !entity.isAlive() || entity.isRemoved()
                     || target.distanceTo(entity) >= getManipulationDistance(sequence)
-                    || target.getHealth() < targetHealth.get() * 0.85
+                    || target.getHealth() < health.get() * 0.85
                     || entity.getHealth() < casterHealth.get() * 0.5) {
                 if (isMass) {
                     removeMassTarget(entity.getUUID(), target.getUUID());
@@ -337,7 +337,7 @@ public class PuppeteeringAbility extends SelectableAbility {
                 }
             }
 
-            targetHealth.set(finalTarget.getHealth());
+            health.set(finalTarget.getHealth());
         }, () -> {
             if (stopped.get()) return;
 

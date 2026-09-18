@@ -6,11 +6,13 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SefirotData;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.network.packets.toServer.RequestSefirotSyncPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectRegistry;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.ServerLocation;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
@@ -389,29 +391,9 @@ public class SefirahHandler {
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, chaosSeaLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 23568, 66, 299, chaosSeaLevel);
                 }
 
-            }
-            case "brood_hive" -> {
-                ServerLevel broodHiveLevel = player.serverLevel().getServer().getLevel(
-                        ModDimensions.BROOD_HIVE_DIMENSION_KEY);
-                if (broodHiveLevel == null) {
-                    return;
-                }
-
-                player.teleportTo(broodHiveLevel,
-                        23568,
-                        66,
-                        299,
-                        -90,
-                        0);
-
-                SefrotInvasionManager.recordOwnerEntry(player);
-
-                if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, broodHiveLevel);
-                }
             }
             case "city_of_calamity" -> {
                 ServerLevel cityLevel = player.serverLevel().getServer().getLevel(
@@ -430,7 +412,7 @@ public class SefirahHandler {
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, cityLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 23568, 66, 299, cityLevel);
                 }
             }
             case "nation_of_disorder" -> {
@@ -450,7 +432,7 @@ public class SefirahHandler {
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, nationLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 23568, 66, 299, nationLevel);
                 }
             }
             case "tenebrous_world" -> {
@@ -470,7 +452,7 @@ public class SefirahHandler {
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, tenebrousWorldLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 23568, 66, 299, tenebrousWorldLevel);
                 }
             }
             case "knowledge_moor" -> {
@@ -490,7 +472,7 @@ public class SefirahHandler {
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, knowledgeMoorLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 23568, 66, 299, knowledgeMoorLevel);
                 }
             }
             case "key_of_light" -> {
@@ -510,7 +492,8 @@ public class SefirahHandler {
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, keyOfLightLevel);
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, 23568, 66, 299, keyOfLightLevel);
+
                 }
             }
         }

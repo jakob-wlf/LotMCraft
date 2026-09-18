@@ -67,7 +67,7 @@ public class ShaderManager {
 
 
     private static boolean shouldApplyShatteredGlass(Player player) {
-        return player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get()).isInMirrorWorld();
+        return player.level().dimension().equals(ModDimensions.MIRROR_WORLD_DIMENSION_KEY);
     }
 
     private static boolean shouldApplyDrought(Player player) {

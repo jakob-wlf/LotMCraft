@@ -149,7 +149,7 @@ public class InternalUnderworldAbilityScreen extends AbstractContainerScreen<Che
             int playerSeq = this.minecraft != null && this.minecraft.player != null
                     ? BeyonderData.getSequence(this.minecraft.player)
                     : 0;
-            boolean riverOwner = "river_of_eternal_darkness".equals(de.jakob.lotm.util.data.ClientData.getClaimedSefirot());
+            boolean riverOwner = "river_of_eternal_darkness".equals(de.jakob.lotm.util.data.AbilityWheelClientData.getClaimedSefirot());
             int maxSouls = getMaxSoulsForSequence(playerSeq) + (riverOwner ? 15 : 0);
             String soulText = "Souls: " + currentSouls + "/" + maxSouls;
             int soulTextX = Math.max(4, (this.imageWidth - this.font.width(soulText)) / 2);

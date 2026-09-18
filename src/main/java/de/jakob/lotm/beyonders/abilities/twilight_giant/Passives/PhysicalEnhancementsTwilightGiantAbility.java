@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PhysicalEnhancementsTwilightGiantAbility extends PhysicalEnhancementsAbility {
 
-    public PhysicalEnhancementsTwilightGiantAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsTwilightGiantAbility(String id) {
+        super(id);
     }
 
     @Override

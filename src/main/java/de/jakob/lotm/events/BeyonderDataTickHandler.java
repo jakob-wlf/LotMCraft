@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
@@ -43,7 +44,7 @@ public class BeyonderDataTickHandler {
 
     // In BeyonderDataTickHandler
     private static final Map<UUID, Set<PassiveAbility>> cachedAbilities = new ConcurrentHashMap<>();
-    private static final Map<UUID, Set<PassiveAbilityItem>> lastTickedAbilities = new ConcurrentHashMap<>();
+    private static final Map<UUID, Set<PassiveAbility>> lastTickedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {
         cachedAbilities.remove(entity.getUUID());
@@ -78,7 +79,7 @@ public class BeyonderDataTickHandler {
         }
 
         // Tick cooldowns
-        AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT);
+        AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT.get());
         component.tick();
 
         //Virtual Personas heal
@@ -221,24 +222,24 @@ public class BeyonderDataTickHandler {
         if(entity.level().isClientSide) return;
 
         UUID uuid = entity.getUUID();
-        Set<PassiveAbilityItem> current = getApplicableAbilities(entity);
-        Set<PassiveAbilityItem> last = lastTickedAbilities.get(uuid);
+        Set<PassiveAbility> current = getApplicableAbilities(entity);
+        Set<PassiveAbility> last = lastTickedAbilities.get(uuid);
 
         if (last != null && !last.equals(current)) {
             // Handle removal
-            for (PassiveAbilityItem ability : last) {
+            for (PassiveAbility ability : last) {
                 if (!current.contains(ability)) {
                     ability.onPassiveAbilityRemoved(entity, (ServerLevel)entity.level());
                 }
             }
             // Handle gain
-            for (PassiveAbilityItem ability : current) {
+            for (PassiveAbility ability : current) {
                 if (!last.contains(ability)) {
                     ability.onPassiveAbilityGained(entity, (ServerLevel)entity.level());
                 }
             }
         } else if (last == null && !current.isEmpty()) {
-            for (PassiveAbilityItem ability : current) {
+            for (PassiveAbility ability : current) {
                 ability.onPassiveAbilityGained(entity, (ServerLevel)entity.level());
             }
         }

@@ -101,5 +101,7 @@ public class EffectRegistry {
         register(EffectIds.RING_PULSE, RingPulseEffect::new, 20 * 2);
         register(EffectIds.CHAOS_VORTEX, ChaosVortexEffect::new, 20 * 6);
         register(EffectIds.MARIONETTE_THREADS, MarionetteThreadsEffect::new, 20 * 6);
+        register(EffectIds.SEFIRAH_SKY_BEAM, SefirahSkyBeamEffect::new, 20 * 6, true);
+        register(EffectIds.RIVER_SKY_BEAM, RiverSkyBeamEffect::new, 20 * 6, true);
     }
 }

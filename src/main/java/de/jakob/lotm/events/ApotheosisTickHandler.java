@@ -86,8 +86,7 @@ public class ApotheosisTickHandler {
         ParticleUtil.spawnSphereParticles(level, dust, center, 2.0, 80);
 
         if (ticksLeft % 120 == 0) {
-            MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.BEAMS_OF_LIGHT,
-                    new EntityLocation(player), 120, false, level, player);
+            EffectManager.playMovableEffect(EffectIds.BEAMS_OF_LIGHT, level, player, EffectParams.ofDuration(120));
         }
 
         // Every 5 ticks: drain spirit and sanity from nearby players who are looking at the transcending player

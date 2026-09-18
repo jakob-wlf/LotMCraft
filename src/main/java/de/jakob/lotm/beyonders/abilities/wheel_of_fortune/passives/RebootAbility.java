@@ -3,8 +3,8 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.BeyonderComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ProphecyAbility;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.network.PacketHandler;
@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.EventPriority;
@@ -32,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class RebootAbility extends PassiveAbilityItem {
+public class RebootAbility extends PassiveAbility {
     private static final String activeKey = "lotm_reboot_active";
     private static final String onlineTicksKey = "lotm_reboot_online_ticks";
     private static final String restoredHoursKey = "lotm_reboot_restored_hours";
@@ -41,8 +40,8 @@ public class RebootAbility extends PassiveAbilityItem {
     private static final int restorationHours = 8;
     private static final int maximumAntiDivinationPower = 9;
 
-    public RebootAbility(Item.Properties properties) {
-        super(properties);
+    public RebootAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class RebootAbility extends PassiveAbilityItem {
     public static void onLivingDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || event.isCanceled()) return;
         if (player.getPersistentData().getBoolean(activeKey)) return;
-        if (!((RebootAbility) PassiveAbilityHandler.REBOOT.get()).shouldApplyTo(player)) return;
+        if (!((RebootAbility) PassiveAbilityHandler.getById("reboot_ability")).shouldApplyTo(player)) return;
         if (!"wheel_of_fortune".equals(BeyonderData.getPathway(player))
                 || BeyonderData.getSequence(player) != 1) return;
 

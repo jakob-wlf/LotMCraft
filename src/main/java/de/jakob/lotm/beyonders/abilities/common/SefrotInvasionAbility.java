@@ -36,9 +36,9 @@ public class SefrotInvasionAbility extends Ability {
     }
 
     @Override
-    public boolean hasAbility(LivingEntity entity) {
+    public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
         return (!(entity instanceof ServerPlayer player) || !SefirahHandler.hasSefirot(player))
-                && super.hasAbility(entity);
+                && super.hasAbility(entity, ignoreCreativeMode);
     }
 
     @Override

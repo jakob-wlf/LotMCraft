@@ -7,8 +7,6 @@ import de.jakob.lotm.beyonders.quest.QuestManager;
 import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.QuestComponent;
-import de.jakob.lotm.quest.QuestManager;
-import de.jakob.lotm.quest.QuestRegistry;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;

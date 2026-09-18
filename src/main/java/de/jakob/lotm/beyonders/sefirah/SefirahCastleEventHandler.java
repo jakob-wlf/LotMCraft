@@ -8,7 +8,6 @@ import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.item.custom.MysteriousTabletItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -110,7 +109,8 @@ public class SefirahCastleEventHandler {
         if (player.tickCount % 5 == 0) {
             UUID beamId = ritualBeamEffectIds.get(player.getUUID());
             if (beamId != null) {
-                MovableEffectManager.updateEffectPosition(beamId, new EntityLocation(player), serverLevel);
+                Vec3 pos = player.position();
+                EffectManager.updateEffectPosition(beamId, pos.x, pos.y, pos.z, serverLevel);
             }
         }
 
@@ -118,6 +118,7 @@ public class SefirahCastleEventHandler {
             return;
         }
 
+        tickRitual(player, serverLevel);
     }
 
     @SubscribeEvent
@@ -133,9 +134,12 @@ public class SefirahCastleEventHandler {
             return;
         }
 
-        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
-        return false;
+        if (player.level() instanceof ServerLevel serverLevel) {
+            Vec3 pos = player.position();
+            EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE_PARTICLES, pos.x, pos.y, pos.z, serverLevel);
         }
+        event.setCanceled(true);
+    }
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
@@ -224,13 +228,10 @@ public class SefirahCastleEventHandler {
         // Start the geometry sky beam, visible to all players in the level except the accommodating
         // player themselves (it's extremely distracting in first-person)
         if (player.level() instanceof ServerLevel sl) {
-            UUID beamId = MovableEffectManager.playEffect(
-                    MovableEffectManager.MovableEffect.SKY_BEAM,
-                    new EntityLocation(player),
-                    0, true, sl, player);
+            UUID beamId = EffectManager.playMovableEffect(EffectIds.SEFIRAH_SKY_BEAM, sl, player);
             ritualBeamEffectIds.put(playerId, beamId);
             // Immediately cancel it on the accommodating player's own client
-            MovableEffectManager.removeEffect(beamId, player);
+            EffectManager.cancelEffect(beamId, player);
         }
         PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, requiredTicks));
     }
@@ -264,13 +265,13 @@ public class SefirahCastleEventHandler {
         // so the RemoveMovableEffect packet would be sent to the wrong set of players.
         UUID finishBeamId = ritualBeamEffectIds.remove(playerId);
         if (finishBeamId != null) {
-            MovableEffectManager.removeEffect(finishBeamId, serverLevel);
+            EffectManager.cancelEffect(finishBeamId, serverLevel);
         }
 
         boolean claimed = SefirahHandler.claimSefirot(player, sefirotId, true);
         if (claimed) {
             player.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_claimed"));
-            SefirahHandler.teleportToSefirot(player, true);
+            SefirahHandler.teleportToSefirot(player, SefirahHandler.getSefirot(player), true);
         } else {
             player.sendSystemMessage(Component.translatable("lotm.sefirot.sefirah_castle_already_occupied"));
             dropTablet(player);
@@ -393,7 +394,8 @@ public class SefirahCastleEventHandler {
         // Stop the geometry sky beam
         UUID beamId = ritualBeamEffectIds.remove(playerId);
         if (beamId != null && player.level() instanceof ServerLevel sl) {
-            MovableEffectManager.removeEffect(beamId, sl);
+            //Need to fix
+            //MovableEffectManager.removeEffect(beamId, sl);
         }
         ritualTicks.remove(playerId);
         ritualTabletIds.remove(playerId);

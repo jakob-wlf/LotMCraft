@@ -63,7 +63,6 @@ import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.DamageTrackerEntity;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
-import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
 import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
@@ -293,8 +292,6 @@ public class ModEvents {
         SpawnBeyonderSpawnerCommand.register(event.getDispatcher());
         LuckCheckCommand.register(event.getDispatcher());
         KeyOfLightTempleLocateCommand.register(event.getDispatcher());
-        AllyRequestCommands.register(event.getDispatcher());
-        AllyCommand.register(event.getDispatcher());
         EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         CorruptionCommand.register(event.getDispatcher());

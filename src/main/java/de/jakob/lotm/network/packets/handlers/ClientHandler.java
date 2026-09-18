@@ -39,7 +39,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.data.ClientSpiritCache;
 import de.jakob.lotm.util.helper.AnimationUtil;
@@ -49,6 +49,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -84,7 +85,7 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
     public static void handleSyncAnchors(SyncAnchorsPacket packet) {
-        ClientData.setAnchors(packet.anchors());
+        AbilityWheelClientData.setAnchors(packet.anchors());
     }
 
     public static void openCoordinateScreen(Player player, String use) {
@@ -643,18 +644,6 @@ public class ClientHandler {
         }
     }
 
-public static void handleControllingDataPacket(SyncControllingDataPacket packet) {
-    Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
-    if(entity == null) {
-        return;
-    }
-    entity.getData(ModAttachments.CONTROLLING_DATA.get()).setControlling(packet.isControlling());
-    entity.getData(ModAttachments.CONTROLLING_DATA.get()).setBodyEntity(packet.bodyEntity());
-
-    if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
-        screen.refreshAvailableAbilities();
-    }
-}
     public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
         Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
         if(entity == null) {
@@ -953,5 +942,9 @@ public static void handleControllingSync(SyncControllingPacket packet) {
     player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntityPathway(packet.controlledEntityPathway());
     player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
     player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
+
+    if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+        screen.refreshAvailableAbilities();
+    }
 }
 }

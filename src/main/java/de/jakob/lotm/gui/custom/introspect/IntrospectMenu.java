@@ -20,6 +20,7 @@ public class IntrospectMenu extends AbstractContainerMenu {
     private float sanity;
     private float corruption;
     private boolean sefirotOwner;
+    private ItemStackHandler itemHandler;
 
     // Client-side constructor
     public IntrospectMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
@@ -32,6 +33,11 @@ public class IntrospectMenu extends AbstractContainerMenu {
         this.digestionProgress = digestionProgress;
         this.sanity = sanity;
         this.corruption = corruption;
+    }
+
+    // Server-side constructor
+    public IntrospectMenu(int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity, float corruption, boolean sefirotOwner) {
+        this(new ArrayList<>(List.of()), containerId, playerInventory, sequence, pathway, digestionProgress, sanity, corruption, sefirotOwner);
     }
 
     // Server-side constructor

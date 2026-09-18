@@ -48,7 +48,7 @@ public record TeleportToSefirotPacket() implements CustomPacketPayload {
                     return;
                 }
 
-                SefirahHandler.teleportToSefirot(serverPlayer, true);
+                SefirahHandler.teleportToSefirot(serverPlayer, SefirahHandler.getClaimedSefirot(serverPlayer), true);
                 SefirahHandler.handleSefirotKey(serverPlayer);
             }
         });

@@ -26,7 +26,7 @@ public class MercuryBodyRenderLayer<T extends LivingEntity, M extends EntityMode
     public void render(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
                        T entity, float limbSwing, float limbSwingAmount, float partialTicks,
                        float ageInTicks, float netHeadYaw, float headPitch) {
-        if (!(PassiveAbilityHandler.MERCURY_BODY.get() instanceof MercuryBodyAbility mercuryBody)
+        if (!(PassiveAbilityHandler.getById("mercury_body_ability") instanceof MercuryBodyAbility mercuryBody)
                 || !mercuryBody.shouldApplyTo(entity)) {
             return;
         }

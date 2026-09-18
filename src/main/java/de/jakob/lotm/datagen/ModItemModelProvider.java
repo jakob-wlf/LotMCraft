@@ -94,15 +94,6 @@ public class ModItemModelProvider extends ItemModelProvider {
             basicItem(i.get());
         });
 
-        PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {
-            if (i.get() instanceof ElevatedDivinationAbility) {
-                itemWithCustomDisplayAbilityTexture(i.get(), "divination_ability");
-            } else if (i.get() instanceof ElevatedConcealmentAbility) {
-                itemWithCustomDisplayAbilityTexture(i.get(), "concealment_ability");
-            } else {
-                itemWithCustomDisplay(i.get());
-            }
-        });
         itemWithCustomDisplay(ModItems.FOOL_Card.get());
         basicItem(ModItems.MOD_ICON.get());
 

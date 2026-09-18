@@ -14,8 +14,9 @@ import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
+import io.netty.util.internal.shaded.org.jctools.queues.MpscArrayQueue;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -95,7 +96,8 @@ public class SpiritualBaptismAbility extends SelectableAbility {
         boolean wasMarionette = MarionetteUtils.isMarionette(target);
         boolean wasPuppetNpc = target instanceof BeyonderNPCEntity npc && npc.isPuppetWarrior();
         if (wasMarionette) {
-            MarionetteUtils.releaseMarionetteControl(target);
+            //MarionetteUtils.releaseMarionetteControl(target);
+
         }
         if ((wasMarionette || wasPuppetNpc) && target instanceof BeyonderNPCEntity npc) {
             npc.restoreNormalNpcState();

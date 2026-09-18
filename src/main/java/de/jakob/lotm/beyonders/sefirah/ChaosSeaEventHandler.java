@@ -8,7 +8,8 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.BlasphemySlateItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -151,7 +152,8 @@ public class ChaosSeaEventHandler {
         if (player.tickCount % 5 == 0) {
             UUID beamId = ritualBeamEffectIds.get(player.getUUID());
             if (beamId != null) {
-                MovableEffectManager.updateEffectPosition(beamId, new EntityLocation(player), serverLevel);
+                Vec3 pos = player.position();
+                EffectManager.updateEffectPosition(beamId, pos.x, pos.y, pos.z, serverLevel);
             }
         }
 
@@ -197,12 +199,9 @@ public class ChaosSeaEventHandler {
         ritualAnnounced.remove(playerId);
 
         if (player.level() instanceof ServerLevel sl) {
-            UUID beamId = MovableEffectManager.playEffect(
-                    MovableEffectManager.MovableEffect.SKY_BEAM,
-                    new EntityLocation(player),
-                    0, true, sl, player);
+            UUID beamId = EffectManager.playMovableEffect(EffectIds.SEFIRAH_SKY_BEAM, sl, player);
             ritualBeamEffectIds.put(playerId, beamId);
-            MovableEffectManager.removeEffect(beamId, player);
+            EffectManager.cancelEffect(beamId, player);
         }
 
         PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(0, requiredTicks));
@@ -236,7 +235,7 @@ public class ChaosSeaEventHandler {
         // Finish — claim sefirah
         UUID finishBeamId = ritualBeamEffectIds.remove(playerId);
         if (finishBeamId != null) {
-            MovableEffectManager.removeEffect(finishBeamId, serverLevel);
+            EffectManager.cancelEffect(finishBeamId, serverLevel);
         }
 
         boolean claimed = SefirahHandler.claimSefirot(player, sefirotId, true);
@@ -244,7 +243,7 @@ public class ChaosSeaEventHandler {
             player.sendSystemMessage(Component.literal(
                     "The Chaos Sea has accepted you. Its endless disorder flows through your veins.")
                     .withStyle(net.minecraft.ChatFormatting.AQUA));
-            serverLevel.getServer().execute(() -> SefirahHandler.teleportToSefirot(player, true));
+            serverLevel.getServer().execute(() -> SefirahHandler.teleportToSefirot(player, SefirahHandler.getSefirot(player), true));
         } else {
             player.sendSystemMessage(Component.literal(
                     "The Chaos Sea is already claimed by another.")
@@ -317,7 +316,7 @@ public class ChaosSeaEventHandler {
         UUID playerId = player.getUUID();
         UUID beamId   = ritualBeamEffectIds.remove(playerId);
         if (beamId != null && player.level() instanceof ServerLevel sl) {
-            MovableEffectManager.removeEffect(beamId, sl);
+            EffectManager.cancelEffect(beamId, sl);
         }
         ritualTicks.remove(playerId);
         ritualSlateIds.remove(playerId);

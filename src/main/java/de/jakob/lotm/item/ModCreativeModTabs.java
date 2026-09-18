@@ -1,7 +1,6 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
@@ -51,6 +50,8 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.DROPS_OF_ETERNAL_DARKNESS_BUCKET.get());
                         output.accept(ModItems.SEALED_BOTTLE.get());
                         output.accept(ModItems.ETERNAL_DARKNESS_RIVER_WATER_BOTTLE.get());
+                        output.accept(ModBlocks.RITUALISTIC_TABLE);
+                        output.accept(ModItems.MYSTERIOUS_SILVER_PLATE);
                         // ── Blasphemy Cards ──
                         output.accept(ModItems.FOOL_BLASPHEMY_CARD.get());
                         output.accept(ModItems.DOOR_BLASPHEMY_CARD.get());
@@ -72,19 +73,6 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.BLASPHEMY_SLATE_LEFT_HALF.get());
                         output.accept(ModItems.BLASPHEMY_SLATE_RIGHT_HALF.get());
                         output.accept(ModItems.BLASPHEMY_SLATE.get());
-                    })
-                    .build());
-
-    public static final Supplier<CreativeModeTab> PASSIVE_ABILITIES_TAB = CREATIVE_MODE_TABS.register("passive_abilities_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(PassiveAbilityHandler.PHYSICAL_ENHANCEMENTS_RED_PRIEST.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "lotm_tab"))
-                    .title(Component.translatable("creativetab.lotmcraft.passive_abilities_tab"))
-                    .displayItems((parameters, output) -> {
-                        PassiveAbilityHandler.ITEMS.getEntries().forEach(itemHolder -> {
-                            output.accept(itemHolder.get());
-                        });
-                        output.accept(ModBlocks.RITUALISTIC_TABLE);
-                        output.accept(ModItems.MYSTERIOUS_SILVER_PLATE);
                     })
                     .build());
 

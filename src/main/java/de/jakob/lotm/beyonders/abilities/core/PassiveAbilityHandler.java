@@ -168,6 +168,24 @@ public class PassiveAbilityHandler {
         // Visionary
         passiveAbilities.add(new MetaAwarenessAbility("meta_awareness_ability"));
         passiveAbilities.add(new PureIdealism("pure_idealism_ability"));
+
+        // Wheel of fortune (additional)
+        passiveAbilities.add(new MercuryBodyAbility("mercury_body_ability"));
+        passiveAbilities.add(new AbsolutePerceptionAbility("absolute_perception_ability"));
+        passiveAbilities.add(new InnateSpiritVisionAbility("innate_spirit_vision_ability"));
+        passiveAbilities.add(new LuckPerceptionAbility("luck_perception_ability"));
+        passiveAbilities.add(new RebootAbility("reboot_ability"));
+
+        // Twilight giant (additional)
+        passiveAbilities.add(new PhysicalEnhancementsTwilightGiantAbility("physical_enhancements_twilight_giant_ability"));
+        passiveAbilities.add(new WeaponMasteryPassiveAbility("weapon_mastery_ability"));
+
+        // Sefirot passives
+        passiveAbilities.add(new ElevatedDivinationAbility("elevated_divination_ability"));
+        passiveAbilities.add(new ElevatedConcealmentAbility("elevated_concealment_ability"));
+
+        // General tier passives
+        passiveAbilities.add(new FateResistanceAbility("fate_resistance_ability"));
     }
 
 

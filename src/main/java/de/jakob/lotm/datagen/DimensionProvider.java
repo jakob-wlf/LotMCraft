@@ -665,18 +665,18 @@ public class DimensionProvider {
                                     bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    new SefirotChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)),
-                                                                    "data/lotmcraft/dimension_data/river_of_eternal_darkness/")));
+                                                                    "river_of_eternal_darkness")));
 
                                     bootstrap.register(ModDimensions.CHAOS_SEA_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.CHAOS_SEA_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    new SefirotChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.CHAOS_SEA_BIOME_KEY)),
-                                                            "data/lotmcraft/dimension_data/chaos_sea/")));
+                                                            "chaos_sea")));
 
                                     bootstrap.register(ModDimensions.BROOD_HIVE_LEVEL_KEY,
                                             new LevelStem(

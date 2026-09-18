@@ -4,13 +4,14 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
-import de.jakob.lotm.attachments.ControllingDataComponent;
+
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ControllingUtil;
+
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -89,7 +90,7 @@ public class ParasitationAbility extends SelectableAbility {
             controllingMap.remove(parasiteUUID);
             controllingTimer.remove(parasiteUUID);
             controllingLowerSeq.remove(parasiteUUID);
-            if (parasite != null) ControllingUtil.reset(parasite, serverLevel, true);
+            if (parasite != null) ControllingUtils.cancel(parasite, 0, true, false);
         }
         if (host.getUUID().equals(concealedMap.get(parasiteUUID))) {
             concealedMap.remove(parasiteUUID);
@@ -162,7 +163,7 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtils.startControlling(player, target, true, false, true);
+        ControllingUtils.startControlling(player, target, true, false);
     }
 
     public static void exitControl(ServerLevel serverLevel, ServerPlayer player) {
@@ -415,7 +416,7 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtil.possess(player, target, false, false);
+        ControllingUtils.startControlling(player, target, true, false);
     }
 
     private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {
