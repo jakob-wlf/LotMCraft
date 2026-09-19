@@ -207,111 +207,111 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
                 availableAbilities.addAll(controllerPathwayAbilities);
             } else {
-                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
 
-            if (discernmentComponent.isDiscerning()) {
-                ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                availableAbilities.addAll(controllerPathwayAbilities);
-            } else {
-                // Driven entirely by the held characteristic list (rather than a single pathway/sequence) so
-                // that possession abilities which merge in extra characteristics (e.g. Manipulation) correctly
-                // show abilities from every held pathway, not just the assumed one.
-                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
-                // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
-                int historyStart = Math.max(0, menu.getSequence());
-                for (int i = historyStart; i < pathwayHistory.length; i++) {
-                    String pathway = pathwayHistory[i];
-                    if (pathway != null) {
-                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                        availableAbilities.addAll(pathwayAbilities);
+                if (discernmentComponent.isDiscerning()) {
+                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
+                    availableAbilities.addAll(controllerPathwayAbilities);
+                } else {
+                    // Driven entirely by the held characteristic list (rather than a single pathway/sequence) so
+                    // that possession abilities which merge in extra characteristics (e.g. Manipulation) correctly
+                    // show abilities from every held pathway, not just the assumed one.
+                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                    ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
+                    // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
+                    int historyStart = Math.max(0, menu.getSequence());
+                    for (int i = historyStart; i < pathwayHistory.length; i++) {
+                        String pathway = pathwayHistory[i];
+                        if (pathway != null) {
+                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                            availableAbilities.addAll(pathwayAbilities);
+                        }
+                    }
+
+                    for (Characteristic characteristic : charList) {
+                        if (characteristic.stack() <= 0 || !characteristic.isEnabled()) {
+                            continue;
+                        }
+                        // Skip the GOO marker entry - it has no ability row of its own
+                        if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                            continue;
+                        }
+
+                        ArrayList<Ability> characteristicAbilities =
+                                LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
+                                        characteristic.pathway(),
+                                        characteristic.sequence()
+                                );
+
+                        availableAbilities.addAll(characteristicAbilities);
                     }
                 }
+            }
 
-                for (Characteristic characteristic : charList) {
-                    if (characteristic.stack() <= 0 || !characteristic.isEnabled()) {
-                        continue;
-                    }
-                    // Skip the GOO marker entry - it has no ability row of its own
-                    if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
-                        continue;
-                    }
-
-                    ArrayList<Ability> characteristicAbilities =
-                            LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
-                                    characteristic.pathway(),
-                                    characteristic.sequence()
-                            );
-
-                    availableAbilities.addAll(characteristicAbilities);
+            // Add sefirot authority unlocked cross-path abilities
+            for (String sefirotId : AbilityWheelClientData.getSefirotUnlockedAbilityIds()) {
+                Ability sefirotAbility = LOTMCraft.abilityHandler.getById(sefirotId);
+                if (sefirotAbility != null) {
+                    availableAbilities.add(sefirotAbility);
                 }
             }
-        }
 
-        // Add sefirot authority unlocked cross-path abilities
-        for (String sefirotId : AbilityWheelClientData.getSefirotUnlockedAbilityIds()) {
-            Ability sefirotAbility = LOTMCraft.abilityHandler.getById(sefirotId);
-            if (sefirotAbility != null) {
-                availableAbilities.add(sefirotAbility);
+            // Add the sefirot_authority_ability itself when the player owns a sefirot
+            if (AbilityWheelClientData.isOwningSefirot()) {
+                Ability sefirotAuth = LOTMCraft.abilityHandler.getById("sefirot_authority_ability");
+                if (sefirotAuth != null) availableAbilities.add(sefirotAuth);
             }
-        }
 
-        // Add the sefirot_authority_ability itself when the player owns a sefirot
-        if (AbilityWheelClientData.isOwningSefirot()) {
-            Ability sefirotAuth = LOTMCraft.abilityHandler.getById("sefirot_authority_ability");
-            if (sefirotAuth != null) availableAbilities.add(sefirotAuth);
-        }
+            // Add above_the_sequence_authority_ability for all Great Old Ones
+            if (menu.getSequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                Ability aboveSeqAuth = LOTMCraft.abilityHandler.getById("above_the_sequence_authority_ability");
+                if (aboveSeqAuth != null) availableAbilities.add(aboveSeqAuth);
+            }
 
-        // Add above_the_sequence_authority_ability for all Great Old Ones
-        if (menu.getSequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
-            Ability aboveSeqAuth = LOTMCraft.abilityHandler.getById("above_the_sequence_authority_ability");
-            if (aboveSeqAuth != null) availableAbilities.add(aboveSeqAuth);
-        }
+            // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
+            // twice when a pathway history entry exists (once for current pathway, once for historical).
+            List<Ability> unique = availableAbilities.stream().distinct().toList();
+            availableAbilities.clear();
+            availableAbilities.addAll(unique);
 
-        // Deduplicate: abilities like Cogitation/Ally match all pathways and can be added
-        // twice when a pathway history entry exists (once for current pathway, once for historical).
-        List<Ability> unique = availableAbilities.stream().distinct().toList();
-        availableAbilities.clear();
-        availableAbilities.addAll(unique);
+            availableAbilities.removeIf(Ability::getShouldBeHidden);
+            if (AbilityWheelClientData.isOwningSefirot()) {
+                availableAbilities.removeIf(ability -> ability.getId().equals("sefrot_invasion_ability"));
+            }
 
-        availableAbilities.removeIf(Ability::getShouldBeHidden);
-        if (AbilityWheelClientData.isOwningSefirot()) {
-            availableAbilities.removeIf(ability -> ability.getId().equals("sefrot_invasion_ability"));
-        }
-
-        // Sub-abilities toggle only applies on normal tabs (not copied tabs)
-        if (showSubAbilities && !isCopiedTab(currentTab)) {
-            List<Ability> expanded = new ArrayList<>();
-            for (Ability ability : availableAbilities) {
-                expanded.add(ability);
-                subAbilityEntries.add(null);
-                if (ability instanceof SelectableAbility sa) {
-                    String[] names = sa.getAbilityNamesCopy();
-                    if (names.length > 1) {
-                        for (int si = 0; si < names.length; si++) {
-                            expanded.add(ability);
-                            subAbilityEntries.add(new SubAbilityEntry(ability, si));
+            // Sub-abilities toggle only applies on normal tabs (not copied tabs)
+            if (showSubAbilities && !isCopiedTab(currentTab)) {
+                List<Ability> expanded = new ArrayList<>();
+                for (Ability ability : availableAbilities) {
+                    expanded.add(ability);
+                    subAbilityEntries.add(null);
+                    if (ability instanceof SelectableAbility sa) {
+                        String[] names = sa.getAbilityNamesCopy();
+                        if (names.length > 1) {
+                            for (int si = 0; si < names.length; si++) {
+                                expanded.add(ability);
+                                subAbilityEntries.add(new SubAbilityEntry(ability, si));
+                            }
                         }
                     }
                 }
+                availableAbilities.clear();
+                availableAbilities.addAll(expanded);
+            } else {
+                for (int i = 0; i < availableAbilities.size(); i++) {
+                    subAbilityEntries.add(null);
+                }
             }
-            availableAbilities.clear();
-            availableAbilities.addAll(expanded);
-        } else {
-            for (int i = 0; i < availableAbilities.size(); i++) {
-                subAbilityEntries.add(null);
-            }
+
+            int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
+            int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
+            int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
+            maxAbilitiesScroll = Math.max(0, rows - visibleRows);
+
+            // Also recompute copied scroll
+            updateCopiedScroll();
+
+            passiveAbilities.addAll(LOTMCraft.passiveAbilityHandler.getPassiveAbilitiesForEntity(minecraft.player));
         }
-
-        int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
-        int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
-        int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
-        maxAbilitiesScroll = Math.max(0, rows - visibleRows);
-
-        // Also recompute copied scroll
-        updateCopiedScroll();
-
-        passiveAbilities.addAll(LOTMCraft.passiveAbilityHandler.getPassiveAbilitiesForEntity(minecraft.player));
     }
 
     private boolean isCopiedTab(Tab tab) {

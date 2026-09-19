@@ -48,9 +48,9 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
 
                 // While actively controlling another body (Manipulation, Marionette Controlling, Parasitation, ...)
                 // show/filter abilities by the assumed identity instead of your permanent highest-achieved one.
-                de.jakob.lotm.attachments.ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
-                int sequence = controllingData.isControlling() ? BeyonderData.getSequence(player) : BeyonderData.getHighestSequence(player);
-                String pathway = controllingData.isControlling() ? BeyonderData.getPathway(player) : BeyonderData.getHighestPathway(player);
+                //de.jakob.lotm.attachments.ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
+                int sequence = BeyonderData.getSequence(player);
+                String pathway = BeyonderData.getPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);

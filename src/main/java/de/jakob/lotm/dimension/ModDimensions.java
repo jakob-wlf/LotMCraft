@@ -394,26 +394,6 @@ public class ModDimensions {
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "a_fork_of_the_river_of_eternal_darkness"));
 
     // =========================================================================
-    // BROOD HIVE dimension
-    // =========================================================================
-
-    public static final ResourceKey<LevelStem> BROOD_HIVE_LEVEL_KEY =
-            ResourceKey.create(Registries.LEVEL_STEM,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
-
-    public static final ResourceKey<Level> BROOD_HIVE_DIMENSION_KEY =
-            ResourceKey.create(Registries.DIMENSION,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
-
-    public static final ResourceKey<DimensionType> BROOD_HIVE_TYPE_KEY =
-            ResourceKey.create(Registries.DIMENSION_TYPE,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
-
-    public static final ResourceKey<Biome> BROOD_HIVE_BIOME_KEY =
-            ResourceKey.create(Registries.BIOME,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive_biome"));
-
-    // =========================================================================
     // CITY OF CALAMITY dimension
     // =========================================================================
 

@@ -799,7 +799,7 @@ public class DimensionProvider {
                                     bootstrap.register(ModDimensions.KEY_OF_LIGHT_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.KEY_OF_LIGHT_TYPE_KEY),
-                                                    new PreGeneratedChunkGenerator(
+                                                    new SefirotChunkGenerator(
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.KEY_OF_LIGHT_BIOME_KEY)),
                                                             "data/lotmcraft/dimension_data/key_of_light/")));

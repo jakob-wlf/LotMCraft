@@ -1,8 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -13,7 +11,6 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ControllingUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.playerMap.Characteristic;
@@ -79,8 +76,9 @@ public class ManipulationAbility extends SelectableAbility {
 
         switch (abilityIndex) {
             case 0 -> groupIncite(level, entity);
-            case 1 -> control(level, entity);
-            case 2 -> stopControl(level, entity);
+            //TODO reimplement
+            //case 1 -> control(level, entity);
+            //case 2 -> stopControl(level, entity);
         }
     }
 

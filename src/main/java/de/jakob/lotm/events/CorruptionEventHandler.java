@@ -53,7 +53,7 @@ public class CorruptionEventHandler {
         // While possessing/controlling another body (Manipulation, Marionette Controlling, Parasitation, ...)
         // the characteristic list is a temporary merge of two bodies' data, not genuine forbidden-pathway
         // acquisition, so don't punish it with corruption.
-        if (entity.getData(ModAttachments.CONTROLLING_DATA).isControlling()) return;
+        //if (entity.getData(ModAttachments.CONTROLLING_DATA).isControlling()) return; TODO fix
 
         // Players exempted from corruption leakage gain nothing
         //if (corruptionComp.isLeakageExempt()) return;
