@@ -167,9 +167,9 @@ dependencies {
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
 
     //tessellate (for compatibility)
-    compileOnly "curse.maven:tessellate-1660059:8757447"
+    compileOnly "curse.maven:tessellate-1660059:8870011"
     //tessellate in dev for testing
-    localRuntime "curse.maven:tessellate-1660059:8757447"
+    localRuntime "curse.maven:tessellate-1660059:8870011"
     localRuntime "curse.maven:architectury-api-419699:8492726"
 
     // LDLib2
