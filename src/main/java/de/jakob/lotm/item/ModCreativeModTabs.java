@@ -49,6 +49,7 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.UNIQUENESS_MAP);
                         output.accept(ModItems.CITY_MAP);
                         output.accept(ModItems.DROPS_OF_ETERNAL_DARKNESS_BUCKET.get());
+                        output.accept(ModItems.WATER_OF_THE_RIVER_STYX_BUCKET.get());
                         output.accept(ModItems.SEALED_BOTTLE.get());
                         output.accept(ModItems.ETERNAL_DARKNESS_RIVER_WATER_BOTTLE.get());
                         // ── Blasphemy Cards ──

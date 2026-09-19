@@ -23,6 +23,17 @@ public class ModFluidTypes {
                     .lightLevel(0))
     );
 
+        public static final DeferredHolder<FluidType, FluidType> WATER_OF_THE_RIVER_STYX_TYPE = FLUID_TYPES.register(
+            "water_of_the_river_styx",
+            () -> new FluidType(FluidType.Properties.create()
+                .canSwim(true)
+                .canDrown(true)
+                .supportsBoating(true)
+                .density(1100)
+                .viscosity(1200)
+                .lightLevel(0))
+        );
+
     public static void register(IEventBus eventBus) {
         FLUID_TYPES.register(eventBus);
     }

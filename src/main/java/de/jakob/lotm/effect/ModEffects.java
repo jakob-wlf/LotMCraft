@@ -53,6 +53,18 @@ public class ModEffects {
     public static final Holder<MobEffect> CORRUPTED = MOB_EFFECTS.register("corrupted",
             () -> new CorruptedEffect(MobEffectCategory.HARMFUL, 0xFFFFFF));
 
+    public static final Holder<MobEffect> JOY = MOB_EFFECTS.register("joy",
+            () -> new JoyEffect(MobEffectCategory.BENEFICIAL, 0xFFD700));
+
+    public static final Holder<MobEffect> ANGER = MOB_EFFECTS.register("anger",
+            () -> new AngerEffect(MobEffectCategory.HARMFUL, 0xB80000));
+
+    public static final Holder<MobEffect> TOUCH_OF_DEATH = MOB_EFFECTS.register("touch_of_death",
+            () -> new TouchOfDeathEffect(MobEffectCategory.HARMFUL, 0xB8B8C2));
+
+    public static final Holder<MobEffect> DEAD = MOB_EFFECTS.register("dead",
+            () -> new DeadEffect(MobEffectCategory.HARMFUL, 0x707078));
+
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);
     }

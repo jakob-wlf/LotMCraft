@@ -6,6 +6,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientLuckResourceCache;
+import de.jakob.lotm.util.ClientRitualProgressCache;
 import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import net.minecraft.client.Minecraft;
@@ -37,6 +38,7 @@ public class HudProgressBarsRenderer {
             renderProgressBar(guiGraphics);
             renderLuckResourceBar(guiGraphics);
             renderSacrificeBar(guiGraphics);
+            renderRitualBar(guiGraphics);
             renderSanityBar(guiGraphics);
             renderCorruptionBar(guiGraphics);
         });
@@ -157,6 +159,33 @@ public class HudProgressBarsRenderer {
                 barY - 10, 0xFFFF6B72, true);
     }
 
+        private static void renderRitualBar(GuiGraphics guiGraphics) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.options.hideGui || !ClientRitualProgressCache.isActive()) return;
+
+        int barWidth = 120;
+        int barHeight = 6;
+        int barX = guiGraphics.guiWidth() / 2 - barWidth / 2;
+        int barY = guiGraphics.guiHeight() - 70;
+        float progress = Math.clamp(
+            ClientRitualProgressCache.getCurrent() / (float) ClientRitualProgressCache.getTotal(), 0, 1);
+
+        guiGraphics.fill(barX, barY, barX + barWidth, barY + barHeight, 0x80000000);
+        int fillWidth = (int) (barWidth * progress);
+        if (fillWidth > 0) {
+            guiGraphics.fill(barX, barY, barX + fillWidth, barY + barHeight, 0xFFD49B45);
+        }
+
+        String value = ClientRitualProgressCache.isTimed()
+            ? String.format("%.1fs / %.1fs", ClientRitualProgressCache.getCurrent() / 20.0f,
+                ClientRitualProgressCache.getTotal() / 20.0f)
+            : ClientRitualProgressCache.getCurrent() + " / " + ClientRitualProgressCache.getTotal();
+        String text = ClientRitualProgressCache.getLabel() + ": " + value;
+        guiGraphics.drawString(mc.font, text,
+            guiGraphics.guiWidth() / 2 - mc.font.width(text) / 2,
+            barY - 10, 0xFFFFCC66, true);
+        }
+
     private static void renderSanityBar(GuiGraphics guiGraphics) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.options.hideGui) return;
@@ -164,7 +193,7 @@ public class HudProgressBarsRenderer {
 
         float sanity = mc.player.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity();
 
-        if(sanity > .85f) return; // Please leave it like this :'( -Jakob
+        if(sanity >= 1f) return;
 
         int barWidth = 14;
         int barHeight = 120;

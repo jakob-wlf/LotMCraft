@@ -1303,6 +1303,7 @@ public class AbilityUtil {
     }
 
     public static boolean isUndead(LivingEntity entity) {
+        if (de.jakob.lotm.dimension.UnderworldTouchOfDeathHandler.isFullyUndead(entity)) return true;
         return switch (BeyonderData.getPathway(entity)) {
             case "death", "abyss", "chained", "hanged_man" -> true;
             default -> entity.getType().is(EntityTypeTags.UNDEAD);

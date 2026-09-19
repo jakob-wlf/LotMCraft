@@ -59,6 +59,11 @@ public class CorruptionEventHandler {
         CorruptionComponent corruptionComp = entity.getData(ModAttachments.CORRUPTION_COMPONENT);
         BeyonderComponent beyonderComp = entity.getData(ModAttachments.BEYONDER_COMPONENT);
 
+        // While possessing/controlling another body (Manipulation, Marionette Controlling, Parasitation, ...)
+        // the characteristic list is a temporary merge of two bodies' data, not genuine forbidden-pathway
+        // acquisition, so don't punish it with corruption.
+        if (entity.getData(ModAttachments.CONTROLLING_DATA).isControlling()) return;
+
         // Players exempted from corruption leakage gain nothing
         //if (corruptionComp.isLeakageExempt()) return;
 

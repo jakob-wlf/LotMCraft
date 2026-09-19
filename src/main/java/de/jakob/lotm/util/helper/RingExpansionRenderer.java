@@ -28,6 +28,7 @@ import java.util.Map;
 public class RingExpansionRenderer {
     private static final List<RingEffect> activeEffects = new ArrayList<>();
     private static final Map<String, RingEffect> keyedEffects = new HashMap<>();
+    private static long lastEffectTick = Long.MIN_VALUE;
 
     /**
      * Represents a single expanding ring/hollow cylinder effect
@@ -242,6 +243,14 @@ public class RingExpansionRenderer {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
+        long gameTime = player.level().getGameTime();
+        if (gameTime != lastEffectTick) {
+            lastEffectTick = gameTime;
+            tickEffects();
+        }
+
+        if (activeEffects.isEmpty()) return;
+
         // Set up rendering state
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -274,8 +283,9 @@ public class RingExpansionRenderer {
         RenderSystem.depthMask(true); // Re-enable depth writing
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
+    }
 
-        // Tick and remove finished effects
+    private static void tickEffects() {
         Iterator<RingEffect> iterator = activeEffects.iterator();
         while (iterator.hasNext()) {
             RingEffect effect = iterator.next();

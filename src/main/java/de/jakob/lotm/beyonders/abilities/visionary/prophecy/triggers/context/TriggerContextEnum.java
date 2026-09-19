@@ -8,7 +8,8 @@ public enum TriggerContextEnum {
     EMPTY,
     NUMBER,
     STRING,
-    PLAYER
+    PLAYER,
+    PATH_SEQ
     ;
 
     public static TriggerContextEnum fromNBT(CompoundTag tag, String key) {

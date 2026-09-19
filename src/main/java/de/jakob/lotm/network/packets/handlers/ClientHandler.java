@@ -556,11 +556,21 @@ public class ClientHandler {
     }
 
     public static void openPsychologicalCueExplanation() {
-        Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createPsychologicalCueAbilityMenu(Minecraft.getInstance().screen));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) return;
+
+        int sequence = ClientBeyonderCache.getSequence(minecraft.player.getUUID());
+        minecraft.setScreen(VisionaryAbilityMenus.createPsychologicalCueAbilityMenu(
+                minecraft.screen, sequence));
     }
 
     public static void openStoryWritingExplanation() {
-        Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createStoryWritingAbilityMenu(Minecraft.getInstance().screen));
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null) return;
+
+        int sequence = ClientBeyonderCache.getSequence(minecraft.player.getUUID());
+        minecraft.setScreen(VisionaryAbilityMenus.createStoryWritingAbilityMenu(
+                minecraft.screen, sequence));
     }
 
     public static void openProphecyExplanation() {

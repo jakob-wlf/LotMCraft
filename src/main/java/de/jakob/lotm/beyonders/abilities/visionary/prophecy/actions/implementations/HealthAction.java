@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.implementations;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
@@ -24,7 +25,7 @@ public class HealthAction extends ActionBase {
 
     @Override
     public int getRequiredSeq() {
-        return 0;
+        return LOTMCraft.GREAT_OLD_ONE_SEQ;
     }
 
     @Override

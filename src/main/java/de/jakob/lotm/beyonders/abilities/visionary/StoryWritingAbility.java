@@ -6,9 +6,11 @@ import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerHelper;
+import de.jakob.lotm.beyonders.advancementrituals.visionary.seq1.VisSeq1Ritual;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -118,24 +120,38 @@ public class StoryWritingAbility extends ToggleAbility {
 
         String rawMessage = event.getRawText();
 
-        var trigger = TriggerHelper.deduceWithContext(rawMessage, writingMap.get(player.getUUID()), player);
-        if (trigger == null) {
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+        TriggerHelper.ParseResult parseResult = TriggerHelper.deduceDetailed(
+                rawMessage, writingMap.get(player.getUUID()), player);
+        if (!parseResult.succeeded()) {
+            player.sendSystemMessage(Component.literal("Story failed: " + parseResult.failureReason())
+                    .withStyle(ChatFormatting.RED));
             return;
         }
+        var trigger = parseResult.trigger();
 
         var target = player.level().getPlayerByUUID(trigger.getTarget());
         if (target != null) {
             if (target instanceof ServerPlayer playerTarget)
-                if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(player), player, playerTarget, null))
+                if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(player), player, playerTarget, null)) {
+                    player.sendSystemMessage(Component.literal(
+                            "Story failed: the target is a stronger Visionary and resisted it.")
+                            .withStyle(ChatFormatting.RED));
                     return;
+                }
         }
         else{
-            if(VisionaryHandler.shouldFailAndTriggerOfflineTarget(BeyonderData.getSequence(player), player,BeyonderData.playerMap.get(trigger.getTarget()).get()))
+            if(VisionaryHandler.shouldFailAndTriggerOfflineTarget(BeyonderData.getSequence(player), player,BeyonderData.playerMap.get(trigger.getTarget()).get())) {
+                player.sendSystemMessage(Component.literal(
+                        "Story failed: the offline target is a stronger Visionary and resisted it.")
+                        .withStyle(ChatFormatting.RED));
                 return;
+            }
         }
 
         BeyonderData.playerMap.addProphecy(trigger.getTarget(), new Prophecy(trigger.getTarget(), trigger, trigger.getType(), player.getUUID()));
+        player.sendSystemMessage(Component.literal("Story successfully written for "
+                + BeyonderData.playerMap.get(trigger.getTarget()).get().trueName() + ".")
+                .withStyle(ChatFormatting.GREEN));
     }
 
     @SubscribeEvent
@@ -155,6 +171,9 @@ public class StoryWritingAbility extends ToggleAbility {
                 if (!obj.trigger().isGeneralLoop()) continue;
 
                 int result = obj.checkAndPerform(player.level(), player);
+                if (result == 1) {
+                    VisSeq1Ritual.onProphecyTriggered(obj.casterId(), player);
+                }
                 if (result == 1 || result == -1) {
                     buff1.add(obj);
                 }

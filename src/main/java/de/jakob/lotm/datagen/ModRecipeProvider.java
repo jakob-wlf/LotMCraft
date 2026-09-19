@@ -86,7 +86,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.TYRANT_BLASPHEMY_CARD.get())
                 .requires(ModItems.VISIONARY_BLASPHEMY_CARD.get())
                 .requires(ModItems.JUSTICIAR_BLASPHEMY_CARD.get())
-                .requires(ModItems.TWILIGHT_GIANT_BLASPHEMY_CARD.get())
                 .requires(ModItems.DEATH_BLASPHEMY_CARD.get())
                 .requires(ModItems.ABYSS_BLASPHEMY_CARD.get())
                 .requires(ModItems.WHEEL_OF_FORTUNE_BLASPHEMY_CARD.get())
@@ -101,7 +100,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.DOOR_BLASPHEMY_CARD.get())
                 .requires(ModItems.FOOL_BLASPHEMY_CARD.get())
                 .requires(ModItems.MOTHER_BLASPHEMY_CARD.get())
-                .requires(ModItems.BLACK_EMPEROR_BLASPHEMY_CARD.get())
                 .requires(ModItems.DARKNESS_BLASPHEMY_CARD.get())
                 .unlockedBy("has_red_priest_blasphemy_card", has(ModItems.RED_PRIEST_BLASPHEMY_CARD.get()))
                 .save(recipeOutput);

@@ -45,6 +45,7 @@ public abstract class TriggerContextBase {
             case NUMBER -> TriggerNumbersContext.load(tag, id, provider);
             case STRING -> TriggerStringContext.load(tag, id, provider);
             case PLAYER -> TriggerPlayerContext.load(tag, id, provider);
+            case PATH_SEQ -> TriggerPathSeqContext.load(tag, id, provider);
         };
     }
 
@@ -56,6 +57,7 @@ public abstract class TriggerContextBase {
             case NUMBER -> new TriggerNumbersContext(id);
             case STRING -> new TriggerStringContext(id);
             case PLAYER -> new TriggerPlayerContext(id);
+            case PATH_SEQ -> new TriggerPathSeqContext(id);
         };
     }
 }

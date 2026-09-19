@@ -152,6 +152,32 @@ public class ClientEvents {
                 RenderSystem.setShaderFogShape(FogShape.SPHERE);
             }
         }, ModFluidTypes.DROPS_OF_ETERNAL_DARKNESS_TYPE.get());
+
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+            private static final ResourceLocation STILL = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_styx_water_still");
+            private static final ResourceLocation FLOWING = ResourceLocation.fromNamespaceAndPath("lotmcraft", "block/river_styx_water_flowing");
+
+            @Override
+            public ResourceLocation getStillTexture() {
+                return STILL;
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return FLOWING;
+            }
+
+            @Override
+            public int getTintColor() {
+                return 0xFFFFFFFF;
+            }
+
+            @Override
+            public Vector3f modifyFogColor(Camera camera, float partialTick, ClientLevel level, int renderDistance,
+                                           float darkenWorldAmount, Vector3f fluidFogColor) {
+                return new Vector3f(0.55f, 0.55f, 0.60f);
+            }
+        }, ModFluidTypes.WATER_OF_THE_RIVER_STYX_TYPE.get());
     }
 
     private static void registerSealedArtifactTint(Item item, RegisterColorHandlersEvent.Item event) {

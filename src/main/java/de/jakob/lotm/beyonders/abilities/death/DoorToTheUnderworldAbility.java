@@ -4,6 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -117,6 +118,8 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
         Vec3 lookVec = portalLookAtEntity.position().subtract(portalCenter).normalize();
         entity.setYRot(yawFromVector(lookVec));
         entity.setXRot(0);
+        entity.setTravelDestination(getTravelDestination(serverLevel),
+            portalCenter.x, portalCenter.z);
         serverLevel.addFreshEntity(entity);
 
         openPortal.put(caster.getUUID(), entity);
@@ -156,6 +159,8 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
         Vec3 lookVec = portalLookAtEntity.position().subtract(portalCenter).normalize();
         entity.setYRot(yawFromVector(lookVec));
         entity.setXRot(0);
+        entity.setTravelDestination(getTravelDestination(serverLevel),
+            portalCenter.x, portalCenter.z);
         serverLevel.addFreshEntity(entity);
 
         openPortal.put(player.getUUID(), entity);
@@ -177,6 +182,12 @@ public class DoorToTheUnderworldAbility extends SelectableAbility {
     private static float yawFromVector(Vec3 dir) {
         if (dir.lengthSqr() < 1.0E-6) return 0.0F;
         return (float)(Math.toDegrees(Math.atan2(-dir.x, dir.z)));
+    }
+
+    private static net.minecraft.resources.ResourceKey<Level> getTravelDestination(ServerLevel sourceLevel) {
+        return sourceLevel.dimension().equals(ModDimensions.UNDERWORLD_DIMENSION_KEY)
+                ? Level.OVERWORLD
+                : ModDimensions.UNDERWORLD_DIMENSION_KEY;
     }
 
     private void release(ServerPlayer player) {

@@ -12,6 +12,7 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -115,15 +116,19 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
         String rawMessage = event.getRawText();
 
-        var trigger = TriggerHelper.deduceWithContext(rawMessage, map.get(player.getUUID()), player);
-        if(trigger == null){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+        TriggerHelper.ParseResult parseResult = TriggerHelper.deduceDetailed(
+                rawMessage, map.get(player.getUUID()), player);
+        if(!parseResult.succeeded()){
+            player.sendSystemMessage(Component.literal("Cue failed: " + parseResult.failureReason())
+                    .withStyle(ChatFormatting.RED));
             return;
         }
+        var trigger = parseResult.trigger();
 
         var target = player.level().getPlayerByUUID(trigger.getTarget());
         if(target == null){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+            player.sendSystemMessage(Component.literal("Cue failed: the target must be online.")
+                    .withStyle(ChatFormatting.RED));
             return;
         }
 
@@ -131,13 +136,17 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
         Integer distance = TriggerHelper.getDistanceToTarget(player, trigger.getTarget());
         if (distance == null) {
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+            player.sendSystemMessage(Component.literal("Cue failed: could not determine the target's distance.")
+                    .withStyle(ChatFormatting.RED));
             return;
         }
 
         if(!virtualPersonaCaster.affects(target.getName().getString())) {
             if (distance > getDistancePerSeq(map.get(player.getUUID()))) {
-                AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+                player.sendSystemMessage(Component.literal("Cue failed: target is " + distance
+                        + " blocks away; your maximum range is "
+                        + getDistancePerSeq(map.get(player.getUUID())) + ".")
+                        .withStyle(ChatFormatting.RED));
                 return;
             }
         }
@@ -147,12 +156,17 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
         int targetSeq = BeyonderData.getSequence(target);
         if(AbilityUtil.isTargetSignificantlyStronger(map.get(player.getUUID()), targetSeq)){
-            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.story_writing.failed"));
+            player.sendSystemMessage(Component.literal(
+                "Cue failed: the target is significantly stronger than you.")
+                .withStyle(ChatFormatting.RED));
             player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, VisionaryLoosingControlHandler.getBasePerSeq(targetSeq), false, false, false));
             return;
         }
 
         BeyonderData.playerMap.addProphecy(trigger.getTarget(), new Prophecy(trigger.getTarget(), trigger, trigger.getType(), player.getUUID()));
+        player.sendSystemMessage(Component.literal("Psychological cue successfully applied to "
+            + target.getName().getString() + ".")
+            .withStyle(ChatFormatting.GREEN));
     }
 
     private static int getDistancePerSeq(int seq){

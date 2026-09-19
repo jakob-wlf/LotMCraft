@@ -176,8 +176,8 @@ public class ControllingUtil {
         syncIntrospectData(player);
     }
 
-    public static void reset(ServerPlayer player, ServerLevel level, boolean resetData){
-        if (player == null) return;
+    public static LivingEntity reset(ServerPlayer player, ServerLevel level, boolean resetData){
+        if (player == null) return null;
         ControllingDataComponent data = player.getData(ModAttachments.CONTROLLING_DATA);
         CompoundTag targetTag = data.getTargetEntity();
 
@@ -362,7 +362,7 @@ public class ControllingUtil {
         }
 
 
-        if(targetEntity instanceof LivingEntity){
+        if(targetEntity instanceof LivingEntity && !data.isSkipReleaseCharAdjustment()){
             LivingEntity target = (LivingEntity) targetEntity;
             BeyonderData.getCharList((LivingEntity) targetEntity).forEach(c -> {
                 if (Objects.equals(c.pathway(), BeyonderData.getPathway(target)) && c.sequence() == BeyonderData.getSequence(target)) {
@@ -371,7 +371,9 @@ public class ControllingUtil {
                 }
             });
         }
+        data.setSkipReleaseCharAdjustment(false);
 
+        return restoredTarget;
     }
 
     private static void copyPosition(LivingEntity source, LivingEntity target) {
@@ -440,41 +442,41 @@ public class ControllingUtil {
 
                 if (target instanceof Player targetPlayer) {
                     BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(source instanceof Player sp ? sp : targetPlayer));
-                    // Build a defensive deep-copy of the characteristic list.
-                    ArrayList<Characteristic> charCopy = new ArrayList<>();
-                    for (Characteristic characteristic : BeyonderData.getCharList(source)) {
-                        charCopy.add(new Characteristic(characteristic.pathway(), characteristic.stack(), characteristic.sequence()));
-                    }
+                }
 
-                    // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent.
-                    // Use skipCheck=true to allow copying even if slots are "full" (it's a copy, not a new acquisition).
-                    // Use updateCharacteristics=false because we're about to set the characteristic list manually via setCharacteristicList.
-                    // Use putIntoMap=false so the global map is only updated when players are restored.
-                    BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), true, false, false, true, false, false, false);
+                // Build a defensive deep-copy of the characteristic list.
+                ArrayList<Characteristic> charCopy = new ArrayList<>();
+                for (Characteristic characteristic : BeyonderData.getCharList(source)) {
+                    charCopy.add(new Characteristic(characteristic.pathway(), characteristic.stack(), characteristic.sequence()));
+                }
 
-                    // Copy pathway history to ensure client-side UI (like Introspect screen) works correctly
-                    target.getData(ModAttachments.BEYONDER_COMPONENT).setPathwayHistory(source.getData(ModAttachments.BEYONDER_COMPONENT).getPathwayHistory().clone());
+                // Set the pathway/sequence/etc using the standard setter to keep PlayerMap and passive effects consistent.
+                // Use skipCheck=true to allow copying even if slots are "full" (it's a copy, not a new acquisition).
+                // Use updateCharacteristics=false because we're about to set the characteristic list manually via setCharacteristicList.
+                // Use putIntoMap=false so the global map is only updated when players are restored.
+                BeyonderData.setBeyonder(target, BeyonderData.getPathway(source), BeyonderData.getSequence(source), true, false, false, true, false, false, false);
 
-                    // Overwrite the characteristic list with the exact copy from source
-                    target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
+                // Copy pathway history to ensure client-side UI (like Introspect screen) works correctly
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setPathwayHistory(source.getData(ModAttachments.BEYONDER_COMPONENT).getPathwayHistory().clone());
 
+                // Overwrite the characteristic list with the exact copy from source. Applied for both players
+                // and non-players - without this, non-player targets kept accumulating +1 to the preliminary
+                // setBeyonder call above every time they were restored (players got this correction, mobs didn't).
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setCharacteristicList(charCopy);
+
+                BeyonderData.setDigestionProgress(target, BeyonderData.getDigestionProgress(source));
+                target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(BeyonderData.getDigestionProgress(source));
+
+                if (target instanceof Player targetPlayer) {
                     // Sync digestion/griefing for players
                     if (source instanceof Player sourcePlayer) {
-                        //BeyonderData.digest(targetPlayer, BeyonderData.getDigestionProgress(sourcePlayer), false);
                         BeyonderData.setGriefingEnabled(targetPlayer, BeyonderData.isGriefingEnabled(sourcePlayer));
                     }
-                    BeyonderData.setDigestionProgress(target, BeyonderData.getDigestionProgress(source));
-                    target.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(BeyonderData.getDigestionProgress(source));
 
                     if (target instanceof ServerPlayer serverPlayer) {
                         syncIntrospectData(serverPlayer);
                         LOTMCraft.LOGGER.info("copyData: synced Beyonder data for player {}", serverPlayer.getUUID());
                     }
-                } else if (BeyonderData.isBeyonder(target)) {
-                    // Source is not a Beyonder and not forced -> preserve target's existing Beyonder data
-                    LOTMCraft.LOGGER.info("copyData: source {} is not Beyonder; preserving existing Beyonder data on target {}", source.getUUID(), target.getUUID());
-                } else {
-                    BeyonderData.clearBeyonderData(target);
                 }
             }
         }
@@ -632,9 +634,14 @@ public class ControllingUtil {
         float sanity = player.getData(ModAttachments.SANITY_COMPONENT).getSanity();
 
         float corruption = player.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+        // While actively controlling another body, reflect the assumed identity instead of the
+        // permanent highest-achieved one so the Introspect screen and ability list match reality.
+        ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
+        int introspectSequence = controllingData.isControlling() ? BeyonderData.getSequence(player) : BeyonderData.getHighestSequence(player);
+        String introspectPathway = controllingData.isControlling() ? BeyonderData.getPathway(player) : BeyonderData.getHighestPathway(player);
         PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket(
-                BeyonderData.getHighestSequence(player),
-                BeyonderData.getHighestPathway(player),
+                introspectSequence,
+                introspectPathway,
                 sanity,
                 corruption
         ));

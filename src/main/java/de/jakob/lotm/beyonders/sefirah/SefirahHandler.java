@@ -347,17 +347,22 @@ public class SefirahHandler {
                     return;
                 }
 
+                double spawnX = 393.411;
+                double spawnY = 320.0;
+                double spawnZ = -49.469;
+
                 player.teleportTo(keyOfLightLevel,
-                        23568,
-                        66,
-                        299,
+                    spawnX,
+                    spawnY,
+                    spawnZ,
                         -90,
                         0);
 
                 SefrotInvasionManager.recordOwnerEntry(player);
 
                 if (playTeleportEffect) {
-                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE, 23568, 66, 299, keyOfLightLevel);
+                    EffectManager.playEffect(EffectManager.Effect.SEFIRAH_CASTLE,
+                            spawnX, spawnY, spawnZ, keyOfLightLevel);
                 }
             }
         }

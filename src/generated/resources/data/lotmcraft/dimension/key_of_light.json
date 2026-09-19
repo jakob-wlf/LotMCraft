@@ -1,0 +1,11 @@
+{
+  "type": "lotmcraft:key_of_light",
+  "generator": {
+    "type": "lotmcraft:pregenerated",
+    "region_path": "data/lotmcraft/dimension_data/key_of_light/",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:key_of_light_biome"
+    }
+  }
+}

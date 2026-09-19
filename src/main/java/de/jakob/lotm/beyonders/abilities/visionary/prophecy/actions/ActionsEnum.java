@@ -25,6 +25,9 @@ public enum ActionsEnum {
     DOUBLE,
     SPIRITUALITY,
     PLAYER,
+    JOY,
+    ANGER,
+    COUNT_FOR_RITUAL,
     EMPTY
     ;
 

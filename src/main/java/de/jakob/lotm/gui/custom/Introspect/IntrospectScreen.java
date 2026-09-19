@@ -2,7 +2,6 @@ package de.jakob.lotm.gui.custom.Introspect;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
@@ -191,46 +190,43 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
         } else {
-            ControllingDataComponent controllingDataComponent = minecraft.player.getData(ModAttachments.CONTROLLING_DATA);
-            if (controllingDataComponent.isControlling()) {
+            var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
+
+            if (discernmentComponent.isDiscerning()) {
                 ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
                 availableAbilities.addAll(controllerPathwayAbilities);
             } else {
-                var discernmentComponent = minecraft.player.getData(ModAttachments.DISCERNMENT_DATA);
+                // Driven entirely by the held characteristic list (rather than a single pathway/sequence) so
+                // that possession abilities which merge in extra characteristics (e.g. Manipulation) correctly
+                // show abilities from every held pathway, not just the assumed one.
+                String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
+                ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
+                // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
+                int historyStart = Math.max(0, menu.getSequence());
+                for (int i = historyStart; i < pathwayHistory.length; i++) {
+                    String pathway = pathwayHistory[i];
+                    if (pathway != null) {
+                        ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
+                        availableAbilities.addAll(pathwayAbilities);
+                    }
+                }
 
-                if (discernmentComponent.isDiscerning()) {
-                    ArrayList<Ability> controllerPathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceOrderedBySequence(menu.getPathway(), menu.getSequence());
-                    availableAbilities.addAll(controllerPathwayAbilities);
-                } else {
-                    String[] pathwayHistory = ClientBeyonderCache.getPathwayHistory(minecraft.player.getUUID());
-                    ArrayList<Characteristic> charList = ClientBeyonderCache.getCharList(minecraft.player.getUUID());
-                    // GOO (seq -1) owns everything from seq 0 upward; clamp start index to 0
-                    int historyStart = Math.max(0, menu.getSequence());
-                    for (int i = historyStart; i < pathwayHistory.length; i++) {
-                        String pathway = pathwayHistory[i];
-                        if (pathway != null) {
-                            ArrayList<Ability> pathwayAbilities = LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(pathway, i);
-                            availableAbilities.addAll(pathwayAbilities);
-                        }
+                for (Characteristic characteristic : charList) {
+                    if (characteristic.stack() <= 0 || !characteristic.isEnabled()) {
+                        continue;
+                    }
+                    // Skip the GOO marker entry - it has no ability row of its own
+                    if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
+                        continue;
                     }
 
-                    for (Characteristic characteristic : charList) {
-                        if (characteristic.stack() <= 0 || !characteristic.isEnabled()) {
-                            continue;
-                        }
-                        // Skip the GOO marker entry - it has no ability row of its own
-                        if (characteristic.sequence() == de.jakob.lotm.LOTMCraft.GREAT_OLD_ONE_SEQ) {
-                            continue;
-                        }
+                    ArrayList<Ability> characteristicAbilities =
+                            LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
+                                    characteristic.pathway(),
+                                    characteristic.sequence()
+                            );
 
-                        ArrayList<Ability> characteristicAbilities =
-                                LOTMCraft.abilityHandler.getByPathwayAndSequenceExactOrdered(
-                                        characteristic.pathway(),
-                                        characteristic.sequence()
-                                );
-
-                        availableAbilities.addAll(characteristicAbilities);
-                    }
+                    availableAbilities.addAll(characteristicAbilities);
                 }
             }
         }

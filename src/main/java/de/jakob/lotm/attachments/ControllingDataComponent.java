@@ -20,8 +20,17 @@ public class ControllingDataComponent {
     private CompoundTag targetEntity = null;
     private CompoundTag bodyEntity = null;
     private boolean isMovementOnly = false;
+    private boolean skipReleaseCharAdjustment = false;
 
     public ControllingDataComponent() {}
+
+    public boolean isSkipReleaseCharAdjustment() {
+        return skipReleaseCharAdjustment;
+    }
+
+    public void setSkipReleaseCharAdjustment(boolean skipReleaseCharAdjustment) {
+        this.skipReleaseCharAdjustment = skipReleaseCharAdjustment;
+    }
 
     public boolean isControlling() {
         return isControlling;

@@ -1,0 +1,4 @@
+{
+  "parent": "neoforge:item/bucket",
+  "fluid": "lotmcraft:water_of_the_river_styx"
+}

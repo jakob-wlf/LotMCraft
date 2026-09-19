@@ -216,6 +216,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncRitualProgressPacket.TYPE,
+                SyncRitualProgressPacket.STREAM_CODEC,
+                SyncRitualProgressPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncSefirotAccommodationPacket.TYPE,
                 SyncSefirotAccommodationPacket.STREAM_CODEC,
                 SyncSefirotAccommodationPacket::handle

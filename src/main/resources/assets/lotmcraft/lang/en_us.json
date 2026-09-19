@@ -867,6 +867,10 @@
   "ability.lotmcraft.manipulation.control": "Control Target",
   "ability.lotmcraft.manipulation.control.too_strong": "Too powerful to control",
   "ability.lotmcraft.manipulation.control.success": "Control successful",
+  "ability.lotmcraft.manipulation.control.success_permanent": "Control successful (permanent)",
+  "ability.lotmcraft.manipulation.stop_control": "Stop Manipulating",
+  "ability.lotmcraft.manipulation.stop_control.success": "Control ended",
+  "ability.lotmcraft.manipulation.stop_control.not_controlling": "You are not controlling anyone",
   "lotmcraft.mental_plague_ability": "Mental Plague",
   "lotmcraft.mental_plague.description": "Spread a mental plague that will drive all entities to insanity",
   "ability.lotmcraft.mental_plague_ability.place": "Place",
@@ -1936,6 +1940,11 @@
 
   "block.lotmcraft.drops_of_eternal_darkness": "Drops of Eternal Darkness",
   "item.lotmcraft.drops_of_eternal_darkness_bucket": "Bucket of Eternal Darkness River Water",
+  "block.lotmcraft.water_of_the_river_styx": "Water of the River Styx",
+  "item.lotmcraft.water_of_the_river_styx_bucket": "Bucket of River Styx Water",
+  "effect.lotmcraft.touch_of_death": "Touch of Death",
+  "effect.lotmcraft.dead": "Dead",
+  "biome.lotmcraft.a_fork_of_the_river_of_eternal_darkness": "A Fork of the River of Eternal Darkness",
 
   "lotm.sefirot.no_sefirot": "You don't have a Sefirot",
   "lotm.sefirot.already_has_sefirot": "You already possess a Sefirot",

@@ -258,6 +258,7 @@ public class ModEvents {
         PrayCommand.register(event.getDispatcher());
         ImprintCommand.register(event.getDispatcher());
         TestCommand.register(event.getDispatcher());
+        RitualsCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

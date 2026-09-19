@@ -412,7 +412,7 @@ public class ModEntities {
 
     public static final Supplier<EntityType<UnderworldGateEntity>> UNDERWORLD_GATE =
             ENTITY_TYPES.register("underworld_gate", () -> EntityType.Builder.<UnderworldGateEntity>of(UnderworldGateEntity::new, MobCategory.MISC)
-                    .sized(1.5f, 2.5f).build("underworld_gate"));
+                    .sized(1.5f, 2.5f).noSave().build("underworld_gate"));
 
     public static final Supplier<EntityType<PlanetEntity>> PLANET =
             ENTITY_TYPES.register("planet", () -> EntityType.Builder.of(PlanetEntity::new, MobCategory.MISC)

@@ -23,8 +23,20 @@ public class ModFluids {
             FLUIDS.register("flowing_drops_of_eternal_darkness",
                     () -> new BaseFlowingFluid.Flowing(dropsProperties()));
 
+                public static final DeferredHolder<Fluid, BaseFlowingFluid.Source> WATER_OF_THE_RIVER_STYX_SOURCE =
+                    FLUIDS.register("water_of_the_river_styx",
+                        () -> new BaseFlowingFluid.Source(styxProperties()));
+
+                public static final DeferredHolder<Fluid, BaseFlowingFluid.Flowing> WATER_OF_THE_RIVER_STYX_FLOWING =
+                    FLUIDS.register("flowing_water_of_the_river_styx",
+                        () -> new BaseFlowingFluid.Flowing(styxProperties()));
+
     private static BaseFlowingFluid.Properties dropsProperties() {
         return PropertiesHolder.DROPS_OF_ETERNAL_DARKNESS_PROPERTIES;
+    }
+
+    private static BaseFlowingFluid.Properties styxProperties() {
+        return PropertiesHolder.WATER_OF_THE_RIVER_STYX_PROPERTIES;
     }
 
     private static final class PropertiesHolder {
@@ -38,6 +50,18 @@ public class ModFluids {
                         .levelDecreasePerBlock(1)
                         .slopeFindDistance(4)
                         .tickRate(5)
+                        .explosionResistance(100.0f);
+
+                private static final BaseFlowingFluid.Properties WATER_OF_THE_RIVER_STYX_PROPERTIES =
+                    new BaseFlowingFluid.Properties(
+                        ModFluidTypes.WATER_OF_THE_RIVER_STYX_TYPE,
+                        WATER_OF_THE_RIVER_STYX_SOURCE,
+                        WATER_OF_THE_RIVER_STYX_FLOWING)
+                        .block(ModBlocks.WATER_OF_THE_RIVER_STYX)
+                        .bucket(ModItems.WATER_OF_THE_RIVER_STYX_BUCKET)
+                        .levelDecreasePerBlock(1)
+                        .slopeFindDistance(4)
+                        .tickRate(7)
                         .explosionResistance(100.0f);
 
         private PropertiesHolder() {

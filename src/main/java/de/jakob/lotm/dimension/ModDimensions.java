@@ -41,6 +41,9 @@ public class ModDimensions {
     public static final Supplier<MapCodec<NatureDimensionWorldChunkGenerator>> NATURE_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("nature", () -> NatureDimensionWorldChunkGenerator.CODEC);
 
+    public static final Supplier<MapCodec<UnderworldChunkGenerator>> UNDERWORLD_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("underworld", () -> UnderworldChunkGenerator.CODEC);
+
     public static final Supplier<MapCodec<SpaceTimeLabyrinthChunkGenerator>> SPACE_TIME_LABYRINTH_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("space_time_labyrinth", () -> SpaceTimeLabyrinthChunkGenerator.CODEC);
 
@@ -56,6 +59,9 @@ public class ModDimensions {
 
     public static final Supplier<MapCodec<SpiritWorldBiomeSource>> SPIRIT_WORLD_BIOME_SOURCE =
             BIOME_SOURCES.register("spirit_world_biome_source", () -> SpiritWorldBiomeSource.CODEC);
+
+    public static final Supplier<MapCodec<UnderworldBiomeSource>> UNDERWORLD_BIOME_SOURCE =
+            BIOME_SOURCES.register("underworld_biome_source", () -> UnderworldBiomeSource.CODEC);
 
     // =======================
     // DREAM MAZE dimension
@@ -313,6 +319,30 @@ public class ModDimensions {
     public static final ResourceKey<Biome> RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "river_of_eternal_darkness_biome"));
+
+    // =========================================================================
+    // UNDERWORLD dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> UNDERWORLD_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld"));
+
+    public static final ResourceKey<Level> UNDERWORLD_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld"));
+
+    public static final ResourceKey<DimensionType> UNDERWORLD_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld"));
+
+    public static final ResourceKey<Biome> UNDERWORLD_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld_biome"));
+
+    public static final ResourceKey<Biome> ETERNAL_DARKNESS_FORK_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "a_fork_of_the_river_of_eternal_darkness"));
 
     // =========================================================================
     // BROOD HIVE dimension

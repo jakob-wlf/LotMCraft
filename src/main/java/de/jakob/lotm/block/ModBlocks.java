@@ -68,6 +68,21 @@ public class ModBlocks {
                             .isViewBlocking((state, level, pos) -> false))
     );
 
+    public static final DeferredBlock<LiquidBlock> WATER_OF_THE_RIVER_STYX = registerBlockWithoutItem(
+            "water_of_the_river_styx",
+            () -> new LiquidBlock(ModFluids.WATER_OF_THE_RIVER_STYX_SOURCE.get(),
+                    BlockBehaviour.Properties.of()
+                            .noOcclusion()
+                            .noCollission()
+                            .noLootTable()
+                            .replaceable()
+                            .liquid()
+                            .strength(100.0f)
+                            .sound(SoundType.EMPTY)
+                            .isSuffocating((state, level, pos) -> false)
+                            .isViewBlocking((state, level, pos) -> false))
+    );
+
     public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
             () -> new RealityPortalBlock(BlockBehaviour.Properties.of()
                     .noLootTable()

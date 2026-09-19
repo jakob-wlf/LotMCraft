@@ -107,6 +107,12 @@ Sets a player's kill count to the specified value. Kill count is used by the Red
 
 ---
 
+### `/greatoldone <form> [player]`
+
+Force-transforms a Beyonder into `lord-of-mysteries`, `eternal-darkness`, `god-almighty`, or `key-of-light`. The player argument is required from the server console. Requires OP level 2.
+
+---
+
 ### `/luck <player> [value]`
 
 Reads or sets a player's current Luck. Requires OP level 2.
@@ -136,6 +142,17 @@ Manage active quests for players. Requires OP level 2.
 ### `/sanity <target> <amount>`
 
 Sets the sanity of a living entity to the given value (0.0–1.0). Sanity affects ability effectiveness and triggers Losing Control at low values. Requires OP level 2.
+
+---
+
+### `/ritual`
+
+Checks advancement ritual progress or edits persistent ritual participant requirements.
+
+| Subcommand | Description |
+|---|---|
+| `/ritual <pathway> <sequence> check` | Shows the executor's progress for the selected ritual. |
+| `/ritual <pathway> <sequence> edit RequiredAmount <amount>` | Sets the ritual's required amount. Requires OP level 2. For scaling rituals, this changes only the minimum amount and preserves the multiplier. |
 
 ---
 

@@ -44,6 +44,14 @@ public class GreatOldOneCommand {
                                         context.getSource(),
                                         "eternal-darkness",
                                     StringArgumentType.getString(context, "player")))))
+                        .then(Commands.literal("god-almighty")
+                            .executes(context -> transform(context.getSource(), "god-almighty", null))
+                            .then(Commands.argument("player", StringArgumentType.string())
+                                .suggests(PLAYER_SUGGESTIONS)
+                                .executes(context -> transform(
+                                    context.getSource(),
+                                    "god-almighty",
+                                    StringArgumentType.getString(context, "player")))))
                         .then(Commands.literal("key-of-light")
                             .executes(context -> transform(context.getSource(), "key-of-light", null))
                             .then(Commands.argument("player", StringArgumentType.string())
@@ -83,6 +91,7 @@ public class GreatOldOneCommand {
 
         GreatOldOneManager.transformAs(player, gooType);
         String label = switch (gooType.toLowerCase(java.util.Locale.ROOT)) {
+            case "god-almighty" -> "God Almighty";
             case "eternal-darkness" -> "Eternal Darkness";
             case "key-of-light" -> "Key of Light";
             default -> "Lord of Mysteries";

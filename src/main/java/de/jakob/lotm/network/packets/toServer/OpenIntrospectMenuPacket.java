@@ -52,8 +52,11 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
-                int sequence = BeyonderData.getHighestSequence(player);
-                String pathway = BeyonderData.getHighestPathway(player);
+                // While actively controlling another body (Manipulation, Marionette Controlling, Parasitation, ...)
+                // show/filter abilities by the assumed identity instead of your permanent highest-achieved one.
+                de.jakob.lotm.attachments.ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
+                int sequence = controllingData.isControlling() ? BeyonderData.getSequence(player) : BeyonderData.getHighestSequence(player);
+                String pathway = controllingData.isControlling() ? BeyonderData.getPathway(player) : BeyonderData.getHighestPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 List<ItemStack> passiveAbilities = new ArrayList<>(PassiveAbilityHandler.ITEMS.getEntries().stream().filter(entry -> {

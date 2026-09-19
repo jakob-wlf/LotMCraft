@@ -869,8 +869,8 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
         ));
 
-        // Twilight Giant pathway
-        RECIPES.add(new PotionRecipe(
+        // Twilight Giant pathway (disabled)
+        /*RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.WARRIOR_POTION.get(),
                 new ItemStack(Items.IRON_SWORD, 1),
                 new ItemStack(Items.BEEF, 1),
@@ -923,7 +923,7 @@ public class PotionRecipes {
                 new ItemStack(Items.NETHER_STAR, 1),
                 new ItemStack(Items.TOTEM_OF_UNDYING, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 1)))
-        ));
+        ));*/
     }
 
     @Nullable

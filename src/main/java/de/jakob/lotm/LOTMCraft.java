@@ -332,6 +332,8 @@ public class LOTMCraft
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.MYSTICAL_RING.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), RenderType.translucent());
                 ItemBlockRenderTypes.setRenderLayer(ModFluids.DROPS_OF_ETERNAL_DARKNESS_FLOWING.get(), RenderType.translucent());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.WATER_OF_THE_RIVER_STYX_SOURCE.get(), RenderType.translucent());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.WATER_OF_THE_RIVER_STYX_FLOWING.get(), RenderType.translucent());
 
                 PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(ANIMATION_LAYER_ID, 1000,
                         player -> new PlayerAnimationController(player,

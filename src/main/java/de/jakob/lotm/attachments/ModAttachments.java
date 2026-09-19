@@ -236,6 +236,11 @@ public class ModAttachments {
                     AttachmentType.serializable(BeyonderComponent::new).copyOnDeath().build()
             );
 
+    public static final Supplier<AttachmentType<VisionaryRitualDataComponent>> VISIONARY_RITUAL_DATA =
+            ATTACHMENT_TYPES.register("visionary_ritual_data", () ->
+                    AttachmentType.serializable(VisionaryRitualDataComponent::new).copyOnDeath().build()
+            );
+
     public static final Supplier<AttachmentType<SkillScalingComponent>> SKILL_SCALING_COMPONENT =
             ATTACHMENT_TYPES.register("skill_scaling_component", () ->
                     AttachmentType.builder(SkillScalingComponent::new)

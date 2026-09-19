@@ -149,6 +149,10 @@ public class ModItems {
             () -> new BucketItem(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(), new Item.Properties().stacksTo(1))
     );
 
+    public static final DeferredItem<Item> WATER_OF_THE_RIVER_STYX_BUCKET = ITEMS.register("water_of_the_river_styx_bucket",
+            () -> new BucketItem(ModFluids.WATER_OF_THE_RIVER_STYX_SOURCE.get(), new Item.Properties().stacksTo(1))
+    );
+
     /** Crafted in an anvil: empty bottle + door characteristic. */
     public static final DeferredItem<Item> SEALED_BOTTLE = ITEMS.registerItem(
             "sealed_bottle", SealedBottleItem::new, new Item.Properties().stacksTo(16));
