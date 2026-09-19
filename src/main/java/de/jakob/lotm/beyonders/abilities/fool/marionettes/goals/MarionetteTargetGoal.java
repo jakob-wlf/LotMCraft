@@ -1,7 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -68,13 +69,15 @@ public class MarionetteTargetGoal extends TargetGoal {
 
         LivingEntity controllerAttacker = controller.getLastHurtByMob();
         if (controllerAttacker != null && controllerAttacker.isAlive() &&
-                controllerAttacker != marionette && controllerAttacker != controller) {
+                controllerAttacker != marionette && controllerAttacker != controller &&
+                AbilityUtil.mayTarget(marionette, controllerAttacker)) {
             return controllerAttacker;
         }
 
         LivingEntity controllerTarget = controller.getLastHurtMob();
         if (controllerTarget != null && controllerTarget.isAlive() &&
-                controllerTarget != marionette && controllerTarget != controller) {
+                controllerTarget != marionette && controllerTarget != controller &&
+                AbilityUtil.mayTarget(marionette, controllerTarget)) {
             return controllerTarget;
         }
 

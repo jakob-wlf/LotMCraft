@@ -6,9 +6,9 @@ import de.jakob.lotm.entity.custom.ability_entities.door_pathway.TravelersDoorEn
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenTravelersDoorPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -118,6 +118,11 @@ public class TravelersDoorAbility extends SelectableAbility {
 
                 travelersDoorUsers.remove(player.getUUID());
 
+                if (de.jakob.lotm.beyonders.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
+                    player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+                    return;
+                }
+
                 int spiritualityCost = getCostForDistance(player.position(), validatedPos);
                 if(BeyonderData.getSpirituality(player) < spiritualityCost) {
                     spawnFailureParticles(serverLevel, targetLoc);
@@ -125,7 +130,9 @@ public class TravelersDoorAbility extends SelectableAbility {
                 }
                 BeyonderData.reduceSpirituality(player, spiritualityCost);
 
-                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel, player.getLookAngle().normalize().scale(-1), targetLoc, pos.getX(), pos.getY(), pos.getZ());
+                TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(), serverLevel,
+                    player.getLookAngle().normalize().scale(-1), targetLoc, pos.getX(), pos.getY(), pos.getZ(),
+                    AbilityUtil.getSeqWithArt(player, this));
                 serverLevel.addFreshEntity(door);
                 serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);
 

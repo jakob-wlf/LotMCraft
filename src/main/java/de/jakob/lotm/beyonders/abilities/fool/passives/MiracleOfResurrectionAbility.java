@@ -1,14 +1,17 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,7 +45,27 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
 
     }
 
+    @Override
+    public void onPassiveAbilityGained(LivingEntity entity, ServerLevel serverLevel) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        MiracleOfResurrectionComponent data = player.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
+        if (data.getResurrectionAttempts() <= 0) {
+            data.setResurrectionAttempts(4);
+        }
+    }
+
+    @Override
+    public void onPassiveAbilityRemoved(LivingEntity entity, ServerLevel serverLevel) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        // Clear attempts when this passive isn't naturally active for the player's pathway.
+        if (!"fool".equalsIgnoreCase(BeyonderData.getPathway(player)) || BeyonderData.getSequence(player) > 2) {
+            MiracleOfResurrectionComponent data = player.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
+            data.setResurrectionAttempts(0);
+        }
+    }
+
     static Random random = new Random();
+    private static final int HISTORICAL_VOID_EXIT_TICKS = 20 * 10;
 
     @SubscribeEvent
     public static void beforePlayerDies(LivingIncomingDamageEvent event) {
@@ -63,6 +86,10 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
             if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
             MiracleOfResurrectionComponent data = serverPlayer.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             if (data.getResurrectionAttempts() > 0) {
+                if (SefrotInvasionManager.forfeitForResurrection(serverPlayer)) {
+                    event.setCanceled(true);
+                    return;
+                }
                 data.setResurrectionAttempts(data.getResurrectionAttempts() - 1);
 
                 event.setCanceled(true);
@@ -91,6 +118,11 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
                     ToggleAbility.cleanUp(serverLevel, serverPlayer);
                     BeyonderData.setSpirituality(serverPlayer, BeyonderData.getMaxSpirituality(serverPlayer));
                     LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").useAbility(serverLevel, serverPlayer, false, false, false, false);
+
+                        if (!"fool".equalsIgnoreCase(BeyonderData.getPathway(serverPlayer))) {
+                        ServerScheduler.scheduleDelayed(HISTORICAL_VOID_EXIT_TICKS, () ->
+                            HistoricalVoidHidingAbility.forceExit(serverLevel, serverPlayer), serverLevel);
+                        }
                 }
 
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());

@@ -1,10 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
-import de.jakob.lotm.beyonders.abilities.core.*;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
 import de.jakob.lotm.item.ModItems;

@@ -31,7 +31,7 @@ public class PotionRecipeItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         if (level.isClientSide && recipe != null) {
-            PacketHandler.sendToServer(new OpenRecipeMenuPacket(recipe.potion().getSequence(), recipe.potion().getPathway()));
+            PacketHandler.sendToServer(new OpenRecipeMenuPacket(recipe.potion().getSequence(), recipe.potion().getPathway(), false));
         }
         return InteractionResultHolder.success(player.getItemInHand(usedHand));
     }

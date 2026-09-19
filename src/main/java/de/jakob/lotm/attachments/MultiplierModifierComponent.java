@@ -1,20 +1,14 @@
 package de.jakob.lotm.attachments;
 
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.DisableAbilityUsageForTimePacket;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class MultiplierModifierComponent implements INBTSerializable<CompoundTag> {
 

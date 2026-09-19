@@ -1,20 +1,26 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.AnchorComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ConnectionAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
-import de.jakob.lotm.data.ModDataComponents;
-import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.dimension.SpiritWorldHandler;
-import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.data.ModDataComponents;
+import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.OpenAnchorCuttingScreenPacket;
+import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -31,7 +37,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class AngelAuthorityAbility extends SelectableAbility {
     private AngelFlightAbility flightSkill;
@@ -64,11 +72,17 @@ public class AngelAuthorityAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{"ability.lotmcraft.angel_authority.spirit_world_passage",
                 "ability.lotmcraft.angel_authority.artifact_shattering",
-                "ability.lotmcraft.angel_authority.flight"
+                "ability.lotmcraft.angel_authority.flight",
+                "ability.lotmcraft.angel_authority.characteristic_splitting",
+                "ability.lotmcraft.angel_authority.cut_connections"
         };
     }
 
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if (level.isClientSide && entity instanceof Player && abilityIndex == 3) {
+            de.jakob.lotm.network.packets.handlers.ClientHandler.openCharacteristicSplittingScreen();
+            return;
+        }
         if (!level.isClientSide && entity instanceof ServerPlayer player) {
             switch (abilityIndex) {
                 case 0:
@@ -83,8 +97,41 @@ public class AngelAuthorityAbility extends SelectableAbility {
                     flight(player, (ServerLevel) level);
                     break;
 
+                case 4:
+                    cutConnections(player);
+                    break;
+
             }
         }
+    }
+
+    private void cutConnections(ServerPlayer player) {
+        if (ConnectionAbility.cutConnectedItem(player, player.getMainHandItem())) {
+            player.displayClientMessage(Component.literal("The item's spiritual connection was cut."), true);
+            return;
+        }
+        openAnchorCuttingScreen(player);
+    }
+
+    public static void openAnchorCuttingScreen(ServerPlayer player) {
+        List<OpenAnchorCuttingScreenPacket.AnchorInfo> anchors = player
+                .getData(ModAttachments.ANCHOR_COMPONENT).getAnchors().entrySet().stream()
+                .map(entry -> {
+                    ServerPlayer anchor = player.server.getPlayerList().getPlayer(entry.getKey());
+                    String name = anchor == null ? entry.getKey().toString().substring(0, 8) : anchor.getName().getString();
+                    return new OpenAnchorCuttingScreenPacket.AnchorInfo(
+                            entry.getKey().toString(), name, entry.getValue());
+                })
+                .toList();
+        PacketHandler.sendToPlayer(player, new OpenAnchorCuttingScreenPacket(anchors));
+    }
+
+    public static boolean cutAnchor(ServerPlayer player, UUID anchorId) {
+        if (!BeyonderData.isBeyonder(player) || BeyonderData.getSequence(player) > 2) return false;
+        AnchorComponent anchors = player.getData(ModAttachments.ANCHOR_COMPONENT);
+        if (!anchors.getAnchors().containsKey(anchorId)) return false;
+        anchors.removeAnchor(anchorId);
+        return true;
     }
 
     public void flight(Player player, ServerLevel level){
@@ -131,6 +178,10 @@ public class AngelAuthorityAbility extends SelectableAbility {
 
     public void spiritWorldPassage(ServerPlayer player) {
         if (player.level().isClientSide) return;
+        if (de.jakob.lotm.beyonders.sefirah.SefirahCastleEventHandler.isAccommodating(player)) {
+            player.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+            return;
+        }
         ServerLevel targetLevel;
         Vec3 targetPos;
 

@@ -18,27 +18,65 @@ public class IntrospectMenu extends AbstractContainerMenu {
     private String pathway;
     private float digestionProgress;
     private float sanity;
+    private float corruption;
+    private boolean sefirotOwner;
+    private ItemStackHandler itemHandler;
 
     // Client-side constructor
     public IntrospectMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInventory, buf.readInt(), buf.readUtf(), 0.0f, 1.0f);
+        this(new ArrayList<>(List.of()), containerId, playerInventory, buf.readInt(), buf.readUtf(), 0.0f, 1.0f, 0.0f, buf.readBoolean());
     }
 
-    public void updateData(int sequence, String pathway, float digestionProgress, float sanity) {
+    public void updateData(int sequence, String pathway, float digestionProgress, float sanity, float corruption) {
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
         this.sanity = sanity;
+        this.corruption = corruption;
     }
 
     // Server-side constructor
-    public IntrospectMenu(int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity) {
+    public IntrospectMenu(int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity, float corruption, boolean sefirotOwner) {
+        this(new ArrayList<>(List.of()), containerId, playerInventory, sequence, pathway, digestionProgress, sanity, corruption, sefirotOwner);
+    }
+
+    // Server-side constructor
+    public IntrospectMenu(List<ItemStack> passiveAbilities, int containerId, Inventory playerInventory, int sequence, String pathway, float digestionProgress, float sanity, float corruption, boolean sefirotOwner) {
         super(ModMenuTypes.INTROSPECT_MENU.get(), containerId);
 
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
         this.sanity = sanity;
+        this.corruption = corruption;
+        this.sefirotOwner = sefirotOwner;
+        this.itemHandler = new ItemStackHandler(9) {
+            @Override
+            public boolean isItemValid(int slot, ItemStack stack) {
+                return false; // Prevent insertion
+            }
+
+            @Override
+            public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+                return ItemStack.EMPTY;
+            }
+        };
+
+        boolean showKillCount = pathway.equals("red_priest") && sequence <= 3;
+        int slotY = showKillCount ? 188 : 178;
+        for (int i = 0; i < 9; i++) {
+            int x = 7 + (i * 18);
+            this.addSlot(new SlotItemHandler(itemHandler, i, x, slotY));
+        }
+
+        if(!passiveAbilities.isEmpty()) {
+            int size = Math.min(passiveAbilities.size(), itemHandler.getSlots());
+
+            // Populate with provided items
+            for (int i = 0; i < size; i++) {
+                itemHandler.setStackInSlot(i, passiveAbilities.get(i).copy());
+            }
+        }
     }
 
     @Override
@@ -65,5 +103,13 @@ public class IntrospectMenu extends AbstractContainerMenu {
 
     public float getSanity() {
         return sanity;
+    }
+
+    public float getCorruption() {
+        return corruption;
+    }
+
+    public boolean isSefirotOwner() {
+        return sefirotOwner;
     }
 }

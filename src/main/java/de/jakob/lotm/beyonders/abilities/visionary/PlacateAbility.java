@@ -1,10 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.VirtualPersonaComponent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.dimension.UnderworldTouchOfDeathHandler;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -18,7 +19,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class PlacateAbility extends SelectableAbility {
     public PlacateAbility(String id) {
@@ -223,6 +227,7 @@ public class PlacateAbility extends SelectableAbility {
 
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(getSanityPerSeq(entitySeq), entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
+        UnderworldTouchOfDeathHandler.placate(entity);
 
         var mentalPlague = entity.getData(ModAttachments.MENTAL_PLAGUE.get());
         if(mentalPlague.hasMentalPlague()){

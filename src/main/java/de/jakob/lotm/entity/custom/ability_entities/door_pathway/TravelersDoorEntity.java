@@ -6,7 +6,6 @@ import de.jakob.lotm.dimension.SpiritWorldHandler;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -26,7 +25,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.Set;
 
@@ -44,6 +42,9 @@ public class TravelersDoorEntity extends Entity {
     private int use;
 
     private static final double TELEPORT_RANGE = 1.0;
+    private static final double SEQUENCE_5_INSTANT_RANGE = 100.0;
+    private static final double SEQUENCE_4_INSTANT_RANGE = 250.0;
+    private static final double SEQUENCE_3_INSTANT_RANGE = 500.0;
 
 
     public TravelersDoorEntity(EntityType<?> entityType, Level level) {
@@ -73,8 +74,9 @@ public class TravelersDoorEntity extends Entity {
         this.use = use;
     }
 
-    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, double destX, double destY, double destZ) {
-        this(type, level, facing, center, 0, 5);
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing,
+                               Vec3 center, double destX, double destY, double destZ, int casterSeq) {
+        this(type, level, facing, center, 0, casterSeq);
         this.destX = destX;
         this.destY = destY;
         this.destZ = destZ;
@@ -100,7 +102,7 @@ public class TravelersDoorEntity extends Entity {
         serverLevel.setChunkForced(chunkPosition().x, chunkPosition().z, true);
 
 
-        if(tickCount > 20 * 6) {
+        if(tickCount > 20 * 10) {
             this.discard();
             return;
         }
@@ -119,6 +121,11 @@ public class TravelersDoorEntity extends Entity {
             if (spiritWorldLevel == null) return;
 
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
+                if (entity instanceof net.minecraft.server.level.ServerPlayer sp
+                        && de.jakob.lotm.beyonders.sefirah.SefirahCastleEventHandler.isAccommodating(sp)) {
+                    sp.sendSystemMessage(net.minecraft.network.chat.Component.translatable("lotm.sefirot.sefirah_castle_spirit_world_locked"));
+                    continue;
+                }
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
                     Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position(), spiritWorldLevel);
@@ -173,43 +180,58 @@ public class TravelersDoorEntity extends Entity {
         ServerLevel spiritWorldLevel = level.getServer().getLevel(spiritWorld);
         if (spiritWorldLevel == null) return;
 
-        if(level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
-            ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, position().add(0, .5, 0), 35, .4, .1);
-            ParticleUtil.spawnParticles(level, new DustParticleOptions(
-                    new Vector3f(99 / 255f, 255 / 255f, 250 / 255f),
-                    1
-            ), position().add(0, .5, 0), 35, .4, .1);
-            this.discard();
-            return;
-        }
-
-        Vec3 spiritWorldPos = SpiritWorldHandler.getCoordinatesInSpiritWorld(this.position(), spiritWorldLevel);
-        Vec3 spiritWorldTargetPos = SpiritWorldHandler.getCoordinatesInSpiritWorld(new Vec3(destX, destY, destZ), spiritWorldLevel);
-
-        int dragDuration = (int) (spiritWorldPos.distanceTo(spiritWorldTargetPos));
-
-        Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize();
+        Vec3 destination = new Vec3(destX, destY, destZ);
+        boolean alreadyInSpiritWorld = level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY);
+        Vec3 spiritWorldPos = alreadyInSpiritWorld
+                ? this.position()
+                : SpiritWorldHandler.getCoordinatesInSpiritWorld(this.position(), spiritWorldLevel);
+        Vec3 spiritWorldTargetPos = alreadyInSpiritWorld
+                ? destination
+                : SpiritWorldHandler.getCoordinatesInSpiritWorld(destination, spiritWorldLevel);
+        double glideSpeed = getGlideSpeed();
+        int dragDuration = Math.max(1,
+                (int) Math.ceil(spiritWorldPos.distanceTo(spiritWorldTargetPos) / glideSpeed));
+        boolean instantTravel = casterSeq <= 2
+                || this.position().distanceTo(destination) <= getInstantTeleportRange();
 
         for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
-            if(!(entity instanceof LivingEntity) || casterSeq <= 2) {
+            if (!(entity instanceof LivingEntity) || instantTravel) {
                 entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
                 continue;
             }
 
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
+            Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize().scale(glideSpeed);
 
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
                 ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
-                Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
+                Vec3 nextPos = currentEntityPos[0].add(dir);
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
 
-                ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, currentEntityPos[0].add(0, .5, 0), 35, .4, .1);
-                ParticleUtil.spawnParticles(level, ParticleTypes.PORTAL, currentEntityPos[0].add(0, .5, 0), 35, .7, .1);
+                ParticleUtil.spawnParticles(spiritWorldLevel, ParticleTypes.END_ROD, currentEntityPos[0].add(0, .5, 0), 35, .4, .1);
+                ParticleUtil.spawnParticles(spiritWorldLevel, ParticleTypes.PORTAL, currentEntityPos[0].add(0, .5, 0), 35, .7, .1);
 
-            }, () -> entity.teleportTo((ServerLevel) this.level(), destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot()), level);
+            }, () -> {
+                if (entity.isAlive()) {
+                    entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
+                }
+            }, level);
         }
+    }
+
+    private double getGlideSpeed() {
+        if (casterSeq <= 3) return 4.0;
+        if (casterSeq == 4) return 2.0;
+        return 1.0;
+    }
+
+    private double getInstantTeleportRange() {
+        if (casterSeq <= 2) return Double.POSITIVE_INFINITY;
+        if (casterSeq == 3) return SEQUENCE_3_INSTANT_RANGE;
+        if (casterSeq == 4) return SEQUENCE_4_INSTANT_RANGE;
+        return SEQUENCE_5_INSTANT_RANGE;
     }
 
     @Override
@@ -236,6 +258,9 @@ public class TravelersDoorEntity extends Entity {
         if(compoundTag.contains("Use")) {
             this.use = compoundTag.getInt("Use");
         }
+        if (compoundTag.contains("CasterSeq")) {
+            this.casterSeq = compoundTag.getInt("CasterSeq");
+        }
     }
 
     @Override
@@ -244,6 +269,7 @@ public class TravelersDoorEntity extends Entity {
         compoundTag.putDouble("DestY", this.destY);
         compoundTag.putDouble("DestZ", this.destZ);
         compoundTag.putInt("Use", this.use);
+        compoundTag.putInt("CasterSeq", this.casterSeq);
     }
 
     @Override

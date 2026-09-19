@@ -6,7 +6,6 @@ package de.jakob.lotm.rendering.models.red_priest;// Made with Blockbench 5.0.7
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureAnimations;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;

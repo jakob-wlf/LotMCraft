@@ -1,11 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
+import de.jakob.lotm.attachments.FlamingJumpData;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.attachments.FlamingJumpData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;

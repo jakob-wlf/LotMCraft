@@ -2,9 +2,7 @@ package de.jakob.lotm.entity.client.spirits.spirit_bane;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneModel;
 import de.jakob.lotm.entity.custom.spirits.SpiritBaneEntity;
-import de.jakob.lotm.entity.custom.spirits.SpiritBizarroBaneEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

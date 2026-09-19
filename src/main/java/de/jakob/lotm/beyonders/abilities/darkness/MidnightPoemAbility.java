@@ -1,10 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.darkness;
 
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
@@ -12,6 +11,7 @@ import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -37,7 +37,7 @@ public class MidnightPoemAbility extends SelectableAbility {
     private final DustParticleOptions dustBig = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 10f);
 
     public MidnightPoemAbility(String id) {
-        super(id, 4f, "calming");
+        super(id, 16f, "calming");
         interactionRadius = 20;
     }
 
@@ -128,6 +128,21 @@ public class MidnightPoemAbility extends SelectableAbility {
     }
 
     @Override
+    public boolean isSubAbilityAllowed(LivingEntity entity, int selectedAbility) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 6) {
+            return selectedAbility < 2;
+        }
+        if (entitySeq > 4) {
+            return selectedAbility < 3;
+        }
+        if (entitySeq > 3) {
+            return selectedAbility < 4;
+        }
+        return true;
+    }
+
+    @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch (abilityIndex) {
             case 0 -> lullaby(level, entity);
@@ -209,10 +224,9 @@ public class MidnightPoemAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.CRIMSON_LEAF.get(), entity.position().subtract(0, .2, 0), 500, 7, .01, 7, 0.07);
 
 
-        LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
-        if(luckComponent.getLuck() < 0) {
+        if(LuckManager.getLuck(entity) < 0) {
             int amplifier = Math.min(Math.round(multiplier(entity) * 750), 3000);
-            luckComponent.addLuckWithMax(amplifier, 3000);
+            LuckManager.cleanseMisfortune(entity, amplifier);
         }
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((0.15f*(int)Math.max(multiplier(entity)/20,1)), entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
@@ -220,10 +234,9 @@ public class MidnightPoemAbility extends SelectableAbility {
         {
             e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (0.15f*(int)Math.max(multiplier(entity)/2,1)), e);
             e.removeEffect(ModEffects.LOOSING_CONTROL);
-            LuckComponent luckC = e.getData(ModAttachments.LUCK_COMPONENT);
-            if(luckC.getLuck() < 0) {
+            if(LuckManager.getLuck(e) < 0) {
                 int amplifier = Math.min(Math.round(multiplier(entity) * 750), 3000);
-                luckC.addLuckWithMax(amplifier, 3000);
+                LuckManager.cleanseMisfortune(e, amplifier);
             }
         });
     }

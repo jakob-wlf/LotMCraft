@@ -28,12 +28,12 @@ public class Earthquake extends Calamity{
     private final Random random = new Random();
 
     @Override
-    public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier, boolean griefing) {
-        spawnCalamity(level, startPos, multiplier, griefing, 28, 9.5f, null, false);
+    protected void spawnScaledCalamity(ServerLevel level, Vec3 startPos, float damageMultiplier, boolean griefing, float rangeScale) {
+        spawnCalamity(level, startPos, damageMultiplier, griefing, Math.max(1, Math.round(28 * rangeScale)), 9.5f, null, false);
     }
 
     public void spawnCalamity(ServerLevel level, Vec3 startPos, float multiplier, boolean griefing, int radius, float rawDamage, LivingEntity caster, boolean damageCaster) {
-        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle(level, startPos.add(0, -2, 0), 30));
+        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle(level, startPos.add(0, -2, 0), radius));
         for(int i = -12; i < 13; i++) {
             blocks.addAll(AbilityUtil.getBlocksInCircle(level, startPos.add(0, i, 0), radius));
         }

@@ -1,9 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.SefrotInvasionManager;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
@@ -288,6 +289,11 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
 
                 if (target == null && component.avatars.isEmpty()) return;
 
+                if (SefrotInvasionManager.forfeitForResurrection(player)) {
+                    event.setCanceled(true);
+                    return;
+                }
+
                 if (!(target.level() instanceof ServerLevel targetLevel)) return;
 
                 Vec3 pos = target.position();
@@ -301,6 +307,11 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
             }
 
             if(component.names.isEmpty()) return;
+
+            if (SefrotInvasionManager.forfeitForResurrection(player)) {
+                event.setCanceled(true);
+                return;
+            }
 
             String name = component.names.removeFirst();
             var id = BeyonderData.playerMap.getKeyByName(name);

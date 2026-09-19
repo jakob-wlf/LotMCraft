@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.BonemealableBlock;
@@ -38,6 +40,11 @@ public class PlantNurturingAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
+
+        if(entity instanceof Player player) {
+            BeyonderData.digest(player, 0.01f, true);
+        }
+
         if(level.isClientSide)
             return;
         try {

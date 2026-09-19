@@ -1,0 +1,19 @@
+﻿{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "lotmcraft:spectator"},
+    {"item": "lotmcraft:telepathist"},
+    {"item": "lotmcraft:psychiatrist"},
+    {"item": "lotmcraft:hypnotist"},
+    {"item": "lotmcraft:dreamwalker"},
+    {"item": "lotmcraft:manipulator"},
+    {"item": "lotmcraft:dream_weaver"},
+    {"item": "lotmcraft:discerner"},
+    {"item": "lotmcraft:author"}
+  ],
+  "result": {
+    "id": "lotmcraft:visionary_blasphemy_card",
+    "count": 1
+  },
+  "category": "misc"
+}

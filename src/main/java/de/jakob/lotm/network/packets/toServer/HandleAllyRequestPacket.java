@@ -1,7 +1,6 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.helper.AllyUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;

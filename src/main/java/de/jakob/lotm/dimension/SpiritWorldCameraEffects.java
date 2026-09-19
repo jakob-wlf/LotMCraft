@@ -43,12 +43,9 @@ public class SpiritWorldCameraEffects {
     }
 
     private static boolean shouldSuppressEffects(LocalPlayer player) {
-        String[] pathwayHistory = BeyonderData.getPathwayHistory(player);
 
-        for (int i = 0; i < pathwayHistory.length; i++) {
-            if (i <= 5 && "door".equals(pathwayHistory[i])) {
-                return true;
-            }
+        if(BeyonderData.getCharList(player).stream().anyMatch(c -> c.pathway().equals("door") && c.sequence() <= 5)){
+            return true;
         }
 
         return BeyonderData.getSequence(player) <= 2 || (BeyonderData.getPathway(player).equals("door") && BeyonderData.getSequence(player) <= 5);

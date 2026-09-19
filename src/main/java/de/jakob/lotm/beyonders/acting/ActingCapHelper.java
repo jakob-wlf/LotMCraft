@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.acting;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncActingCapPacket;

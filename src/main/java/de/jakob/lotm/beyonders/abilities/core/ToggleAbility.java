@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
-import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -10,11 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class ToggleAbility extends Ability {
 
@@ -70,7 +65,7 @@ public abstract class ToggleAbility extends Ability {
 
     public void prepareTick(Level level, LivingEntity entity) {
         if(!level.isClientSide && shouldConsumeSpirituality(entity)) {
-            float cost = getSpiritualityCost();
+            float cost = getInflatedSpiritualityCost(entity, (ServerLevel) level);
             if(BeyonderData.getSpirituality(entity) <= cost) {
                 cancel((ServerLevel) level, entity);
                 return;

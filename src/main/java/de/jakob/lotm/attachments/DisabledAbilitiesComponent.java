@@ -66,6 +66,11 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
         }
     }
 
+    /** Removes all abilities disabled under a given cause key in one call. */
+    public void clearCause(String cause) {
+        disabledAbilities.remove(cause);
+    }
+
     public void disableSpecificAbilityForTime(String ability, String cause, int ticks) {
         disabledAbilities.computeIfAbsent(cause, k -> new ArrayList<>());
 
@@ -103,6 +108,15 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
     public void enableAllAbilities() {
         hasAllAbilitiesDisabled.clear();
         disabledAbilities.clear();
+    }
+
+    /**
+     * Clears all temporary disabled states while preserving entries under {@code preservedCause}.
+     * Use this on player logout so permanent seals (e.g. death-imprint seals) survive in NBT.
+     */
+    public void clearAllAbilitiesExceptCause(String preservedCause) {
+        hasAllAbilitiesDisabled.clear();
+        disabledAbilities.entrySet().removeIf(e -> !e.getKey().equals(preservedCause));
     }
 
     @Override

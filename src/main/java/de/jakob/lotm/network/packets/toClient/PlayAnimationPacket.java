@@ -9,9 +9,6 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public record PlayAnimationPacket(int playerId, String animId) implements CustomPacketPayload {
     
     public static final Type<PlayAnimationPacket> TYPE =

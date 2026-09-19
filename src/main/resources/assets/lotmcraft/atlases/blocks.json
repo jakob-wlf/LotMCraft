@@ -1,0 +1,12 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "lotmcraft:block/river_of_eternal_darkness_water_still"
+    },
+    {
+      "type": "single",
+      "resource": "lotmcraft:block/river_of_eternal_darkness_water_flowing"
+    }
+  ]
+}

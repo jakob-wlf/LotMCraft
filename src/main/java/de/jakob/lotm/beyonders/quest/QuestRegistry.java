@@ -1,10 +1,10 @@
 package de.jakob.lotm.beyonders.quest;
 
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.beyonders.quest.impl.*;
 import de.jakob.lotm.beyonders.quest.impl.kill_beyonder_quests.KillBeyonderGenericQuest;
 import de.jakob.lotm.beyonders.quest.impl.kill_beyonder_quests.KillTyrantSeq4Quest;
-//import de.jakob.lotm.beyonders.quest.impl.HelpBeyonderQuest;
+import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -2,8 +2,6 @@ package de.jakob.lotm.entity.client.knowledge_rabbit;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.murloc.MurlocModel;
-import de.jakob.lotm.entity.custom.MurlocEntity;
 import de.jakob.lotm.entity.custom.spirits.RabbitOfKnowledgeEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

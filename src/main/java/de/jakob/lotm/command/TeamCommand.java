@@ -1,15 +1,12 @@
 package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeamInviteManager;
 import de.jakob.lotm.util.helper.TeamUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -17,7 +14,6 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -92,6 +88,20 @@ public class TeamCommand {
     }
 
     private static boolean checkEligible(CommandSourceStack source, ServerPlayer player) {
+        // If the player is currently controlling a marionette, check their original body's data
+        EntityControllingComponent controlling = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        if (controlling.isControlling()) {
+            net.minecraft.world.entity.LivingEntity bodyEntity = controlling.getControlledEntity();
+            if (bodyEntity != null) {
+                boolean eligible = de.jakob.lotm.util.BeyonderData.getCharList(bodyEntity).stream()
+                        .anyMatch(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0);
+                if (eligible) {
+                    return true;
+                }
+            }
+            source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
+            return false;
+        }
         if (!TeamUtils.isEligibleLeader(player)) {
             source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
             return false;
@@ -107,7 +117,14 @@ public class TeamCommand {
         }
 
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
-        int maxSize = TeamUtils.getMaxTeamSize(BeyonderData.getSequence(leader));
+
+        int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
+                .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
+                .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)
+                .min()
+                .orElse(LOTMCraft.NON_BEYONDER_SEQ);
+
+        int maxSize = TeamUtils.getMaxTeamSize(sequence);
 
         if (leaderTeam.memberCount() >= maxSize) {
             source.sendFailure(Component.literal("Your team is full (" + maxSize + " members max at your sequence)."));

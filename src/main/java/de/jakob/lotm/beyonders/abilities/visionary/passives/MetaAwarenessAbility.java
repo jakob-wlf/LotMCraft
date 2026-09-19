@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -63,6 +62,7 @@ public class MetaAwarenessAbility extends PassiveAbility {
 
         // Check all online players who have this passive
         for (ServerPlayer candidate : serverLevel.getServer().getPlayerList().getPlayers()) {
+
             // Don't trigger if the sender is saying their own name
             if (candidate.getUUID().equals(sender.getUUID())) continue;
 
@@ -149,7 +149,10 @@ public class MetaAwarenessAbility extends PassiveAbility {
     }
 
     private static boolean hasMetaAwareness(ServerPlayer player) {
-        var data = BeyonderData.playerMap.get(player.getUUID()).get();
+        if (!BeyonderData.isBeyonder(player)){
+            return false;
+        }
+        var data = BeyonderData.playerMap.get(player.getUUID()).get(); // og line 140 where error
         return data.sequence() <= 1 && data.pathway().equals("visionary");
     }
 }

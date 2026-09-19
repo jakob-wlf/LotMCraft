@@ -27,7 +27,7 @@ public class SeqTrigger extends TriggerBase {
 
     @Override
     public int getRequiredSeq() {
-        return 5;
+        return 1;
     }
 
     @Override

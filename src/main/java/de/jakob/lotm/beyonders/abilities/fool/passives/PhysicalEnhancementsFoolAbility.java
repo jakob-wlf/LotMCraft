@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -113,4 +112,5 @@ public class PhysicalEnhancementsFoolAbility extends PhysicalEnhancementsAbility
             default -> List.of();
         };
     }
+
 }

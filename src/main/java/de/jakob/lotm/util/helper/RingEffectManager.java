@@ -26,7 +26,7 @@ public class RingEffectManager {
                 center.x, center.y, center.z,
                 maxRadius, duration,
                 red, green, blue, alpha,
-                ringThickness, ringHeight, expansionSpeed, smoothExpansion, fadeOut
+                ringThickness, ringHeight, expansionSpeed, smoothExpansion, fadeOut, "", false
         );
 
         // Send to all players within 64 blocks using AABB
@@ -48,7 +48,7 @@ public class RingEffectManager {
                 center.x, center.y, center.z,
                 maxRadius, duration,
                 red, green, blue, alpha,
-                ringThickness, ringHeight, expansionSpeed, smoothExpansion,true
+                ringThickness, ringHeight, expansionSpeed, smoothExpansion,true, "", false
         );
 
         // Send to all players within 64 blocks using AABB
@@ -84,6 +84,36 @@ public class RingEffectManager {
                                         ServerLevel level) {
         createRingForAll(center, maxRadius, duration, red, green, blue, alpha,
                 ringThickness, ringHeight, 1.0f, true, true, level);
+    }
+
+    public static void createWorldHeightRingForAll(String effectKey, Vec3 center,
+                                                    float maxRadius, int duration,
+                                                    float red, float green, float blue, float alpha,
+                                                    float ringThickness, ServerLevel level) {
+        float ringHeight = level.getMaxBuildHeight() - level.getMinBuildHeight();
+        Vec3 worldHeightCenter = new Vec3(center.x,
+            level.getMinBuildHeight() + ringHeight / 2.0, center.z);
+        RingEffectPacket packet = new RingEffectPacket(
+            worldHeightCenter.x, worldHeightCenter.y, worldHeightCenter.z,
+            maxRadius, duration, red, green, blue, alpha,
+            ringThickness, ringHeight, 20.0f, true, false, effectKey, false);
+        double viewRadiusSquared = Math.pow(maxRadius + 64.0, 2);
+        for (ServerPlayer player : level.players()) {
+            double deltaX = player.getX() - center.x;
+            double deltaZ = player.getZ() - center.z;
+            if (deltaX * deltaX + deltaZ * deltaZ <= viewRadiusSquared) {
+                PacketDistributor.sendToPlayer(player, packet);
+            }
+        }
+    }
+
+    public static void removeRingForAll(String effectKey, ServerLevel level) {
+        RingEffectPacket packet = new RingEffectPacket(
+            0, 0, 0, 0, 1, 0, 0, 0, 0,
+            0.1f, 0.1f, 1.0f, false, false, effectKey, true);
+        for (ServerPlayer player : level.players()) {
+            PacketDistributor.sendToPlayer(player, packet);
+        }
     }
 
     /**

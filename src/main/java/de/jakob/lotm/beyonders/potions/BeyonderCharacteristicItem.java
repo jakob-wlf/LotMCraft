@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.potions;
 
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -40,32 +39,6 @@ public class BeyonderCharacteristicItem extends Item {
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-
-        if(level.isClientSide) {
-            return InteractionResultHolder.success(stack);
-        }
-
-        var item = stack.getItem();
-
-        if(!(item instanceof BeyonderCharacteristicItem beChar)) return InteractionResultHolder.fail(stack);
-
-        int seq = beChar.getSequence();
-        String path = beChar.getPathway();
-
-        if(path.equals(BeyonderData.getPathway(player))){
-            if(seq >= BeyonderData.getSequence(player)){
-                var stacks = BeyonderData.getCharStacks(player);
-
-                if(stacks[seq] >= 0 && seq >= 1 && BeyonderData.getDigestionProgress(player) == 1.0){
-                    BeyonderData.setCharStack(player, (stacks[seq] + 1), seq, true);
-                    BeyonderData.setDigestionProgress(player, 0);
-                    player.setItemInHand(hand, ItemStack.EMPTY);
-                    return InteractionResultHolder.success(ItemStack.EMPTY);
-                }
-            }
-        }
-
-        return InteractionResultHolder.fail(stack);
+        return InteractionResultHolder.pass(player.getItemInHand(hand));
     }
 }

@@ -1,20 +1,22 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
-import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
+import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
+import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ConnectionAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ProphecyAbility;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
-import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.ProbabilityManipulationManager;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
+import de.jakob.lotm.util.playerMap.Characteristic;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -22,16 +24,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
-import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Ability {
 
@@ -147,6 +146,7 @@ public abstract class Ability {
                 pdata.remove(EntropySubAbility.SENSORY_DECAY_COOLDOWN_UNTIL_KEY);
             }
         }
+        inflatedCooldown = Math.round(inflatedCooldown * ProphecyAbility.getCooldownMultiplier(newUser));
         component.setCooldown(id, inflatedCooldown);
 
         if(AbilityUtil.hasArtifactScaling(entity)){
@@ -154,8 +154,32 @@ public abstract class Ability {
             AbilityUtil.removeArtifactScaling(entity);
         }
 
+        if (ProbabilityManipulationManager.shouldFail(serverLevel, newUser, this)) {
+            if (this.autoClear) clearArtifactScaling(entity);
+            if (AbilityUtil.ignoreAllies.containsKey(entity.getUUID())
+                    && !AbilityUtil.ignoreAllies.get(entity.getUUID())) {
+                AbilityUtil.ignoreAllies.remove(entity.getUUID());
+            }
+            return;
+        }
+
         // Use ability client and server sided
-        onAbilityUse(serverLevel, newUser);
+        List<ServerPlayer> connectedTargets = ConnectionAbility.consumeConnectedTargets(newUser, this);
+        if (connectedTargets.isEmpty()) {
+            onAbilityUse(serverLevel, newUser);
+        } else {
+            for (ServerPlayer connectedTarget : connectedTargets) {
+                AbilityUtil.setRemoteCastTargetUUID(connectedTarget.getUUID());
+                try {
+                    onAbilityUse(connectedTarget.serverLevel(), newUser);
+                    if (!AbilityUtil.wasRemoteCastTargetResolved()) {
+                        break;
+                    }
+                } finally {
+                    AbilityUtil.clearRemoteCastTargetUUID();
+                }
+            }
+        }
         if(entity instanceof ServerPlayer player) PacketHandler.sendToPlayer(player, new UseAbilityPacket(getId(), newUser.getId()));
 
         if(this.autoClear){
@@ -193,17 +217,18 @@ public abstract class Ability {
         var pdata = entity.getPersistentData();
         if (pdata.contains(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY)) {
             if (pdata.getLong(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY) > level.getGameTime()) {
-                return base * pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
+                base *= pdata.getFloat(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
             } else {
                 pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_MULT_KEY);
                 pdata.remove(EntropySubAbility.ENTROPY_DRAIN_SPIRIT_UNTIL_KEY);
             }
         }
-        return base;
+        return base * ProphecyAbility.getCostMultiplier(entity);
     }
 
     public float multiplier(LivingEntity entity) {
-        return entity != null ? (float) AbilityUtil.getMultiplierWithArt(entity, this) : 1f;
+        return entity != null ? (float) AbilityUtil.getMultiplierWithArt(entity, this)
+                * ProphecyAbility.getAbilityStrengthMultiplier(entity) : 1f;
     }
 
     public void onHold(Level level, LivingEntity entity) {
@@ -211,6 +236,12 @@ public abstract class Ability {
     }
 
     public boolean shouldUseAbility(LivingEntity entity) {
+        if (entity instanceof Mob mob) {
+            if (mob.getTarget() != null && hasOptimalDistance) {
+                double distance = entity.distanceTo(mob.getTarget());
+                return distance <= optimalDistance + 5.0; // Increased buffer
+            }
+        }
         return true;
     }
 
@@ -224,7 +255,15 @@ public abstract class Ability {
             }
         }
 
-        if(!BeyonderData.isBeyonder(entity)) return false;
+        if(!BeyonderData.isBeyonder(entity)) {
+            return false;
+        }
+
+        // Check sefirot-authority-granted abilities (server-side only)
+        if (!entity.level().isClientSide()
+                && entity.getData(de.jakob.lotm.attachments.ModAttachments.SEFIROT_UNLOCKED_ABILITIES).hasAbility(this.id)) {
+            return true;
+        }
 
         String pathway = BeyonderData.getPathway(entity, true);
         int sequence = BeyonderData.getSequence(entity, false, true);
@@ -252,13 +291,10 @@ public abstract class Ability {
                 return true;
         }
 
-        // Check pathway
-        for(int i = sequence; i < BeyonderData.getPathwayHistory(entity).length; i++) {
-            if(BeyonderData.getPathwayHistory(entity)[i] == null) continue;
-            String userPath = BeyonderData.getPathwayHistory(entity)[i];
-            if(getRequirements().containsKey(userPath) && getRequirements().get(userPath) == i) {
-                return true;
-            }
+        // Check for received blessings
+        if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
+                .anyMatch(b -> getRequirements().containsKey(b.pathway()) && getRequirements().get(b.pathway()) >= b.sequence())) {
+            return true;
         }
 
         // Check sefirot
@@ -271,7 +307,9 @@ public abstract class Ability {
             }
         }
 
-        return false;
+        return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence && character.isEnabled());
+
+        //return false;
     }
 
     public boolean canUse(LivingEntity entity) {
@@ -279,7 +317,13 @@ public abstract class Ability {
     }
 
     public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
-        if(!hasAbility(entity, false) && hasToHaveAbility && !isCopied) return false;
+        if(!(entity instanceof Player) && !canBeUsedByNPC) {
+            return false;
+        }
+
+        if(!hasAbility(entity, false) && hasToHaveAbility && !isCopied) {
+            return true;
+        }
 
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {
@@ -290,20 +334,31 @@ public abstract class Ability {
         }
 
         AbilityCooldownComponent component = entity.getData(ModAttachments.COOLDOWN_COMPONENT);
-        if(component.isOnCooldown(id)) return false;
+        if(component.isOnCooldown(id)) {
+            return false;
+        }
 
-        if((BeyonderData.getSpirituality(entity) < getSpiritualityCost()) && doesConsumeSpirituality) return false;
-
-        if(!(entity instanceof Player) && !canBeUsedByNPC) return false;
+        // Allow use down to a 30% spirituality deficit; the shortfall is paid in sanity on use
+        float requiredSpirituality = entity.level() instanceof ServerLevel serverLevel
+            ? getInflatedSpiritualityCost(entity, serverLevel)
+            : getSpiritualityCost();
+        if(shouldConsumeSpirituality(entity) && doesConsumeSpirituality
+            && BeyonderData.getSpirituality(entity) < requiredSpirituality * 0.7f) {
+            return false;
+        }
 
         if(entity instanceof Player player && player.isSpectator() && !ParasitationAbility.isConcealed(player.getUUID())) return false;
 
         if(!canBeUsedWhileControlling && entity instanceof Player player && ControllingUtils.isControlling(player)) return false;
 
         DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) return false;
+        if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) {
+            return false;
+        }
 
-        if(LOTMCraft.abilityHandler.isDisabled(this)) return false;
+        if(LOTMCraft.abilityHandler.isDisabled(this)) {
+            return false;
+        }
 
         return true;
     }
@@ -321,11 +376,12 @@ public abstract class Ability {
     private float getDigestionProgressForUse(LivingEntity entity) {
         int sequence = BeyonderData.getSequence(entity, false, true);
 
-        if (!getRequirements().containsKey(BeyonderData.getPathway(entity, true))) {
-            return 0f;
+        String pathway = BeyonderData.getCharList(entity).stream().filter(character -> getRequirements().containsKey(character.pathway())).findFirst().orElse(new Characteristic("None", 0,10)).pathway();
+        if (!getRequirements().containsKey(pathway)) {
+           return 0f;
         }
 
-        int requiredSequence = getRequirements().get(BeyonderData.getPathway(entity, true));
+        int requiredSequence = getRequirements().get(pathway);
 
         if (sequence > requiredSequence) {
             return 0f;
@@ -406,5 +462,9 @@ public abstract class Ability {
 
     public float spiritualityCost() {
         return getSpiritualityCost();
+    }
+
+    public int luckCost() {
+        return 0;
     }
 }

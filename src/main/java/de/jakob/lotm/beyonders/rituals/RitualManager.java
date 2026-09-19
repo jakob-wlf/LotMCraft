@@ -25,7 +25,6 @@ import net.minecraft.server.network.Filterable;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.item.BookItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WrittenBookContent;
@@ -36,7 +35,6 @@ import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

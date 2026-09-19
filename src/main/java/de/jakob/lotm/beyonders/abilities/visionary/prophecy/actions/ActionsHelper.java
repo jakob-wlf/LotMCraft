@@ -14,6 +14,12 @@ import java.util.UUID;
 
 public class ActionsHelper {
 
+    public record ParseResult(@Nullable ActionBase action, @Nullable String failureReason) {
+        public boolean succeeded() {
+            return action != null;
+        }
+    }
+
     private static @Nullable ActionsEnum getType(String str){
         return switch (str){
             case "drop" -> ActionsEnum.DROP_ITEM;
@@ -38,6 +44,9 @@ public class ActionsHelper {
             case "double" -> ActionsEnum.DOUBLE;
             case "spirituality" -> ActionsEnum.SPIRITUALITY;
             case "player" -> ActionsEnum.PLAYER;
+            case "joy" -> ActionsEnum.JOY;
+            case "anger" -> ActionsEnum.ANGER;
+            case "countforritual" -> ActionsEnum.COUNT_FOR_RITUAL;
             default -> null;
         };
     }
@@ -66,6 +75,9 @@ public class ActionsHelper {
             case DOUBLE -> ActionContextEnum.STRING;
             case SPIRITUALITY -> ActionContextEnum.NUMBER;
             case PLAYER -> ActionContextEnum.STRING;
+            case JOY -> ActionContextEnum.EMPTY;
+            case ANGER -> ActionContextEnum.EMPTY;
+            case COUNT_FOR_RITUAL -> ActionContextEnum.EMPTY;
             case EMPTY -> ActionContextEnum.EMPTY;
         };
     }
@@ -80,6 +92,49 @@ public class ActionsHelper {
         if(id == null) return null;
 
         return deduceActionWithContextSkipNick(stream, casterSeq, id);
+    }
+
+    public static @Nullable ActionBase deduceActionWithContext(String str, int casterSeq, UUID targetId) {
+        return deduceActionDetailed(str, casterSeq, targetId).action();
+    }
+
+    public static ParseResult deduceActionDetailed(String str, int casterSeq, UUID targetId) {
+        TokenStream stream = new TokenStream(str);
+        if (!stream.match("if")) {
+            return new ParseResult(null, "Start with: if <player> <trigger> then <action>");
+        }
+
+        stream.next();
+        stream = moveToThenOrAnd(stream);
+        if (stream == null) {
+            return new ParseResult(null, "Missing 'then <action>'.");
+        }
+
+        stream.next();
+        String keyword = stream.peek();
+        if (keyword == null) {
+            return new ParseResult(null, "Missing an action after 'then'.");
+        }
+
+        ActionsEnum actionType = getType(keyword.toLowerCase());
+        if (actionType == null) {
+            return new ParseResult(null, "Unknown action '" + keyword + "'.");
+        }
+
+        try {
+            ActionContextBase context = ActionContextBase.create(getContextType(actionType), targetId);
+            context.fillFromStream(stream);
+
+            ActionBase action = ActionBase.create(actionType, context);
+            if (action.getRequiredSeq() < casterSeq) {
+                return new ParseResult(null, "Action '" + keyword + "' requires sequence "
+                        + action.getRequiredSeq() + " or stronger.");
+            }
+
+            return new ParseResult(action, null);
+        } catch (RuntimeException exception) {
+            return new ParseResult(null, "Invalid arguments for action '" + keyword + "'.");
+        }
     }
 
     public static @Nullable ActionBase deduceActionWithContextSkipNick(TokenStream stream, int casterSeq, UUID id){

@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -16,7 +17,6 @@ import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -34,6 +34,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PuppeteeringAbility extends SelectableAbility {
 
@@ -69,6 +70,13 @@ public class PuppeteeringAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         if(level.isClientSide)
             return;
+
+        // Block Puppeteering during dream divination — the caster's body is a ghost observer
+        TransformationComponent transformation = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        if (transformation.isTransformed() &&
+                transformation.getTransformationIndex() == TransformationComponent.TransformationType.DREAM_DIVINATION.getIndex()) {
+            return;
+        }
 
         switch(selectedAbility){
             case 0 -> puppeteering(level, entity);
@@ -186,7 +194,13 @@ public class PuppeteeringAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel) || !BeyonderData.isBeyonder(entity)) return;
 
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        LivingEntity targetRaw = AbilityUtil.getTargetEntity(entity, getManipulationDistance(sequence), 3);
+        // Validate range: TargetEntityEvent handlers (e.g. Grafting Mode 3) can override the target
+        // to an entity beyond the actual manipulation distance.  Reject it if it is out of range.
+        if (targetRaw != null && targetRaw.distanceTo(entity) > getManipulationDistance(sequence)) {
+            targetRaw = null;
+        }
+        final LivingEntity target = targetRaw;
 
         if (target == null || target == entity || target instanceof Phantom) {
             if (entity instanceof ServerPlayer player) {
@@ -231,12 +245,34 @@ public class PuppeteeringAbility extends SelectableAbility {
         }
 
         AtomicBoolean stopped = new AtomicBoolean(false);
-        AtomicDouble targetHealth = new AtomicDouble(target.getHealth());
-        AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
-        AtomicDouble elapsedTicks = new AtomicDouble(0.0);
+        AtomicInteger elapsedTicks = new AtomicInteger(0);
+        int totalTicks = Math.max(1, time);
+        AtomicBoolean completed = new AtomicBoolean(false);
 
-        ServerScheduler.scheduleForDuration(0, 1, time, () -> {
-            if (stopped.get()) return;
+        Vec3 startTemp = entity.getEyePosition().add(entity.getLookAngle().normalize());
+        Vec3 endTemp = target.getEyePosition();
+
+        final Vec3 perp1 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
+        final Vec3 perp2 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
+        final Vec3 perp3 = VectorUtil.getRandomPerpendicular(endTemp.subtract(startTemp));
+
+        if(target instanceof Mob mob) {
+            mob.setTarget(entity);
+        }
+
+        AtomicDouble health = new AtomicDouble(target.getHealth());
+        AtomicDouble casterHealth = new AtomicDouble(entity.getHealth());
+        LivingEntity finalTarget = target;
+        ServerScheduler.scheduleForDuration(0, 2, time, () -> {
+            if(stopped.get()) {
+                return;
+            }
+
+            if(!finalTarget.isAlive() || finalTarget.isRemoved() || finalTarget.level() != level) {
+                entitiesBeingManipulated.remove(entity.getUUID());
+                stopped.set(true);
+                return;
+            }
 
             if (isMass) {
                 Set<UUID> targets = massEntitiesBeingManipulated.get(entity.getUUID());
@@ -251,12 +287,13 @@ public class PuppeteeringAbility extends SelectableAbility {
                 }
             }
 
-            double currentTick = elapsedTicks.addAndGet(1.0);
+
+            double currentTick = elapsedTicks.addAndGet(1);
             float progress = (float) currentTick / time;
 
             if (!target.isAlive() || target.isRemoved() || target.level() != level || !entity.isAlive() || entity.isRemoved()
                     || target.distanceTo(entity) >= getManipulationDistance(sequence)
-                    || target.getHealth() < targetHealth.get() * 0.85
+                    || target.getHealth() < health.get() * 0.85
                     || entity.getHealth() < casterHealth.get() * 0.5) {
                 if (isMass) {
                     removeMassTarget(entity.getUUID(), target.getUUID());
@@ -265,6 +302,12 @@ public class PuppeteeringAbility extends SelectableAbility {
                 }
                 stopped.set(true);
                 return;
+            }
+
+            if (entity instanceof ServerPlayer player) {
+                int elapsed = Math.min(totalTicks, elapsedTicks.addAndGet(2));
+                int percent = Math.min(100, Math.round(elapsed * 100.0f / totalTicks));
+                AbilityUtil.sendActionBar(player, Component.literal(percent + "%").withColor(0xFFa26fc9));
             }
 
             Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
@@ -294,7 +337,7 @@ public class PuppeteeringAbility extends SelectableAbility {
                 }
             }
 
-            targetHealth.set(target.getHealth());
+            health.set(finalTarget.getHealth());
         }, () -> {
             if (stopped.get()) return;
 
@@ -308,15 +351,19 @@ public class PuppeteeringAbility extends SelectableAbility {
                 EffectManager.playEffect(EffectIds.RING_PULSE, target.getX(), target.getY() + 1, target.getZ(), level, serverPlayer, EffectParams.ofParams(0.5f, 0.1f, 0.7f));
             }
 
+            completed.set(true);
+            if (entity instanceof ServerPlayer player) {
+                AbilityUtil.sendActionBar(player, Component.literal("Success").withColor(0xFF4CAF50));
+            }
             MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
             MarionetteOwnerComponent data = entity.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT);
 
             if (entity instanceof Player player && !component.isMarionette() && data.getMarionettes().size() < getMaxPuppetCount(sequence)) {
-                turnIntoMarionette(target, player);
+                turnIntoMarionette(finalTarget, player);
                 AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotm.puppeteering.press_b").withColor(getColorForPathway("fool")));
             }
             else {
-                target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                finalTarget.hurt(target.damageSources().generic(), Float.MAX_VALUE);
             }
         }, level);
     }
@@ -337,11 +384,13 @@ public class PuppeteeringAbility extends SelectableAbility {
 
             target.setPos(pos);
             target.level().addFreshEntity(target);
+            ((BeyonderNPCEntity) target).setPersistenceRequired();
         }
         target.setHealth(target.getMaxHealth());
         if(target instanceof Mob mob) {
             mob.setTarget(null);
             mob.getNavigation().stop();
+            mob.setPersistenceRequired();
         }
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));

@@ -1,9 +1,7 @@
 package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.FloatArgumentType;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
