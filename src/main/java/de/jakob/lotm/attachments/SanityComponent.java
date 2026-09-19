@@ -50,10 +50,23 @@ public class SanityComponent {
             }
 
             if (BeyonderData.isBeyonder(entity)) {
-                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity));
+                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(entity, false, true));
             }
         }
 
+        this.sanity += amount;
+
+        float maxSanity = entity instanceof net.minecraft.world.entity.player.Player p
+                ? de.jakob.lotm.beyonders.acting.ActingCapHelper.getEffectiveCap(p) : 1.0f;
+        if (this.sanity > maxSanity) this.sanity = maxSanity;
+        else if (this.sanity < 0.0f) this.sanity = 0.0f;
+
+        if (entity instanceof ServerPlayer player) {
+            PacketHandler.sendToPlayer(player, new SyncSanityPacket(sanity, entity.getId()));
+        }
+    }
+
+    public void increaseSanityAndSyncIgnoreSequence(float amount, LivingEntity entity) {
         this.sanity += amount;
 
         float maxSanity = entity instanceof net.minecraft.world.entity.player.Player p
@@ -77,7 +90,7 @@ public class SanityComponent {
             amount = virtualPersonas.block(amount );
 
             if (entity instanceof ServerPlayer player && BeyonderData.isBeyonder(player)) {
-                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player));
+                amount *= (float) BeyonderData.getSanityDecreaseMultiplierForSequence(BeyonderData.getSequence(player, false, true));
             }
         }
 

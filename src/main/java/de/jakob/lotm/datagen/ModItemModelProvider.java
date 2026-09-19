@@ -1,9 +1,6 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
-import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
@@ -28,13 +25,13 @@ public class ModItemModelProvider extends ItemModelProvider {
     protected void registerModels() {
         basicItem(ModItems.PAPER_FIGURINE_SUBSTITUTE.get());
         basicItem(ModItems.MIRROR.get());
-        basicItem(ModItems.MARIONETTE_CONTROLLER.get());
         basicItem(ModItems.SUBORDINATE_CONTROLLER.get());
         basicItem(ModItems.EXCAVATED_AREA_ITEM.get());
         basicItem(ModItems.SUN_ITEM.get());
         basicItem(ModItems.MOON_ITEM.get());
         basicItem(ModItems.GUIDING_BOOK.get());
         basicItem(ModItems.CRYSTAL_BALL.get());
+        basicItem(ModItems.MYSTERIOUS_SILVER_PLATE.get());
         basicItem(ModItems.ONE_POUND.get());
         basicItem(ModItems.ONE_SOLI.get());
         basicItem(ModItems.UNIQUENESS_MAP.get());
@@ -92,16 +89,6 @@ public class ModItemModelProvider extends ItemModelProvider {
 
         ModIngredients.ITEMS.getEntries().forEach(i -> {
             basicItem(i.get());
-        });
-
-        PassiveAbilityHandler.ITEMS.getEntries().forEach(i -> {
-            if (i.get() instanceof ElevatedDivinationAbility) {
-                itemWithCustomDisplayAbilityTexture(i.get(), "divination_ability");
-            } else if (i.get() instanceof ElevatedConcealmentAbility) {
-                itemWithCustomDisplayAbilityTexture(i.get(), "concealment_ability");
-            } else {
-                itemWithCustomDisplay(i.get());
-            }
         });
 
         itemWithCustomDisplay(ModItems.FOOL_Card.get());

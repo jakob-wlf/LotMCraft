@@ -1,6 +1,5 @@
 package de.jakob.lotm.dimension;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.RiverOfEternalDarknessData;
 import de.jakob.lotm.fluid.ModFluids;
 import net.minecraft.core.BlockPos;
@@ -10,7 +9,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.StairBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.ArrayList;

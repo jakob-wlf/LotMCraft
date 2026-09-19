@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.gui.custom.TextDisplay.AbilityMenuBuilder;
-import de.jakob.lotm.gui.custom.TextDisplay.ColoredTextDisplayScreen;
-import de.jakob.lotm.gui.custom.TextDisplay.TextColorHelper;
+import de.jakob.lotm.gui.custom.text_display.AbilityMenuBuilder;
+import de.jakob.lotm.gui.custom.text_display.ColoredTextDisplayScreen;
+import de.jakob.lotm.gui.custom.text_display.TextColorHelper;
 import net.minecraft.client.gui.screens.Screen;
 
 public final class WheelOfFortuneAbilityMenus {

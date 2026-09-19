@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.error;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -61,7 +62,7 @@ public class DeceitAbility extends SelectableAbility {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.DECEPTION, entity.getX(), entity.getY() + .5, entity.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.DECEPTION, entity.getX(), entity.getY() + .5, entity.getZ(), serverLevel);
 
         seqMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
 

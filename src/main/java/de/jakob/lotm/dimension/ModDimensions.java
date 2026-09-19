@@ -32,11 +32,26 @@ public class ModDimensions {
     public static final Supplier<MapCodec<SpiritWorldChunkGenerator>> SPIRIT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("spirit_world", () -> SpiritWorldChunkGenerator.CODEC);
 
-    public static final Supplier<MapCodec<PreGeneratedChunkGenerator>> PREGENERATED_CHUNK_GENERATOR =
-            CHUNK_GENERATORS.register("pregenerated", () -> PreGeneratedChunkGenerator.CODEC);
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> SEFIRAH_CASTLE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("sefirah_castle", () -> SefirotChunkGenerator.SEFIRAH_CASTLE_CODEC);
+
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> BROOD_HIVE_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("brood_hive", () -> SefirotChunkGenerator.BROOD_HIVE_CODEC);
+
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> CHAOS_SEA_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("chaos_sea", () -> SefirotChunkGenerator.CHAOS_SEA_CODEC);
+
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> RIVER_OF_ETERNAL_DARKNESS_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("river_of_eternal_darkness", () -> SefirotChunkGenerator.RIVER_OF_ETERNAL_DARKNESS_CODEC);
 
     public static final Supplier<MapCodec<ConcealmentWorldChunkGenerator>> CONCEALMENT_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("concealment_world", () -> ConcealmentWorldChunkGenerator.CODEC);
+
+    public static final Supplier<MapCodec<HistoricalVoidChunkGenerator>> HISTORICAL_VOID_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("historical_void", () -> HistoricalVoidChunkGenerator.CODEC);
+
+    public static final Supplier<MapCodec<MirrorWorldChunkGenerator>> MIRROR_WORLD_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("mirror_world", () -> MirrorWorldChunkGenerator.CODEC);
 
     public static final Supplier<MapCodec<NatureDimensionWorldChunkGenerator>> NATURE_WORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("nature", () -> NatureDimensionWorldChunkGenerator.CODEC);
@@ -244,10 +259,21 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_gilded_ruins"));
 
-    /**
-     * Convenience array — same order as {@link SpiritWorldBiome#values()} and
-     * {@link SpiritWorldBiomeSource#BIOME_ORDER}.
-     */
+    /** index 9 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_WASTES =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world_wastes"));
+
+    /** index 10 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_MIRE_HOLLOW =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_mire_hollow"));
+
+    /** index 11 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_BONE_STEPPES =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_bone_steppes"));
+
     @SuppressWarnings("unchecked")
     public static final ResourceKey<Biome>[] SPIRIT_WORLD_BIOME_KEYS = new ResourceKey[]{
             SPIRIT_BIOME_WOOL_MEADOWS,       // 0
@@ -259,6 +285,9 @@ public class ModDimensions {
             SPIRIT_BIOME_FUNGAL_DEPTHS,      // 6
             SPIRIT_BIOME_GLACIAL_SHELF,      // 7
             SPIRIT_BIOME_GILDED_RUINS,       // 8
+            SPIRIT_BIOME_WASTES,             // 9
+            SPIRIT_BIOME_MIRE_HOLLOW,        // 10
+            SPIRIT_BIOME_BONE_STEPPES,       // 11
     };
 
     // =========================================================================
@@ -280,6 +309,26 @@ public class ModDimensions {
     public static final ResourceKey<Biome> SEFIRAH_CASTLE_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle_biome"));
+
+    // =========================================================================
+    // BROOD HIVE dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> BROOD_HIVE_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+
+    public static final ResourceKey<Level> BROOD_HIVE_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+
+    public static final ResourceKey<DimensionType> BROOD_HIVE_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+
+    public static final ResourceKey<Biome> BROOD_HIVE_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive_biome"));
 
     // =========================================================================
     // CHAOS SEA dimension
@@ -483,6 +532,46 @@ public class ModDimensions {
     public static final ResourceKey<Biome> CONCEALMENT_WORLD_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "concealment_world_biome"));
+
+    // =========================================================================
+    // HISTORICAL VOID dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> HISTORICAL_VOID_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"));
+
+    public static final ResourceKey<Level> HISTORICAL_VOID_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"));
+
+    public static final ResourceKey<DimensionType> HISTORICAL_VOID_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void"));
+
+    public static final ResourceKey<Biome> HISTORICAL_VOID_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void_biome"));
+
+    // =========================================================================
+        // MIRROR WORLD dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> MIRROR_WORLD_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mirror_world"));
+
+    public static final ResourceKey<Level> MIRROR_WORLD_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mirror_world"));
+
+    public static final ResourceKey<DimensionType> MIRROR_WORLD_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mirror_world"));
+
+    public static final ResourceKey<Biome> MIRROR_WORLD_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mirror_world_biome"));
 
     // -------------------------------------------------------------------------
     // Registration

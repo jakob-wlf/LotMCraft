@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -16,7 +17,6 @@ public class HolyImpactEffect extends ActiveEffect {
 
     private static final int   BURST_COUNT  = 40;
     private static final int   DRIFT_COUNT  = 25;
-    private static final float DURATION     = 20f;
 
     private final RandomSource rng = RandomSource.create();
 
@@ -34,8 +34,8 @@ public class HolyImpactEffect extends ActiveEffect {
     private final float[] dDelay  = new float[DRIFT_COUNT];
     private final float[] dLife   = new float[DRIFT_COUNT];
 
-    public HolyImpactEffect(double x, double y, double z) {
-        super(x, y, z, (int) DURATION);
+    public HolyImpactEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         bake();
     }
 
@@ -75,7 +75,7 @@ public class HolyImpactEffect extends ActiveEffect {
         Vector3f up    = new Vector3f(0f, 1f, 0f).rotate(camRot);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
         Matrix4f m = poseStack.last().pose();
 
         RenderSystem.depthMask(false);

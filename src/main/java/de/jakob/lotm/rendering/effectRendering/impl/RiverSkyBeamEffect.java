@@ -3,7 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import de.jakob.lotm.rendering.effectRendering.ActiveMovableEffect;
+import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -19,7 +19,7 @@ import org.joml.Vector3f;
  * <p>Color smooth-cycles between Darkness (deep purple-blue), Death (dark forest
  * green) and Twilight Giant (amber-orange) every 6 seconds.
  */
-public class RiverSkyBeamEffect extends ActiveMovableEffect {
+public class RiverSkyBeamEffect extends ActiveEffect {
 
     // ── Pathway colors ────────────────────────────────────────────────────────
     private static final float[][] PATH_COLORS = {

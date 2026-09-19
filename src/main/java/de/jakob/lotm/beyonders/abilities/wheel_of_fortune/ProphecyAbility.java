@@ -42,12 +42,7 @@ import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -351,7 +346,6 @@ public class ProphecyAbility extends ToggleAbility {
             if (amount < requiredLuck) {
                 return new TargetProphecy(target, 0, EffectTier.HIGH, requiredLuck, false, false);
             }
-
             float successChance;
             if (sefirotOwner && higherSequence) {
                 successChance = 0.05f;

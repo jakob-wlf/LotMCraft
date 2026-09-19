@@ -3,10 +3,10 @@
 package de.jakob.lotm.jei;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.AbilityWheel.AbilityWheelScreen;
-import de.jakob.lotm.gui.custom.ArtifactWheel.ArtifactWheelScreen;
+import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
+import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;

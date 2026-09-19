@@ -4,12 +4,13 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ApotheosisComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
+import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
-import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.EntityLocation;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -84,8 +85,7 @@ public class ApotheosisTickHandler {
         ParticleUtil.spawnSphereParticles(level, dust, center, 2.0, 80);
 
         if (ticksLeft % 120 == 0) {
-            MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.BEAMS_OF_LIGHT,
-                    new EntityLocation(player), 120, false, level, player);
+            EffectManager.playMovableEffect(EffectIds.BEAMS_OF_LIGHT, level, player, EffectParams.ofDuration(120));
         }
 
         // Every 5 ticks: drain spirit and sanity from nearby players who are looking at the transcending player
@@ -143,9 +143,8 @@ public class ApotheosisTickHandler {
         Vec3 currentCenter = player.position().add(0, player.getBbHeight() / 2, 0);
         ParticleUtil.spawnSphereParticles(level, dustParticle, currentCenter, 1.5, 60);
 
-        if (ticksLeft % 120 == 0) {
-            MovableEffectManager.playEffect(MovableEffectManager.MovableEffect.BEAMS_OF_LIGHT,
-                    new EntityLocation(player), 120, false, level, player);
+        if(component.getApotheosisTicksLeft() % (120) == 0) {
+            EffectManager.playMovableEffect(EffectIds.BEAMS_OF_LIGHT, (ServerLevel) player.level(), player, EffectParams.ofDuration(120));
         }
 
         component.setApotheosisTicksLeftAndSync(ticksLeft - 1, level, player);

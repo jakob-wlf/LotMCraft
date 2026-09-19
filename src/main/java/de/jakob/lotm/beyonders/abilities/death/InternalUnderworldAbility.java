@@ -2,15 +2,14 @@ package de.jakob.lotm.beyonders.abilities.death;
 
 import com.mojang.authlib.GameProfile;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
-import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.DeathImprintData;
+import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.core.*;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
@@ -18,17 +17,13 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenInternalUnderworldAbilityScreenPacket;
 import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import de.jakob.lotm.network.packets.toServer.UseQueuedSoulAbilityPacket;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
-import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
-import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.data.PathwayInfos;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
-import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -98,7 +93,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
     private static final int SOUL_PASSIVE_COOLDOWN_TICKS = 20 * 60 * 5;
 
     private record ActiveSoul(LivingEntity entity, CompoundTag soulData) {}
-    private record ActiveSoulPassive(PassiveAbilityItem ability, int remainingTicks) {}
+    private record ActiveSoulPassive(PassiveAbility ability, int remainingTicks) {}
     public record FreedSoulSlots(Set<String> seq0Paths, Set<String> seq1Paths) {}
     // Runtime-only tracking for released souls and passive timers per player.
     private static final Map<UUID, List<ActiveSoul>> activeSouls = new ConcurrentHashMap<>();
@@ -723,7 +718,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             .filter(ability -> isRiverOwner ? !RIVER_TOGGLE_BLACKLIST.contains(ability.getId()) : !(ability instanceof ToggleAbility))
             .filter(ability -> isAbilityAllowedFor(pathway, playerSequence, ability))
             .toList();
-        List<PassiveAbilityItem> passiveAbilities = getSoulPassives(pathway, sequence, playerSequence);
+        List<PassiveAbility> passiveAbilities = getSoulPassives(pathway, sequence, playerSequence);
         if (abilities.isEmpty() && passiveAbilities.isEmpty()) {
             player.sendSystemMessage(Component.literal("This soul has no abilities").withStyle(ChatFormatting.RED));
             return;
@@ -766,12 +761,12 @@ public class InternalUnderworldAbility extends SelectableAbility {
             container.setItem(passiveSlot, lockedItem);
         } else {
             for (int i = 0; i < passiveAbilities.size() && passiveSlot < 53; i++) {
-                PassiveAbilityItem passiveAbility = passiveAbilities.get(i);
+                PassiveAbility passiveAbility = passiveAbilities.get(i);
                 ItemStack item = createPassiveAbilityDisplayItem(passiveAbility, activePassive, cooldownTicks, playerSequence);
                 CompoundTag tag = new CompoundTag();
-                ResourceLocation passiveId = BuiltInRegistries.ITEM.getKey(passiveAbility);
+                String passiveId = passiveAbility.getId();
                 if (passiveId != null) {
-                    tag.putString("PassiveId", passiveId.toString());
+                    tag.putString("PassiveId", passiveId);
                     item.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
                     container.setItem(passiveSlot, item);
                     passiveSlot++;
@@ -809,7 +804,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
                         }
 
                         if (tag.contains("PassiveId")) {
-                            PassiveAbilityItem passiveAbility = resolvePassiveAbility(tag.getString("PassiveId"));
+                            PassiveAbility passiveAbility = resolvePassiveAbility(tag.getString("PassiveId"));
                             if (passiveAbility != null) {
                                 level.getServer().execute(() -> {
                                     activateSoulPassive(player, passiveAbility);
@@ -1091,9 +1086,10 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return item;
     }
 
-    private static ItemStack createPassiveAbilityDisplayItem(PassiveAbilityItem abilityItem, ActiveSoulPassive activePassive, int cooldownTicks, int playerSequence) {
+    private static ItemStack createPassiveAbilityDisplayItem(PassiveAbility abilityItem, ActiveSoulPassive activePassive, int cooldownTicks, int playerSequence) {
         // Show remaining duration/cooldown state for soul passives.
-        ItemStack item = new ItemStack(abilityItem);
+        ItemStack item = new ItemStack(Items.PAPER);
+        item.set(DataComponents.CUSTOM_NAME, abilityItem.getName());
         List<Component> lore = new ArrayList<>();
         boolean isActive = activePassive != null && activePassive.ability() == abilityItem;
         int durationTicks = getPassiveDurationTicks(playerSequence);
@@ -1197,34 +1193,28 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return reqSeq != null && minSequence <= reqSeq;
     }
 
-    private static List<PassiveAbilityItem> getSoulPassives(String pathway, int soulSequence, int playerSequence) {
+    private static List<PassiveAbility> getSoulPassives(String pathway, int soulSequence, int playerSequence) {
         if (pathway == null || pathway.isEmpty() || soulSequence < 0) return Collections.emptyList();
         if (playerSequence > 2) return Collections.emptyList();
         int minSequence = soulSequence;
 
-        return PassiveAbilityHandler.ITEMS.getEntries().stream()
-                .map(entry -> (PassiveAbilityItem) entry.get())
+        return PassiveAbilityHandler.passiveAbilities.stream()
             .filter(item -> !(item instanceof PhysicalEnhancementsAbility))
             .filter(item -> isPassiveAllowedFor(pathway, minSequence, item))
                 .toList();
     }
 
-    private static boolean isPassiveAllowedFor(String pathway, int minSequence, PassiveAbilityItem item) {
+    private static boolean isPassiveAllowedFor(String pathway, int minSequence, PassiveAbility item) {
         Integer reqSeq = item.getRequirements().get(pathway);
         return reqSeq != null && minSequence <= reqSeq;
     }
 
-    private static PassiveAbilityItem resolvePassiveAbility(String passiveId) {
+    private static PassiveAbility resolvePassiveAbility(String passiveId) {
         if (passiveId == null || passiveId.isEmpty()) return null;
-        ResourceLocation id = ResourceLocation.tryParse(passiveId);
-        if (id == null) return null;
-        if (BuiltInRegistries.ITEM.get(id) instanceof PassiveAbilityItem passiveAbility) {
-            return passiveAbility;
-        }
-        return null;
+        return PassiveAbilityHandler.getById(passiveId);
     }
 
-    private static void activateSoulPassive(ServerPlayer player, PassiveAbilityItem passiveAbility) {
+    private static void activateSoulPassive(ServerPlayer player, PassiveAbility passiveAbility) {
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
         ActiveSoulPassive existing = activeSoulPassives.get(player.getUUID());
@@ -1254,7 +1244,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             ? "Passive activated (Infinite): "
             : "Passive activated for " + formatDurationLabel(durationTicks) + ": ";
         player.sendSystemMessage(Component.literal(activeLabel)
-            .append(passiveAbility.getName(new ItemStack(passiveAbility)))
+            .append(passiveAbility.getName())
             .withStyle(ChatFormatting.AQUA));
     }
 
@@ -1293,7 +1283,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
             CompoundTag tag = customData.copyTag();
             if (!tag.contains("PassiveId")) continue;
 
-            PassiveAbilityItem passiveAbility = resolvePassiveAbility(tag.getString("PassiveId"));
+            PassiveAbility passiveAbility = resolvePassiveAbility(tag.getString("PassiveId"));
             if (passiveAbility == null) continue;
 
             ItemStack updated = createPassiveAbilityDisplayItem(passiveAbility, activePassive, cooldownTicks, playerSequence);

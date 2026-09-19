@@ -8,7 +8,10 @@
   "max_distance_from_center": 80,
 
   "biomes": [
-    "lotmcraft:spirit_crystalline_peaks"
+    "lotmcraft:spirit_crystalline_peaks",
+    "lotmcraft:spirit_void_gardens",
+    "lotmcraft:spirit_wool_meadows",
+    "lotmcraft:spirit_glacial_shelf"
   ],
 
   "step": "surface_structures",

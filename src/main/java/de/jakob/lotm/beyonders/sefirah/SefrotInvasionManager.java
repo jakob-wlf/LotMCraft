@@ -35,11 +35,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -108,7 +104,7 @@ public final class SefrotInvasionManager {
 
         SefirotData data = SefirotData.get(invader.server);
         data.setLastReturnLocation(invader);
-        data.setIsInSefirot(invader.getUUID(), true);
+        data.setIsInSefirot(invader.getUUID(), true, opportunity.sefirot());
         invader.teleportTo(defender.serverLevel(), destination.getX() + 0.5, destination.getY(),
             destination.getZ() + 0.5, defender.getYRot(), 0);
 
@@ -235,7 +231,7 @@ public final class SefrotInvasionManager {
         activeInvasions.remove(invasion.invaderId(), invasion);
 
         UUID winnerId = invasion.other(loserId);
-        SefirotData.get(server).setIsInSefirot(loserId, false);
+        SefirotData.get(server).setIsInSefirot(loserId, false, invasion.sefirot);
         ServerPlayer winner = server.getPlayerList().getPlayer(winnerId);
         ServerPlayer loser = server.getPlayerList().getPlayer(loserId);
         ServerPlayer defender = server.getPlayerList().getPlayer(invasion.defenderId());

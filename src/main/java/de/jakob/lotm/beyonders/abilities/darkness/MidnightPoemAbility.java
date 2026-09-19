@@ -230,7 +230,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         }
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((0.15f*(int)Math.max(multiplier(entity)/20,1)), entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * (int) (Math.max(multiplier(entity)/2,1))).forEach(e ->
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * multiplier(entity), false, true).forEach(e ->
         {
             e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync((float) (0.15f*(int)Math.max(multiplier(entity)/2,1)), e);
             e.removeEffect(ModEffects.LOOSING_CONTROL);

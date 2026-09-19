@@ -1,11 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.common.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
-import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.Collections;
@@ -14,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ElevatedDivinationAbility extends PassiveAbilityItem {
+public class ElevatedDivinationAbility extends PassiveAbility {
 
     /** Players with this passive active — their divination never fails against non-sefirot holders. */
     public static final Set<UUID> ELEVATED_DIVINATION_ACTIVE =
@@ -29,8 +28,8 @@ public class ElevatedDivinationAbility extends PassiveAbilityItem {
 
     private static final String REQUIRED_SEFIROT = "sefirah_castle";
 
-    public ElevatedDivinationAbility(Item.Properties properties) {
-        super(properties);
+    public ElevatedDivinationAbility(String id) {
+        super(id);
     }
 
     @Override

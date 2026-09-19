@@ -1,14 +1,14 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.attachments.DeathImprintData;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedDivinationAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
-import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -151,7 +151,6 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
 
         int distance = (int) Math.sqrt(dx * dx + dy * dy + dz * dz);
 
-            // distance still isn't balanced
             int maxDistance = switch (playerSequence) {
                 case 9, 8, 7, 6, 5 -> 200 * (10 - playerSequence);
                 case 4             -> 2500;

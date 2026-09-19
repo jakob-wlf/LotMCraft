@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.demoness.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,10 +9,10 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FeatherFallAbility extends PassiveAbilityItem {
+public class FeatherFallAbility extends PassiveAbility {
 
-    public FeatherFallAbility(Properties properties) {
-        super(properties);
+    public FeatherFallAbility(String id) {
+        super(id);
     }
 
     @Override
@@ -24,7 +24,7 @@ public class FeatherFallAbility extends PassiveAbilityItem {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(entity.fallDistance > 3)
+        if(entity.fallDistance > 2)
             entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 30, 1, false, false, false));
     }
 

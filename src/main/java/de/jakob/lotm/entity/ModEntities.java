@@ -6,6 +6,7 @@ import de.jakob.lotm.entity.custom.ability_entities.*;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
+import de.jakob.lotm.entity.custom.ability_entities.demoness_pathway.ChaosVortexEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSwordEntity;
@@ -91,6 +92,10 @@ public class ModEntities {
             ENTITY_TYPES.register("wind_blade", () -> EntityType.Builder.<WindBladeEntity>of(WindBladeEntity::new, MobCategory.MISC)
                     .sized(.75f, 2f).noSave().build("wind_blade"));
 
+    public static final Supplier<EntityType<ChaosVortexEntity>> CHAOS_VORTEX =
+            ENTITY_TYPES.register("chaos_vortex", () -> EntityType.Builder.<ChaosVortexEntity>of(ChaosVortexEntity::new, MobCategory.MISC)
+                    .sized(5f, 5f).noSave().build("chaos_vortex"));
+
     // Ability Entities - Death Pathway
 
     public static final Supplier<EntityType<DeathDivineKingdomEntity>> DEATH_DIVINE_KINGDOM =
@@ -108,6 +113,10 @@ public class ModEntities {
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
             ENTITY_TYPES.register("apprentice_door", () -> EntityType.Builder.<ApprenticeDoorEntity>of(ApprenticeDoorEntity::new, MobCategory.MISC)
                     .sized(.005f, 2f).build("apprentice_door"));
+
+    public static final Supplier<EntityType<PortalEntity>> PORTAL =
+            ENTITY_TYPES.register("portal", () -> EntityType.Builder.<PortalEntity>of(PortalEntity::new, MobCategory.MISC)
+                    .sized(1f, 1f).noSummon().build("portal"));
 
     public static final Supplier<EntityType<TravelersDoorEntity>> TRAVELERS_DOOR =
             ENTITY_TYPES.register("travelers_door", () -> EntityType.Builder.<TravelersDoorEntity>of(TravelersDoorEntity::new, MobCategory.MISC)
@@ -299,6 +308,7 @@ public class ModEntities {
                     .clientTrackingRange(10)
                     .updateInterval(1)
                     .fireImmune()
+                    .noSave()
                     .build("black_hole"));
 
     // Lightning
@@ -313,6 +323,7 @@ public class ModEntities {
     public static final Supplier<EntityType<LightningBranchEntity>> LIGHTNING_BRANCH =
             ENTITY_TYPES.register("lightning_branch", () -> EntityType.Builder.<LightningBranchEntity>of(LightningBranchEntity::new, MobCategory.MISC)
                     .sized(0.1f, 0.1f)
+                    .clientTrackingRange(64)
                     .clientTrackingRange(64)
                     .updateInterval(1)
                     .build("lightning_branch"));
@@ -371,6 +382,18 @@ public class ModEntities {
             ENTITY_TYPES.register("spirit_malmouth", () -> EntityType.Builder.of(SpiritMalmouthEntity::new, MobCategory.MONSTER)
                     .sized(1.3f, 1.3f).build("spirit_malmouth"));
 
+    public static final Supplier<EntityType<AbscessedHandEntity>> ABSCESSED_HAND =
+            ENTITY_TYPES.register("abscessed_hand", () -> EntityType.Builder.of(AbscessedHandEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("abscessed_hand"));
+
+    public static final Supplier<EntityType<MurlocEntity>> MURLOC =
+            ENTITY_TYPES.register("murloc", () -> EntityType.Builder.of(MurlocEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("murloc"));
+
+    public static final Supplier<EntityType<RabbitOfKnowledgeEntity>> RABBIT_OF_KNOWLEDGE =
+            ENTITY_TYPES.register("rabbit_of_knowledge", () -> EntityType.Builder.of(RabbitOfKnowledgeEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 1.3f).build("rabbit_of_knowledge"));
+
 
     // NPCs and Living Entities
 
@@ -403,10 +426,12 @@ public class ModEntities {
                     .noSave()
                     .build("blink_afterimage"));
 
-    public static final Supplier<EntityType<OriginalBodyEntity>> ORIGINAL_BODY =
-            ENTITY_TYPES.register("original_body", () -> EntityType.Builder.<OriginalBodyEntity>of(OriginalBodyEntity::new, MobCategory.MISC)
+    public static final Supplier<EntityType<ControlBodyDouble>> CONTROL_BODY_DOUBLE =
+            ENTITY_TYPES.register("control_body_double", () -> EntityType.Builder.<ControlBodyDouble>of(ControlBodyDouble::new, MobCategory.MISC)
                     .sized(0.6F, 1.8F)
-                    .build("original_body"));
+                    .noSave()
+                    .noSummon()
+                    .build("control_body_double"));
 
     // Utility
 

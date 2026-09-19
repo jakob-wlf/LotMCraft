@@ -1,13 +1,10 @@
 package de.jakob.lotm.dimension;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -15,7 +12,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.Random;
 
@@ -42,7 +38,7 @@ public class SpaceTimeLabyrinthEffect {
 
         if (entity.tickCount % DAMAGE_INTERVAL_TICKS != 0) return;
 
-        if (((VoidImmunityAbility) PassiveAbilityHandler.VOID_IMMUNITY.get()).shouldApplyTo(entity)) return;
+        if (((VoidImmunityAbility) PassiveAbilityHandler.getById("void_immunity_ability")).shouldApplyTo(entity)) return;
 
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE);
         entity.hurt(source, DAMAGE_PER_PULSE);

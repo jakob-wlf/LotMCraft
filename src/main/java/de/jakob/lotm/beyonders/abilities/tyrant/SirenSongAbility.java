@@ -90,7 +90,7 @@ public class SirenSongAbility extends SelectableAbility {
 
     private void buffSong(ServerLevel level, LivingEntity entity) {
         Location loc = new Location(entity.getEyePosition().add(0, .1, 0), level);
-        ParticleUtil.createParticleSpirals((ParticleOptions) ModParticles.GOLDEN_NOTE.get(), loc, 3.0, 3, 4, .35, 5, 20 * 20* (int) multiplier(entity), 15, 8);
+        ParticleUtil.createParticleSpirals((ParticleOptions) ModParticles.GOLDEN_NOTE.get(), loc, 3.0, 3.0, 4, .35, 5, (int) (20 * 20* multiplier(entity)), 15, 8);
 
         BeyonderData.addModifier(entity, "buff_song", 1.5);
 
@@ -116,7 +116,7 @@ public class SirenSongAbility extends SelectableAbility {
 
     private void deathMelody(ServerLevel level, LivingEntity entity) {
         Location supplier = new Location(entity.position(), level);
-        ParticleUtil.createExpandingParticleSpirals((ParticleOptions) ModParticles.BLACK_NOTE.get(), supplier, 1, 11, 4, .35, 5, 20 * 20* (int) multiplier(entity), 40, 10);
+        ParticleUtil.createExpandingParticleSpirals((ParticleOptions) ModParticles.BLACK_NOTE.get(), supplier, 1, 11, 4, .35, 5, (int) (20 * 20* multiplier(entity)), 40, 10);
 
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.DEATH_MELODY.get(), SoundSource.BLOCKS, 1, 1);
 

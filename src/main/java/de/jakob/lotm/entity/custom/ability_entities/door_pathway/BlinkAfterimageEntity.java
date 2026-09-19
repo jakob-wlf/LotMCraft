@@ -3,7 +3,6 @@ package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.goals.AbilityUseGoal;
 import de.jakob.lotm.events.custom.TargetEntityEvent;
 import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;

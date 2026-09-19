@@ -5,19 +5,15 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
-import de.jakob.lotm.beyonders.sefirah.ProbabilityManipulationManager;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ConnectionAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.ProphecyAbility;
-import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
-import de.jakob.lotm.attachments.AbilityCooldownComponent;
-import de.jakob.lotm.attachments.ControllingDataComponent;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.ProbabilityManipulationManager;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.ClientData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import de.jakob.lotm.util.playerMap.Characteristic;
@@ -33,13 +29,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
-import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class Ability {
 
@@ -64,12 +55,14 @@ public abstract class Ability {
     public boolean canBeUsedInArtifact = true;
     public boolean canBeReplicated = true;
     public boolean canBeShared = true;
+    public boolean canBeUsedWhileControlling = true;
 
     public boolean canAlwaysBeUsed = false;
 
     // Misc
     public boolean doesNotIncreaseDigestion = false;
     protected boolean shouldBeHidden = false;
+    public int onHoldTickInverval = 5;
 
     // Utility
     protected final Random random = new Random();
@@ -131,7 +124,7 @@ public abstract class Ability {
 
         // Digest potion
         if(!doesNotIncreaseDigestion && newUser instanceof Player player) {
-            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player), BeyonderData.getSequence(player)).isEmpty())
+            if(ActingTaskRegistry.getTasksFor(BeyonderData.getPathway(player, true), BeyonderData.getSequence(player, false, true)).isEmpty())
                 BeyonderData.digest(player, getDigestionProgressForUse(newUser), true);
         }
 
@@ -234,8 +227,8 @@ public abstract class Ability {
     }
 
     public float multiplier(LivingEntity entity) {
-        return (float) AbilityUtil.getMultiplierWithArt(entity, this)
-                * ProphecyAbility.getAbilityStrengthMultiplier(entity);
+        return entity != null ? (float) AbilityUtil.getMultiplierWithArt(entity, this)
+                * ProphecyAbility.getAbilityStrengthMultiplier(entity) : 1f;
     }
 
     public void onHold(Level level, LivingEntity entity) {
@@ -252,7 +245,16 @@ public abstract class Ability {
         return true;
     }
 
-    public boolean hasAbility(LivingEntity entity) {
+    public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
+        if(entity.getData(ModAttachments.MARIONETTE_COMPONENT).isMarionette() && entity.getData(ModAttachments.MARIONETTE_COMPONENT).hasWorm()) {
+            if(entity.level() instanceof ServerLevel serverLevel) {
+                Player controller = serverLevel.getPlayerByUUID(UUID.fromString(entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID()));
+                if(controller != null && hasAbility(controller, ignoreCreativeMode)) {
+                    return true;
+                }
+            }
+        }
+
         if(!BeyonderData.isBeyonder(entity)) {
             return false;
         }
@@ -263,20 +265,24 @@ public abstract class Ability {
             return true;
         }
 
-        String pathway = BeyonderData.getPathway(entity);
-        int sequence = BeyonderData.getSequence(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
-        // Creative + OP players can use any ability up to their sequence
-        if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2)) {
+        if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2) && !ignoreCreativeMode) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
 
-        // use the old system in case of controlling - will change once worms get added
-        ControllingDataComponent controllingDataComponent = entity.getData(ModAttachments.CONTROLLING_DATA);
-        if (controllingDataComponent.isControlling()) {
-            if(getRequirements().containsKey(pathway) && getRequirements().get(pathway) >= sequence) {
-                return true;
+        if (entity instanceof Player player && ControllingUtils.isControlling(player)) {
+            ControllingUtils.PathwayData pathwayData = ControllingUtils.currentlyControlling(player);
+            boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(player);
+
+            boolean hasTargetAbility = getRequirements().containsKey(pathwayData.pathway()) && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
+
+            if (!canUseOwnAbilities) {
+                return hasTargetAbility;
             }
+
+            if (hasTargetAbility) return true;
         }
 
         DiscernmentComponent discernmentComponent = entity.getData(ModAttachments.DISCERNMENT_DATA.get());
@@ -289,6 +295,16 @@ public abstract class Ability {
         if (entity.getData(de.jakob.lotm.attachments.ModAttachments.RECEIVED_BLESSING_COMPONENT).getBlessings().stream()
                 .anyMatch(b -> getRequirements().containsKey(b.pathway()) && getRequirements().get(b.pathway()) >= b.sequence())) {
             return true;
+        }
+
+        // Check sefirot
+        if(entity instanceof Player player) {
+            String[] sefirotPathways = SefirahHandler.getAdditionalPathwaysForPlayer(player);
+            for (String sefirotPathway : sefirotPathways) {
+                if (getRequirements().containsKey(sefirotPathway) && getRequirements().get(sefirotPathway) >= sequence) {
+                    return true;
+                }
+            }
         }
 
         return BeyonderData.getCharList(entity).stream().anyMatch(character -> getRequirements().containsKey(character.pathway()) && getRequirements().get(character.pathway()) >= sequence && character.isEnabled());
@@ -305,7 +321,7 @@ public abstract class Ability {
             return false;
         }
 
-        if(!hasAbility(entity) && hasToHaveAbility && !isCopied) {
+        if(!hasAbility(entity, false) && hasToHaveAbility && !isCopied) {
             return true;
         }
 
@@ -333,6 +349,8 @@ public abstract class Ability {
 
         if(entity instanceof Player player && player.isSpectator() && !ParasitationAbility.isConcealed(player.getUUID())) return false;
 
+        if(!canBeUsedWhileControlling && entity instanceof Player player && ControllingUtils.isControlling(player)) return false;
+
         DisabledAbilitiesComponent disabledComponent = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         if((disabledComponent.isAbilityUsageDisabled() || disabledComponent.isSpecificAbilityDisabled(this.getId())) && !this.canAlwaysBeUsed) {
             return false;
@@ -356,7 +374,7 @@ public abstract class Ability {
     }
 
     private float getDigestionProgressForUse(LivingEntity entity) {
-        int sequence = BeyonderData.getSequence(entity);
+        int sequence = BeyonderData.getSequence(entity, false, true);
 
         String pathway = BeyonderData.getCharList(entity).stream().filter(character -> getRequirements().containsKey(character.pathway())).findFirst().orElse(new Characteristic("None", 0,10)).pathway();
         if (!getRequirements().containsKey(pathway)) {
@@ -402,7 +420,7 @@ public abstract class Ability {
             return Component.translatable("lotmcraft." + getId()).withStyle(ChatFormatting.BOLD);
         }
 
-        String pathway = BeyonderData.getPathway(entity);
+        String pathway = BeyonderData.getPathway(entity, true);
 
         int color = BeyonderData.pathwayInfos.containsKey(pathway) ? BeyonderData.pathwayInfos.get(pathway).color() : 0xFFFFFF;
         return getName().withStyle(ChatFormatting.BOLD).withColor(color);

@@ -1,11 +1,14 @@
 package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -36,6 +39,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_diamond", has(Items.DIAMOND))
                 .save(recipeOutput);
 
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MYSTERIOUS_SILVER_PLATE.get())
+                .pattern("IPI")
+                .pattern("MNA")
+                .pattern("IPI")
+                .define('P', Items.PRISMARINE_SHARD)
+                .define('I', Items.IRON_INGOT)
+                .define('N', Items.NETHERITE_INGOT)
+                .define('A', ModIngredients.ANCIENT_WRAITH_DUST)
+                .define('M', ModIngredients.MIST_WATCHER_CRYSTAL)
+                .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
+                .save(recipeOutput);
+
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GUIDING_BOOK.get())
                 .requires(Items.BOOK)
                 .requires(Items.AMETHYST_SHARD)
@@ -61,7 +76,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('S', Items.STICK)
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.SEALED_BOTTLE.get())
                 .pattern("NDN")
                 .pattern("DBD")
@@ -109,6 +123,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModItems.BLASPHEMY_SLATE_LEFT_HALF.get())
                 .requires(ModItems.BLASPHEMY_SLATE_RIGHT_HALF.get())
                 .unlockedBy("has_blasphemy_slate_left_half", has(ModItems.BLASPHEMY_SLATE_LEFT_HALF.get()))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.RITUALISTIC_TABLE.asItem())
+                .pattern("   ")
+                .pattern("GCG")
+                .pattern("W W")
+                .define('G', Items.GOLD_INGOT)
+                .define('C', Items.PURPLE_CARPET)
+                .define('W', Ingredient.of(ItemTags.PLANKS))
+                .unlockedBy("has_planks", has(ItemTags.PLANKS))
                 .save(recipeOutput);
     }
 }

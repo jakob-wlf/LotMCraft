@@ -1,10 +1,8 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
-import de.jakob.lotm.attachments.MirrorWorldTraversalComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
+import de.jakob.lotm.beyonders.abilities.common.passives.ElevatedConcealmentAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.NightDomainAbility;
@@ -255,8 +253,7 @@ public class DivinationUtil {
         if ((InvisibilityAbility.invisiblePlayers.contains(serverPlayer.getUUID())) || (ShadowConcealmentAbility.invisiblePlayers.contains(serverPlayer.getUUID()))) {
             addedValue += 2;
         }
-        MirrorWorldTraversalComponent component = serverPlayer.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get());
-        if(component.isInMirrorWorld()) {
+        if(serverPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY)) {
             addedValue += 8;
         }
         // Space Concealment provides strong anti-divination

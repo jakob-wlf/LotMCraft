@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.twilight_giant.Passives;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class WeaponMasteryPassiveAbility extends PassiveAbilityItem {
+public class WeaponMasteryPassiveAbility extends PassiveAbility {
 
     private static final ResourceLocation ATTACK_DAMAGE_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(
         LOTMCraft.MOD_ID,
@@ -38,8 +38,8 @@ public class WeaponMasteryPassiveAbility extends PassiveAbilityItem {
     private static final double ATTACK_COOLDOWN_MULTIPLIER = 0.15;
     private static final double CHARGE_TIME_MULTIPLIER = 0.75;
 
-    public WeaponMasteryPassiveAbility(Properties properties) {
-        super(properties);
+    public WeaponMasteryPassiveAbility(String id) {
+        super(id);
     }
 
 
@@ -134,8 +134,8 @@ public class WeaponMasteryPassiveAbility extends PassiveAbilityItem {
             return;
         }
 
-        PassiveAbilityItem ability = (PassiveAbilityItem) PassiveAbilityHandler.WEAPON_MASTERY_PASSIVE.get();
-        if (!ability.shouldApplyTo(event.getEntity())) {
+        PassiveAbility ability = PassiveAbilityHandler.getById("weapon_mastery_ability");
+        if (ability == null || !ability.shouldApplyTo(event.getEntity())) {
             return;
         }
 

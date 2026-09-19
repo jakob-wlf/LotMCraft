@@ -1,0 +1,15 @@
+{
+  "type": "lotmcraft:simple_structures",
+  "start_pool": "lotmcraft:brood_hive_leak",
+  "size": 1,
+  "max_distance_from_center": 80,
+  "biomes": "#lotmcraft:has_structure/brood_hive_leak_biomes",
+  "step": "underground_structures",
+  "start_height": {
+    "type": "minecraft:uniform",
+    "min_inclusive": { "absolute": -5 },
+    "max_inclusive": { "absolute": -45 }
+  },
+  "liquid_settings": "apply_waterlogging",
+  "spawn_overrides": {}
+}

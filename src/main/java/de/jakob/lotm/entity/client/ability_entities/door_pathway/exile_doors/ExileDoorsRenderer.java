@@ -2,7 +2,6 @@ package de.jakob.lotm.entity.client.ability_entities.door_pathway.exile_doors;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ExileDoorsEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,7 +11,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 public class ExileDoorsRenderer extends EntityRenderer<ExileDoorsEntity> {

@@ -1,0 +1,11 @@
+{
+  "type": "lotmcraft:brood_hive",
+  "generator": {
+    "type": "lotmcraft:brood_hive",
+    "region_path": "data/lotmcraft/dimension_data/brood_hive/",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:brood_hive_biome"
+    }
+  }
+}

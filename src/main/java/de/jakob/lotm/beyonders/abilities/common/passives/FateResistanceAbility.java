@@ -1,11 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.common.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.Collections;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * While active, the player's luck can only be altered by a Sequence 1 beyonder.
  * All other luck modifications from outside sources are blocked.
  */
-public class FateResistanceAbility extends PassiveAbilityItem {
+public class FateResistanceAbility extends PassiveAbility {
 
     /** UUIDs of players who currently have Fate Resistance active. */
     public static final Set<UUID> FATE_RESISTANCE_ACTIVE =
@@ -30,8 +29,8 @@ public class FateResistanceAbility extends PassiveAbilityItem {
     private static final String REQUIRED_SEFIROT = "sefirah_castle";
     private static final int THRESHOLD_SEQ = 6;
 
-    public FateResistanceAbility(Item.Properties properties) {
-        super(properties);
+    public FateResistanceAbility(String id) {
+        super(id);
     }
 
     @Override

@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -31,7 +31,7 @@ public record CancelEffectByPositionPacket(double x, double y, double z, double 
     public static void handle(CancelEffectByPositionPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.flow().isClientbound()) {
-                ClientHandler.cancelEffectsNear(packet.x(), packet.y(), packet.z(), packet.radius());
+                VFXRenderer.cancelEffectsNear(packet.x(), packet.y(), packet.z(), packet.radius());
             }
         });
     }

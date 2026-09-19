@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -27,30 +28,30 @@ public class LoopholeEffect extends ActiveEffect {
     private float bubbleIntensity = 0f;
     private float contradictionPulse = 0f;
 
-    public LoopholeEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 14); // 6 seconds duration
+    public LoopholeEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Create contradiction lines that criss-cross through the bubble
+
         for (int i = 0; i < 40; i++) {
             contradictionLines.add(new ContradictionLine());
         }
 
-        // Create looping paths that twist back on themselves
+
         for (int i = 0; i < 12; i++) {
             loopPaths.add(new LoopPath());
         }
 
-        // Create deceitful particles that flicker and mislead
+
         for (int i = 0; i < 150; i++) {
             deceitParticles.add(new DeceitParticle());
         }
 
-        // Create reality fractures - cracks in logic
+
         for (int i = 0; i < 25; i++) {
             realityFractures.add(new RealityFracture());
         }
 
-        // Create bubble segments for more organic look
+
         int latSegments = 20;
         int lonSegments = 24;
         for (int lat = 0; lat < latSegments; lat++) {
@@ -67,7 +68,7 @@ public class LoopholeEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Bubble grows quickly, sustains, then collapses
+
         if (progress < 0.2f) {
             bubbleIntensity = progress / 0.2f;
         } else if (progress > 0.85f) {
@@ -79,11 +80,11 @@ public class LoopholeEffect extends ActiveEffect {
         contradictionPulse = Mth.sin(tick * 0.15f) * 0.5f + 0.5f;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render in specific order for proper blending
+
         renderBubbleShell(poseStack, bufferSource, progress);
         renderBubbleSurface(poseStack, bufferSource, progress);
         renderRealityFractures(poseStack, bufferSource, progress);
@@ -113,7 +114,7 @@ public class LoopholeEffect extends ActiveEffect {
                 float phi1 = (float) (lon * 2 * Math.PI / lonSegments);
                 float phi2 = (float) ((lon + 1) * 2 * Math.PI / lonSegments);
 
-                // Multiple layers of distortion for bubbly effect
+
                 float wobble1 = Mth.sin(phi1 * 4f + currentTick * 0.08f) * 0.12f;
                 wobble1 += Mth.sin(theta1 * 6f + currentTick * 0.12f) * 0.08f;
                 wobble1 += Mth.sin((phi1 + theta1) * 3f - currentTick * 0.1f) * 0.1f;
@@ -141,7 +142,7 @@ public class LoopholeEffect extends ActiveEffect {
                 float y4 = r1 * Mth.cos(theta2);
                 float z4 = r1 * Mth.sin(theta2) * Mth.sin(phi1);
 
-                // Iridescent bubble colors - purple/pink/blue shimmer
+
                 float shimmer = Mth.sin(phi1 * 2f + currentTick * 0.1f) * 0.5f + 0.5f;
                 float r = 0.4f + shimmer * 0.3f;
                 float g = 0.3f + shimmer * 0.2f;
@@ -161,7 +162,7 @@ public class LoopholeEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Add shiny surface reflections moving across the bubble
+
         for (BubbleSegment segment : bubbleSegments) {
             segment.update(progress, bubbleIntensity);
 
@@ -171,12 +172,12 @@ public class LoopholeEffect extends ActiveEffect {
             float theta = segment.theta;
             float phi = segment.phi + currentTick * 0.05f;
 
-            // Wobble matching the main bubble
+
             float wobble = Mth.sin(phi * 4f + currentTick * 0.08f) * 0.12f;
             wobble += Mth.sin(theta * 6f + currentTick * 0.12f) * 0.08f;
             wobble += Mth.sin((phi + theta) * 3f - currentTick * 0.1f) * 0.1f;
 
-            float r = radius + wobble + 0.05f; // Slightly outside the main bubble
+            float r = radius + wobble + 0.05f;
 
             float x = r * Mth.sin(theta) * Mth.cos(phi);
             float y = r * Mth.cos(theta);
@@ -185,7 +186,7 @@ public class LoopholeEffect extends ActiveEffect {
             float size = 0.3f * segment.size;
             float brightness = segment.brightness * bubbleIntensity;
 
-            // Bright shimmery white highlights
+
             renderBillboardQuad(consumer, matrix, x, y, z, size,
                     1f, 0.95f, 1f, brightness * 0.6f);
         }
@@ -195,13 +196,13 @@ public class LoopholeEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Add glossy highlight bands that move across the bubble surface
+
         int bandCount = 3;
         for (int b = 0; b < bandCount; b++) {
             float bandOffset = b * 0.33f;
             float bandProgress = ((progress * 0.5f + bandOffset) % 1f);
 
-            // Vertical band moving around
+
             float bandAngle = bandProgress * Mth.TWO_PI;
             float bandWidth = 0.4f;
 
@@ -236,7 +237,7 @@ public class LoopholeEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Swirling dark core representing the void of logic
+
         float coreRadius = 1.5f + Mth.sin(currentTick * 0.08f) * 0.3f;
         int segments = 16;
 
@@ -283,7 +284,7 @@ public class LoopholeEffect extends ActiveEffect {
 
             if (line.alpha <= 0f) continue;
 
-            // Draw line as a thin quad
+
             Vec3 dir = new Vec3(
                     line.endX - line.startX,
                     line.endY - line.startY,
@@ -368,7 +369,7 @@ public class LoopholeEffect extends ActiveEffect {
 
             if (fracture.alpha <= 0f) continue;
 
-            // Draw jagged fracture line
+
             for (int i = 0; i < fracture.segments.size() - 1; i++) {
                 Vec3 p1 = fracture.segments.get(i);
                 Vec3 p2 = fracture.segments.get(i + 1);
@@ -398,7 +399,7 @@ public class LoopholeEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Rippling distortion waves emanating from center
+
         int waveCount = 3;
         for (int w = 0; w < waveCount; w++) {
             float waveOffset = w * 0.33f;
@@ -440,9 +441,9 @@ public class LoopholeEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-                cameraPos.x - (this.x + x),
-                cameraPos.y - (this.y + y),
-                cameraPos.z - (this.z + z)
+                cameraPos.x - (this.getX() + x),
+                cameraPos.y - (this.getY() + y),
+                cameraPos.z - (this.getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);
@@ -479,7 +480,7 @@ public class LoopholeEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity) {
-            // Create moving highlights across the bubble surface
+
             float pulse = Mth.sin(currentTick * pulseSpeed + pulseOffset);
             float movingHighlight = Mth.sin(phi * 2f - currentTick * 0.1f + theta * 3f);
 
@@ -503,7 +504,7 @@ public class LoopholeEffect extends ActiveEffect {
         }
 
         void regenerate() {
-            // Random position within bubble
+
             float angle1 = random.nextFloat() * Mth.TWO_PI;
             float angle2 = random.nextFloat() * Mth.TWO_PI;
             float dist = random.nextFloat() * BUBBLE_RADIUS * 0.8f;
@@ -516,7 +517,7 @@ public class LoopholeEffect extends ActiveEffect {
             this.endY = (random.nextFloat() - 0.5f) * BUBBLE_RADIUS;
             this.endZ = Mth.sin(angle2) * dist;
 
-            // Reddish colors for contradictions
+
             this.r = 0.6f + random.nextFloat() * 0.3f;
             this.g = 0.2f + random.nextFloat() * 0.2f;
             this.b = 0.3f + random.nextFloat() * 0.2f;
@@ -525,11 +526,11 @@ public class LoopholeEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity) {
-            // Pulsing contradictions
+
             float pulse = Mth.sin(progress * 10f + phaseOffset) * 0.5f + 0.5f;
             this.alpha = 0.5f + pulse * 0.4f;
 
-            // Occasionally regenerate to show changing contradictions
+
             if (random.nextFloat() < 0.005f) {
                 regenerate();
             }
@@ -556,7 +557,7 @@ public class LoopholeEffect extends ActiveEffect {
 
             for (int i = 0; i < numPoints; i++) {
                 float t = i / (float) numPoints;
-                float angle = t * Mth.TWO_PI * 2f; // Double loop
+                float angle = t * Mth.TWO_PI * 2f;
 
                 float radius = baseRadius * (1f + 0.3f * Mth.sin(angle * 3f));
                 float x = Mth.cos(angle) * radius;
@@ -568,7 +569,7 @@ public class LoopholeEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity) {
-            // Rotate the loop
+
             float rotation = currentTick * rotationSpeed;
 
             for (int i = 0; i < points.size(); i++) {
@@ -612,7 +613,7 @@ public class LoopholeEffect extends ActiveEffect {
 
             this.size = 0.06f + random.nextFloat() * 0.08f;
 
-            // Dark, muted colors
+
             this.r = 0.4f + random.nextFloat() * 0.3f;
             this.g = 0.2f + random.nextFloat() * 0.3f;
             this.b = 0.4f + random.nextFloat() * 0.3f;
@@ -625,16 +626,16 @@ public class LoopholeEffect extends ActiveEffect {
             this.y += vy;
             this.z += vz;
 
-            // Flicker effect - particles blink in and out (deceitful)
+
             float flicker = Mth.sin(currentTick * 0.3f + flickerPhase);
             this.visible = flicker > -0.3f;
 
             this.alpha = 0.6f * (0.5f + 0.5f * flicker);
 
-            // Keep within bubble
+
             float distance = (float) Math.sqrt(x * x + y * y + z * z);
             if (distance > BUBBLE_RADIUS * 0.8f) {
-                // Bounce back
+
                 float factor = -0.5f;
                 this.vx *= factor;
                 this.vy *= factor;
@@ -657,7 +658,7 @@ public class LoopholeEffect extends ActiveEffect {
         void generateFracture() {
             segments.clear();
 
-            // Random starting point
+
             float angle = random.nextFloat() * Mth.TWO_PI;
             float dist = random.nextFloat() * BUBBLE_RADIUS * 0.5f;
 
@@ -667,7 +668,7 @@ public class LoopholeEffect extends ActiveEffect {
 
             segments.add(new Vec3(x, y, z));
 
-            // Create jagged fracture path
+
             int numSegments = 5 + random.nextInt(5);
             for (int i = 0; i < numSegments; i++) {
                 Vec3 last = segments.get(segments.size() - 1);
@@ -684,7 +685,7 @@ public class LoopholeEffect extends ActiveEffect {
             float pulse = Mth.sin(progress * 12f + pulseOffset) * 0.5f + 0.5f;
             this.alpha = 0.4f + pulse * 0.4f;
 
-            // Occasionally regenerate fractures
+
             if (random.nextFloat() < 0.003f) {
                 generateFracture();
             }

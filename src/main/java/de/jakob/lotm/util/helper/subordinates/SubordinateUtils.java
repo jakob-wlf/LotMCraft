@@ -1,10 +1,10 @@
 package de.jakob.lotm.util.helper.subordinates;
 
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.entity.custom.goals.SubordinateFollowGoal;
-import de.jakob.lotm.entity.custom.goals.SubordinateLoadChunksGoal;
-import de.jakob.lotm.entity.custom.goals.SubordinateTargetGoal;
-import de.jakob.lotm.entity.custom.goals.SuordinateStayGoal;
+import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
+import de.jakob.lotm.entity.goals.SubordinateFollowGoal;
+import de.jakob.lotm.entity.goals.SubordinateTargetGoal;
+import de.jakob.lotm.entity.goals.SuordinateStayGoal;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.component.DataComponents;
@@ -55,7 +55,7 @@ public class SubordinateUtils {
             );
 
             mob.goalSelector.addGoal(0, new SubordinateFollowGoal(mob));
-            mob.goalSelector.addGoal(0, new SubordinateLoadChunksGoal(mob));
+            mob.goalSelector.addGoal(0, new EntityLoadChunksGoal(mob));
             mob.goalSelector.addGoal(1, new SuordinateStayGoal(mob));
             mob.targetSelector.addGoal(0, new SubordinateTargetGoal(mob));
             mob.setTarget(null);

@@ -1,7 +1,7 @@
 {
   "type": "lotmcraft:river_of_eternal_darkness",
   "generator": {
-    "type": "lotmcraft:pregenerated",
+    "type": "lotmcraft:river_of_eternal_darkness",
     "region_path": "data/lotmcraft/dimension_data/river_of_eternal_darkness/",
     "biome_source": {
       "type": "minecraft:fixed",

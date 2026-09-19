@@ -4,9 +4,9 @@ import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerBase
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerEnum;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
 import de.jakob.lotm.util.BeyonderData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 

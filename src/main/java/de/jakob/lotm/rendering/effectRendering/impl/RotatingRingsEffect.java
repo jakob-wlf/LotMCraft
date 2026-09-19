@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -22,8 +23,8 @@ public class RotatingRingsEffect extends ActiveEffect {
     private static final ResourceLocation OBSIDIAN_TEXTURE =
             ResourceLocation.withDefaultNamespace("textures/block/obsidian.png");
 
-    public RotatingRingsEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 60 * 5);
+    public RotatingRingsEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
         rings[0] = new ObsidianRing(3.0f, 4.4f,  0.045f,  0.031f,  0.017f);
         rings[1] = new ObsidianRing(3.5f, 5.0f, -0.032f,  0.024f, -0.011f);

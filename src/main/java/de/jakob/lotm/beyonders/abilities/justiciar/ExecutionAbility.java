@@ -78,7 +78,7 @@ public class ExecutionAbility extends Ability {
         playGuillotineAnimation(serverLevel, target, caster);
     }
 
-    private static void playGuillotineAnimation(ServerLevel serverLevel, LivingEntity target, LivingEntity caster) {
+    public static void playGuillotineAnimation(ServerLevel serverLevel, LivingEntity target, LivingEntity caster) {
         final double tx = target.getX();
         final double ty = target.getY();
         final double tz = target.getZ();

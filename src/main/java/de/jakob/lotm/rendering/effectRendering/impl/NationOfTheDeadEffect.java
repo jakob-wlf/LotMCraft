@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -47,8 +48,8 @@ public class NationOfTheDeadEffect extends ActiveEffect {
 
     private final int duration;
 
-    public NationOfTheDeadEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 106);
+    public NationOfTheDeadEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
         this.duration = 20 * 101;
         bake();
     }
@@ -110,7 +111,7 @@ public class NationOfTheDeadEffect extends ActiveEffect {
         Vector3f up    = new Vector3f(0f, 1f, 0f).rotate(camRot);
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
         Matrix4f m = poseStack.last().pose();
 
         RenderSystem.depthMask(false);

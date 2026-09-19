@@ -2,11 +2,11 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.MysticalDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenPacket;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -25,7 +25,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -66,10 +65,11 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, level, targetLoc, 14);
 
         ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), targetLoc, 900, 8, .2, 8, .075);
-        EffectManager.playEffect(EffectManager.Effect.BANISHMENT, targetLoc.x, targetLoc.y, targetLoc.z, level);
+        EffectManager.playEffect(EffectIds.BANISHMENT, targetLoc.x, targetLoc.y, targetLoc.z, level);
         level.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDERMAN_TELEPORT, entity.getSoundSource(), 1, 1);
 
         ServerLevel banishLevel = selectRandomLevel(level);
+        if(banishLevel == null) return;
         Vec3 banishLoc = generateRandomLocationInLevel(banishLevel);
 
         for(int i = 0; i < 20; i++) {
@@ -109,7 +109,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
     private ServerLevel selectRandomLevel(ServerLevel level) {
          return switch (level.random.nextInt(3)) {
             case 0 -> level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
-                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "exile")));
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space")));
             case 1 -> level.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
                         ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world")));
             default -> level;
@@ -141,7 +141,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         coordinates = TeleportationUtil.clampToBorder(level, coordinates);
 
         for(LivingEntity entity : targets) {
-            EffectManager.playEffect(EffectManager.Effect.TELEPORTATION, entity.getX(), entity.getY(), entity.getZ(), level);
+            EffectManager.playEffect(EffectIds.TELEPORTATION, entity.getX(), entity.getY(), entity.getZ(), level);
             level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDERMAN_TELEPORT, entity.getSoundSource(), 1, 1);
             ParticleUtil.spawnSphereParticles(level, ParticleTypes.ENCHANTED_HIT, entity.position().add(0, entity.getEyeHeight() / 2, 0), 3, 400);
             ParticleUtil.spawnSphereParticles(level, ParticleTypes.END_ROD, entity.position().add(0, entity.getEyeHeight() / 2, 0), 2, 200);
@@ -150,7 +150,7 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
         }
 
         level.playSound(null, BlockPos.containing(coordinates), SoundEvents.ENDERMAN_TELEPORT, soundSource, 1, 1);
-        EffectManager.playEffect(EffectManager.Effect.TELEPORTATION, coordinates.x, coordinates.y, coordinates.z, level);
+        EffectManager.playEffect(EffectIds.TELEPORTATION, coordinates.x, coordinates.y, coordinates.z, level);
         ParticleUtil.spawnSphereParticles(level, ParticleTypes.ENCHANTED_HIT, coordinates.add(0, .9, 0), 3, 400);
         ParticleUtil.spawnSphereParticles(level, ParticleTypes.END_ROD, coordinates.add(0, .9, 0), 2, 200);
     }

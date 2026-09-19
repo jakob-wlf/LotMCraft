@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Calamity;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Meteor;
@@ -18,12 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class PassiveCalamityAttraction extends PassiveAbilityItem {
+public class PassiveCalamityAttraction extends PassiveAbility {
     private static final double minimumSpawnDistance = 4;
     private static final double maximumSpawnDistance = 20;
 
-    public PassiveCalamityAttraction(Properties properties) {
-        super(properties);
+    public PassiveCalamityAttraction(String id) {
+        super(id);
     }
 
     @Override

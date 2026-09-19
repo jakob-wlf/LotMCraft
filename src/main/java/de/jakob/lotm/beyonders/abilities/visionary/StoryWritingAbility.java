@@ -3,7 +3,6 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerHelper;
 import de.jakob.lotm.beyonders.advancementrituals.visionary.seq1.VisSeq1Ritual;

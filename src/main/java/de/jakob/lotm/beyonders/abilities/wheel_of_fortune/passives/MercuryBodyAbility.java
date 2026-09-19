@@ -1,12 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -14,11 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MercuryBodyAbility extends PassiveAbilityItem {
+public class MercuryBodyAbility extends PassiveAbility {
     private static final Set<UUID> mercuryBodyHolders = ConcurrentHashMap.newKeySet();
 
-    public MercuryBodyAbility(Item.Properties properties) {
-        super(properties);
+    public MercuryBodyAbility(String id) {
+        super(id);
     }
 
     @Override

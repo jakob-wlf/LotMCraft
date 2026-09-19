@@ -1,17 +1,16 @@
 {
-  "targets": [
-    "swap"
-  ],
+  "targets": [ "swap" ],
   "passes": [
     {
-      "name": "lotmcraft:shattered_glass",
+      "name": "shattered_glass",
       "intarget": "minecraft:main",
-      "outtarget": "swap"
-    },
-    {
-      "name": "minecraft:blit",
-      "intarget": "swap",
-      "outtarget": "minecraft:main"
+      "outtarget": "minecraft:main",
+      "uniforms": [
+        { "name": "GameTime",      "type": "float", "values": [ 0.0 ] },
+        { "name": "ShardScale",    "type": "float", "values": [ 9.0 ] },
+        { "name": "ShardStrength", "type": "float", "values": [ 0.012 ] },
+        { "name": "CrackWidth",    "type": "float", "values": [ 0.02 ] }
+      ]
     }
   ]
 }

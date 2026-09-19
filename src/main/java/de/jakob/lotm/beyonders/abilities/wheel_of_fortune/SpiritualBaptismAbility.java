@@ -1,19 +1,20 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.TransformationComponent;
-import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.common.passives.FateResistanceAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -87,14 +88,15 @@ public class SpiritualBaptismAbility extends SelectableAbility {
     }
 
     private void performBaptism(LivingEntity caster, LivingEntity target, ServerLevel serverLevel){
-        EffectManager.playEffect(EffectManager.Effect.SPIRITUAL_BAPTISM, target.getX(), target.getY(), target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.SPIRITUAL_BAPTISM, target.getX(), target.getY(), target.getZ(), serverLevel);
         target.addEffect(new MobEffectInstance(MobEffects.HEAL, 5, 40, false, false, false));
 
         ParasitationAbility.cleanseParasite(serverLevel, target);
         boolean wasMarionette = MarionetteUtils.isMarionette(target);
         boolean wasPuppetNpc = target instanceof BeyonderNPCEntity npc && npc.isPuppetWarrior();
         if (wasMarionette) {
-            MarionetteUtils.releaseMarionetteControl(target);
+            //MarionetteUtils.releaseMarionetteControl(target);
+
         }
         if ((wasMarionette || wasPuppetNpc) && target instanceof BeyonderNPCEntity npc) {
             npc.restoreNormalNpcState();

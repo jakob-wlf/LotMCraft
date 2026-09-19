@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
@@ -24,25 +25,25 @@ public class SpaceDistortionEffect extends ActiveEffect {
     private final List<FloatingOrb> floatingOrbs = new ArrayList<>();
     private float rotation = 0f;
 
-    public SpaceDistortionEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 60); // 60 second duration
+    public SpaceDistortionEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Initialize particles
+
         for (int i = 0; i < 150; i++) {
             particles.add(new DistortionParticle());
         }
 
-        // Initialize energy bolts
+
         for (int i = 0; i < 12; i++) {
             energyBolts.add(new EnergyBolt());
         }
 
-        // Initialize spiral streams
+
         for (int i = 0; i < 6; i++) {
             spiralStreams.add(new SpiralStream(i));
         }
 
-        // Initialize floating orbs
+
         for (int i = 0; i < 8; i++) {
             floatingOrbs.add(new FloatingOrb());
         }
@@ -56,12 +57,12 @@ public class SpaceDistortionEffect extends ActiveEffect {
 
         float progress = getProgress();
 
-        // Pulsating intensity
+
         float pulseSpeed = 3f;
         float pulse = (float) (0.7 + 0.3 * Math.sin(progress * pulseSpeed * Math.PI * 2));
         float secondaryPulse = (float) (0.6 + 0.4 * Math.sin(progress * pulseSpeed * 1.5 * Math.PI * 2));
 
-        // Fade in at start, fade out at end
+
         float fadeIn = Mth.clamp(progress * 5f, 0f, 1f);
         float fadeOut = Mth.clamp((1f - progress) * 2f, 0f, 1f);
         float intensity = fadeIn * fadeOut * pulse;
@@ -69,21 +70,21 @@ public class SpaceDistortionEffect extends ActiveEffect {
         rotation += 0.5f * tick;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
-        // Render pulsating core (larger)
+
         renderCore(poseStack, intensity, pulse, secondaryPulse);
 
-        // Render energy waves
+
         renderEnergyWaves(poseStack, intensity, progress);
 
-        // Render rotating outer rings (more and larger)
+
         renderOuterRings(poseStack, intensity, rotation);
 
-        // Render energy bolts
+
         renderEnergyBolts(poseStack, intensity, progress);
 
-        // Render floating orbs
+
         renderFloatingOrbs(poseStack, intensity, pulse);
 
         poseStack.popPose();
@@ -101,19 +102,19 @@ public class SpaceDistortionEffect extends ActiveEffect {
         int segments = 28;
         Matrix4f matrix = poseStack.last().pose();
 
-        // Inner purple core
+
         renderSphereLayer(matrix, radius * 0.8f, 0.7f, 0.2f, 1.0f, intensity * 0.9f, segments);
 
-        // Mid purple layer
+
         renderSphereLayer(matrix, radius * 1.0f, 0.6f, 0.2f, 0.9f, intensity * 0.7f, segments);
 
-        // Blue middle glow
+
         renderSphereLayer(matrix, radius * 1.2f * secondaryPulse, 0.3f, 0.5f, 1.0f, intensity * 0.6f, segments);
 
-        // Purple outer glow
+
         renderSphereLayer(matrix, radius * 1.4f, 0.5f, 0.3f, 0.9f, intensity * 0.4f, segments);
 
-        // Distant blue aura
+
         renderSphereLayer(matrix, radius * 1.7f, 0.2f, 0.4f, 0.8f, intensity * 0.2f, segments);
 
         RenderSystem.enableCull();
@@ -132,7 +133,7 @@ public class SpaceDistortionEffect extends ActiveEffect {
         Matrix4f matrix = poseStack.last().pose();
         int segments = 32;
 
-        // Multiple expanding waves
+
         for (int wave = 0; wave < 3; wave++) {
             float waveProgress = (progress * 2f + wave * 0.33f) % 1f;
             float waveRadius = 0.5f + waveProgress * 2.5f;
@@ -184,33 +185,33 @@ public class SpaceDistortionEffect extends ActiveEffect {
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        // Ring 1 - horizontal rotation (largest)
+
         poseStack.pushPose();
         poseStack.mulPose(new org.joml.Quaternionf().fromAxisAngleDeg(0, 1, 0, rotation));
         renderRing(poseStack, 2.5f, 0.12f, 0.4f, 0.3f, 1.0f, intensity * 0.7f);
         poseStack.popPose();
 
-        // Ring 2 - tilted rotation
+
         poseStack.pushPose();
         org.joml.Vector3f axis2 = new org.joml.Vector3f(1, 0, 1).normalize();
         poseStack.mulPose(new org.joml.Quaternionf().fromAxisAngleDeg(axis2.x, axis2.y, axis2.z, -rotation * 1.3f));
         renderRing(poseStack, 2.1f, 0.1f, 0.5f, 0.2f, 0.9f, intensity * 0.6f);
         poseStack.popPose();
 
-        // Ring 3 - different axis
+
         poseStack.pushPose();
         org.joml.Vector3f axis3 = new org.joml.Vector3f(1, 1, 0).normalize();
         poseStack.mulPose(new org.joml.Quaternionf().fromAxisAngleDeg(axis3.x, axis3.y, axis3.z, rotation * 0.8f));
         renderRing(poseStack, 2.8f, 0.08f, 0.6f, 0.4f, 1.0f, intensity * 0.5f);
         poseStack.popPose();
 
-        // Ring 4 - counter-rotating
+
         poseStack.pushPose();
         poseStack.mulPose(new org.joml.Quaternionf().fromAxisAngleDeg(0, 1, 0, -rotation * 0.6f));
         renderRing(poseStack, 1.8f, 0.09f, 0.3f, 0.4f, 0.95f, intensity * 0.6f);
         poseStack.popPose();
 
-        // Ring 5 - vertical-ish
+
         poseStack.pushPose();
         org.joml.Vector3f axis5 = new org.joml.Vector3f(0, 1, 1).normalize();
         poseStack.mulPose(new org.joml.Quaternionf().fromAxisAngleDeg(axis5.x, axis5.y, axis5.z, rotation * 1.5f));
@@ -238,7 +239,7 @@ public class SpaceDistortionEffect extends ActiveEffect {
             float x2 = cos * (radius + thickness);
             float z2 = sin * (radius + thickness);
 
-            // Smooth gradient from center to edge
+
             float edgeFade = 0.5f;
             buffer.addVertex(matrix, x1, 0, z1).setColor(r, g, b, alpha);
             buffer.addVertex(matrix, x2, 0, z2).setColor(r, g, b, alpha * edgeFade);
@@ -613,7 +614,7 @@ public class SpaceDistortionEffect extends ActiveEffect {
         }
 
         void reset() {
-            // Uniformly distribute particles on a sphere
+
             float theta = (float) Math.acos(2 * random.nextFloat() - 1);
             float phi = random.nextFloat() * (float) Math.PI * 2;
             float dist = 1.2f + random.nextFloat() * 1.3f;
@@ -650,7 +651,7 @@ public class SpaceDistortionEffect extends ActiveEffect {
                 return;
             }
 
-            // Orbit around center with slight spiral
+
             float angle = lifetime * orbitSpeed;
             float currentDist = (float) pos.length();
             pos = new Vec3(
@@ -659,7 +660,7 @@ public class SpaceDistortionEffect extends ActiveEffect {
                     Math.sin(angle) * currentDist
             );
 
-            // Gentle pull towards center
+
             Vec3 toCenter = pos.normalize().scale(-0.008);
             velocity = velocity.add(toCenter);
 

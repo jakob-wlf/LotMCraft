@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
@@ -28,10 +29,7 @@ public class ShaderManager {
                 return;
             }
             
-            // Check in priority order - shattered glass takes precedence
-            if (shouldApplyShatteredGlass(player)) {
-                applyShader(mc, "shattered_glass");
-            } else if (shouldApplySanityShader(player)) {
+            if (shouldApplySanityShader(player)) {
                 applyShader(mc, "sanity_loss");
             } else if (shouldApplyCorruptionShader(player)) {
                 applyShader(mc, "corruption");
@@ -69,7 +67,7 @@ public class ShaderManager {
 
 
     private static boolean shouldApplyShatteredGlass(Player player) {
-        return player.getData(ModAttachments.MIRROR_WORLD_COMPONENT.get()).isInMirrorWorld();
+        return player.level().dimension().equals(ModDimensions.MIRROR_WORLD_DIMENSION_KEY);
     }
 
     private static boolean shouldApplyDrought(Player player) {

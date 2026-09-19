@@ -67,6 +67,8 @@ public class ClientEvents {
         LOTMCraft.useSharedAbilityKey = new KeyMapping("key.beyonders.use_shared_ability", GLFW.GLFW_KEY_N, "key.categories.beyonders");
         LOTMCraft.nextSharedAbilityKey = new KeyMapping("key.beyonders.next_shared_ability", GLFW.GLFW_KEY_PERIOD, "key.categories.beyonders");
         LOTMCraft.previousSharedAbilityKey = new KeyMapping("key.beyonders.previous_shared_ability", GLFW.GLFW_KEY_COMMA, "key.categories.beyonders");
+        LOTMCraft.openMarionetteMenuKey = new KeyMapping("key.beyonders.open_marionette_menu", GLFW.GLFW_KEY_B, "key.categories.beyonders");
+        LOTMCraft.nextMarionetteKey = new KeyMapping("key.beyonders.next_marionette", GLFW.GLFW_KEY_X, "key.categories.beyonders");
 
 
         event.register(LOTMCraft.pathwayInfosKey);
@@ -94,6 +96,8 @@ public class ClientEvents {
         event.register(LOTMCraft.useSharedAbilityKey);
         event.register(LOTMCraft.nextSharedAbilityKey);
         event.register(LOTMCraft.previousSharedAbilityKey);
+        event.register(LOTMCraft.openMarionetteMenuKey);
+        event.register(LOTMCraft.nextMarionetteKey);
     }
 
     @SubscribeEvent

@@ -1,8 +1,8 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.Introspect.IntrospectScreen;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -16,7 +16,7 @@ import java.util.List;
 
 /**
  * Server → Client: sends the current list of available and unlocked sefirot cross-path abilities.
- * The client stores these in {@link ClientData} so the Introspect screen can include them in
+ * The client stores these in {@link AbilityWheelClientData} so the Introspect screen can include them in
  * the available-abilities panel.
  */
 public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
@@ -48,10 +48,10 @@ public record SyncSefirotAuthorityDataPacket(List<String> availableIds,
 
     public static void handle(SyncSefirotAuthorityDataPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
-            ClientData.setSefirotAvailableAbilityIds(packet.availableIds());
-            ClientData.setSefirotUnlockedAbilityIds(packet.unlockedIds());
-            ClientData.setOwnsSefirot(packet.hasSefirot());
-            ClientData.setClaimedSefirot(packet.claimedSefirot());
+            AbilityWheelClientData.setSefirotAvailableAbilityIds(packet.availableIds());
+            AbilityWheelClientData.setSefirotUnlockedAbilityIds(packet.unlockedIds());
+            AbilityWheelClientData.setOwnsSefirot(packet.hasSefirot());
+            AbilityWheelClientData.setClaimedSefirot(packet.claimedSefirot());
             if (Minecraft.getInstance().screen instanceof IntrospectScreen introspectScreen) {
                 introspectScreen.refreshAvailableAbilities();
             }

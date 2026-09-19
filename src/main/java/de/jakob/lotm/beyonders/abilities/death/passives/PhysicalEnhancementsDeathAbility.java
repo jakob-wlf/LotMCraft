@@ -21,8 +21,8 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
 
     public static final HashSet<LivingEntity> activeEntities = new HashSet<>();
 
-    public PhysicalEnhancementsDeathAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsDeathAbility(String id) {
+        super(id);
     }
 
     @Override

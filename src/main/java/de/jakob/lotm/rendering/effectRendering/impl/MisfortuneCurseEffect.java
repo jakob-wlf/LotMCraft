@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
+import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -29,25 +30,25 @@ public class MisfortuneCurseEffect extends ActiveEffect {
     private float curseIntensity = 0f;
     private float spiralRotation = 0f;
 
-    public MisfortuneCurseEffect(double x, double y, double z) {
-        super(x, y, z, 20 * 2); // 8 seconds duration
+    public MisfortuneCurseEffect(Location location, int duration, boolean infinite) {
+        super(location, duration, infinite);
 
-        // Create multiple spirals that orbit and descend
+
         for (int i = 0; i < 5; i++) {
             spirals.add(new CurseSpiral(i));
         }
 
-        // Create curse particles
+
         for (int i = 0; i < 120; i++) {
             particles.add(new MisfortuneParticle());
         }
 
-        // Create floating ominous runes
+
         for (int i = 0; i < 8; i++) {
             runes.add(new OminousRune());
         }
 
-        // Create ethereal chains
+
         for (int i = 0; i < 6; i++) {
             chains.add(new ChainLink());
         }
@@ -60,7 +61,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
         float progress = tick / maxDuration;
 
-        // Curse builds up, sustains, then fades
+
         if (progress < 0.15f) {
             curseIntensity = progress / 0.15f;
         } else if (progress > 0.85f) {
@@ -72,11 +73,11 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         spiralRotation += 0.08f;
 
         poseStack.pushPose();
-        poseStack.translate(x, y, z);
+        poseStack.translate(getX(), getY(), getZ());
 
         MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
 
-        // Render in order for proper blending
+
         renderCoreVortex(poseStack, bufferSource, progress);
         renderChains(poseStack, bufferSource, progress);
         renderSpirals(poseStack, bufferSource, progress);
@@ -92,7 +93,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Dark swirling vortex at the center
+
         float vortexRadius = 0.8f + Mth.sin(currentTick * 0.1f) * 0.2f;
         int segments = 24;
 
@@ -100,7 +101,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
             float angle1 = (float) (i * Math.PI * 2 / segments + spiralRotation);
             float angle2 = (float) ((i + 1) * Math.PI * 2 / segments + spiralRotation);
 
-            // Inner dark core
+
             float innerRadius = vortexRadius * 0.3f;
             float outerRadius = vortexRadius;
 
@@ -116,7 +117,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
             float alpha = 0.7f * curseIntensity;
 
-            // Dark center
+
             addVertex(consumer, matrix, x1, 0, z1, 0.1f, 0.05f, 0.0f, alpha);
             addVertex(consumer, matrix, x2, 0, z2, 0.1f, 0.05f, 0.0f, alpha);
             addVertex(consumer, matrix, x3, 0, z3, PRIMARY_R * 0.5f, PRIMARY_G * 0.5f, PRIMARY_B * 0.5f, alpha * 0.6f);
@@ -133,7 +134,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
             if (spiral.alpha <= 0f) continue;
 
-            // Draw spiral as connected segments
+
             for (int i = 0; i < spiral.points.size() - 1; i++) {
                 Vec3 p1 = spiral.points.get(i);
                 Vec3 p2 = spiral.points.get(i + 1);
@@ -144,7 +145,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
                 float t = i / (float) spiral.points.size();
                 float segmentAlpha = spiral.alpha * curseIntensity * (1f - t * 0.4f);
 
-                // Gradient from dark to bronze
+
                 float r = PRIMARY_R * (0.3f + t * 0.7f);
                 float g = PRIMARY_G * (0.3f + t * 0.7f);
                 float b = PRIMARY_B * (0.3f + t * 0.7f);
@@ -188,11 +189,11 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
             if (rune.alpha <= 0f) continue;
 
-            // Draw rune as a glowing symbol (simplified as cross pattern)
+
             float size = rune.size;
             float alpha = rune.alpha * curseIntensity;
 
-            // Vertical line
+
             addVertex(consumer, matrix, rune.x - size * 0.1f, rune.y - size, rune.z,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B, alpha);
             addVertex(consumer, matrix, rune.x + size * 0.1f, rune.y - size, rune.z,
@@ -202,7 +203,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
             addVertex(consumer, matrix, rune.x - size * 0.1f, rune.y + size, rune.z,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B, alpha);
 
-            // Horizontal line
+
             addVertex(consumer, matrix, rune.x - size, rune.y - size * 0.1f, rune.z,
                     PRIMARY_R, PRIMARY_G, PRIMARY_B, alpha);
             addVertex(consumer, matrix, rune.x + size, rune.y - size * 0.1f, rune.z,
@@ -223,7 +224,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
             if (chain.alpha <= 0f) continue;
 
-            // Draw chain as a series of connected segments
+
             for (int i = 0; i < chain.segments.size() - 1; i++) {
                 Vec3 p1 = chain.segments.get(i);
                 Vec3 p2 = chain.segments.get(i + 1);
@@ -253,7 +254,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Creeping mist at the base
+
         int segments = 16;
         float mistRadius = 2.5f + Mth.sin(currentTick * 0.05f) * 0.3f;
 
@@ -284,7 +285,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        // Pulsing rings of misfortune
+
         int ringCount = 3;
         for (int r = 0; r < ringCount; r++) {
             float ringOffset = r * 0.33f;
@@ -329,9 +330,9 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         Vec3 cameraPos = mc.gameRenderer.getMainCamera().getPosition();
 
         Vec3 toCamera = new Vec3(
-                cameraPos.x - (this.x + x),
-                cameraPos.y - (this.y + y),
-                cameraPos.z - (this.z + z)
+                cameraPos.x - (this.getX() + x),
+                cameraPos.y - (this.getY() + y),
+                cameraPos.z - (this.getZ() + z)
         ).normalize();
 
         Vec3 up = new Vec3(0, 1, 0);
@@ -376,10 +377,10 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
             for (int i = 0; i < numPoints; i++) {
                 float t = i / (float) numPoints;
-                float angle = t * Mth.TWO_PI * 3f; // 3 full rotations
-                float height = t * 4f - 2f; // Descends from top to bottom
+                float angle = t * Mth.TWO_PI * 3f;
+                float height = t * 4f - 2f;
 
-                float radius = orbitRadius * (1f - t * 0.3f); // Tightens as it descends
+                float radius = orbitRadius * (1f - t * 0.3f);
                 float x = Mth.cos(angle + angleOffset) * radius;
                 float z = Mth.sin(angle + angleOffset) * radius;
 
@@ -388,7 +389,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         }
 
         void update(float progress, float intensity, float rotation) {
-            // Rotate the entire spiral
+
             for (int i = 0; i < points.size(); i++) {
                 Vec3 p = points.get(i);
                 float rotAmount = spiralSpeed * 0.05f;
@@ -422,19 +423,19 @@ public class MisfortuneCurseEffect extends ActiveEffect {
             this.y = random.nextFloat() * 3f - 1f;
             this.z = Mth.sin(angle) * dist;
 
-            // Spiraling inward motion
+
             float centerDist = (float) Math.sqrt(x * x + z * z);
             float tangentAngle = angle + Mth.HALF_PI;
             
             this.vx = -x * 0.01f + Mth.cos(tangentAngle) * 0.02f;
-            this.vy = -0.02f - random.nextFloat() * 0.01f; // Falling
+            this.vy = -0.02f - random.nextFloat() * 0.01f;
             this.vz = -z * 0.01f + Mth.sin(tangentAngle) * 0.02f;
 
             this.size = 0.05f + random.nextFloat() * 0.06f;
             this.lifetime = 60f + random.nextFloat() * 40f;
             this.age = 0f;
 
-            // Darker variants of the primary color
+
             float brightness = 0.6f + random.nextFloat() * 0.4f;
             this.r = PRIMARY_R * brightness;
             this.g = PRIMARY_G * brightness;
@@ -447,7 +448,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
             this.z += vz;
             this.age++;
 
-            // Fade in and out
+
             float lifetimeProgress = age / lifetime;
             if (lifetimeProgress < 0.2f) {
                 this.alpha = lifetimeProgress / 0.2f * 0.8f;
@@ -457,7 +458,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
                 this.alpha = 0.8f;
             }
 
-            // Respawn if too old or out of bounds
+
             if (age >= lifetime || Math.abs(y) > 3f) {
                 respawn();
             }
@@ -509,7 +510,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
 
             for (int i = 0; i < numLinks; i++) {
                 float t = i / (float) numLinks;
-                float height = 2.5f - t * 4f; // Top to bottom
+                float height = 2.5f - t * 4f;
 
                 segments.add(new Vec3(0, height, 0));
             }
@@ -518,7 +519,7 @@ public class MisfortuneCurseEffect extends ActiveEffect {
         void update(float progress, float intensity, float rotation) {
             float angle = angleOffset + rotation * 0.3f;
 
-            // Update chain positions to orbit
+
             for (int i = 0; i < segments.size(); i++) {
                 Vec3 base = segments.get(i);
                 float sway = Mth.sin(currentTick * 0.1f + i * 0.5f) * 0.2f;

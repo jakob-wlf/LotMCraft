@@ -1,8 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
@@ -30,7 +31,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
+public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
 
     private static final String BASE_MODIFIER_ID = "lotm_physical_enhancement";
 
@@ -64,8 +65,8 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     // is a significant server-side win.
     private static final Map<UUID, Integer> lastKnownSequence = new ConcurrentHashMap<>();
 
-    public PhysicalEnhancementsAbility(Properties properties) {
-        super(properties);
+    public PhysicalEnhancementsAbility(String id) {
+        super(id);
     }
 
     /**
@@ -138,9 +139,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             if(dataOp.isPresent()) {
                 var data = dataOp.get();
 
-                ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
+                EntityControllingComponent controllingData = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
                 List<Characteristic> charList = data.chars();
-                if (!charList.isEmpty() && controllingData.getTargetUUID() == null && !controllingData.isControlling()) {
+                if (!charList.isEmpty() && !controllingData.isControlling()) {
 
                     if (sequenceLevel < 9) {
                         currentEnhancements = currentEnhancements.stream()
@@ -202,6 +203,9 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
     }
 
     protected int getCurrentSequenceLevel(LivingEntity entity) {
+        if(entity instanceof Player player && ControllingUtils.isControlling(player)) {
+            return ControllingUtils.getControlledSequence(player);
+        }
         return BeyonderData.getSequence(entity, getPathwayName());
     }
 
@@ -542,6 +546,13 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
         reducedRegen.remove(uuid);
     }
 
+    public static void removeAllEnhancementsForEntity(LivingEntity entity) {
+        for(PassiveAbility passiveAbility : PassiveAbilityHandler.passiveAbilities) {
+            if(passiveAbility instanceof PhysicalEnhancementsAbility physicalEnhancementsAbility)
+                physicalEnhancementsAbility.removeAllEnhancements(entity);
+        }
+    }
+
     private void removeAllEnhancements(LivingEntity entity) {
         Map<PhysicalEnhancementsAbility, Map<EnhancementType, Integer>> enhancements = entityEnhancements.get(entity.getUUID());
         if (enhancements != null) {
@@ -566,7 +577,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbilityItem {
             }
         }
 
-        System.out.println("removeAllEnhancements called for " + entity.getUUID());
         entityEnhancements.remove(entity.getUUID());
         temporaryEnhancements.remove(entity.getUUID());
         enhancementBoosts.remove(entity.getUUID());

@@ -2,6 +2,7 @@ package de.jakob.lotm.dimension;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import de.jakob.lotm.block.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.world.level.LevelHeightAccessor;
@@ -184,6 +185,10 @@ public class DeepSpaceDimensionChunkGenerator extends ChunkGenerator {
 
         int islandThickness = 4 + rng.nextInt(5); // top slab thickness 4–8
 
+        boolean hasPortal = rng.nextInt(100) < 12;
+        int portalOffsetX = hasPortal ? rng.nextInt(Math.max(1, halfW)) * (rng.nextBoolean() ? 1 : -1) / 2 : 0;
+        int portalOffsetZ = hasPortal ? rng.nextInt(Math.max(1, halfL)) * (rng.nextBoolean() ? 1 : -1) / 2 : 0;
+
         for (int dx = -halfW; dx <= halfW; dx++) {
             for (int dz = -halfL; dz <= halfL; dz++) {
                 int worldX = cx + dx;
@@ -192,13 +197,11 @@ public class DeepSpaceDimensionChunkGenerator extends ChunkGenerator {
                 int localZ = worldZ - chunkBaseZ;
                 if (localX < 0 || localX >= 16 || localZ < 0 || localZ >= 16) continue;
 
-                // Horizontal distance normalised to [0,1]
                 double hDist = Math.sqrt(
                         ((double) dx * dx) / (halfW * halfW) +
-                        ((double) dz * dz) / (halfL * halfL));
+                                ((double) dz * dz) / (halfL * halfL));
                 if (hDist > 1.0) continue;
 
-                // Top slab: flat top with slight noise
                 int noiseOff = (int) (rng.nextGaussian() * 1.2);
                 for (int dy = 0; dy <= islandThickness; dy++) {
                     int worldY = cy + dy + noiseOff;
@@ -207,12 +210,19 @@ public class DeepSpaceDimensionChunkGenerator extends ChunkGenerator {
                     chunk.setBlockState(new BlockPos(localX, worldY, localZ), bs, false);
                 }
 
-                // Underbelly: tapers downward based on horizontal distance
                 int maxDown = (int) (depth * (1.0 - hDist * hDist));
                 for (int dy = -1; dy >= -maxDown; dy--) {
                     int worldY = cy + dy + noiseOff;
                     if (worldY < chunk.getMinBuildHeight() || worldY >= chunk.getMaxBuildHeight()) continue;
                     chunk.setBlockState(new BlockPos(localX, worldY, localZ), fillBlock, false);
+                }
+
+                if (hasPortal && dx == portalOffsetX && dz == portalOffsetZ) {
+                    int topY = cy + islandThickness + noiseOff + 1;
+                    if (topY >= chunk.getMinBuildHeight() && topY < chunk.getMaxBuildHeight()) {
+                        chunk.setBlockState(new BlockPos(localX, topY, localZ),
+                                ModBlocks.REALITY_PORTAL.get().defaultBlockState(), false);
+                    }
                 }
             }
         }

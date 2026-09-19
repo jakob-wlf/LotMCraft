@@ -1,14 +1,12 @@
 package de.jakob.lotm.util.helper;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
-import de.jakob.lotm.util.data.ClientData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.util.ArrayList;
 
@@ -74,6 +72,19 @@ public class AbilityWheelHelper {
         syncToClient(player);
     }
 
+    public static void setAbilitiesForEntity(ServerPlayer player, LivingEntity entity, ArrayList<String> abilities) {
+        AbilityWheelComponent component = entity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        component.setAbilities(abilities);
+
+        // Adjust selected ability if needed
+        int selected = component.getSelectedAbility();
+        if (selected >= abilities.size()) {
+            component.setSelectedAbility(Math.max(0, abilities.size() - 1));
+        }
+
+        syncToClient(player, entity);
+    }
+
     /**
      * Clears all abilities from the player's wheel and syncs to client.
      * @param player The player to clear abilities for
@@ -88,15 +99,10 @@ public class AbilityWheelHelper {
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         CopiedAbilityComponent copiedComponent = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
-        for(String abilityId : new ArrayList<>(component.getAbilities())) {
-            String[] parts = abilityId.split(":");
-            String baseId = parts[0];
-            boolean isCopied = parts.length >= 3 && parts[2].equals("copied");
-            Ability ability = LOTMCraft.abilityHandler.getById(baseId);
-            boolean hasBackingCopy = copiedComponent.getAbilities().stream()
-                    .anyMatch(data -> data.abilityId().equals(baseId));
-            if (ability == null || (isCopied ? !hasBackingCopy : !ability.hasAbility(player))) {
-                component.getAbilities().remove(abilityId);
+        for (String raw : new ArrayList<>(component.getAbilities())) {
+            AbilityId id = AbilityId.parse(raw);
+            if (!id.isUsableBy(player) && (!id.copied() || !CopiedAbilityHelper.hasCopiedAbility(player, id.baseId()))) {
+                component.getAbilities().remove(raw);
             }
         }
         int selected = component.getSelectedAbility();
@@ -126,7 +132,11 @@ public class AbilityWheelHelper {
      * @param player The player to sync to
      */
     public static void syncToClient(ServerPlayer player) {
-        AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        syncToClient(player, player);
+    }
+
+    public static void syncToClient(ServerPlayer player, LivingEntity entity) {
+        AbilityWheelComponent component = entity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         PacketHandler.sendToPlayer(
                 player,
                 new SyncAbilityWheelPacket(component.getAbilities(), component.getSelectedAbility())

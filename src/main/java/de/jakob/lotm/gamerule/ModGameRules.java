@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameRules;
 
 public class ModGameRules {

@@ -1,10 +1,10 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.events.HonorificNamesEventHandler;
-import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingMenu;
 import de.jakob.lotm.beyonders.sefirah.RiverBlessingManager;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.events.HonorificNamesEventHandler;
+import de.jakob.lotm.gui.custom.RiverBlessing.RiverBlessingMenu;
 import de.jakob.lotm.util.BeyonderData;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;

@@ -3,10 +3,10 @@ package de.jakob.lotm.beyonders.abilities.common;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
-import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
@@ -103,7 +103,7 @@ public class SpiritVisionAbility extends ToggleAbility {
         if (!(entity instanceof ServerPlayer player))
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f, false, true);
 
         if (lookedAt != null) {
             if (VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), lookedAt))

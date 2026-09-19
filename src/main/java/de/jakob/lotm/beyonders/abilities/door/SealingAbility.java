@@ -59,9 +59,9 @@ public class SealingAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        int radius = 5*(int) multiplier(entity);
+        int radius = (int) (5*multiplier(entity));
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20*(int) multiplier(entity), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (20*multiplier(entity)), 2);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 

@@ -1,7 +1,6 @@
 package de.jakob.lotm.item;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
@@ -52,6 +51,8 @@ public class ModCreativeModTabs {
                         output.accept(ModItems.WATER_OF_THE_RIVER_STYX_BUCKET.get());
                         output.accept(ModItems.SEALED_BOTTLE.get());
                         output.accept(ModItems.ETERNAL_DARKNESS_RIVER_WATER_BOTTLE.get());
+                        output.accept(ModBlocks.RITUALISTIC_TABLE);
+                        output.accept(ModItems.MYSTERIOUS_SILVER_PLATE);
                         // ── Blasphemy Cards ──
                         output.accept(ModItems.FOOL_BLASPHEMY_CARD.get());
                         output.accept(ModItems.DOOR_BLASPHEMY_CARD.get());
@@ -76,20 +77,9 @@ public class ModCreativeModTabs {
                     })
                     .build());
 
-    public static final Supplier<CreativeModeTab> PASSIVE_ABILITIES_TAB = CREATIVE_MODE_TABS.register("passive_abilities_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(PassiveAbilityHandler.PHYSICAL_ENHANCEMENTS_RED_PRIEST.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "lotm_tab"))
-                    .title(Component.translatable("creativetab.lotmcraft.passive_abilities_tab"))
-                    .displayItems((parameters, output) -> {
-                        PassiveAbilityHandler.ITEMS.getEntries().forEach(itemHolder -> {
-                            output.accept(itemHolder.get());
-                        });
-                    })
-                    .build());
-
     public static final Supplier<CreativeModeTab> BEYONDER_POTIONS_TAB = CREATIVE_MODE_TABS.register("beyonder_potions_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(PotionItemHandler.SEER_POTION.get()))
-                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "passive_abilities_tab"))
+                    .withTabsBefore(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "lotm_tab"))
                     .title(Component.translatable("creativetab.lotmcraft.beyonder_potions_tab"))
                     .displayItems((parameters, output) -> {
                         PotionItemHandler.ITEMS.getEntries().forEach(itemHolder -> {

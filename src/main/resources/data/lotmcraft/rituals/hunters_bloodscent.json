@@ -1,0 +1,29 @@
+{
+  "id": "lotm:hunters_bloodscent",
+  "discovered_from": "lotm:trackers_field_journal",
+  "candle": "minecraft:brown_candle",
+  "sacrifices": [
+    { "item": "minecraft:bone", "count": 2 },
+    { "item": "minecraft:feather", "count": 4 }
+  ],
+  "honorific": {
+    "lines": [
+      "Silent stalker who tracks by scent and shadow alone",
+      "Keeper of a thousand hunts across a thousand nights",
+      "Lend your prey's stumble to my step, that I may close the distance."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.55, "g": 0.35, "b": 0.15 },
+  "book_color": "RED",
+  "duration_ticks": 200,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:speed", "duration_ticks": 4800, "amplifier": 1, "target": "self", "max_distance": -1 },
+        { "id": "minecraft:jump_boost", "duration_ticks": 4800, "amplifier": 0, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

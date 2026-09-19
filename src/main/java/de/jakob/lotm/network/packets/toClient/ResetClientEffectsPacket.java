@@ -5,7 +5,7 @@ import de.jakob.lotm.rendering.*;
 import de.jakob.lotm.util.ClientAccommodationCache;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.ClientRitualProgressCache;
-import de.jakob.lotm.util.data.ClientData;
+import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -27,7 +27,7 @@ public record ResetClientEffectsPacket() implements CustomPacketPayload {
     public static void handle(ResetClientEffectsPacket payload, IPayloadContext context) {
         context.enqueueWork(() -> {
             ClientBeyonderCache.clearCache();
-            ClientData.clearCache();
+            AbilityWheelClientData.clearCache();
             ClientAccommodationCache.reset();
             ClientRitualProgressCache.clear();
             ActiveToggleAbilitiesRenderer.clearCache();

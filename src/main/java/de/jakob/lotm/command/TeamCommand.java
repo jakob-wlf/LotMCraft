@@ -2,7 +2,7 @@ package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.network.PacketHandler;
@@ -89,22 +89,14 @@ public class TeamCommand {
 
     private static boolean checkEligible(CommandSourceStack source, ServerPlayer player) {
         // If the player is currently controlling a marionette, check their original body's data
-        ControllingDataComponent controlling = player.getData(ModAttachments.CONTROLLING_DATA);
+        EntityControllingComponent controlling = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if (controlling.isControlling()) {
-            net.minecraft.nbt.CompoundTag bodyTag = controlling.getBodyEntity();
-            if (bodyTag != null && bodyTag.contains("neoforge:attachments")) {
-                net.minecraft.nbt.CompoundTag attachments = bodyTag.getCompound("neoforge:attachments");
-                if (attachments.contains("lotmcraft:beyonder_component")) {
-                    net.minecraft.nbt.CompoundTag component = attachments.getCompound("lotmcraft:beyonder_component");
-                    if (component.contains("characteristic_list")) {
-                        net.minecraft.nbt.ListTag list = component.getList("characteristic_list", net.minecraft.nbt.Tag.TAG_COMPOUND);
-                        for (int i = 0; i < list.size(); i++) {
-                            net.minecraft.nbt.CompoundTag c = list.getCompound(i);
-                            if (c.getString("pathway").equals("red_priest") && c.getInt("sequence") <= 3 && c.getInt("stack") > 0) {
-                                return true;
-                            }
-                        }
-                    }
+            net.minecraft.world.entity.LivingEntity bodyEntity = controlling.getControlledEntity();
+            if (bodyEntity != null) {
+                boolean eligible = de.jakob.lotm.util.BeyonderData.getCharList(bodyEntity).stream()
+                        .anyMatch(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0);
+                if (eligible) {
+                    return true;
                 }
             }
             source.sendFailure(Component.literal("Only Red Priest Beyonders at sequence 3 or higher can use this command."));
@@ -125,7 +117,7 @@ public class TeamCommand {
         }
 
         TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
-        
+
         int sequence = de.jakob.lotm.util.BeyonderData.getCharList(leader).stream()
                 .filter(c -> c.pathway().equals("red_priest") && c.sequence() <= 3 && c.stack() > 0)
                 .mapToInt(de.jakob.lotm.util.playerMap.Characteristic::sequence)

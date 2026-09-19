@@ -1,12 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.sefirah;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.gui.custom.ChaosSeaAuthority.ChaosSeaAuthorityMenu;
 import de.jakob.lotm.gui.custom.RiverSefirotAuthority.RiverSefirotAuthorityMenu;
 import de.jakob.lotm.gui.custom.SefirotAuthority.SefirotAuthorityMenu;
-import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
-import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,11 +40,11 @@ public class SefirotAuthorityAbility extends Ability {
     }
 
     /** Granted to anyone who currently holds a sefirot — not pathway/sequence based. */
-    @Override
-    public boolean hasAbility(LivingEntity entity) {
-        if (!(entity instanceof ServerPlayer player)) return false;
-        return SefirahHandler.hasSefirot(player);
-    }
+    //@Override
+    //public boolean hasAbility(LivingEntity entity) {
+    //    if (!(entity instanceof ServerPlayer player)) return false;
+    //    return SefirahHandler.hasSefirot(player);
+    //}
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {

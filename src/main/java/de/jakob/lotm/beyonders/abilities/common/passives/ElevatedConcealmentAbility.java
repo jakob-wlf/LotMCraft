@@ -1,10 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.common.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.Collections;
@@ -13,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ElevatedConcealmentAbility extends PassiveAbilityItem {
+public class ElevatedConcealmentAbility extends PassiveAbility {
 
     /**
      * Players with this passive active — they are concealed from all divination and targeting
@@ -24,8 +23,8 @@ public class ElevatedConcealmentAbility extends PassiveAbilityItem {
 
     private static final String REQUIRED_SEFIROT = "river_of_eternal_darkness";
 
-    public ElevatedConcealmentAbility(Item.Properties properties) {
-        super(properties);
+    public ElevatedConcealmentAbility(String id) {
+        super(id);
     }
 
     @Override

@@ -2,11 +2,10 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.common.SpiritVisionAbility;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -14,11 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InnateSpiritVisionAbility extends PassiveAbilityItem {
+public class InnateSpiritVisionAbility extends PassiveAbility {
     private static final Set<UUID> forcedActive = ConcurrentHashMap.newKeySet();
 
-    public InnateSpiritVisionAbility(Item.Properties properties) {
-        super(properties);
+    public InnateSpiritVisionAbility(String id) {
+        super(id);
     }
 
     @Override

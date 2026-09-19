@@ -9,11 +9,9 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSefirotAccommodationPacket;
-import de.jakob.lotm.rendering.effectRendering.MovableEffectManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.EntityLocation;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.data.PathwayInfos;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -182,7 +180,7 @@ public class RiverOfEternalDarknessEventHandler {
             if (player.tickCount % 5 == 0 && player.level() instanceof ServerLevel sl) {
                 UUID beamId = ritualBeamEffectIds.get(player.getUUID());
                 if (beamId != null) {
-                    MovableEffectManager.updateEffectPosition(beamId, new EntityLocation(player), sl);
+                    //MovableEffectManager.updateEffectPosition(beamId, new EntityLocation(player), sl);
                 }
             }
         }
@@ -293,7 +291,7 @@ public class RiverOfEternalDarknessEventHandler {
         // Remove the beam before claiming/resetting
         UUID finishBeamId = ritualBeamEffectIds.remove(player.getUUID());
         if (finishBeamId != null && player.level() instanceof ServerLevel sl) {
-            MovableEffectManager.removeEffect(finishBeamId, sl);
+            //MovableEffectManager.removeEffect(finishBeamId, sl);
         }
 
         boolean claimed = SefirahHandler.claimSefirot(player, riverSefirotId, true);
@@ -312,7 +310,7 @@ public class RiverOfEternalDarknessEventHandler {
         }
         UUID beamId = ritualBeamEffectIds.remove(player.getUUID());
         if (beamId != null && player.level() instanceof ServerLevel sl) {
-            MovableEffectManager.removeEffect(beamId, sl);
+            //MovableEffectManager.removeEffect(beamId, sl);
         }
         ritualTicks.remove(player.getUUID());
         ritualAnnounced.remove(player.getUUID());
@@ -365,13 +363,13 @@ public class RiverOfEternalDarknessEventHandler {
         // Start the sky beam (visible to all except the ritual player in first-person)
         if (!ritualBeamEffectIds.containsKey(player.getUUID())
                 && player.level() instanceof ServerLevel sl) {
-            UUID beamId = MovableEffectManager.playEffect(
-                    MovableEffectManager.MovableEffect.RIVER_SKY_BEAM,
-                    new EntityLocation(player),
-                    0, true, sl, player);
-            ritualBeamEffectIds.put(player.getUUID(), beamId);
-            // Hide from the accommodating player themselves
-            MovableEffectManager.removeEffect(beamId, player);
+        //    UUID beamId = MovableEffectManager.playEffect(
+        //            MovableEffectManager.MovableEffect.RIVER_SKY_BEAM,
+        //            new EntityLocation(player),
+        //            0, true, sl, player);
+        //    ritualBeamEffectIds.put(player.getUUID(), beamId);
+        //    // Hide from the accommodating player themselves
+        //    MovableEffectManager.removeEffect(beamId, player);
         }
 
         PacketHandler.sendToPlayer(player, new SyncSefirotAccommodationPacket(newProgress, requiredTicks));

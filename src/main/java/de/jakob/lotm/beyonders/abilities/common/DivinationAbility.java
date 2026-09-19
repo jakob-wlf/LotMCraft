@@ -4,11 +4,11 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.*;
-import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
-import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.MercuryBodyAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
@@ -227,6 +227,7 @@ public class DivinationAbility extends SelectableAbility {
             .map(holder -> holder.key().location())
             .filter(DivinationAbility::isStructureDivinable)
             .map(ResourceLocation::toString)
+                .filter(id -> !id.contains("brood_hive"))
                 .sorted()
                 .toList();
 

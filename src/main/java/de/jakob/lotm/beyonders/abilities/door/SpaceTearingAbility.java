@@ -34,7 +34,7 @@ public class SpaceTearingAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 27*(int) multiplier(entity), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (27*multiplier(entity)), 2);
         SpaceCollapseEntity collapse = new SpaceCollapseEntity(level, targetLoc, (float) DamageLookup.lookupDps(3, 1, 4, 10) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), entity);
         level.addFreshEntity(collapse);
     }

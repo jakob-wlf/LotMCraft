@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.attachments.SefirotData;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.network.PacketHandler;
@@ -11,21 +11,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-public class AbsolutePerceptionAbility extends PassiveAbilityItem {
+public class AbsolutePerceptionAbility extends PassiveAbility {
     private static final int syncIntervalTicks = 10;
     private final Map<UUID, Set<Entity>> glowingOwners = new java.util.HashMap<>();
 
-    public AbsolutePerceptionAbility(Item.Properties properties) {
-        super(properties);
+    public AbsolutePerceptionAbility(String id) {
+        super(id);
     }
 
     @Override

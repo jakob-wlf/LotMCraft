@@ -3,7 +3,6 @@ package de.jakob.lotm.beyonders.abilities.sefirah;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenAboveSeqAuthorityScreenPacket;
-import de.jakob.lotm.beyonders.sefirah.GreatOldOneManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -38,13 +37,13 @@ public class AboveTheSequenceAuthorityAbility extends Ability {
         return 0f;
     }
 
-    /** Only Great Old Ones (Sequence -1). */
-    @Override
-    public boolean hasAbility(LivingEntity entity) {
-        if (entity.level().isClientSide()) return false;
-        if (!(entity instanceof ServerPlayer player)) return false;
-        return GreatOldOneManager.isGreatOldOne(player);
-    }
+    ///** Only Great Old Ones (Sequence -1). */
+    //@Override
+    //public boolean hasAbility(LivingEntity entity) {
+    //    if (entity.level().isClientSide()) return false;
+    //    if (!(entity instanceof ServerPlayer player)) return false;
+    //    return GreatOldOneManager.isGreatOldOne(player);
+    //}
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {

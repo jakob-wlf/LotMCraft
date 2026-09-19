@@ -55,7 +55,7 @@ public class ToxicSmokeAbility extends Ability {
         Vec3 pos = entity.getEyePosition();
 
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 6, 20 * 5* (int) multiplier(entity), () -> {
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 6, (int) (20 * 5* multiplier(entity)), () -> {
             // Toxic smoke is completely cancelled by purification and will explode with burning interaction
             Location smokeLoc = new Location(pos, level);
             int seq = AbilityUtil.getSeqWithArt(entity, this);
@@ -88,7 +88,7 @@ public class ToxicSmokeAbility extends Ability {
 
             AbilityUtil.damageNearbyEntities((ServerLevel) level,
                     entity,
-                    6.5* (int) multiplier(entity),
+                    6.5* multiplier(entity),
                     DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity),
                     pos,
                     true,

@@ -33,7 +33,7 @@ public class AdvancementsEventHandler {
         if (BeyonderData.isBeyonder(player)) {
             grantAdvancement(player, "become_beyonder");
 
-            if (BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)) != null) {
+            if (BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player, true)) != null) {
                 if (BeyonderData.getSequence(player) == LOTMCraft.GREAT_OLD_ONE_SEQ) {
                     // GOO state is legitimate — no sequence advancement to grant
                 } else if (BeyonderData.getSequence(player) >= 10) {
@@ -42,18 +42,18 @@ public class AdvancementsEventHandler {
                     String charPath = BeyonderData.getCharList(player).stream().filter(c -> c.sequence() == charSeq).findFirst().map(c -> c.pathway()).orElse("none");
                     BeyonderData.setBeyonder(player, charPath, charSeq);
                 } else {
-                    String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player)).getRawSequenceName(BeyonderData.getSequence(player));
+                    String sequenceName = BeyonderData.pathwayInfos.get(BeyonderData.getPathway(player, true)).getRawSequenceName(BeyonderData.getSequence(player, false, true));
                     grantAdvancement(player, "become_" + sequenceName.toLowerCase());
                 }
             } else {
                 LOTMCraft.LOGGER.error("Advancement Error: Missing PathwayInfo for player '{}'. Pathway: '{}', Sequence: {}",
                         player.getName().getString(),
-                        BeyonderData.getPathway(player),
-                        BeyonderData.getSequence(player)
+                        BeyonderData.getPathway(player, true),
+                        BeyonderData.getSequence(player, false, true)
                 );
             }
 
-            int sequence = BeyonderData.getSequence(player);
+            int sequence = BeyonderData.getSequence(player, false, true);
             if (sequence <= 5) grantAdvancement(player, "reach_sequence_5");
             if (sequence <= 3) grantAdvancement(player, "reach_sequence_3");
             if (sequence <= 1) grantAdvancement(player, "reach_sequence_1");

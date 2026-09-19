@@ -6,6 +6,7 @@ import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.MysteriousTabletFragmentItem;
@@ -53,10 +54,10 @@ public class ChestLootModifier extends LootModifier {
 
                 String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
                 int sequence = getWeightedHighSequence();
-                Item item = getRandomLoot(pathway, sequence);
+                ItemStack item = getRandomLoot(pathway, sequence);
 
                 if (item != null && (sequence >= 7)) {
-                    generatedLoot.add(new ItemStack(item));
+                    generatedLoot.add(item);
                 }
             }
         }
@@ -129,12 +130,25 @@ public class ChestLootModifier extends LootModifier {
         return 1 + (int) (weighted * 9);
     }
 
-    public static Item getRandomLoot(String pathway, int sequence) {
-        return switch(random.nextInt(4)) {
-            case 1 -> ModIngredients.selectRandomIngredientOfPathwayAndSequence(random, pathway, sequence);
-            case 2 -> PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
-            case 3 -> BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
-            default -> PotionItemHandler.selectPotionOfPathwayAndSequence(random, pathway, sequence);
+    public static ItemStack getRandomLoot(String pathway, int sequence) {
+        return switch(random.nextInt(8)) {
+            case 1,2 -> {
+                Item item = ModIngredients.selectRandomIngredientOfPathwayAndSequence(random, pathway, sequence);
+                yield item != null ? new ItemStack(item) : null;
+            }
+            case 3,4 -> {
+                Item item = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, sequence);
+                yield item != null ? new ItemStack(item) : null;
+            }
+            case 5,6 -> {
+                Item item = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, sequence);
+                yield item != null ? new ItemStack(item) : null;
+            }
+            case 7 -> RitualManager.getRandomRitualBook();
+            default -> {
+                Item item = PotionItemHandler.selectPotionOfPathwayAndSequence(random, pathway, sequence);
+                yield item != null ? new ItemStack(item) : null;
+            }
         };
     }
 

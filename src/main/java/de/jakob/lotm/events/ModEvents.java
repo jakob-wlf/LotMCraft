@@ -3,7 +3,9 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.death_pathway.underworld_gate.UnderworldGateModel;
@@ -27,6 +29,8 @@ import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.mis
 import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
+import de.jakob.lotm.entity.client.knowledge_rabbit.RabbitOfKnowledgeModel;
+import de.jakob.lotm.entity.client.murloc.MurlocModel;
 import de.jakob.lotm.entity.client.projectiles.fireball.FireballModel;
 import de.jakob.lotm.entity.client.projectiles.flaming_spear.FlamingSpearProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.frost_spear.FrostSpearProjectileModel;
@@ -35,6 +39,7 @@ import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestr
 import de.jakob.lotm.entity.client.projectiles.spear_of_light.SpearOfLightProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.unshadowed_spear.UnshadowedSpearProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.wind_blade.WindBladeModel;
+import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandModel;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneModel;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
@@ -43,23 +48,28 @@ import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostModel;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthModel;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneModel;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
-import de.jakob.lotm.entity.custom.AvatarEntity;
-import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
-import de.jakob.lotm.entity.custom.DamageTrackerEntity;
-import de.jakob.lotm.entity.custom.FireRavenEntity;
-import de.jakob.lotm.entity.custom.ability_entities.OriginalBodyEntity;
+import de.jakob.lotm.entity.custom.*;
+import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
+import de.jakob.lotm.rendering.models.darkness.DarknessMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.death.DeathMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.demoness.DemonessMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.error.ErrorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.justiciar.JusticiarMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.mother.MotherMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
 import de.jakob.lotm.util.helper.TeamUtils;
+import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
@@ -117,6 +127,9 @@ public class ModEvents {
         event.registerLayerDefinition(TradeIndicatorModel.LAYER_LOCATION, TradeIndicatorModel::createBodyLayer);
         event.registerLayerDefinition(CycleOfFateModel.LAYER_LOCATION, CycleOfFateModel::createBodyLayer);
         event.registerLayerDefinition(UnderworldGateModel.LAYER_LOCATION, UnderworldGateModel::createBodyLayer);
+        event.registerLayerDefinition(MurlocModel.LAYER_LOCATION, MurlocModel::createBodyLayer);
+        event.registerLayerDefinition(RabbitOfKnowledgeModel.LAYER_LOCATION, RabbitOfKnowledgeModel::createBodyLayer);
+
 
         // Spirits
         event.registerLayerDefinition(SpiritDervishModel.LAYER_LOCATION, SpiritDervishModel::createBodyLayer);
@@ -127,6 +140,7 @@ public class ModEvents {
         event.registerLayerDefinition(SpiritBizarroBaneModel.LAYER_LOCATION, SpiritBizarroBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritBaneModel.LAYER_LOCATION, SpiritBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritMalmouthModel.LAYER_LOCATION, SpiritMalmouthModel::createBodyLayer);
+        event.registerLayerDefinition(AbscessedHandModel.LAYER_LOCATION, AbscessedHandModel::createBodyLayer);
 
         // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
@@ -136,6 +150,13 @@ public class ModEvents {
         event.registerLayerDefinition(RedPriestMythicalCreatureModel.LAYER_LOCATION, RedPriestMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(SunMythicalCreatureModel.LAYER_LOCATION, SunMythicalCreatureModel::createBodyLayer);
         event.registerLayerDefinition(DoorHighMythicalCreatureModel.LAYER_LOCATION, DoorHighMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(MotherMythicalCreatureModel.LAYER_LOCATION, MotherMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DarknessMythicalCreatureModel.LAYER_LOCATION, DarknessMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DeathMythicalCreatureModel.LAYER_LOCATION, DeathMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(ErrorMythicalCreatureModel.LAYER_LOCATION, ErrorMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(JusticiarMythicalCreatureModel.LAYER_LOCATION, JusticiarMythicalCreatureModel::createBodyLayer);;
+        event.registerLayerDefinition(VisionaryMythicalCreatureModel.LAYER_LOCATION, VisionaryMythicalCreatureModel::createBodyLayer);
+        event.registerLayerDefinition(DemonessMythicalCreatureModel.LAYER_LOCATION, DemonessMythicalCreatureModel::createBodyLayer);
     }
 
     @SubscribeEvent
@@ -144,17 +165,20 @@ public class ModEvents {
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
-        event.put(ModEntities.ORIGINAL_BODY.get(), OriginalBodyEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
+        event.put(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDouble.createAttributes().build());
+        event.put(ModEntities.MURLOC.get(), MurlocEntity.createAttributes().build());
+        event.put(ModEntities.RABBIT_OF_KNOWLEDGE.get(), RabbitOfKnowledgeEntity.createAttributes().build());
 
         event.put(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BLUE_WIZARD.get(), SpiritBlueWizardEntity.createAttributes().build());
-        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritDervishEntity.createAttributes().build());
+        event.put(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), SpiritBubblesEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(), SpiritTranslucentWizardEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_GHOST.get(), SpiritGhostEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BIZARRO_BANE.get(), SpiritBizarroBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_BANE.get(), SpiritBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthEntity.createAttributes().build());
+        event.put(ModEntities.ABSCESSED_HAND.get(), AbscessedHandEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -222,6 +246,27 @@ public class ModEvents {
                 Mob::checkMobSpawnRules,
                 RegisterSpawnPlacementsEvent.Operation.REPLACE
         );
+        event.register(
+                ModEntities.ABSCESSED_HAND.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.MURLOC.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.OCEAN_FLOOR,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.RABBIT_OF_KNOWLEDGE.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
     }
 
     @SubscribeEvent
@@ -230,8 +275,6 @@ public class ModEvents {
         SpawnBeyonderSpawnerCommand.register(event.getDispatcher());
         LuckCheckCommand.register(event.getDispatcher());
         KeyOfLightTempleLocateCommand.register(event.getDispatcher());
-        AllyRequestCommands.register(event.getDispatcher());
-        AllyCommand.register(event.getDispatcher());
         EnablePlayerAbilitiesCommand.register(event.getDispatcher());
         SanityCommand.register(event.getDispatcher());
         CorruptionCommand.register(event.getDispatcher());
@@ -249,6 +292,14 @@ public class ModEvents {
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
+        event.getDispatcher().register(
+                Commands.literal("accept_sefirot_invite")
+                            .executes(ctx -> {
+                                ServerPlayer player = ctx.getSource().getPlayerOrException();
+                                SefirahHandler.acceptInvite(player);
+                                return 1;
+                            })
+        );
         SequenceSlotsCommand.register(event.getDispatcher());
         AncientTraderCommand.register(event.getDispatcher());
         FragmentCommand.register(event.getDispatcher());
@@ -309,6 +360,8 @@ public class ModEvents {
                         word != null ? word : ""));
 
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
+
+        ControllingUtils.handleRejoin(player);
 
         if (team.isInTeam()) {
             // Player is a member — check if their leader still has them listed

@@ -17,6 +17,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -200,13 +202,11 @@ public class TravelersDoorEntity extends Entity {
 
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
+            Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize().scale(glideSpeed);
 
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
-                if (!entity.isAlive()) return;
-                Vec3 remaining = spiritWorldTargetPos.subtract(currentEntityPos[0]);
-                Vec3 nextPos = remaining.length() <= glideSpeed
-                        ? spiritWorldTargetPos
-                        : currentEntityPos[0].add(remaining.normalize().scale(glideSpeed));
+                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
+                Vec3 nextPos = currentEntityPos[0].add(dir);
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
 

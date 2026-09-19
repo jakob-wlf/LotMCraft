@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -76,7 +77,7 @@ public class BlessingAbility extends Ability {
             return;
         }
 
-        EffectManager.playEffect(EffectManager.Effect.BLESSING, target.getX(), target.getY(), target.getZ(), serverLevel);
+        EffectManager.playEffect(EffectIds.BLESSING, target.getX(), target.getY(), target.getZ(), serverLevel);
 
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);

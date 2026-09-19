@@ -4,8 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MysteriousTabletData;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactItem;
 import de.jakob.lotm.block.ModBlocks;
-import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.data.ModTags;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.item.custom.*;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.item.*;
@@ -31,6 +31,7 @@ public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
 
     public static final DeferredItem<Item> FOOL_Card = ITEMS.registerItem("fool_card", Item::new, new Item.Properties());
+    public static final DeferredItem<Item> MYSTERIOUS_SILVER_PLATE = ITEMS.registerItem("mysterious_silver_plate", Item::new, new Item.Properties());
     public static final DeferredItem<Item> ONE_POUND = ITEMS.registerItem("one_pound", Item::new, new Item.Properties());
     public static final DeferredItem<Item> ONE_SOLI = ITEMS.registerItem("one_soli", Item::new, new Item.Properties());
     public static final DeferredItem<Item> CRYSTAL_BALL = ITEMS.registerItem("crystal_ball", Item::new, new Item.Properties().stacksTo(1));
@@ -85,9 +86,6 @@ public class ModItems {
             MysteriousTabletItem::new,
             new Item.Properties().stacksTo(1)
     );
-
-    public static final Supplier<Item> MARIONETTE_CONTROLLER = ITEMS.register("marionette_controller",
-            () -> new MarionetteControllerItem(new Item.Properties().stacksTo(1)));
 
     public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",
             () -> new SubordinateControllerItem(new Item.Properties().stacksTo(1)));

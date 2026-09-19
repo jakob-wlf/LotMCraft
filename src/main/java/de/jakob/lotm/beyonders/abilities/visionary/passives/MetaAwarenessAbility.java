@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary.passives;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.events.HonorificNamesEventHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,7 +22,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class MetaAwarenessAbility extends PassiveAbilityItem {
+public class MetaAwarenessAbility extends PassiveAbility {
     private static final Map<UUID, Long> COOLDOWNS = new HashMap<>();
     private static final long COOLDOWN_MS = 10000; // 10s cooldown
 
@@ -41,8 +40,8 @@ public class MetaAwarenessAbility extends PassiveAbilityItem {
             "while","who","whom","why","will","with","you","your","yours","yourself","yourselves"
     );
 
-    public MetaAwarenessAbility(Item.Properties properties) {
-        super(properties);
+    public MetaAwarenessAbility(String id) {
+        super(id);
     }
 
     @Override

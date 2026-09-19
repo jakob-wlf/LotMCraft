@@ -2,10 +2,10 @@ package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.advancementrituals.AdvancementRitualManager;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -75,8 +75,7 @@ public class AdvancementUtil {
     public static void advance(LivingEntity entity, String pathway, int sequence) {
         if(playerMap == null) return;
 
-        ControllingDataComponent data = entity.getData(ModAttachments.CONTROLLING_DATA);
-        if (data.isControlling()) {
+        if (entity instanceof Player player && ControllingUtils.isControlling(player)) {
             entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
             return;
         }

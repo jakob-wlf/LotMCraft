@@ -4,6 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -118,10 +119,10 @@ public class ProhibitionAbility extends SelectableAbility {
         spawnProhibitionCastEffect(serverLevel, entity);
 
         final double px = entity.getX(), py = entity.getY(), pz = entity.getZ();
-        EffectManager.playEffect(EffectManager.Effect.PROHIBITION, px, py, pz, serverLevel);
+        EffectManager.playEffect(EffectIds.PROHIBITION, px, py, pz, serverLevel);
         ServerScheduler.scheduleForDuration(140, 140, zoneDuration, () -> {
             if (!newZone.isActive()) return;
-            EffectManager.playEffect(EffectManager.Effect.PROHIBITION, px, py, pz, serverLevel);
+            EffectManager.playEffect(EffectIds.PROHIBITION, px, py, pz, serverLevel);
         }, null, serverLevel);
 
         String typeName = type.displayName;

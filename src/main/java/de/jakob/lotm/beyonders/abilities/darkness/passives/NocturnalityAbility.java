@@ -1,6 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.darkness.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityItem;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,13 +11,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class NocturnalityAbility extends PassiveAbilityItem {
+public class NocturnalityAbility extends PassiveAbility {
 
     private final Set<MobEffect> modifiedEffectTypes = new HashSet<>();
     private int tick = 0;
 
-    public NocturnalityAbility(Properties properties) {
-        super(properties);
+    public NocturnalityAbility(String id) {
+        super(id);
     }
 
     @Override

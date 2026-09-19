@@ -1,17 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ControllingDataComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ControllingUtil;
-import de.jakob.lotm.util.helper.marionettes.MarionetteUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -47,6 +46,7 @@ public class ParasitationAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         cannotBeStolen = true;
+        canBeUsedWhileControlling = false;
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ParasitationAbility extends SelectableAbility {
             controllingMap.remove(parasiteUUID);
             controllingTimer.remove(parasiteUUID);
             controllingLowerSeq.remove(parasiteUUID);
-            if (parasite != null) ControllingUtil.reset(parasite, serverLevel, true);
+            if (parasite != null) ControllingUtils.cancel(parasite, 0, true, false);
         }
         if (host.getUUID().equals(concealedMap.get(parasiteUUID))) {
             concealedMap.remove(parasiteUUID);
@@ -161,7 +161,7 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtil.possess(player, target, false, true);
+        ControllingUtils.startControlling(player, target, true, false);
     }
 
     public static void exitControl(ServerLevel serverLevel, ServerPlayer player) {
@@ -173,7 +173,7 @@ public class ParasitationAbility extends SelectableAbility {
         controllingTimer.remove(player.getUUID());
         controllingLowerSeq.remove(player.getUUID());
 
-        ControllingUtil.reset(player, serverLevel, true);
+        ControllingUtils.cancel(player, 0, true, false);
 
         Entity hostEntity = serverLevel.getEntity(hostUUID);
         if (hostEntity instanceof LivingEntity host) {
@@ -348,9 +348,7 @@ public class ParasitationAbility extends SelectableAbility {
         if (serverPlayer.level().isClientSide) return;
         if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
 
-
-        ControllingDataComponent data = serverPlayer.getData(ModAttachments.CONTROLLING_DATA);
-        if (!data.isControlling()) {
+        if (!ControllingUtils.isControlling(serverPlayer)) {
             // Ended externally — clean up without calling reset again
             controllingMap.remove(serverPlayer.getUUID());
             controllingTimer.remove(serverPlayer.getUUID());
@@ -416,7 +414,7 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtil.possess(player, target, false, false);
+        ControllingUtils.startControlling(player, target, true, false);
     }
 
     private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {
