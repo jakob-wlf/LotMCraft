@@ -52,6 +52,13 @@ public class SefirotChunkGenerator extends ChunkGenerator {
             ).apply(instance, (bs, path) -> new SefirotChunkGenerator(bs, "brood_hive"))
     );
 
+    public static final MapCodec<SefirotChunkGenerator> KEY_OF_LIGHT_CODEC = RecordCodecBuilder.mapCodec(instance ->
+            instance.group(
+                    BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),
+                    Codec.STRING.fieldOf("region_path").forGetter(gen -> gen.REGION_PATH)
+            ).apply(instance, (bs, path) -> new SefirotChunkGenerator(bs, "key_of_light"))
+    );
+
     public static final MapCodec<SefirotChunkGenerator> CHAOS_SEA_CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
                     BiomeSource.CODEC.fieldOf("biome_source").forGetter(ChunkGenerator::getBiomeSource),

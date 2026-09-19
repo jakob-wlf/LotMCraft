@@ -41,6 +41,9 @@ public class ModDimensions {
     public static final Supplier<MapCodec<SefirotChunkGenerator>> CHAOS_SEA_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("chaos_sea", () -> SefirotChunkGenerator.CHAOS_SEA_CODEC);
 
+    public static final Supplier<MapCodec<SefirotChunkGenerator>> KEY_OF_LIGHT_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("key_of_light", () -> SefirotChunkGenerator.KEY_OF_LIGHT_CODEC);
+
     public static final Supplier<MapCodec<SefirotChunkGenerator>> RIVER_OF_ETERNAL_DARKNESS_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("river_of_eternal_darkness", () -> SefirotChunkGenerator.RIVER_OF_ETERNAL_DARKNESS_CODEC);
 
