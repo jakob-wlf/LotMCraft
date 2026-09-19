@@ -512,6 +512,10 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                 Component.translatable("lotm.worm").append(Component.literal(": ")).append(Component.literal(String.valueOf(hasWorm))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
                         )));
             }
+            CompoundTag itemData = new CompoundTag();
+            itemData.putInt("MarkedIndex", i);
+            displayItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemData));
+
             entityContainer.setItem(i + 1, displayItem);
         }
 
@@ -538,20 +542,26 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                 return;
                             }
 
-                            if(tag.contains("EntityData")) {
-                                CompoundTag entityData = tag.getCompound("EntityData");
-                                if(isDeleting) {
-                                    removedMarkedEntity(player, entityData);
-                                    player.closeContainer();
-                                } else {
-                                    if(getSummonedCount(player) < getMaxSummoned(player)) {
-                                        level.getServer().execute(() -> {
-                                            spawnTemporaryEntity(level, player, entityData);
-                                        });
+                            if(tag.contains("MarkedIndex")) {
+                                int index = tag.getInt("MarkedIndex");
+                                List<CompoundTag> currentMarked = getMarkedEntities(player);
+
+                                if(index >= 0 && index < currentMarked.size()) {
+                                    CompoundTag entityData = currentMarked.get(index);
+
+                                    if(isDeleting) {
+                                        removedMarkedEntity(player, entityData);
+                                        player.closeContainer();
                                     } else {
-                                        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                                        if(getSummonedCount(player) < getMaxSummoned(player)) {
+                                            level.getServer().execute(() -> {
+                                                spawnTemporaryEntity(level, player, entityData);
+                                            });
+                                        } else {
+                                            player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                                        }
+                                        player.closeContainer();
                                     }
-                                    player.closeContainer();
                                 }
                             }
                         }
@@ -567,16 +577,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         // Create a spawn egg or representation item
         ItemStack display = new ItemStack(Items.PLAYER_HEAD);
-        display.set(DataComponents.CUSTOM_NAME,
-                Component.literal(customName.isEmpty() ? entityId : customName));
 
-        CompoundTag customTag = new CompoundTag();
-        customTag.put("EntityData", entityData);
-
-        display.set(DataComponents.CUSTOM_DATA,
-                CustomData.of(customTag)
+        display.set(
+                DataComponents.CUSTOM_NAME,
+                Component.literal(customName.isEmpty() ? entityId : customName).withStyle(ChatFormatting.YELLOW)
         );
-
         return display;
     }
 
