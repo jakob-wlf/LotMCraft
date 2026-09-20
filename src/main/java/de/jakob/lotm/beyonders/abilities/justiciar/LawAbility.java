@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.justiciar;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;

@@ -2,11 +2,12 @@ package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.*;
+import de.jakob.lotm.fluid.ModFluids;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -79,6 +80,36 @@ public class ModBlocks {
             )
     );
 
+    public static final DeferredBlock<LiquidBlock> DROPS_OF_ETERNAL_DARKNESS = registerBlockWithoutItem(
+            "drops_of_eternal_darkness",
+            () -> new LiquidBlock(ModFluids.DROPS_OF_ETERNAL_DARKNESS_SOURCE.get(),
+                    BlockBehaviour.Properties.of()
+                            .noOcclusion()
+                            .noCollission()
+                            .noLootTable()
+                            .replaceable()
+                            .liquid()
+                            .strength(100.0f)
+                            .sound(SoundType.EMPTY)
+                            .isSuffocating((state, level, pos) -> false)
+                            .isViewBlocking((state, level, pos) -> false))
+    );
+
+    public static final DeferredBlock<LiquidBlock> WATER_OF_THE_RIVER_STYX = registerBlockWithoutItem(
+            "water_of_the_river_styx",
+            () -> new LiquidBlock(ModFluids.WATER_OF_THE_RIVER_STYX_SOURCE.get(),
+                    BlockBehaviour.Properties.of()
+                            .noOcclusion()
+                            .noCollission()
+                            .noLootTable()
+                            .replaceable()
+                            .liquid()
+                            .strength(100.0f)
+                            .sound(SoundType.EMPTY)
+                            .isSuffocating((state, level, pos) -> false)
+                            .isViewBlocking((state, level, pos) -> false))
+    );
+
     public static final DeferredBlock<Block> REALITY_PORTAL = registerBlock("reality_portal",
             () -> new RealityPortalBlock(BlockBehaviour.Properties.of()
                     .noLootTable()
@@ -95,11 +126,25 @@ public class ModBlocks {
                     .strength(-1.0f, 3600000.0F)
             ));
 
+        public static final DeferredBlock<KeyOfLightStatueBlock> KEY_OF_LIGHT_STATUE = BLOCKS.register(
+            "key_of_light_statue",
+            () -> new KeyOfLightStatueBlock(BlockBehaviour.Properties.of()
+                    .noLootTable()
+                    .strength(-1.0f, 3600000.0F)
+                    .sound(SoundType.STONE)
+                    .lightLevel(state -> 10)
+                    .noOcclusion()
+            ));
+
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);
         return toReturn;
     }
+
+        private static <T extends Block> DeferredBlock<T> registerBlockWithoutItem(String name, Supplier<T> block) {
+                return BLOCKS.register(name, block);
+        }
 
     private static <T extends Block> void registerBlockItem(String name, DeferredBlock<T> block) {
         ModItems.ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));

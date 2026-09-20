@@ -8,6 +8,7 @@ import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationOnlinePlaye
 import de.jakob.lotm.network.packets.toClient.SyncPlayerTeleportationPlayerNamesPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.DivinationUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -79,7 +80,7 @@ public class PlayerTeleportationAbility extends SelectableAbility {
             return;
         }
 
-        if (14 <= DivinationUtil.getConcealmentPower(targetPlayer)) {
+        if (14 <= DivinationUtil.getConcealmentPower(targetPlayer) && BeyonderData.getSequence(player) >= 1) {
             player.sendSystemMessage(Component.literal("Failed to locate the target"));
             return;
         }

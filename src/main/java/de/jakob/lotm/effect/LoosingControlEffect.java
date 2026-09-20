@@ -1,22 +1,9 @@
 package de.jakob.lotm.effect;
 
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.damage.ModDamageTypes;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;

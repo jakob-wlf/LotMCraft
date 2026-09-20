@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:fragment_structure",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 783512913,
+    "spacing": 313,
+    "separation": 220,
+    "heightmap": "WORLD_SURFACE_WG",
+    "max_tries": 1
+  }
+}

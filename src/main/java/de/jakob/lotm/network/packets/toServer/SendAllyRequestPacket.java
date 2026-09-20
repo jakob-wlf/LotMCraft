@@ -12,8 +12,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-import java.util.UUID;
-
 public record SendAllyRequestPacket(String allyName) implements CustomPacketPayload {
     public static final Type<SendAllyRequestPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "send_ally_request"));

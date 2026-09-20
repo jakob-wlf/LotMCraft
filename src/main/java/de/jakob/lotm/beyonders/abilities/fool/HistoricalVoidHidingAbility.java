@@ -2,26 +2,20 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -131,6 +125,14 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x(), returnLocation.getPosition().y(), returnLocation.getPosition().z(), (ServerLevel) returnLocation.getLevel());
 
         locations.remove(entity.getUUID());
+    }
+
+    public static void forceExit(ServerLevel level, LivingEntity entity) {
+        for (ToggleAbility ability : ToggleAbility.getActiveAbilitiesForEntity(entity)) {
+            if (ability instanceof HistoricalVoidHidingAbility hiding) {
+                hiding.cancel(level, entity);
+            }
+        }
     }
 
     @SubscribeEvent

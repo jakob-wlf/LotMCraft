@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAccumulationAbility;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -19,6 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MisfortuneGiftingAbility extends Ability {
+    private static final int luckCost = 50;
+    private static final float baseLuckDrainRatePerMinute = 120;
+    private static final int luckDrainDurationTicks = 20 * 60;
+
     public MisfortuneGiftingAbility(String id) {
         super(id, 5);
     }
@@ -31,6 +35,11 @@ public class MisfortuneGiftingAbility extends Ability {
     @Override
     public float getSpiritualityCost() {
         return 120;
+    }
+
+    @Override
+    public int luckCost() {
+        return luckCost;
     }
 
     private static final DustParticleOptions dust = new DustParticleOptions(new Vector3f(201 / 255f, 150 / 255f, 79 / 255f), 1.5f);
@@ -56,9 +65,16 @@ public class MisfortuneGiftingAbility extends Ability {
         int targetSeq = BeyonderData.getSequence(target);
         double eyeHeight = target.getEyeHeight();
         ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, eyeHeight / 2, 0), 120, .3, eyeHeight / 2, .3, 0);
-        double resistance = AbilityUtil.getSequenceResistanceFactor(entitySeq, targetSeq);
-        int amplifier =(int) Math.min(Math.round(multiplier(entity) * 3.125f * (1.0 - resistance)) * 120, 6500);;
-        LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        luckComponent.addLuckWithMax(amplifier, -amplifier);
+        float drainRate = Math.min(LuckManager.getSequenceScaledEffectRate(entity,
+            Math.round(multiplier(entity) * 3.125f) * baseLuckDrainRatePerMinute), 6500);
+        if (drainRate <= 0) {
+            return;
+        }
+        if (!PassiveLuckAccumulationAbility.consumeStoredLuck(entity, luckCost)) {
+            AbilityUtil.sendActionBar(entity, Component.literal("\u00A7cMisfortune Gifting requires more luck."));
+            return;
+        }
+        LuckManager.applyLuckDrain(entity, target, "misfortune_gifting:" + entity.getUUID(),
+            drainRate, luckDrainDurationTicks);
     }
 }

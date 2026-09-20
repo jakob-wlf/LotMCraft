@@ -26,7 +26,7 @@ public class DigestionAction extends ActionBase {
 
     @Override
     public int getRequiredSeq() {
-        return 1;
+        return 0;
     }
 
     @Override

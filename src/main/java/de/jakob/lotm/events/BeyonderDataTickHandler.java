@@ -1,25 +1,22 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
-import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
-import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives.PassiveLuckAbility;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.abilities.core.*;
+import de.jakob.lotm.beyonders.abilities.door.passives.VoidImmunityAbility;
 import de.jakob.lotm.effect.FoolingEffect;
 import de.jakob.lotm.effect.ModEffects;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.item.custom.SubordinateControllerItem;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncOnHoldAbilityPacket;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.LuckManager;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -40,7 +37,9 @@ public class BeyonderDataTickHandler {
     private static final Set<PassiveAbility> passiveAbilities = ConcurrentHashMap.newKeySet();
 
 
+    // In BeyonderDataTickHandler
     private static final Map<UUID, Set<PassiveAbility>> cachedAbilities = new ConcurrentHashMap<>();
+    private static final Map<UUID, Set<PassiveAbility>> lastTickedAbilities = new ConcurrentHashMap<>();
 
     public static void invalidateCache(LivingEntity entity) {
         cachedAbilities.remove(entity.getUUID());
@@ -51,6 +50,7 @@ public class BeyonderDataTickHandler {
     private static Set<PassiveAbility> getApplicableAbilities(LivingEntity entity) {
         if (passiveAbilities.isEmpty()) {
             synchronized (INIT_LOCK) {
+                // Double-checked locking: re-test inside the lock
                 if (passiveAbilities.isEmpty()) {
                     List<PassiveAbility> abilities = PassiveAbilityHandler.passiveAbilities.stream().toList();
                     passiveAbilities.addAll(abilities);
@@ -74,7 +74,7 @@ public class BeyonderDataTickHandler {
         }
 
         // Tick cooldowns
-        AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT);
+        AbilityCooldownComponent component = livingEntity.getData(ModAttachments.COOLDOWN_COMPONENT.get());
         component.tick();
 
         //Virtual Personas heal
@@ -89,13 +89,16 @@ public class BeyonderDataTickHandler {
             disabledFlightComponent.setCooldownTicks(disabledFlightComponent.getCooldownTicks() - 1);
         }
 
+        // Tick Fooling attachment — re-apply a 2-tick cosmetic effect each tick so the HUD always shows it
         if (!livingEntity.level().isClientSide) {
             FoolingComponent foolingComponent = livingEntity.getData(ModAttachments.FOOLING_COMPONENT);
             if (foolingComponent.isFooled()) {
+                // Trigger a new stun on the interval, based on remaining ticks
                 if (foolingComponent.getTicksRemaining() % FoolingEffect.STUN_INTERVAL_TICKS == 0) {
                     foolingComponent.applyStun(FoolingEffect.STUN_DURATION_TICKS);
                 }
 
+                // Zero velocity and suppress client movement every tick while stunned
                 if (foolingComponent.isStunned()) {
                     livingEntity.setDeltaMovement(0, 0, 0);
                     livingEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 2, 254, false, false, false));
@@ -103,6 +106,7 @@ public class BeyonderDataTickHandler {
                 }
 
                 foolingComponent.tick();
+                // Re-apply with the actual remaining ticks so the HUD countdown is accurate
                 livingEntity.addEffect(new MobEffectInstance(ModEffects.FOOLING, foolingComponent.getTicksRemaining(), 0, false, true, true));
             } else if (livingEntity.hasEffect(ModEffects.FOOLING)) {
                 livingEntity.removeEffect(ModEffects.FOOLING);
@@ -133,14 +137,8 @@ public class BeyonderDataTickHandler {
                 tickPassiveAbilities(livingEntity);
 
                 // Remove Unluck gradually
-                LuckComponent luckComponent = livingEntity.getData(ModAttachments.LUCK_COMPONENT);
-                if(luckComponent.getLuck() < 0) {
-                    luckComponent.addLuckWithMax(1, 0);
-                }
-
-                // Remove Luck gradually
-                if(luckComponent.getLuck() > PassiveLuckAbility.getNormalLuckForEntity(livingEntity)) {
-                    luckComponent.addLuckWithMin(-1, PassiveLuckAbility.getNormalLuckForEntity(livingEntity));
+                if(LuckManager.getLuck(livingEntity) < 0) {
+                    LuckManager.cleanseMisfortune(livingEntity, 1);
                 }
             }
 
@@ -193,24 +191,69 @@ public class BeyonderDataTickHandler {
                 SubordinateControllerItem.onHold(player, player.getMainHandItem());
             }
         }
+
+        if(player.tickCount % 20 == 0) {
+            invalidateCache(player);
+        }
+
     }
 
     @SubscribeEvent
     public static void onPlayerClone(PlayerEvent.Clone event) {
         PhysicalEnhancementsAbility.resetEnhancements(event.getEntity().getUUID(), event.getEntity(), true);
         invalidateCache(event.getEntity());
+        PhysicalEnhancementsAbility.resetEnhancements(event.getEntity());
+        invalidateCache(event.getEntity()); // also re-filter applicable abilities
+        lastTickedAbilities.remove(event.getEntity().getUUID());
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        lastTickedAbilities.remove(event.getEntity().getUUID());
+        cachedAbilities.remove(event.getEntity().getUUID());
     }
 
     private static void tickPassiveAbilities(LivingEntity entity) {
         if(entity.level().isClientSide) return;
 
-        getApplicableAbilities(entity).forEach(abilityItem -> {
+        UUID uuid = entity.getUUID();
+        Set<PassiveAbility> current = getApplicableAbilities(entity);
+        Set<PassiveAbility> last = lastTickedAbilities.get(uuid);
+
+        if (last != null && !last.equals(current)) {
+            // Handle removal
+            for (PassiveAbility ability : last) {
+                if (!current.contains(ability)) {
+                    ability.onPassiveAbilityRemoved(entity, (ServerLevel)entity.level());
+                }
+            }
+            // Handle gain
+            for (PassiveAbility ability : current) {
+                if (!last.contains(ability)) {
+                    ability.onPassiveAbilityGained(entity, (ServerLevel)entity.level());
+                }
+            }
+        } else if (last == null && !current.isEmpty()) {
+            for (PassiveAbility ability : current) {
+                ability.onPassiveAbilityGained(entity, (ServerLevel)entity.level());
+            }
+        }
+
+        if (current.isEmpty()) {
+            lastTickedAbilities.remove(uuid);
+        } else {
+            lastTickedAbilities.put(uuid, new HashSet<>(current));
+        }
+
+        // Passive Abilities
+        current.forEach(abilityItem -> {
             abilityItem.tick(entity.level(), entity);
         });
     }
 
     private static void tickOnHold(LivingEntity entity, int tick) {
         if(entity instanceof ServerPlayer player) {
+            // Sync on Hold for currently selected Ability
             AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
             if(component.getSelectedAbility() < 0 || component.getSelectedAbility() >= component.getAbilities().size()) {
                 return;

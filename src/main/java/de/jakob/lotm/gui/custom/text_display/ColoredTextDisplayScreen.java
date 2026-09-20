@@ -57,8 +57,10 @@ public class ColoredTextDisplayScreen extends Screen {
     protected void init() {
         super.init();
         int totalHeight = textLines.size() * LINE_HEIGHT;
-        int displayHeight = this.height - (PADDING * 2) - 30;
-        maxScroll = Math.max(0, totalHeight - displayHeight);
+        int windowHeight = Math.min(400, this.height - 40);
+        int viewportHeight = windowHeight - (PADDING * 2) - 15;
+        maxScroll = Math.max(0, totalHeight - viewportHeight);
+        scrollOffset = Math.min(scrollOffset, maxScroll);
     }
 
     @Override
@@ -98,7 +100,7 @@ public class ColoredTextDisplayScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        int scrollAmount = (int) (scrollY * 3);
+        int scrollAmount = (int) Math.round(scrollY * LINE_HEIGHT * 3);
         scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - scrollAmount));
         return true;
     }

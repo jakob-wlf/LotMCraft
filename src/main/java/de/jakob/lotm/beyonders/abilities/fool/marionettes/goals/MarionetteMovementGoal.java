@@ -1,13 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;

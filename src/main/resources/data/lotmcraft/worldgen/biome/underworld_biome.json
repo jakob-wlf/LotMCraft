@@ -1,0 +1,42 @@
+{
+  "carvers": {},
+  "downfall": 0.0,
+  "effects": {
+    "fog_color": 592141,
+    "foliage_color": 1513245,
+    "grass_color": 1118486,
+    "mood_sound": {
+      "block_search_extent": 8,
+      "offset": 2.0,
+      "sound": "minecraft:ambient.cave",
+      "tick_delay": 6000
+    },
+    "sky_color": 0,
+    "water_color": 14211294,
+    "water_fog_color": 7829376
+  },
+  "features": [],
+  "has_precipitation": false,
+  "spawn_costs": {},
+  "spawners": {
+    "ambient": [],
+    "axolotls": [],
+    "creature": [],
+    "misc": [],
+    "monster": [
+      {"type":"minecraft:zombie","weight":65,"minCount":1,"maxCount":3},
+      {"type":"minecraft:skeleton","weight":55,"minCount":1,"maxCount":3},
+      {"type":"minecraft:drowned","weight":25,"minCount":1,"maxCount":2},
+      {"type":"lotmcraft:spirit_ghost","weight":35,"minCount":1,"maxCount":3},
+      {"type":"lotmcraft:spirit_dervish","weight":25,"minCount":1,"maxCount":2},
+      {"type":"lotmcraft:spirit_bubbles","weight":22,"minCount":1,"maxCount":2},
+      {"type":"lotmcraft:spirit_blue_wizard","weight":14,"minCount":1,"maxCount":1},
+      {"type":"lotmcraft:spirit_translucent_wizard","weight":12,"minCount":1,"maxCount":1},
+      {"type":"lotmcraft:spirit_malmouth","weight":10,"minCount":1,"maxCount":1}
+    ],
+    "underground_water_creature": [],
+    "water_ambient": [],
+    "water_creature": []
+  },
+  "temperature": 0.15
+}

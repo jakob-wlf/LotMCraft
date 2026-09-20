@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.visionary.handlers.mixin;
 import de.jakob.lotm.beyonders.abilities.visionary.MindWorldAuthorityEnvisioningAbility;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.events.EnvisionedObjectsEventHandler;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -39,8 +40,10 @@ public class CreativeSlotMixin {
             if(potion.getSequence() <= 2) return;
         }
 
+        stack = EnvisionedObjectsEventHandler.markEnvisioned(stack, player);
+
         if (slot < 0) {
-            player.containerMenu.setCarried(stack.copy());
+            player.containerMenu.setCarried(stack);
             player.inventoryMenu.broadcastChanges();
             player.inventoryMenu.sendAllDataToRemote();
             ci.cancel();
@@ -50,7 +53,7 @@ public class CreativeSlotMixin {
         if (slot >= 36 && slot <= 44) {
             int hotbarIndex = slot - 36;
 
-            player.getInventory().items.set(hotbarIndex, stack.copy());
+            player.getInventory().items.set(hotbarIndex, stack);
             player.getInventory().setChanged();
 
             // force selected slot sync
@@ -63,7 +66,7 @@ public class CreativeSlotMixin {
         }
 
         if (slot >= 0 && slot < player.getInventory().items.size()) {
-            player.getInventory().items.set(slot, stack.copy());
+            player.getInventory().items.set(slot, stack);
             player.getInventory().setChanged();
         }
 

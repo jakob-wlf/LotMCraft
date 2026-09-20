@@ -4,13 +4,14 @@ import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.advancementrituals.AdvancementRitualManager;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
-import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -25,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.joml.Vector3f;
 
@@ -42,7 +44,8 @@ public class AdvancementUtil {
             new HashSet<>(Set.of("fool", "error", "door")),
             new HashSet<>(Set.of("red_priest", "demoness")),
             new HashSet<>(Set.of("sun", "tyrant", "visionary")),
-            new HashSet<>(Set.of("darkness", "death"))
+            new HashSet<>(Set.of("darkness", "death", "twilight_giant")),
+            new HashSet<>(Set.of("black_emperor", "justiciar"))
     );
 
 
@@ -51,6 +54,7 @@ public class AdvancementUtil {
         Player player = event.getEntity();
         if (!activeAdvancements.containsKey(player.getUUID())) return;
 
+        cleanupAdvancementEffects(player);
         BeyonderPotion potion = activeAdvancements.get(player.getUUID());
         if (!player.getInventory().add(potion.getDefaultInstance()))
             player.drop(potion.getDefaultInstance(), false);
@@ -58,6 +62,14 @@ public class AdvancementUtil {
 
         int index = player.getInventory().findSlotMatchingItem(PotionItemHandler.EMPTY_BOTTLE.get().getDefaultInstance());
         if (index != -1) player.getInventory().removeItem(index, 1);
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (activeAdvancements.remove(entity.getUUID()) != null) {
+            cleanupAdvancementEffects(entity);
+        }
     }
 
     public static void advance(LivingEntity entity, String pathway, int sequence) {
@@ -86,9 +98,11 @@ public class AdvancementUtil {
 
         String prevPathway = getPathway(entity);
         int prevSequence = getSequence(entity);
+        boolean ritualCompleted = !(entity instanceof ServerPlayer player)
+                || AdvancementRitualManager.consumeCompletion(player, pathway, sequence);
 
         if (!prevPathway.equals(pathway)) {
-            advancePathwaySwitch(entity, pathway, sequence, prevPathway, prevSequence);
+            advancePathwaySwitch(entity, pathway, sequence, prevPathway, prevSequence, ritualCompleted);
             return;
         }
 
@@ -104,24 +118,24 @@ public class AdvancementUtil {
             return;
         }
 
-        executeAdvancement(entity, pathway, sequence, failureChance, null);
+        executeAdvancement(entity, pathway, sequence, failureChance, null, !ritualCompleted);
     }
 
     private static void advanceFirstTime(LivingEntity entity, String pathway, int sequence, float sanity) {
         double failureChance = calculateFailureChanceForFirstTime(sequence, sanity);
-        executeAdvancement(entity, pathway, sequence, failureChance, null);
+        executeAdvancement(entity, pathway, sequence, failureChance, null, false);
     }
 
     private static void advancePathwaySwitch(LivingEntity entity, String pathway, int sequence,
-                                             String prevPathway, int prevSequence) {
-        boolean isSameDomainSwitch = prevSequence <= 5 && sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
-        double failureChance = isSameDomainSwitch && !hasSwitchedPathway(entity) ? 0.0 : 1.0;
+                                             String prevPathway, int prevSequence, boolean ritualCompleted) {
+        boolean isSameDomainSwitch = sequence == (prevSequence - 1) && sameDomain(prevPathway, pathway);
+        double failureChance = isSameDomainSwitch ? 0.0 : 1.0;
 
         Runnable onSuccess = isSameDomainSwitch
                 ? () -> playerMap.recordPathwaySwitch(entity, prevSequence, prevPathway)
                 : null;
-
-        executeAdvancement(entity, pathway, sequence, failureChance, onSuccess);
+        failureChance = 0;
+        executeAdvancement(entity, pathway, sequence, failureChance, onSuccess, !ritualCompleted);
     }
 
     private static void advanceSameSequence(LivingEntity entity, String pathway, int sequence, double failureChance) {
@@ -143,8 +157,9 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
+            cleanupAdvancementEffects(entity);
             if (entity.isDeadOrDying()) return;
-            BeyonderData.addCharStack(entity, sequence);
+            BeyonderData.addCharacteristic(entity, finalSequence, finalPathway);
             sendThirdPersonPacket(entity);
         });
     }
@@ -152,13 +167,14 @@ public class AdvancementUtil {
     // Fires the event, schedules effects, then schedules failure-death or success-setBeyonder.
     // onSuccessPreSet runs before setBeyonder if non-null.
     private static void executeAdvancement(LivingEntity entity, String pathway, int sequence,
-                                           double failureChance, Runnable onSuccessPreSet) {
+                                           double failureChance, Runnable onSuccessPreSet,
+                                           boolean forceFailure) {
         int duration = calculateAdvancementDuration(sequence);
         StartAdvanceSequencePathwayEvent event = postAdvancementEvent(entity, sequence, pathway, failureChance, duration);
 
         String finalPathway = event.getPathway();
         int finalSequence = event.getSequence();
-        double finalFailureChance = event.getFailureChance();
+        double finalFailureChance = forceFailure ? 1.0 : event.getFailureChance();
         int finalDuration = event.getDuration();
 
         scheduleAdvancementEffects(entity, finalPathway, finalDuration, finalSequence);
@@ -171,6 +187,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(finalDuration, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
+            cleanupAdvancementEffects(entity);
             if (entity.isDeadOrDying()) return; // died mid-advancement; don't apply the sequence-up
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
@@ -198,9 +215,21 @@ public class AdvancementUtil {
         ServerScheduler.scheduleDelayed(deathTime, () -> {
             if (!activeAdvancements.containsKey(entity.getUUID())) return;
             activeAdvancements.remove(entity.getUUID());
+            cleanupAdvancementEffects(entity);
             if (!entity.isDeadOrDying())
                 entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
         });
+    }
+
+    private static void cleanupAdvancementEffects(LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {
+            PacketHandler.sendToPlayer(player, new ChangePlayerPerspectivePacket(
+                    entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.FIRST.getValue()));
+        }
+        FogComponent fogComponent = entity.getData(ModAttachments.FOG_COMPONENT);
+        fogComponent.setActiveAndSync(false, entity);
+        entity.setDeltaMovement(Vec3.ZERO);
+        entity.hurtMarked = true;
     }
 
     private static void sendThirdPersonPacket(LivingEntity entity) {
@@ -228,6 +257,7 @@ public class AdvancementUtil {
         AtomicInteger tickCounter = new AtomicInteger(0);
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
+            if (!activeAdvancements.containsKey(entity.getUUID())) return;
             int tick = tickCounter.getAndIncrement();
             float hueShift = (float) Math.sin(tick * 0.05f) * 0.3f;
 
@@ -275,7 +305,7 @@ public class AdvancementUtil {
         if (!(entity instanceof ServerPlayer serverPlayer)) return;
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> {
-            if (entity.isDeadOrDying()) return;
+            if (entity.isDeadOrDying() || !activeAdvancements.containsKey(entity.getUUID())) return;
             PacketHandler.sendToPlayer(serverPlayer, new ChangePlayerPerspectivePacket(
                     entity.getId(), ChangePlayerPerspectivePacket.PERSPECTIVE.THIRD.getValue()));
         }, () -> {
@@ -289,7 +319,7 @@ public class AdvancementUtil {
 
         Vec3 position = entity.position().add(0, 1.5, 0);
         ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
-            if (entity.isDeadOrDying()) return;
+            if (entity.isDeadOrDying() || !activeAdvancements.containsKey(entity.getUUID())) return;
             entity.teleportTo(position.x, position.y, position.z);
         }, serverLevel);
     }

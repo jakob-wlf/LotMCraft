@@ -6,7 +6,6 @@ package de.jakob.lotm.entity.client.spirits.translucent_wizard;// Made with Bloc
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.custom.spirits.SpiritBlueWizardEntity;
 import de.jakob.lotm.entity.custom.spirits.SpiritTranslucentWizardEntity;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;

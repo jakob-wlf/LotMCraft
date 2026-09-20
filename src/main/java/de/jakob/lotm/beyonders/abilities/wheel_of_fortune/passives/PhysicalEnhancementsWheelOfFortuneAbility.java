@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.util.BeyonderData;
 
 import java.util.HashMap;
 import java.util.List;
@@ -111,4 +110,5 @@ public class PhysicalEnhancementsWheelOfFortuneAbility extends PhysicalEnhanceme
             default -> List.of();
         };
     }
+
 }

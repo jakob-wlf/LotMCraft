@@ -1,0 +1,15 @@
+{
+  "fallback": "minecraft:empty",
+
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "lotmcraft:river_of_eternal_darkness_well",
+        "processors": "lotmcraft:river_of_eternal_darkness_well",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

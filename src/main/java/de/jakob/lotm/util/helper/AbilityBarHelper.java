@@ -3,6 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityBarPacket;
+import de.jakob.lotm.network.packets.toClient.UpdateAbilityBarPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
@@ -18,6 +19,14 @@ public class AbilityBarHelper {
         player.getData(ModAttachments.ABILITY_BAR_COMPONENT).setAbilities(abilities);
         if(player instanceof ServerPlayer serverPlayer) {
             PacketHandler.sendToPlayer(serverPlayer, new SyncAbilityBarPacket(abilities));
+        }
+    }
+
+    public static void removeAbility(ServerPlayer player, String abilityId) {
+        ArrayList<String> abilities = getAbilities(player);
+        if (abilities.remove(abilityId)) {
+            setAbilities(player, abilities);
+            PacketHandler.sendToPlayer(player, new UpdateAbilityBarPacket(abilities));
         }
     }
 }

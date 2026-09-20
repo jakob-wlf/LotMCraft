@@ -1,3 +1,4 @@
+import java.nio.file.Paths
 plugins {
     id 'java-library'
     id 'maven-publish'
@@ -40,6 +41,16 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+    exclusiveContent {
+        forRepository {
+            maven {
+                url "https://cursemaven.com"
+            }
+        }
+        filter {
+            includeGroup "curse.maven"
+        }
+    }
 }
 
 base {
@@ -75,7 +86,7 @@ neoForge {
             client()
             gameDirectory = project.file('run2')
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            programArguments.addAll '--username', 'Player2'
+            programArguments.addAll '--uuid', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '--username', 'Player2'
         }
 
         server {
@@ -90,13 +101,6 @@ neoForge {
         gameTestServer {
             type = "gameTestServer"
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        }
-
-        client2 {
-            client()
-            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-            gameDirectory = project.file('run2')
-            programArguments.addAll '--uuid', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', '--username', 'Player2'
         }
 
         data {
@@ -161,6 +165,12 @@ dependencies {
     implementation 'com.github.Querz:NBT:6.1'
 
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
+
+    //tessellate (for compatibility)
+    compileOnly "curse.maven:tessellate-1660059:8870011"
+    //tessellate in dev for testing
+    localRuntime "curse.maven:tessellate-1660059:8870011"
+    localRuntime "curse.maven:architectury-api-419699:8492726"
 
     // LDLib2
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
@@ -240,5 +250,62 @@ idea {
     module {
         downloadSources = true
         downloadJavadoc = true
+    }
+}
+
+tasks.register('compactJar') {
+    group = 'build'
+    description = 'Creates a repository-isolated Python venv and executes the ultimate JAR optimizer.'
+
+    // Explicitly define that this task requires the 'jar' task output
+    def jarTask = tasks.named('jar').get()
+    dependsOn(jarTask)
+
+    doLast {
+        // Define paths inside your local repository folder
+        def repoDir = projectDir.absolutePath
+        def venvDir = Paths.get(repoDir, '.gradle_python_venv').toString()
+
+        // Determine correct executable paths based on Host Operating System
+        def isWindows = System.getProperty('os.name').toLowerCase().contains('win')
+        def pythonExec = isWindows ? "python" : "python3"
+        def venvPython = isWindows ? Paths.get(venvDir, "Scripts", "python.exe").toString() : Paths.get(venvDir, "bin", "python").toString()
+        def scriptPath = Paths.get(repoDir, "MinifyJAR.py").toString()
+
+        // Safely extract the absolute path from the ModDevGradle output provider
+        def targetJar = jarTask.archiveFile.get().asFile.absolutePath
+
+        // Step 1: Create the isolated virtual environment in the repository folder if missing
+        if (!file(venvDir).exists()) {
+            println "[Optimizer] Initializing isolated Python Virtual Environment..."
+            exec {
+                commandLine pythonExec, '-m', 'venv', venvDir
+            }
+        }
+
+        // Step 2: Install dependencies locked to the local environment space only if missing
+        def hasDeps = project.exec {
+            commandLine venvPython, '-c', 'import zopfli, nbtlib'
+            ignoreExitValue = true
+            standardOutput = new java.io.ByteArrayOutputStream()
+            errorOutput = new java.io.ByteArrayOutputStream()
+        }.exitValue == 0
+
+        if (!hasDeps) {
+            println "[Optimizer] Syncing environment dependencies (zopflipy, nbtlib)..."
+            exec {
+                commandLine venvPython, '-m', 'pip', 'install', '--quiet', 'zopflipy==1.12', 'nbtlib==2.0.4'
+            }
+        }
+
+        // Step 3: Run the multi-process ultra-compaction pass
+        if (file(targetJar).exists()) {
+            println "[Optimizer] Compacting Mod Dev Package: ${jarTask.archiveFileName.get()}"
+            exec {
+                commandLine venvPython, scriptPath, targetJar
+            }
+        } else {
+            throw new GradleException("Compactor Error: Target built artifact not found at ${targetJar}")
+        }
     }
 }

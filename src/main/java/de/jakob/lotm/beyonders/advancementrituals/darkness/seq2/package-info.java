@@ -1,0 +1,2 @@
+/** Sequence 2 advancement ritual logic for the darkness pathway. */
+package de.jakob.lotm.beyonders.advancementrituals.darkness.seq2;

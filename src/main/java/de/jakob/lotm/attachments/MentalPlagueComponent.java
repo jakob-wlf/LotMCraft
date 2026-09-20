@@ -1,17 +1,12 @@
 package de.jakob.lotm.attachments;
 
-import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 
-import java.util.LinkedList;
 import java.util.UUID;
 
 public class MentalPlagueComponent {

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.handlers;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
@@ -16,6 +17,16 @@ import javax.annotation.Nullable;
 public class VisionaryHandler {
 
     private static boolean MIND_WORLD_SEAL = false;
+
+    // Caster's targets they've manipulated while asleep; lets dream jump skip the asleep check for these pairs.
+    // Persisted via VisionaryRitualDataComponent so bonds survive restarts.
+    public static void addDreamBond(LivingEntity caster, LivingEntity target) {
+        caster.getData(ModAttachments.VISIONARY_RITUAL_DATA).getDreamBonds().add(target.getUUID());
+    }
+
+    public static boolean hasDreamBond(LivingEntity caster, LivingEntity target) {
+        return caster.getData(ModAttachments.VISIONARY_RITUAL_DATA).getDreamBonds().contains(target.getUUID());
+    }
 
     public static boolean isMindWorldSealed(){
         return MIND_WORLD_SEAL;

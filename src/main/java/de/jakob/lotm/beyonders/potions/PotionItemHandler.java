@@ -583,6 +583,43 @@ public class PotionItemHandler {
 //            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
 
+    public static DeferredItem<Item> WARRIOR_POTION = ITEMS.registerItem("warrior_potion", properties ->
+                    new BeyonderPotion(properties, 9, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> PUGILIST_POTION = ITEMS.registerItem("pugilist_potion", properties ->
+                    new BeyonderPotion(properties, 8, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> WEAPON_MASTER_POTION = ITEMS.registerItem("weapon_master_potion", properties ->
+                    new BeyonderPotion(properties, 7, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DAWN_PALADIN_POTION = ITEMS.registerItem("dawn_paladin_potion", properties ->
+                    new BeyonderPotion(properties, 6, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> GUARDIAN_POTION = ITEMS.registerItem("guardian_potion", properties ->
+                    new BeyonderPotion(properties, 5, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> DEMON_HUNTER_POTION = ITEMS.registerItem("demon_hunter_potion", properties ->
+                    new BeyonderPotion(properties, 4, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> SILVER_KNIGHT_POTION = ITEMS.registerItem("silver_knight_potion", properties ->
+                    new BeyonderPotion(properties, 3, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> GLORY_POTION = ITEMS.registerItem("glory_potion", properties ->
+                    new BeyonderPotion(properties, 2, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+    public static DeferredItem<Item> HAND_OF_GOD_POTION = ITEMS.registerItem("hand_of_god_potion", properties ->
+                    new BeyonderPotion(properties, 1, "twilight_giant"),
+            new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
+
+
     public static DeferredItem<Item> EMPTY_BOTTLE = ITEMS.registerItem("empty_bottle", Item::new);
 
 

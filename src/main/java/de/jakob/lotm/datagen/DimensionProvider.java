@@ -2,6 +2,7 @@ package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.dimension.*;
+import de.jakob.lotm.entity.ModEntities;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -10,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.level.biome.*;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
@@ -116,6 +119,57 @@ public class DimensionProvider {
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.2f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x050505)
+                                                            .waterColor(0x000000)
+                                                            .waterFogColor(0x000000)
+                                                            .grassColorOverride(0x0a0a0a)
+                                                            .foliageColorOverride(0x0a0a0a)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    bootstrap.register(ModDimensions.UNDERWORLD_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.15f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x09090d)
+                                                            .waterColor(0xd8d8de)
+                                                            .waterFogColor(0x777780)
+                                                            .grassColorOverride(0x111116)
+                                                            .foliageColorOverride(0x17171d)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(underworldSpawns(false))
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
+                                    bootstrap.register(ModDimensions.ETERNAL_DARKNESS_FORK_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.05f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x000000)
+                                                            .fogColor(0x020203)
+                                                            .waterColor(0x090909)
+                                                            .waterFogColor(0x020203)
+                                                            .grassColorOverride(0x17120f)
+                                                            .foliageColorOverride(0x1c1713)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(underworldSpawns(true))
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
@@ -458,6 +512,23 @@ public class DimensionProvider {
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
+
+                                    bootstrap.register(ModDimensions.KEY_OF_LIGHT_BIOME_KEY,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.8f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0xBFE8FF)
+                                                            .fogColor(0xE8F6FF)
+                                                            .waterColor(0x3F76E4)
+                                                            .waterFogColor(0x050533)
+                                                            .grassColorOverride(0x79C05A)
+                                                            .foliageColorOverride(0x59AE30)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
                                 })
 
                                 .add(Registries.DIMENSION_TYPE, bootstrap -> {
@@ -518,12 +589,28 @@ public class DimensionProvider {
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
 
+                                    bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(18000), false, false, false, false,
+                                            1.0, false, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "river_of_eternal_darkness"),
+                                            0.2f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
                                     bootstrap.register(ModDimensions.BROOD_HIVE_TYPE_KEY, new DimensionType(
                                             OptionalLong.of(6000), false, true, false, false,
                                             1.0, false, false, -64, 384, 384,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"),
                                             1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
+                                    bootstrap.register(ModDimensions.UNDERWORLD_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(18000), false, false, false, false,
+                                            1.0, false, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld"),
+                                            0.08f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
 
                                     bootstrap.register(ModDimensions.SPIRIT_WORLD_TYPE_KEY, new DimensionType(
@@ -555,6 +642,14 @@ public class DimensionProvider {
                                             1.0, true, false, -64, 384, 384,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mirror_world"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
+                                    bootstrap.register(ModDimensions.KEY_OF_LIGHT_TYPE_KEY, new DimensionType(
+                                            OptionalLong.of(6000), true, false, false, false,
+                                            1.0, false, false, -64, 384, 384,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "key_of_light"),
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
                                 })
@@ -637,6 +732,78 @@ public class DimensionProvider {
                                                             new FixedBiomeSource(
                                                                     biomeRegistry.getOrThrow(ModDimensions.CONCEALMENT_WORLD_BIOME_KEY)))));
 
+                                    bootstrap.register(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_TYPE_KEY),
+                                                    new SefirotChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.RIVER_OF_ETERNAL_DARKNESS_BIOME_KEY)),
+                                                                    "river_of_eternal_darkness")));
+
+                                    bootstrap.register(ModDimensions.UNDERWORLD_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.UNDERWORLD_TYPE_KEY),
+                                                    new UnderworldChunkGenerator(
+                                                            new UnderworldBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.UNDERWORLD_BIOME_KEY),
+                                                                    biomeRegistry.getOrThrow(ModDimensions.ETERNAL_DARKNESS_FORK_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.CHAOS_SEA_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CHAOS_SEA_TYPE_KEY),
+                                                    new SefirotChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CHAOS_SEA_BIOME_KEY)),
+                                                            "chaos_sea")));
+
+                                    bootstrap.register(ModDimensions.BROOD_HIVE_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.BROOD_HIVE_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.BROOD_HIVE_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.CITY_OF_CALAMITY_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.CITY_OF_CALAMITY_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.CITY_OF_CALAMITY_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.NATION_OF_DISORDER_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.NATION_OF_DISORDER_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.NATION_OF_DISORDER_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.TENEBROUS_WORLD_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.TENEBROUS_WORLD_TYPE_KEY),
+                                                     // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.TENEBROUS_WORLD_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.KNOWLEDGE_MOOR_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_TYPE_KEY),
+                                                    // new PreGeneratedChunkGenerator(
+                                                    new NatureDimensionWorldChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KNOWLEDGE_MOOR_BIOME_KEY)))));
+
+                                    bootstrap.register(ModDimensions.KEY_OF_LIGHT_LEVEL_KEY,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.KEY_OF_LIGHT_TYPE_KEY),
+                                                    new SefirotChunkGenerator(
+                                                            new FixedBiomeSource(
+                                                                    biomeRegistry.getOrThrow(ModDimensions.KEY_OF_LIGHT_BIOME_KEY)),
+                                                            "data/lotmcraft/dimension_data/key_of_light/")));
+
                                     bootstrap.register(ModDimensions.HISTORICAL_VOID_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.HISTORICAL_VOID_TYPE_KEY),
@@ -655,4 +822,23 @@ public class DimensionProvider {
                 )
         );
     }
+
+        private static MobSpawnSettings underworldSpawns(boolean eternalFork) {
+                MobSpawnSettings.Builder builder = new MobSpawnSettings.Builder()
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.ZOMBIE, 65, 1, 3))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.SKELETON, 55, 1, 3))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(EntityType.DROWNED, 25, 1, 2))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_GHOST.get(), eternalFork ? 55 : 35, 1, 3))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_DERVISH_ENTITY.get(), 25, 1, 2))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_BUBBLES_ENTITY.get(), 22, 1, 2))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_BLUE_WIZARD.get(), 14, 1, 1))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_TRANSLUCENT_WIZARD.get(), 12, 1, 1))
+                                .addSpawn(MobCategory.MONSTER, new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_MALMOUTH.get(), 10, 1, 1));
+
+                if (eternalFork) {
+                        builder.addSpawn(MobCategory.MONSTER,
+                            new MobSpawnSettings.SpawnerData(ModEntities.SPIRIT_BANE.get(), 14, 1, 1));
+                }
+                return builder.build();
+        }
 }

@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -17,7 +16,10 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static de.jakob.lotm.beyonders.abilities.visionary.TelepathyAbility.performTelepathy;
 

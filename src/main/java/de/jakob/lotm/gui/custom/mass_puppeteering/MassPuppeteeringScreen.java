@@ -3,7 +3,6 @@ package de.jakob.lotm.gui.custom.mass_puppeteering;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toServer.MassPuppeteeringSelectedEntitiesPacket;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;

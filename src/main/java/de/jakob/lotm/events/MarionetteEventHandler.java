@@ -1,11 +1,16 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.*;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMaxDistanceGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMovementGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteTargetGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.NonBeyonderMarionetteUseAbilityGoal;
 import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
@@ -14,6 +19,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteEventHandler {
@@ -74,5 +80,21 @@ public class MarionetteEventHandler {
         }
 
         loadChunksAroundEntity(level, mob, 2);
+    }
+
+    @SubscribeEvent
+    public static void onLivingChangeTarget(LivingChangeTargetEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity source)) return;
+        if (source.level().isClientSide) return;
+
+        LivingEntity target = event.getNewAboutToBeSetTarget();
+        if (target == null) return;
+
+        MarionetteComponent component = source.getData(ModAttachments.MARIONETTE_COMPONENT.get());
+        if (!component.isMarionette()) return;
+
+        if (!AbilityUtil.mayTarget(source, target)) {
+            event.setCanceled(true);
+        }
     }
 }

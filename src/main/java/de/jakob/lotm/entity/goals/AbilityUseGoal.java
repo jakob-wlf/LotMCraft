@@ -1,10 +1,10 @@
 package de.jakob.lotm.entity.goals;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -32,19 +32,20 @@ public class AbilityUseGoal extends Goal {
     public AbilityUseGoal(Mob entity) {
         this.entity = entity;
         this.ignoreUsageConditions = false;
-        this.setFlags(EnumSet.of(Flag.TARGET));
+        // No flags means it doesn't conflict with movement or combat goals
+        this.setFlags(EnumSet.noneOf(Flag.class));
     }
 
     public AbilityUseGoal(Mob entity, List<Ability> usableAbilities) {
         this.entity = entity;
         this.presetAbilities = usableAbilities;
         this.ignoreUsageConditions = true;
-        this.setFlags(EnumSet.of(Flag.TARGET));
+        this.setFlags(EnumSet.noneOf(Flag.class));
     }
 
     @Override
     public boolean canUse() {
-        if (entity.getTarget() != null) {
+        if (entity.getTarget() != null && entity.getTarget().isAlive()) {
             return true;
         }
 
@@ -59,7 +60,7 @@ public class AbilityUseGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return entity.getTarget() != null || canUse();
+        return (entity.getTarget() != null && entity.getTarget().isAlive()) || canUse();
     }
 
     @Override
@@ -133,7 +134,9 @@ public class AbilityUseGoal extends Goal {
         }
 
         Ability selectedAbility = selectWeightedAbility(toSelect, new Random());
-        if(selectedAbility == null) return;
+        if(selectedAbility == null) {
+            return;
+        }
 
         if(!ignoreUsageConditions)
             selectedAbility.useAbility((ServerLevel) level, entity);

@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DoorAuthorityData;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;

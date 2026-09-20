@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilitySelectionPacket;
@@ -14,27 +14,21 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.server.level.ServerPlayer;
-
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class EntropySubAbility {
 

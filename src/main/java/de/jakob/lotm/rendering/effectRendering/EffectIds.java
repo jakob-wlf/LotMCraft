@@ -59,4 +59,6 @@ public final class EffectIds {
     public static final int RING_PULSE = 53;
     public static final int CHAOS_VORTEX = 54;
     public static final int MARIONETTE_THREADS = 55;
+    public static final int SEFIRAH_SKY_BEAM = 56;
+    public static final int RIVER_SKY_BEAM = 57;
 }

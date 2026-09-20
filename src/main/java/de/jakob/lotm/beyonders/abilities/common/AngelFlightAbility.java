@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;

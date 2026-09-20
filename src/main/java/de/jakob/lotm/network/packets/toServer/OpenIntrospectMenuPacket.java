@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
+import de.jakob.lotm.beyonders.sefirah.SefirotAuthorityManager;
 import de.jakob.lotm.gui.custom.introspect.IntrospectMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelDataToIntrospectPacket;
@@ -44,22 +46,31 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                 if(!BeyonderData.isBeyonder(player))
                     return;
 
-                int sequence = BeyonderData.getSequence(player, false, true);
-                String pathway = BeyonderData.getPathway(player, true);
+                // While actively controlling another body (Manipulation, Marionette Controlling, Parasitation, ...)
+                // show/filter abilities by the assumed identity instead of your permanent highest-achieved one.
+                //de.jakob.lotm.attachments.ControllingDataComponent controllingData = player.getData(ModAttachments.CONTROLLING_DATA);
+                int sequence = BeyonderData.getSequence(player);
+                String pathway = BeyonderData.getPathway(player);
                 float digestionProgress = BeyonderData.getDigestionProgress(player);
 
                 SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
                 float sanity = sanityComponent.getSanity();
 
+                float corruption = player.getData(ModAttachments.CORRUPTION_COMPONENT).getCorruption();
+
+                boolean isSefirotOwner = SefirahHandler.hasSefirot(player);
+
                 AbilityWheelHelper.removeUnusableAbilities(player);
                 AbilityWheelComponent abilityWheelComponent = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
 
-                player.openMenu(new IntrospectMenuProvider(sequence, pathway, digestionProgress, sanity), buf -> {
+                player.openMenu(new IntrospectMenuProvider(sequence, pathway, digestionProgress, sanity, corruption, isSefirotOwner), buf -> {
                     buf.writeInt(sequence);
                     buf.writeUtf(pathway);
+                    buf.writeBoolean(isSefirotOwner);
                 });
 
-                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity));
+                SefirotAuthorityManager.syncToClient(player);
+                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity, corruption));
                 PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataToIntrospectPacket(abilityWheelComponent.getAbilities()));
                 PacketHandler.sendToPlayer(player, new SyncKillCountPacket(player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount()));
                 PacketHandler.syncUniquenessToPlayer(player);

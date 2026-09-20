@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class WaypointAbility extends SelectableAbility {
     public WaypointAbility(String id) {

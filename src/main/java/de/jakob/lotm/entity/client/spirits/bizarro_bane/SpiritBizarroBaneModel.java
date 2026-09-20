@@ -5,7 +5,6 @@ package de.jakob.lotm.entity.client.spirits.bizarro_bane;// Made with Blockbench
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardAnimations;
 import de.jakob.lotm.entity.custom.spirits.SpiritBizarroBaneEntity;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;

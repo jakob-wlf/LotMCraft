@@ -4,11 +4,11 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.util.data.ClientSpiritCache;
-import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingPacket;
+import de.jakob.lotm.util.data.ClientSpiritCache;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -30,11 +30,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)

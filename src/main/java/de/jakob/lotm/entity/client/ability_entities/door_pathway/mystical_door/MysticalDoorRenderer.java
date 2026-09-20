@@ -5,7 +5,6 @@ import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.MysticalDoorEntity;
-import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ReturnPortalEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

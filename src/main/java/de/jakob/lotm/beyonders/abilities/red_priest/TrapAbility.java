@@ -69,10 +69,10 @@ public class TrapAbility extends Ability {
                     }
 
                     if(BeyonderData.isGriefingEnabled(entity)) {
-                        level.explode(entity, pos.x, pos.y, pos.z, 4f, true, Level.ExplosionInteraction.MOB);
+                        level.explode(entity, pos.x, pos.y, pos.z, 1.5f, true, Level.ExplosionInteraction.MOB);
                     }
                     else {
-                        level.explode(entity, pos.x, pos.y, pos.z, 4f, false, Level.ExplosionInteraction.NONE);
+                        level.explode(entity, pos.x, pos.y, pos.z, 1.5f, false, Level.ExplosionInteraction.NONE);
                     }
                 }
             }, (ServerLevel) level);

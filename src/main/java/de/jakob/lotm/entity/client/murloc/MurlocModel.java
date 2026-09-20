@@ -6,10 +6,7 @@ package de.jakob.lotm.entity.client.murloc;// Made with Blockbench 5.1.6
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandAnimations;
 import de.jakob.lotm.entity.custom.MurlocEntity;
-import de.jakob.lotm.entity.custom.spirits.AbscessedHandEntity;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
@@ -17,7 +14,6 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 
 public class MurlocModel<T extends MurlocEntity> extends HierarchicalModel<T> {
 	// This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor

@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
-import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
-import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
-
 
 import java.util.HashMap;
 import java.util.List;

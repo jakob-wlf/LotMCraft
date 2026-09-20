@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.implementations;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerBase;
@@ -25,7 +26,7 @@ public class InstantTrigger extends TriggerBase {
 
     @Override
     public int getRequiredSeq() {
-        return 5;
+        return LOTMCraft.GREAT_OLD_ONE_SEQ;
     }
 
     @Override

@@ -2,9 +2,7 @@ package de.jakob.lotm.entity.client.murloc;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandModel;
 import de.jakob.lotm.entity.custom.MurlocEntity;
-import de.jakob.lotm.entity.custom.spirits.AbscessedHandEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;

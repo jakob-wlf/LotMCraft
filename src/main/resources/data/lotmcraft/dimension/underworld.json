@@ -1,0 +1,11 @@
+{
+  "type": "lotmcraft:underworld",
+  "generator": {
+    "type": "lotmcraft:underworld",
+    "biome_source": {
+      "type": "lotmcraft:underworld_biome_source",
+      "underworld": "lotmcraft:underworld_biome",
+      "eternal_darkness_fork": "lotmcraft:a_fork_of_the_river_of_eternal_darkness"
+    }
+  }
+}

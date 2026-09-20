@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.attachments.AbilityWheelComponent;
+import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
@@ -97,6 +98,7 @@ public class AbilityWheelHelper {
 
     public static void removeUnusableAbilities(ServerPlayer player) {
         AbilityWheelComponent component = player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        CopiedAbilityComponent copiedComponent = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         for (String raw : new ArrayList<>(component.getAbilities())) {
             AbilityId id = AbilityId.parse(raw);
             if (!id.isUsableBy(player) && (!id.copied() || !CopiedAbilityHelper.hasCopiedAbility(player, id.baseId()))) {

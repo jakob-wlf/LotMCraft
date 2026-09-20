@@ -8,19 +8,19 @@ import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKin
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.UnderworldGateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.demoness_pathway.ChaosVortexEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
+import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
+import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
-import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
-import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
-import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
+import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.spirits.*;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -30,7 +30,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {
@@ -438,7 +437,7 @@ public class ModEntities {
 
     public static final Supplier<EntityType<UnderworldGateEntity>> UNDERWORLD_GATE =
             ENTITY_TYPES.register("underworld_gate", () -> EntityType.Builder.<UnderworldGateEntity>of(UnderworldGateEntity::new, MobCategory.MISC)
-                    .sized(1.5f, 2.5f).build("underworld_gate"));
+                    .sized(1.5f, 2.5f).noSave().build("underworld_gate"));
 
     public static final Supplier<EntityType<PlanetEntity>> PLANET =
             ENTITY_TYPES.register("planet", () -> EntityType.Builder.of(PlanetEntity::new, MobCategory.MISC)

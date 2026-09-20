@@ -1,10 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.darkness;
 
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
@@ -38,7 +38,7 @@ public class RequiemAbility extends Ability {
     private static final HashSet<UUID> pacifiedEntities = new HashSet<>();
 
     public RequiemAbility(String id) {
-        super(id, 3, "calming");
+        super(id, 15, "calming");
         postsUsedAbilityEventManually = true;
     }
 
@@ -49,7 +49,7 @@ public class RequiemAbility extends Ability {
 
     @Override
     public float getSpiritualityCost() {
-        return 45;
+        return 50;
     }
 
     @Override
@@ -92,6 +92,7 @@ public class RequiemAbility extends Ability {
         pacifiedEntities.add(targetEntity.getUUID());
 
         float multiplier_target = multiplier(targetEntity);
+        multiplier_target = multiplier_target != 0 ? multiplier_target : 0;
         int duration = 0;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
