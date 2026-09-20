@@ -3,6 +3,7 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.DreamTraversalAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
+import de.jakob.lotm.beyonders.abilities.error.RealityLoopholeAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -13,6 +14,7 @@ import de.jakob.lotm.item.PotionIngredient;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.network.packets.toClient.SyncPsychologicalInvisibilityPacket;
+import de.jakob.lotm.network.packets.toClient.SyncRealityLoopholePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
@@ -93,6 +95,7 @@ public class BeyonderEventHandler {
             BeyonderData.recalculateCharStackModifiers(serverPlayer);
             serverPlayer.getData(ModAttachments.LUCK_COMPONENT.get()).setLuck(0);
             PacketHandler.sendToPlayer(serverPlayer, new SyncPsychologicalInvisibilityPacket(PsychologicalInvisibilityAbility.invisiblePlayers));
+            PacketHandler.sendToPlayer(serverPlayer, new SyncRealityLoopholePacket(RealityLoopholeAbility.phasedOut));
 
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }

@@ -89,6 +89,10 @@ public class MirrorSubstituteAbility extends Ability {
         if(num <= 0)
             return;
 
+        // skip damage canceling if the damage was lower than 10% of the player's max health, or if the attack was not fatal
+        if (!(event.getOriginalDamage() / entity.getMaxHealth() >= 0.1)
+                && !(entity.getHealth() - event.getOriginalDamage() <= 0)) return;
+
         figurineNumbers.put(event.getEntity().getUUID(), num - 1);
         event.setNewDamage(0);
 

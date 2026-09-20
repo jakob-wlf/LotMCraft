@@ -319,6 +319,7 @@ public class AbilityHandler {
         abilities.add(new FateSiphoningAbility("fate_siphoning_ability"));
         abilities.add(new ConceptualTheftAbility("conceptual_theft_ability"));
         abilities.add(new TimeManipulationAbility("time_manipulation_ability"));
+        abilities.add(new RealityLoopholeAbility("reality_loophole_ability"));
 
         // BLACK EMPEROR PATHWAY
 //        abilities.add(new Eloquence("eloquence_ability"));

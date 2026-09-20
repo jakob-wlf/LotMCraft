@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -28,13 +29,20 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MundaneConceptualTheft extends SelectableAbility {
     public static final HashMap<UUID, Integer> stolenDistanceMap = new HashMap<>(80);
+    private static final Map<UUID, Float> deferredDamage = new ConcurrentHashMap<>();
+    private static final int PERCEPTION_THEFT_DURATION_TICKS = 30 * 20;
 
     public MundaneConceptualTheft(String id) {
         super(id, 1);
@@ -55,8 +63,8 @@ public class MundaneConceptualTheft extends SelectableAbility {
         return new String[]{"ability.lotmcraft.mundane_conceptual_theft.steal_walk",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_sight",
                 "ability.lotmcraft.mundane_conceptual_theft.steal_health",
-                "ability.lotmcraft.mundane_conceptual_theft.steal_distance"
-                //"ability.lotmcraft.mundane_conceptual_theft.steal_thoughts"
+                "ability.lotmcraft.mundane_conceptual_theft.steal_distance",
+                "ability.lotmcraft.mundane_conceptual_theft.steal_perception"
         };
     }
 
@@ -112,6 +120,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
             case 0 -> stealWalk(target, getTheftDuration(entitySeq, targetSeq));
             case 1 -> stealSight(target, getTheftDuration(entitySeq, targetSeq));
             case 2 -> stealHealth(entity, target);
+            case 4 -> stealPerception(entity, target);
 
         }
     }
@@ -174,5 +183,34 @@ public class MundaneConceptualTheft extends SelectableAbility {
                 movementSpeedInner.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"));
             }
         });
+    }
+
+    private void stealPerception(LivingEntity entity, LivingEntity target) {
+        if (!(target instanceof ServerPlayer targetPlayer)) return;
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int targetSeq = BeyonderData.getSequence(target);
+
+        if (entitySeq - targetSeq >= 2) return; // target is 2+ sequences stronger than caster — unaffected
+
+        if (deferredDamage.putIfAbsent(targetPlayer.getUUID(), 0f) != null) return; // already affected — re-casting does not refresh/restack
+
+        PacketHandler.suppressSpiritualitySync(targetPlayer, PERCEPTION_THEFT_DURATION_TICKS);
+
+        ServerScheduler.scheduleDelayed(PERCEPTION_THEFT_DURATION_TICKS, () -> {
+            float totalDamage = deferredDamage.remove(targetPlayer.getUUID());
+            if (totalDamage > 0 && targetPlayer.isAlive() && !targetPlayer.isRemoved()) {
+                targetPlayer.hurt(ModDamageTypes.source(targetPlayer.level(), ModDamageTypes.BEYONDER_GENERIC, entity), totalDamage);
+            }
+        }, (ServerLevel) targetPlayer.level());
+    }
+
+    @SubscribeEvent
+    public static void onLivingDamage(LivingIncomingDamageEvent event) {
+        LivingEntity entity = event.getEntity();
+        if (!deferredDamage.containsKey(entity.getUUID())) return;
+
+        deferredDamage.merge(entity.getUUID(), event.getAmount(), Float::sum);
+        event.setCanceled(true);
     }
 }

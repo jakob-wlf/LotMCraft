@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary.handlers;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.error.RealityLoopholeAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.PsychologicalInvisibilityAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.effect.ModEffects;
@@ -110,11 +111,16 @@ public class VisionaryHandler {
 
 
     public static boolean isInvisible(LivingEntity target){
-        return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID());
+        return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID())
+                || RealityLoopholeAbility.phasedOutClient.contains(target.getUUID());
     }
 
     public static boolean shouldStayInvisible(int seq, LivingEntity target){
-        if(isInvisible(target)){
+        if(RealityLoopholeAbility.phasedOutClient.contains(target.getUUID())){
+            return true;
+        }
+
+        if(PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID())){
             return seq >= PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
         }
 

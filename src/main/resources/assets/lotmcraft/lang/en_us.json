@@ -1031,6 +1031,7 @@
   "ability.lotmcraft.mundane_conceptual_theft.steal_sight": "Steal Sight",
   "ability.lotmcraft.mundane_conceptual_theft.steal_health": "Steal Health",
   "ability.lotmcraft.mundane_conceptual_theft.steal_distance": "Steal Distance",
+  "ability.lotmcraft.mundane_conceptual_theft.steal_perception": "Steal Perception",
   "ability.lotmcraft.mundane_conceptual_theft.steal_thoughts": "Steal Thoughts",
   "ability.lotmcraft.mundane_conceptual_theft.theft_failed": "Theft Failed",
   "lotmcraft.parasitation_ability": "Parasitation",
@@ -1050,6 +1051,8 @@
   "lotmcraft.deceit_ability.description": "Deceive surrounding enemies for them to forget about you, or deceive the world to be invulnerable for a short time",
   "ability.lotmcraft.deceit.entities": "Deceive surrounding enemies",
   "ability.lotmcraft.deceit.world": "Deceive the world",
+  "lotmcraft.reality_loophole_ability": "Reality Loophole",
+  "lotmcraft.reality_loophole_ability.description": "Slip outside the world: become truly invisible, untargetable, and unharmable, at the cost of being unable to interact with anything or use other abilities",
 
   "lotmcraft.mausoleum_domain_ability": "Mausoleum Domain",
 

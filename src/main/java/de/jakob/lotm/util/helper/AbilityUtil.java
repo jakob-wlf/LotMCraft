@@ -3,6 +3,7 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
+import de.jakob.lotm.beyonders.abilities.error.RealityLoopholeAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -201,6 +202,7 @@ public class AbilityUtil {
         if (source == null || target == null) return true;
         if (source == target) return false;
         if (target instanceof Player player && player.isCreative()) return false;
+        if (RealityLoopholeAbility.phasedOut.contains(target.getUUID())) return false;
         if (!source.canAttack(target)) return false;
 
         // Check ally relationship - allies cannot damage each other

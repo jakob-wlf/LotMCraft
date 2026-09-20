@@ -15,9 +15,29 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class PacketHandler {
 
     private static final String PROTOCOL_VERSION = "1";
+    private static final Map<UUID, Long> spiritualitySyncSuppressedUntil = new ConcurrentHashMap<>();
+
+    public static void suppressSpiritualitySync(ServerPlayer target, int durationTicks) {
+        long untilTick = target.level().getGameTime() + durationTicks;
+        spiritualitySyncSuppressedUntil.put(target.getUUID(), untilTick);
+    }
+
+    public static boolean isSpiritualitySyncSuppressed(ServerPlayer player) {
+        Long until = spiritualitySyncSuppressedUntil.get(player.getUUID());
+        if (until == null) return false;
+        if (player.level().getGameTime() >= until) {
+            spiritualitySyncSuppressedUntil.remove(player.getUUID());
+            return false;
+        }
+        return true;
+    }
 
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
@@ -464,6 +484,12 @@ public class PacketHandler {
                 SyncPsychologicalInvisibilityPacket.TYPE,
                 SyncPsychologicalInvisibilityPacket.STREAM_CODEC,
                 SyncPsychologicalInvisibilityPacket::handle
+        );
+
+        registrar.playToClient(
+                SyncRealityLoopholePacket.TYPE,
+                SyncRealityLoopholePacket.STREAM_CODEC,
+                SyncRealityLoopholePacket::handle
         );
 
         registrar.playToClient(
@@ -955,6 +981,10 @@ public class PacketHandler {
     }
 
     public static void syncBeyonderDataToPlayer(ServerPlayer player) {
+        // Full early-return while suppressed: pathway/sequence/griefing/digestion/char-stack/worm-amount
+        // updates are paused too, not just spirituality — intentional for Steal Perception's "frozen HUD" effect.
+        if (isSpiritualitySyncSuppressed(player)) return;
+
         String pathway = BeyonderData.getPathway(player, true);
         int sequence = BeyonderData.getSequence(player, false, true);
         float spirituality = BeyonderData.getSpirituality(player);
