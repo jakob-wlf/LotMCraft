@@ -944,6 +944,8 @@ public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
     executor.start();
 }
 
+private static long refreshThrottle = 0;
+
 public static void handleControllingSync(SyncControllingPacket packet) {
     Player player = getPlayer();
     if(player == null) return;
@@ -953,7 +955,10 @@ public static void handleControllingSync(SyncControllingPacket packet) {
     player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
     player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
 
-    if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+    long time = System.currentTimeMillis();
+
+    if (Minecraft.getInstance().screen instanceof IntrospectScreen screen && time - refreshThrottle > 100) {
+        refreshThrottle = time;
         screen.refreshAvailableAbilities();
     }
 }
