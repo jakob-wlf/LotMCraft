@@ -169,6 +169,7 @@ public class ControllingUtils {
                 }
 
                 AbilityWheelHelper.setAbilitiesForEntity(player, controlled, player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
+                AbilityBarHelper.setAbilities(controlled, player.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities());
             }
         }
 

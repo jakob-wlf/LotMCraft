@@ -52,7 +52,7 @@ public class GraftingAbility extends SelectableAbility {
 
 
     public GraftingAbility(String id) {
-        super(id, 0.5f);
+        super(id, 1.0f);
 
         canBeUsedByNPC = false;
         canBeShared = false;

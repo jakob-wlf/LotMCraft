@@ -36,6 +36,7 @@ public class MirrorWorldTraversalAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         cannotBeStolen = true;
         canBeShared = false;
+        canBeUsedByNPC = false;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 3, 5, 7, 10));
