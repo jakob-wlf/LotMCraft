@@ -3,6 +3,7 @@ package de.jakob.lotm.util.shapeShifting;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ShapeShiftComponent;
+import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.IsPlayerModelPacket;
@@ -90,6 +91,7 @@ public class ShapeShiftingUtil {
             data.setSkinOnly(true);
             String playerName = entityType.split(":")[1];
             NameUtils.setPlayerName(player, playerName);
+            shouldSendMetaAwareness(player, playerName);
         }else {
             String entityName = entityType;
             entityName = entityName.contains(":") ? entityName.split(":")[1] : entityName;
@@ -162,6 +164,16 @@ public class ShapeShiftingUtil {
             return "lotmcraft:beyonder_npc:" + npc.getSkinName();
         }
         return EntityType.getKey(entity.getType()).toString();
+    }
+
+    private static void shouldSendMetaAwareness(ServerPlayer player, String targetName){
+        if (player == null || player.getServer() == null) return;
+
+        ServerPlayer targetPlayer = player.getServer().getPlayerList().getPlayerByName(targetName);
+
+        if (targetPlayer != null) {
+            MetaAwarenessAbility.sendWithMessage(player, targetPlayer, "Somebody Shape Shifted into you");
+        }
     }
 
     // sync shapes for tracked players

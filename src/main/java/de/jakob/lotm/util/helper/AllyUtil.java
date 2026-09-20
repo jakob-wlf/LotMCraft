@@ -126,13 +126,9 @@ public class AllyUtil {
         return comp1.isAlly(entity2.getUUID());
     }
 
-    public static Set<String> getAllAllies(LivingEntity entity){
+    public static Set<AllyComponent.AllyInfo> getAllAllies(LivingEntity entity) {
         var comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
-        Set<String> names = new HashSet<>();
-        for (AllyComponent.AllyInfo info : comp.allies()) {
-            names.add(info.playerName());
-        }
-        return names;
+        return comp.allies();
     }
 
     public static boolean isAlly(LivingEntity entity, UUID allyUUID) {

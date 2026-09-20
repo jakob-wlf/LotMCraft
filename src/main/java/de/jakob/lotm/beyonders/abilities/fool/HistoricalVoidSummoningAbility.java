@@ -823,7 +823,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private void markEntity(ServerLevel level, ServerPlayer player) {
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true, false);
 
         if(target == null){
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.no_nearby_entities").withStyle(ChatFormatting.RED));

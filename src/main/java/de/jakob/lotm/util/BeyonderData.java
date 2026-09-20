@@ -896,8 +896,8 @@ public class BeyonderData {
             case 6 -> 1.0105f;
             case 5 -> 1.015f;
             case 4 -> 1.03f;
-            case 3 -> 1.1f;
-            case 2 -> 1.15f;
+            case 3 -> 1.075f;
+            case 2 -> 1.1f;
             case 1 -> 1.0f + (float) stacks/7 ;
             default -> 0.0f;
         };

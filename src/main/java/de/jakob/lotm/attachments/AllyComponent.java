@@ -6,10 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 
 public record AllyComponent(Set<AllyInfo> allies, Set<AllyInfo> requests) {
@@ -20,6 +17,7 @@ public record AllyComponent(Set<AllyInfo> allies, Set<AllyInfo> requests) {
 
     public AllyComponent addAlly(UUID allyUUID, String playerName, boolean isPlayer) {
         Set<AllyInfo> newAllies = new HashSet<>(this.allies);
+        newAllies.removeIf(info -> info.uuid().equals(allyUUID));
         newAllies.add(new AllyInfo(allyUUID, playerName, isPlayer));
         return new AllyComponent(newAllies, this.requests);
     }
@@ -40,6 +38,7 @@ public record AllyComponent(Set<AllyInfo> allies, Set<AllyInfo> requests) {
 
     public AllyComponent addRequest(UUID allyUUID, String playerName, boolean isPlayer) {
         Set<AllyInfo> newRequests = new HashSet<>(this.requests);
+        newRequests.removeIf(info -> info.uuid().equals(allyUUID));
         newRequests.add(new AllyInfo(allyUUID, playerName, isPlayer));
         return new AllyComponent(this.allies, newRequests);
     }
@@ -54,7 +53,7 @@ public record AllyComponent(Set<AllyInfo> allies, Set<AllyInfo> requests) {
             instance.group(
                     AllyInfo.CODEC.listOf().<Set<AllyInfo>>xmap(
                             HashSet::new,
-                            set -> set.stream().toList()
+                            ArrayList::new
                     ).fieldOf("allies").forGetter(AllyComponent::allies),
                     AllyInfo.CODEC.listOf().<Set<AllyInfo>>xmap(
                             HashSet::new,

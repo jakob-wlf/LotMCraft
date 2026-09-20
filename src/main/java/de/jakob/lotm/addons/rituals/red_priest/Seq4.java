@@ -33,8 +33,8 @@ public class Seq4 {
         var list = AllyUtil.getAllAllies(player);
 
         for(var obj : list){
-            var data = BeyonderData.playerMap.get(UUID.fromString(obj));
-            if(data.isEmpty()) continue;
+            var data = BeyonderData.playerMap.get(obj.uuid());
+            if(data == null || data.isEmpty()) continue;
 
             if(data.get().sequence() <= 4){
                 component.setStage(component.getStage() + 1);
