@@ -196,7 +196,6 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         availableAbilities.clear();
         subAbilityEntries.clear();
         passiveAbilities.clear();
-        abilitiesScrollOffset = 0;
 
         if (showAllAbilities) {
             availableAbilities.addAll(LOTMCraft.abilityHandler.getAllAbilitiesUpToSequenceOrdered(menu.getSequence()));
@@ -302,16 +301,24 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
                 }
             }
 
-            int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
-            int rows = (int) Math.ceil((double) availableAbilities.size() / iconsPerRow);
-            int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
-            maxAbilitiesScroll = Math.max(0, rows - visibleRows);
+            updateAbilitiesScroll();
 
             // Also recompute copied scroll
             updateCopiedScroll();
 
             passiveAbilities.addAll(LOTMCraft.passiveAbilityHandler.getPassiveAbilitiesForEntity(minecraft.player));
         }
+    }
+
+    private void updateAbilitiesScroll() {
+        int listSize = (currentTab == Tab.SHARED_ABILITIES)
+                ? buildDisplayedSharedAbilities().size()
+                : availableAbilities.size();
+        int iconsPerRow = (ABILITIES_PANEL_WIDTH - 10) / (ABILITY_ICON_SIZE + 2);
+        int rows = (int) Math.ceil((double) listSize / iconsPerRow);
+        int visibleRows = (ABILITIES_PANEL_HEIGHT - 20) / (ABILITY_ICON_SIZE + 2);
+        maxAbilitiesScroll = Math.max(0, rows - visibleRows);
+        abilitiesScrollOffset = Math.max(0, Math.min(abilitiesScrollOffset, maxAbilitiesScroll));
     }
 
     private boolean isCopiedTab(Tab tab) {
@@ -1656,6 +1663,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         Component abilitiesLabel = Component.literal("Abilities").withStyle(ChatFormatting.BOLD);
         guiGraphics.drawString(this.font, abilitiesLabel, panelX + 5, panelY + 5, 0xFFFFFFFF, true);
+
+        if (maxAbilitiesScroll > 0) {
+            Component scrollHint = Component.literal("(Scroll)").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC);
+            int hintWidth = this.font.width(scrollHint);
+            guiGraphics.drawString(this.font, scrollHint,
+                    panelX + ABILITIES_PANEL_WIDTH - hintWidth - 5,
+                    panelY + 5, 0xFF888888, false);
+        }
 
         renderAvailableAbilities(guiGraphics, panelX, panelY + 15);
 
