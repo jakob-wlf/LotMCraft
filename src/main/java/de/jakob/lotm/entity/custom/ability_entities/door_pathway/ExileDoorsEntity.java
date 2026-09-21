@@ -31,7 +31,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.fml.ModList;
 import org.jetbrains.annotations.NotNull;
+import org.texboobcat.tessellate.api.TessellateApi;
 
 import javax.annotation.Nullable;
 import java.util.HashSet;
@@ -137,6 +139,7 @@ public class ExileDoorsEntity extends Entity {
             ServerLevel exileLevel = serverLevel.getServer().getLevel(ResourceKey.create(Registries.DIMENSION,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "deep_space")));
             if (exileLevel != null) {
+
                 double randomX = (serverLevel.random.nextDouble() - 0.5) * 200;
                 double randomZ = (serverLevel.random.nextDouble() - 0.5) * 200;
                 double y = 110;
@@ -157,8 +160,16 @@ public class ExileDoorsEntity extends Entity {
                 level().playSound(null, entity.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, 2.0f, 0.5f + level().random.nextFloat());
 
                 TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
-                if(exileLevel.getBlockState(BlockPos.containing(randomX, y, randomZ)).isAir()) {
-                    exileLevel.setBlockAndUpdate(BlockPos.containing(randomX, y - 1, randomZ), Blocks.END_STONE.defaultBlockState());
+
+                Runnable logic = () -> {
+                    if (exileLevel.getBlockState(BlockPos.containing(randomX, y, randomZ)).isAir()) {
+                        exileLevel.setBlockAndUpdate(BlockPos.containing(randomX, y - 1, randomZ), Blocks.END_STONE.defaultBlockState());
+                    }
+                };
+                if (ModList.get().isLoaded("tessellate")) {
+                    TessellateApi.executeOnMainThread(logic);
+                } else {
+                    logic.run();
                 }
                 entity.teleportTo(exileLevel, randomX, y, randomZ, Set.of(), entity.getYRot(), entity.getXRot());
                 TemporaryChunkLoader.forceChunksTemporarily(exileLevel, randomX, randomZ, 4, exileTicks + 20 * 4);
@@ -171,6 +182,7 @@ public class ExileDoorsEntity extends Entity {
 
                 ServerScheduler.scheduleDelayed(exileTicks - 5, () -> onExileCooldown.add(entity.getUUID()));
                 ServerScheduler.scheduleDelayed(20 * 10 + exileTicks + 5, () -> onExileCooldown.remove(entity.getUUID()));
+
             }
         }
     }
