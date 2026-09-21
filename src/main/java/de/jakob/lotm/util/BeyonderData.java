@@ -277,7 +277,7 @@ public class BeyonderData {
                 if(putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence));
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence));
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -292,7 +292,7 @@ public class BeyonderData {
 
     }
 
-    private static int getMaxWormAmount(int sequence) {
+    public static int getMaxWormAmount(int sequence) {
         return switch (sequence) {
             case 3 -> 60;
             case 2 -> 200;
@@ -550,7 +550,7 @@ public class BeyonderData {
         if (!entity.level().isClientSide()) {
             if(entity instanceof ServerPlayer serverPlayer) {
                 // Send empty data to clear client cache
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket("none", 10, 0.0f, false, 0.0f, new String[10], new int[10], 0);
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), "none", 10, 0.0f, false, 0.0f, new String[10], new int[10], 0);
                 PacketHandler.sendToPlayer(serverPlayer, packet);
             }
             else {

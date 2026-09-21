@@ -1,5 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ShapeShiftComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.MemorisedEntities;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -8,12 +10,16 @@ import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ShapeShiftingAbility extends SelectableAbility {
     public ShapeShiftingAbility(String id) {
         super(id, 5);
@@ -62,5 +68,14 @@ public class ShapeShiftingAbility extends SelectableAbility {
 
     public void resetShape(ServerPlayer player) {
         ShapeShiftingUtil.resetShape(player);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
+        ShapeShiftComponent data = serverPlayer.getData(ModAttachments.SHAPE_SHIFT);
+        if (!(data.getShape().isEmpty())) {
+            ShapeShiftingUtil.shapeShift(serverPlayer, data.getShape(), true);
+        }
     }
 }

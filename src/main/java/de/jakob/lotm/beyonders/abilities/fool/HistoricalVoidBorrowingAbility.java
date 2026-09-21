@@ -43,6 +43,8 @@ import java.util.*;
 
 @EventBusSubscriber
 public class HistoricalVoidBorrowingAbility extends SelectableAbility {
+    private static Map<UUID, Integer> timer = new HashMap<>();
+
     public HistoricalVoidBorrowingAbility(String id) {
         super(id, 1);
 
@@ -137,24 +139,22 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
 
     public static void historicalVoidBorrowHealth(ServerPlayer player, ServerLevel level) {
-        if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
-            if (player.getHealth() < player.getMaxHealth()) {
+        if (player.getHealth() < player.getMaxHealth()) {
 
-                HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-                for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-                    if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH) {
-                        decrementHistoricalBorrowingCount(player, info.summonTime());
-                    }
+            HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
+            for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
+                if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH) {
+                    resetHistoricalBorrows(player, info.summonTime());
                 }
-
-                long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
-                CompoundTag tag = new CompoundTag();
-                tag.putFloat("health", player.getHealth());
-
-                incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.HEALTH, player.getUUID(), tag);
-
-                player.setHealth(player.getMaxHealth());
             }
+
+            long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
+            CompoundTag tag = new CompoundTag();
+            tag.putFloat("health", player.getHealth());
+
+            trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.HEALTH, player.getUUID(), tag);
+
+            player.setHealth(player.getMaxHealth());
         }
     }
 
@@ -165,7 +165,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
                 for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
                     if (info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY) {
-                        decrementHistoricalBorrowingCount(player, info.summonTime());
+                        resetHistoricalBorrows(player, info.summonTime());
                     }
                 }
 
@@ -173,7 +173,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 CompoundTag tag = new CompoundTag();
                 tag.putFloat("spirituality", BeyonderData.getSpirituality(player));
 
-                incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY, player.getUUID(), tag);
+                trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY, player.getUUID(), tag);
 
                 BeyonderData.setSpirituality(player, BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player), BeyonderData.getSequence(player)));
             }
@@ -181,176 +181,169 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
     }
 
     public static void historicalVoidBorrowCleansedState(ServerPlayer player, ServerLevel level) {
-        if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
-
-            HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-            for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-                if (info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE) {
-                    decrementHistoricalBorrowingCount(player, info.summonTime());
-                }
+        HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
+        for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
+            if (info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE) {
+                resetHistoricalBorrows(player, info.summonTime());
             }
-
-            long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
-            CompoundTag tag = new CompoundTag();
-
-            // save if movement was stolen
-            AttributeInstance movementSpeedInner = player.getAttribute(Attributes.MOVEMENT_SPEED);
-            if(movementSpeedInner != null && movementSpeedInner.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"))) {
-                tag.putBoolean("WalkStolen", true);
-
-                // give back movement
-                movementSpeedInner.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"));
-            }
-
-            // save harmful effects to reapply later
-            ListTag effectsList = new ListTag();
-            for (MobEffectInstance instance : new ArrayList<>(player.getActiveEffects())) {
-                if (instance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL) {
-                    effectsList.add(instance.save());
-                    // remove them from the player
-                    player.removeEffect(instance.getEffect());
-                }
-            }
-            if(!effectsList.isEmpty()) {
-                tag.put("StolenEffects", effectsList);
-            }
-
-            // save disabled abilities to reapply later
-            DisabledAbilitiesComponent disabledAbilitiesComponent = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            ListTag abilitiesList = new ListTag();
-            for (DisabledAbilitiesComponent.DisabledAbility entry : disabledAbilitiesComponent.getAllDisabledAbilities()) {
-                CompoundTag abilityTag = new CompoundTag();
-                abilityTag.putString("AbilityName", entry.ability());
-                abilityTag.putInt("Amount", entry.amountDisabled());
-                abilitiesList.add(abilityTag);
-            }
-            tag.put("DisabledAbilities", abilitiesList);
-
-            SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
-            tag.putFloat("sanity", sanityComponent.getSanity());
-            sanityComponent.setSanity(1.0f);
-
-            incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE, player.getUUID(), tag);
         }
+
+        long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
+        CompoundTag tag = new CompoundTag();
+
+        // save if movement was stolen
+        AttributeInstance movementSpeedInner = player.getAttribute(Attributes.MOVEMENT_SPEED);
+        if(movementSpeedInner != null && movementSpeedInner.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"))) {
+            tag.putBoolean("WalkStolen", true);
+
+            // give back movement
+            movementSpeedInner.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mundane_conceptual_theft_walk"));
+        }
+
+        // save harmful effects to reapply later
+        ListTag effectsList = new ListTag();
+        for (MobEffectInstance instance : new ArrayList<>(player.getActiveEffects())) {
+            if (instance.getEffect().value().getCategory() == MobEffectCategory.HARMFUL) {
+                effectsList.add(instance.save());
+                // remove them from the player
+                player.removeEffect(instance.getEffect());
+            }
+        }
+        if(!effectsList.isEmpty()) {
+            tag.put("StolenEffects", effectsList);
+        }
+
+        // save disabled abilities to reapply later
+        DisabledAbilitiesComponent disabledAbilitiesComponent = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        ListTag abilitiesList = new ListTag();
+        for (DisabledAbilitiesComponent.DisabledAbility entry : disabledAbilitiesComponent.getAllDisabledAbilities()) {
+            CompoundTag abilityTag = new CompoundTag();
+            abilityTag.putString("AbilityName", entry.ability());
+            abilityTag.putInt("Amount", entry.amountDisabled());
+            abilitiesList.add(abilityTag);
+        }
+        tag.put("DisabledAbilities", abilitiesList);
+
+        SanityComponent sanityComponent = player.getData(ModAttachments.SANITY_COMPONENT);
+        tag.putFloat("sanity", sanityComponent.getSanity());
+        sanityComponent.setSanity(1.0f);
+
+        trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE, player.getUUID(), tag);
+
     }
 
     public static void historicalVoidBorrowEffects(ServerPlayer player, ServerLevel level) {
-        if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
-
-            HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-            for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-                if (info.type() == HistoricalVoidSummoningAbility.SummonType.EFFECT) {
-                    decrementHistoricalBorrowingCount(player, info.summonTime());
-                }
+        HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
+        for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
+            if (info.type() == HistoricalVoidSummoningAbility.SummonType.EFFECT) {
+                resetHistoricalBorrows(player, info.summonTime());
             }
-
-            if (data.getSavedEffects().isEmpty()) return;
-
-            int maxAllowedTicks = getMaxHistoricalBorrowingDurationTicks(player);
-            int maxEffectDuration = 0;
-
-            for (HistoricalVoidComponent.SavedEffect saved : data.getSavedEffects()) {
-                int effectiveDuration = Math.min(saved.duration(), maxAllowedTicks);
-
-                if (effectiveDuration > maxEffectDuration) {
-                    maxEffectDuration = effectiveDuration;
-                }
-
-                BuiltInRegistries.MOB_EFFECT.getHolder(saved.effectId()).ifPresent(holder -> {
-                    player.addEffect(new MobEffectInstance(
-                            holder,
-                            effectiveDuration,
-                            saved.amplifier()
-                    ));
-                });
-            }
-
-            long borrowTime = level.getGameTime() + maxEffectDuration;
-            CompoundTag tag = new CompoundTag();
-            tag.putFloat("spirituality", BeyonderData.getSpirituality(player));
-
-            incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.EFFECT, player.getUUID(), tag);
-
         }
+
+        if (data.getSavedEffects().isEmpty()) return;
+
+        int maxAllowedTicks = getMaxHistoricalBorrowingDurationTicks(player);
+        int maxEffectDuration = 0;
+
+        for (HistoricalVoidComponent.SavedEffect saved : data.getSavedEffects()) {
+            int effectiveDuration = Math.min(saved.duration(), maxAllowedTicks);
+
+            if (effectiveDuration > maxEffectDuration) {
+                maxEffectDuration = effectiveDuration;
+            }
+
+            BuiltInRegistries.MOB_EFFECT.getHolder(saved.effectId()).ifPresent(holder -> {
+                player.addEffect(new MobEffectInstance(
+                        holder,
+                        effectiveDuration,
+                        saved.amplifier()
+                ));
+            });
+        }
+
+        long borrowTime = level.getGameTime() + maxEffectDuration;
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("spirituality", BeyonderData.getSpirituality(player));
+
+        trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.EFFECT, player.getUUID(), tag);
+
     }
 
     public static void historicalVoidBorrowSequence(ServerPlayer player, ServerLevel level) {
-        if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
-            SimpleContainer entityContainer = new SimpleContainer(54) {
-                @Override
-                public boolean canTakeItem(Container target, int index, ItemStack stack) {
-                    return false; // Prevent taking items normally
-                }
-            };
-            List<CompoundTag> markedEntities = getMarkedEntities(player);
+        SimpleContainer entityContainer = new SimpleContainer(54) {
+            @Override
+            public boolean canTakeItem(Container target, int index, ItemStack stack) {
+                return false; // Prevent taking items normally
+            }
+        };
+        List<CompoundTag> markedEntities = getMarkedEntities(player);
 
-            for(int i = 0; i < Math.min(markedEntities.size(), 53); i++) {
-                CompoundTag entityData = markedEntities.get(i);
-                ItemStack displayItem = createEntityDisplayItem(entityData);
-                if (entityData.contains("EntityNBT")) {
-                    CompoundTag entityNBT = entityData.getCompound("EntityNBT");
-                    CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
+        for(int i = 0; i < Math.min(markedEntities.size(), 53); i++) {
+            CompoundTag entityData = markedEntities.get(i);
+            ItemStack displayItem = createEntityDisplayItem(entityData);
+            if (entityData.contains("EntityNBT")) {
+                CompoundTag entityNBT = entityData.getCompound("EntityNBT");
+                CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
 
-                    if (nfd.contains("pathway")) {
+                if (nfd.contains("pathway")) {
 
-                        if (entityData.contains("OriginalPlayerUUID")) {
-                            if (entityData.getUUID("OriginalPlayerUUID").equals(player.getUUID()) && nfd.getInt("sequence") > 0) {
-                                boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
-                                displayItem.set(
-                                        DataComponents.LORE,
-                                        new ItemLore(List.of(
-                                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
-                                                Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(nfd.getString("pathway")).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(nfd.getInt("sequence") + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                                Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(isMarionette + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
-                                        )));
-                            } else {
-                                continue;
-                            }
+                    if (entityData.contains("OriginalPlayerUUID")) {
+                        if (entityData.getUUID("OriginalPlayerUUID").equals(player.getUUID()) && nfd.getInt("sequence") > 0) {
+                            boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
+                            displayItem.set(
+                                    DataComponents.LORE,
+                                    new ItemLore(List.of(
+                                            Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
+                                            Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(nfd.getString("pathway")).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                            Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(nfd.getInt("sequence") + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                            Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(isMarionette + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
+                                    )));
                         } else {
                             continue;
                         }
+                    } else {
+                        continue;
                     }
                 }
-                entityContainer.setItem(i + 1, displayItem);
             }
+            entityContainer.setItem(i + 1, displayItem);
+        }
 
-            final int finalContainerSize = entityContainer.getContainerSize();
+        final int finalContainerSize = entityContainer.getContainerSize();
 
-            player.openMenu(new SimpleMenuProvider(
-                    (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x6, id, inv, entityContainer, 6) {
-                        @Override
-                        public void clicked(int slotId, int button, ClickType clickType, Player clickPlayer) {
-                            if(slotId >= 0 && slotId < finalContainerSize) {
-                                ItemStack clickedItem = entityContainer.getItem(slotId);
+        player.openMenu(new SimpleMenuProvider(
+                (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x6, id, inv, entityContainer, 6) {
+                    @Override
+                    public void clicked(int slotId, int button, ClickType clickType, Player clickPlayer) {
+                        if(slotId >= 0 && slotId < finalContainerSize) {
+                            ItemStack clickedItem = entityContainer.getItem(slotId);
 
-                                if(clickedItem.isEmpty()) return;
+                            if(clickedItem.isEmpty()) return;
 
-                                CustomData customData = clickedItem.get(DataComponents.CUSTOM_DATA);
+                            CustomData customData = clickedItem.get(DataComponents.CUSTOM_DATA);
 
-                                if(customData == null) return;
+                            if(customData == null) return;
 
-                                CompoundTag tag = customData.copyTag();
+                            CompoundTag tag = customData.copyTag();
 
-                                if(tag.contains("EntityData")) {
-                                    CompoundTag entityData = tag.getCompound("EntityData");
-                                    long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
-                                    CompoundTag anotherTag = new CompoundTag();
-                                    anotherTag.putFloat("sequence", BeyonderData.getSequence(player));
-                                    anotherTag.putString("pathway", BeyonderData.getPathway(player));
+                            if(tag.contains("EntityData")) {
+                                CompoundTag entityData = tag.getCompound("EntityData");
+                                long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
+                                CompoundTag anotherTag = new CompoundTag();
+                                anotherTag.putFloat("sequence", BeyonderData.getSequence(player));
+                                anotherTag.putString("pathway", BeyonderData.getPathway(player));
 
-                                    incrementHistoricalBorrowingCount(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SEQUENCE, player.getUUID(), anotherTag);
+                                trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SEQUENCE, player.getUUID(), anotherTag);
 
-                                    BeyonderData.setPathway(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getString("pathway"));
-                                    BeyonderData.setSequence(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getInt("sequence"));
-                                    player.closeContainer();
-                                }
+                                BeyonderData.setPathway(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getString("pathway"));
+                                BeyonderData.setSequence(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getInt("sequence"));
+                                player.closeContainer();
                             }
                         }
-                    },
-                    Component.literal("select your strongest marked version")
-            ));
-        }
+                    }
+                },
+                Component.literal("select your strongest marked version")
+        ));
     }
 
     public static void returnAllBorrows(ServerPlayer serverPlayer) {
@@ -362,14 +355,16 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             HistoricalVoidComponent.SummonInfo info = data.activeSummonTimes.get(borrowTime);
             if (info == null) continue;
 
-            decrementHistoricalBorrowingCount(serverPlayer, borrowTime);
+            resetHistoricalBorrows(serverPlayer, borrowTime);
         }
         data.resetBorrowing();
     }
 
-    private static void incrementHistoricalBorrowingCount(ServerPlayer player, long borrowTime, HistoricalVoidSummoningAbility.SummonType type, UUID entityUUID, CompoundTag originalBeforeBorrowing) {
+    private static void trackHistoricalBorrows(ServerPlayer player, long borrowTime, HistoricalVoidSummoningAbility.SummonType type, UUID entityUUID, CompoundTag originalBeforeBorrowing) {
         HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        data.historicalBorrowingCount++;
+        if (type == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY) {
+            data.historicalBorrowingCount++;
+        }
         HistoricalVoidComponent.SummonInfo info = new HistoricalVoidComponent.SummonInfo(
                 borrowTime,
                 type,
@@ -379,9 +374,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
         data.activeSummonTimes.put(borrowTime, info);
     }
 
-    private static void decrementHistoricalBorrowingCount(ServerPlayer player, long borrowTime) {
+    private static void resetHistoricalBorrows(ServerPlayer player, long borrowTime) {
         HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        data.historicalBorrowingCount = Math.max(0, data.historicalBorrowingCount - 1);
 
         HistoricalVoidComponent.SummonInfo specificInfo = data.activeSummonTimes.get(borrowTime);
         if(specificInfo != null) {
@@ -532,16 +526,30 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
         if (level.isClientSide || !(level instanceof ServerLevel serverLevel) || !(player instanceof ServerPlayer serverPlayer)) return;
 
         HistoricalVoidComponent data = serverPlayer.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-            if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
-                    info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
-                    info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
-                    info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE) {
 
-                if (serverLevel.getGameTime() > info.summonTime()) {
-                    decrementHistoricalBorrowingCount(serverPlayer, info.summonTime());
-                }
+        if (getHistoricalBorrowingCount(serverPlayer) != 0) {
+            if (timer.getOrDefault(player.getUUID(), 0) == 0) {
+                data.historicalBorrowingCount = Math.max(0, data.historicalBorrowingCount - 1);
             }
+
+            timer.put(player.getUUID(), timer.getOrDefault(player.getUUID(), 0) + 1);
+            if (timer.get(player.getUUID()) > 20 * 60) {
+                timer.put(player.getUUID(),0);
+            }
+        }
+
+        for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
+                if (serverLevel.getGameTime() > info.summonTime()) {
+
+                    if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
+                            info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
+                            info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
+                            info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE
+                    ) {
+                        resetHistoricalBorrows(serverPlayer, info.summonTime());
+                    }
+
+                }
         }
     }
 

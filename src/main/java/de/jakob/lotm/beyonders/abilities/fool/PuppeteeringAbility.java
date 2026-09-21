@@ -4,6 +4,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.demoness.MirrorSubstituteAbility;
+import de.jakob.lotm.beyonders.abilities.door.DoorSubstitutionAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -27,6 +29,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -134,10 +137,10 @@ public class PuppeteeringAbility extends SelectableAbility {
         AllyComponent allyComponent = player.getData(ModAttachments.ALLY_COMPONENT);
 
         for (Entity e : serverLevel.getAllEntities()) {
-            if (e instanceof LivingEntity target && target != player && target.isAlive() && !(target instanceof Phantom) && !allyComponent.isAlly(target.getUUID())) {
+            if (e instanceof LivingEntity target && target != player && target.isAlive() && !(target instanceof Phantom) && !(target instanceof ArmorStand) && !allyComponent.isAlly(target.getUUID())) {
                 MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
                 if (!component.isMarionette()) {
-                    int time = calculatePuppetTime(player, target, 4);
+                    int time = calculatePuppetTime(player, target, 8);
                     if (time >= 0 && player.distanceTo(target) < getManipulationDistance(sequence) * 0.25) {
                         validTargets.put(target, time);
                     }
@@ -324,6 +327,20 @@ public class PuppeteeringAbility extends SelectableAbility {
     private void turnIntoMarionette(LivingEntity target, Player player) {
         if(target instanceof Player) {
             Vec3 pos = target.position();
+
+            PaperFigurineSubstituteAbility.setFigurineNumber(target.getUUID(), 0);
+            MirrorSubstituteAbility.setFigurineNumber(target.getUUID(), 0);
+            DoorSubstitutionAbility.setFigurineNumber(target.getUUID(), 0);
+
+            // set sanity to 0.04 to prevent mirror revival and darkness revival from triggering
+            SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
+            sanity.setSanity(0.04f);
+
+            MiracleOfResurrectionComponent miracleOfResurrection = target.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
+            miracleOfResurrection.setResurrectionAttempts(0);
+
+            MarionetteControllingAbility.swapOnDamageIsActive.remove(target.getUUID());
+
             if(BeyonderData.isBeyonder(target)) {
                 int sequence = BeyonderData.getSequence(target);
                 String pathway = BeyonderData.getPathway(target);
@@ -380,11 +397,11 @@ public class PuppeteeringAbility extends SelectableAbility {
     private int getManipulationDistance(int sequence) {
         return switch (sequence) {
             default -> 7;
-            case 4 -> 150;
-            case 3 -> 400;
-            case 2 -> 1000;
-            case 1 -> 4000;
-            case 0 -> 10000;
+            case 4 -> 75;
+            case 3 -> 200;
+            case 2 -> 500;
+            case 1 -> 2000;
+            case 0 -> 5000;
         };
     }
 
@@ -400,7 +417,7 @@ public class PuppeteeringAbility extends SelectableAbility {
     }
 
     private int getManipulationTimeBySequenceAndSequenceDifference(int sequence, int targetSequence) {
-        if (sequence == 5) {
+        if (sequence >= 5) {
             if (targetSequence < 5) return -1;
             int targetClamped = Math.min(targetSequence, 10);
             return 2400 - (20 * 20) * (targetClamped - 5);

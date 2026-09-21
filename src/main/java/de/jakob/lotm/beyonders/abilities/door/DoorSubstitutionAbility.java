@@ -122,4 +122,8 @@ public class DoorSubstitutionAbility extends Ability {
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .6f, 1);
 
     }
+
+    public static void setFigurineNumber(UUID uuid, int number) {
+        figurineNumbers.put(uuid, number);
+    }
 }

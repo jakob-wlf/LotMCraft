@@ -120,7 +120,7 @@ public class SharedAbilityHudRenderer {
         int boxX = existingBoxW > 0
                 ? hotbarEndX + gap + existingBoxW + gap
                 : hotbarEndX + gap;
-        int boxY = screenH - boxH;
+        int boxY = screenH - boxH * 2;
 
         guiGraphics.fill(boxX, boxY, boxX + boxW, boxY + boxH, COLOR_BG);
         guiGraphics.renderOutline(boxX, boxY, boxW, boxH, COLOR_ACCENT);

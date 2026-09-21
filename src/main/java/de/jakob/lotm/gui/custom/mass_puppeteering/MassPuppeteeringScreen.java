@@ -176,7 +176,7 @@ public class MassPuppeteeringScreen extends AbstractContainerScreen<MassPuppetee
             private final String groupName;
             private final List<EntityEntry> children = new ArrayList<>();
 
-            private boolean expanded = true;
+            private boolean expanded = false;
             private boolean isSelected = false;
 
             private final Button expandButton;

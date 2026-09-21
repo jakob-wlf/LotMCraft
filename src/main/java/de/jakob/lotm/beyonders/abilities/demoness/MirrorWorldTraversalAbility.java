@@ -29,6 +29,7 @@ public class MirrorWorldTraversalAbility extends SelectableAbility {
     public MirrorWorldTraversalAbility(String id) {
         super(id,3);
         canBeUsedWhileControlling = false;
+        canBeUsedByNPC = false;
     }
 
     @Override

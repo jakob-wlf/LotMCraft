@@ -13,18 +13,29 @@ import java.util.List;
 
 public class CopiedAbilityHelper {
 
-    public static void addAbility(ServerPlayer player, CopiedAbilityComponent.CopiedAbilityData data) {
+    public static void addAbility(LivingEntity player, CopiedAbilityComponent.CopiedAbilityData data) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.addAbility(data);
-        syncToClient(player);
+
+        if(player instanceof ServerPlayer serverPlayer){
+            syncToClient(serverPlayer);
+        }
     }
 
-    public static void removeAbility(ServerPlayer player, int index) {
+    public static void removeAbilityIndex(ServerPlayer player, int index) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(index);
         syncToClient(player);
     }
 
+    public static void removeAbilityID(LivingEntity entity, String abilityId) {
+        CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
+        component.removeAbility(abilityId);
+
+        if (entity instanceof ServerPlayer serverPlayer) {
+            syncToClient(serverPlayer);
+        }
+    }
 
     public static void clearAbilities(ServerPlayer player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
