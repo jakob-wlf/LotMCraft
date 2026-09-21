@@ -110,7 +110,7 @@ public class CopiedAbilitiesCommand {
 
     private static int executeRemoveAbility(CommandSourceStack source, LivingEntity target, String abilityId) {
         try {
-            CopiedAbilityHelper.removeAbility(target, abilityId);
+            CopiedAbilityHelper.removeAbilityID(target, abilityId);
             String targetName = target instanceof ServerPlayer player ? player.getGameProfile().getName() : target.getDisplayName().getString();
 
             source.sendSuccess(() -> Component.literal("Removed copied ability '" + abilityId + "' from " + targetName), true);

@@ -69,7 +69,7 @@ public class MiracleHandler {
     private static void summonLightning(ServerLevel level, LivingEntity caster) {
         MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        float damage = ability.baseDamage * 15;
+        float damage = ability.baseDamage * 30;
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2, true);
         for (int i = 0; i < 35; i++) {
@@ -96,7 +96,7 @@ public class MiracleHandler {
     private static void makeGroundHot(ServerLevel level, LivingEntity caster) {
         MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        float damage = ability.baseDamage * 15;
+        float damage = ability.baseDamage * 7.0f;
         Vec3 center = caster.position();
 
         // Affect entities
@@ -264,7 +264,7 @@ public class MiracleHandler {
     private static void summonVolcano(ServerLevel level, LivingEntity caster) {
         MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        float damage = ability.baseDamage * 5.0f;
+        float damage = ability.baseDamage * 7.5f;
         Vec3 targetPos = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2);
 
         EffectManager.playEffect(EffectIds.MIRACLE, targetPos.x, targetPos.y, targetPos.z, level);
@@ -276,7 +276,7 @@ public class MiracleHandler {
     private static void summonTornados(ServerLevel level, LivingEntity caster) {
         MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        float damage = ability.baseDamage * 1.16f;
+        float damage = ability.baseDamage * 3.0f;
         LivingEntity target = AbilityUtil.getTargetEntity(caster, ability.baseDistance, 3);
 
         Vec3 pos = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2);
@@ -321,7 +321,7 @@ public class MiracleHandler {
     private static void summonMeteor(ServerLevel level, LivingEntity caster) {
         MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        float damage = ability.baseDamage * 20;
+        float damage = ability.baseDamage * 40;
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 3);
 

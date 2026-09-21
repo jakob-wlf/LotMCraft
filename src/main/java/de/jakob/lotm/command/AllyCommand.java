@@ -93,13 +93,10 @@ public class AllyCommand {
             return 0;
         }
 
-        // Check if target is online — remove both sides immediately if so
         ServerPlayer onlineTarget = source.getServer().getPlayerList().getPlayer(targetUuid);
         if (onlineTarget != null) {
             AllyUtil.removeAllies(sender, onlineTarget);
         } else {
-            // Target is offline — remove from sender's side only.
-            // The stale entry on the offline player's list is pruned when they next log in.
             AllyUtil.removeAllyOneWay(sender, targetUuid);
             sender.sendSystemMessage(Component.translatable("lotm.ally.removed",
                     targetName).withColor(0xFF9800));

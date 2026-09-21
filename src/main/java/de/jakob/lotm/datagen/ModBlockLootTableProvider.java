@@ -5,6 +5,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,8 +20,9 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     protected void generate() {
         this.dropSelf(ModBlocks.BREWING_CAULDRON.get());
         this.dropSelf(ModBlocks.RITUALISTIC_TABLE.get());
-//        this.dropSelf(ModBlocks.SEFIRAH_BLOCK.get());
-//        this.dropOther(ModBlocks.MYSTICAL_RING.get(), Items.DIAMOND);
+        this.dropSelf(ModBlocks.SEFIRAH_BLOCK.get());
+        this.dropOther(ModBlocks.MYSTICAL_RING.get(), Items.DIAMOND);
+        this.dropSelf(ModBlocks.BREEDING_BLOCK.get());
     }
 
     @Override

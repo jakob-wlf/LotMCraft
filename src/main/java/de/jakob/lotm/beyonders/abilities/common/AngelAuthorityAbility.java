@@ -29,8 +29,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.Vec3;
 
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +40,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
     private AngelFlightAbility flightSkill;
 
     public AngelAuthorityAbility(String id) {
-        super(id, 1.0f);
+        super(id, 7.0f);
         this.canBeUsedByNPC = false;
         this.canBeCopied = false;
         this.cannotBeStolen = true;
@@ -134,6 +136,10 @@ public class AngelAuthorityAbility extends SelectableAbility {
         if (player.level().isClientSide) return;
         ServerLevel targetLevel;
         Vec3 targetPos;
+
+        if (player.level().dimension().equals(Level.OVERWORLD) ||
+                player.level().dimension().equals(Level.NETHER) ||
+                player.level().dimension().equals(Level.END)) return;
 
         if (!player.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             ResourceKey spiritWorld = ResourceKey.create((ResourceKey) Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"));

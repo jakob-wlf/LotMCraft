@@ -20,7 +20,7 @@ public abstract class EntityGlowMixin {
         if (localPlayer != null) {
             var allyComponent = localPlayer.getData(ModAttachments.ALLY_COMPONENT);
             if (allyComponent.isAlly(entity.getUUID())) {
-                cir.setReturnValue(0x55FF55); // Green for allies
+                cir.setReturnValue(0x55FF55);
             }
         }
     }

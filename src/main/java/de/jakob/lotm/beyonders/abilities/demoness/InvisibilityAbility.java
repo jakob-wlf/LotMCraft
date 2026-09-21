@@ -29,7 +29,7 @@ public class InvisibilityAbility extends Ability {
     public static final HashSet<UUID> invisiblePlayers = new HashSet<>();
 
     public InvisibilityAbility(String id) {
-        super(id, 5);
+        super(id, 180);
         this.canBeCopied = false;
         autoClear = false;
     }

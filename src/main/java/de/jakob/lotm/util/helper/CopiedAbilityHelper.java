@@ -21,7 +21,7 @@ public class CopiedAbilityHelper {
             syncToClient(serverPlayer);
     }
 
-    public static void removeAbility(LivingEntity player, int index) {
+    public static void removeAbilityIndex(LivingEntity player, int index) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(index);
 
@@ -29,7 +29,7 @@ public class CopiedAbilityHelper {
             syncToClient(serverPlayer);
     }
 
-    public static void removeAbility(LivingEntity entity, String abilityId) {
+    public static void removeAbilityID(LivingEntity entity, String abilityId) {
         CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(abilityId);
 
@@ -66,7 +66,7 @@ public class CopiedAbilityHelper {
         int newUses = data.remainingUses() - 1;
 
         if (newUses <= 0) {
-            removeAbility(entity, index);
+            removeAbilityIndex(entity, index);
         } else {
             component.getAbilities().set(index, data.withRemainingUses(newUses));
         }
