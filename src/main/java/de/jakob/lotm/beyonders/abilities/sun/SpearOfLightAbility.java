@@ -28,7 +28,7 @@ public class SpearOfLightAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(6000f, 3000f, 2000f));
 
-        baseDamage = 30f;
+        baseDamage = 32f;
     }
 
     @Override

@@ -43,7 +43,7 @@ public class HorrorAuraAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(17000f, 7000f, 4000f, 3250f));
 
-        baseDamage = 1;
+        baseDamage = 2;
     }
 
     @Override

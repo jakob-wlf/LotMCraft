@@ -30,7 +30,7 @@ public class ReturnToEarthAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(12500f, 6600f, 5000f, 3000f));
 
-        baseDamage = 5;
+        baseDamage = 8;
     }
 
     @Override

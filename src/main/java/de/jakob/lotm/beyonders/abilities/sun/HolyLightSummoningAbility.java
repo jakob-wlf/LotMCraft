@@ -38,7 +38,7 @@ public class HolyLightSummoningAbility extends Ability {
         dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f));
 
 
-        baseDamage = 4;
+        baseDamage = 6;
     }
 
     @Override

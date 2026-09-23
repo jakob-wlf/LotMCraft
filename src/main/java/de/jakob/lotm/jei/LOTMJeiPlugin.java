@@ -6,6 +6,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
@@ -53,6 +54,14 @@ public class LOTMJeiPlugin implements IModPlugin {
         registration.addGuiContainerHandler(ArtifactWheelScreen.class, new IGuiContainerHandler<ArtifactWheelScreen>() {
             @Override
             public List<Rect2i> getGuiExtraAreas(ArtifactWheelScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
+        registration.addGuiContainerHandler(CopiedAbilityWheelScreen.class, new IGuiContainerHandler<CopiedAbilityWheelScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(CopiedAbilityWheelScreen screen) {
                 // Return a rectangle covering the entire screen to hide JEI completely
                 return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
             }

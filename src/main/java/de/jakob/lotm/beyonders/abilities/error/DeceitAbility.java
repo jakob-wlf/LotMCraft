@@ -40,7 +40,7 @@ public class DeceitAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(5, 7, 9, 13));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(15000f, 5700f, 3400f, 3400f));
+        dynamicSpirituality = new LinkedList<>(List.of(9000f, 4400f, 3400f, 3400f));
     }
 
     @Override

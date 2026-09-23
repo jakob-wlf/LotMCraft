@@ -38,7 +38,7 @@ public class NightDomainAbility extends Ability {
         dynamicSpirituality = new LinkedList<>(List.of(15000f, 5500f, 3000f, 2150f, 1800f));
 
 
-        baseDamage = 2;
+        baseDamage = 3;
     }
 
     @Override

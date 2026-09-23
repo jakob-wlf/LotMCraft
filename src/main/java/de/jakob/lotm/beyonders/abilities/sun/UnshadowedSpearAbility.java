@@ -27,7 +27,7 @@ public class UnshadowedSpearAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 1000f, 970f));
 
-        baseDamage = 15f;
+        baseDamage = 12f;
     }
 
     @Override

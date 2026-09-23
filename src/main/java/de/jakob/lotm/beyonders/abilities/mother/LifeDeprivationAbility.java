@@ -29,7 +29,7 @@ public class LifeDeprivationAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(10000f, 4500f, 3300f, 2500f));
 
-        baseDamage = 1; //needed to hook into multiplier only
+        baseDamage = 2; //needed to hook into multiplier only
     }
 
     @Override

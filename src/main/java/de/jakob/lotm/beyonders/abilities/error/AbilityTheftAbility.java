@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class AbilityTheftAbility extends Ability {
+public class AbilityTheftAbility extends SelectableAbility {
     public AbilityTheftAbility(String id) {
         super(id, 3f);
         canBeCopied = false;
@@ -35,7 +35,39 @@ public class AbilityTheftAbility extends Ability {
     }
 
     @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("error", 6));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 200;
+    }
+
+    @Override
+    protected String[] getAbilityNames() {
+        return new String[]{
+                "ability.lotmcraft.ability_theft_ability.theft",
+                "ability.lotmcraft.ability_theft_ability.use_stolen",
+        };
+    }
+
+
+    @Override
+    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
+        if (selectedAbility == 0) {
+            performTheft(level, entity);
+        } else if (selectedAbility == 1) {
+            openCopiedAbilityWheel(level, entity);
+        }
+    }
+
+    private void openCopiedAbilityWheel(Level level, LivingEntity entity) {
+        if (!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
+        CopiedAbilityHelper.openCopiedAbilityWheel(player);
+    }
+
+    public void performTheft(Level level, LivingEntity entity){
         if (!(level instanceof ServerLevel)) {
             if (entity instanceof Player player) {
                 player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
@@ -53,15 +85,4 @@ public class AbilityTheftAbility extends Ability {
 
         TheftHandler.performAbilityTheft(level, entity, target, random, false, this);
     }
-
-    @Override
-    public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("error", 6));
-    }
-
-    @Override
-    public float getSpiritualityCost() {
-        return 200;
-    }
-
 }

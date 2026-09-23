@@ -24,7 +24,7 @@ public class SpaceTimeLabyrinthEffect {
 
     private static final int DAMAGE_INTERVAL_TICKS = 25;
 
-    private static final float DAMAGE_PER_PULSE = 8f;
+    private static final float DAMAGE_PER_PULSE = 4f;
 
     private static final double NAUSEA_CHANCE = 0.10;
 

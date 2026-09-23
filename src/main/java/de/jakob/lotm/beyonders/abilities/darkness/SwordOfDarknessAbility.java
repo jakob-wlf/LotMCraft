@@ -43,7 +43,7 @@ public class SwordOfDarknessAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(9500f, 6750f, 4400f, 2850f));
 
-        baseDamage = 10;
+        baseDamage = 12;
     }
 
     @Override

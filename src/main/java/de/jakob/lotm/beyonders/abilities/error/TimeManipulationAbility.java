@@ -24,7 +24,7 @@ public class TimeManipulationAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(10, 15));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(40000f, 25000f));
+        dynamicSpirituality = new LinkedList<>(List.of(20000f, 10000f));
 
         canBeShared = false;
     }

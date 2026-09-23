@@ -48,7 +48,6 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
     public HistoricalVoidHidingAbility(String id) {
         super(id);
 
-        canAlwaysBeUsed = true;
         cannotBeStolen = true;
         canBeCopied = false;
         canBeReplicated = false;

@@ -35,7 +35,7 @@ public class ConceptualTheftAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(5, 8));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(18000f, 10000f));
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 7500f));
     }
 
     @Override

@@ -37,7 +37,7 @@ public class SurgeOfDarknessAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(18500f, 8000f, 4500f, 3850f));
 
-        baseDamage = 6;
+        baseDamage = 8;
     }
 
     @Override

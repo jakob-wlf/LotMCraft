@@ -37,7 +37,7 @@ public class FireOfLightAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f));
 
-        baseDamage = 4f;
+        baseDamage = 6f;
     }
 
     @Override

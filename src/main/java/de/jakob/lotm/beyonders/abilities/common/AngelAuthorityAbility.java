@@ -137,9 +137,10 @@ public class AngelAuthorityAbility extends SelectableAbility {
         ServerLevel targetLevel;
         Vec3 targetPos;
 
-        if (player.level().dimension().equals(Level.OVERWORLD) ||
-                player.level().dimension().equals(Level.NETHER) ||
-                player.level().dimension().equals(Level.END)) return;
+        if (!player.level().dimension().equals(Level.OVERWORLD) &&
+                !player.level().dimension().equals(Level.NETHER) &&
+                !player.level().dimension().equals(Level.END) &&
+                !player.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
 
         if (!player.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             ResourceKey spiritWorld = ResourceKey.create((ResourceKey) Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"));

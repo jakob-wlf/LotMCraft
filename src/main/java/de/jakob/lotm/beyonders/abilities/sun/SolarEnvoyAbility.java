@@ -37,7 +37,7 @@ public class SolarEnvoyAbility extends ToggleAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(400f, 300f, 200f));
 
-        baseDamage = 4f;
+        baseDamage = 8f;
     }
 
     @Override

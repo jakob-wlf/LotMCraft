@@ -45,7 +45,7 @@ public class PlantControllingAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f, 240f, 195f));
 
-        baseDamage = 3;
+        baseDamage = 5;
     }
 
     @Override

@@ -6,6 +6,8 @@ import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.VirtualPersonaComponent;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
@@ -49,6 +51,53 @@ public class PlacateAbility extends SelectableAbility {
                 "ability.lotmcraft.placate.check_cue",
                 "ability.lotmcraft.placate.remove_cue"
         };
+    }
+
+    @Override
+    public void nextAbility(LivingEntity entity){
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+
+        selectedAbility++;
+        if(selectedAbility >= getAbilityNames().length) {
+            selectedAbility = 0;
+        }
+
+        if((!BeyonderData.getPathway(entity).equals("visionary") && selectedAbility >= 2)){
+            selectedAbility = 0;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    @Override
+    public void previousAbility(LivingEntity entity){
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        selectedAbility--;
+        if(selectedAbility <= -1) {
+            selectedAbility = getAbilityNames().length - 1;
+        }
+
+        if((!BeyonderData.getPathway(entity).equals("visionary") && selectedAbility >= 2)){
+            selectedAbility = 0;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
 
     @Override

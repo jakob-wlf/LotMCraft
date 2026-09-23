@@ -2,6 +2,7 @@ package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpMenu;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
@@ -78,6 +79,11 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<MassPuppeteeringMenu>> MASS_PUPPETEERING_MENU =
             MENU_TYPES.register("mass_puppeteering_menu", () ->
                     IMenuTypeExtension.create(MassPuppeteeringMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CopiedAbilityWheelMenu>> COPIED_ABILITY_WHEEL_MENU = MENU_TYPES.register(
+            "copied_ability_wheel_menu",
+            () -> new MenuType<>(CopiedAbilityWheelMenu::new, net.minecraft.world.flag.FeatureFlags.DEFAULT_FLAGS)
+    );
 
     public static final DeferredHolder<MenuType<?>, MenuType<ArtifactWheelMenu>> ARTIFACT_WHEEL_MENU = MENU_TYPES.register(
             "artifact_wheel_menu",

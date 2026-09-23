@@ -42,7 +42,7 @@ public class FlaringSunAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 800f, 780f));
 
-        baseDamage = 2f;
+        baseDamage = 4f;
     }
 
     @Override

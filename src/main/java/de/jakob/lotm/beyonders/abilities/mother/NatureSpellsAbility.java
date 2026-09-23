@@ -42,7 +42,7 @@ public class NatureSpellsAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f));
 
-        baseDamage = 3;
+        baseDamage = 4;
     }
 
     @Override

@@ -37,7 +37,7 @@ public class LightOfHolinessAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 1100f, 630f, 550f, 475f));
 
-        baseDamage = 5f;
+        baseDamage = 7f;
     }
 
     @Override

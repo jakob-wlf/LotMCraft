@@ -28,7 +28,7 @@ public class Seq0 {
         var component = player.getData(ModAttachments.RITUALS.get());
         if (component.isCompleted()) return;
 
-        var target = AbilityUtil.getTargetEntity(player, 10, 0.1f, true);
+        var target = AbilityUtil.getTargetEntity(player, 10, 1f, true);
         if(!(target instanceof ServerPlayer targetPlayer)) return;
 
         if(BeyonderData.getSequence(targetPlayer) != 0) return;

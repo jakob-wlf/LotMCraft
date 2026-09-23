@@ -64,7 +64,7 @@ public class NightmareAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(3000f, 2400f, 1900f, 900f, 600f, 400f, 250f, 100f));
 
-        baseDamage = 8;
+        baseDamage = 10;
     }
 
     @Override
