@@ -531,7 +531,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
         HistoricalVoidComponent data = serverPlayer.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
 
-        if (getHistoricalBorrowingCount(serverPlayer) != 0) {
+        if (getHistoricalBorrowingCount(serverPlayer) > 0) {
             if (timer.getOrDefault(player.getUUID(), 0) == 0) {
                 data.historicalBorrowingCount = Math.max(0, data.historicalBorrowingCount - 1);
             }
@@ -540,6 +540,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             if (timer.get(player.getUUID()) > 30 * 60) {
                 timer.put(player.getUUID(),0);
             }
+        } else {
+            timer.remove(player.getUUID());
         }
 
         for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {

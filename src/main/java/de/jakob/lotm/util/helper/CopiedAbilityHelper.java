@@ -42,7 +42,6 @@ public class CopiedAbilityHelper {
     }
 
     public static void openCopiedAbilityWheel(ServerPlayer player) {
-        System.out.println("[SERVER] Opening wheel for: " + player.getName().getString());
         syncToClient(player);
         player.openMenu(new SimpleMenuProvider(
                 (id, inventory, p) -> new CopiedAbilityWheelMenu(id, inventory),
@@ -115,11 +114,6 @@ public class CopiedAbilityHelper {
     public static void syncToClient(ServerPlayer player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         List<CopiedAbilityComponent.CopiedAbilityData> abilities = component.getAbilities();
-
-        System.out.println("[SERVER] Syncing " + abilities.size() + " abilities to client: " + player.getName().getString());
-        for (CopiedAbilityComponent.CopiedAbilityData data : abilities) {
-            System.out.println("  - Ability ID: " + data.abilityId() + ", Uses: " + data.remainingUses());
-        }
 
         ArrayList<String> abilityIds = new ArrayList<>();
         ArrayList<String> copyTypes = new ArrayList<>();

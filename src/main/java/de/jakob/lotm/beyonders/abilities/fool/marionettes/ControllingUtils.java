@@ -239,7 +239,9 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDimensionChange(EntityTravelToDimensionEvent event) {
         if (!(event.getEntity() instanceof Player player) || !isControlling(player)) return;
-        if (event.getDimension().equals(Level.OVERWORLD) || event.getDimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY)) return;
+        if (event.getDimension().equals(Level.OVERWORLD) ||
+                event.getDimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY) ||
+                event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
         event.setCanceled(true);
     }
 
@@ -271,7 +273,9 @@ public class ControllingUtils {
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(BeyonderData.getSequence(player)) * 4) {
+        int maxDistance = getManipulationDistance(BeyonderData.getSequence(player));
+        if (maxDistance < 0) return;
+        if(player.distanceTo(component.bodyDouble) > maxDistance * 5) {
             cancel(player, 0, true, false);
         }
     }
@@ -282,8 +286,7 @@ public class ControllingUtils {
             case 4 -> 75;
             case 3 -> 200;
             case 2 -> 500;
-            case 1 -> 2000;
-            case 0 -> 5000;
+            case 1, 0 -> -1;
         };
     }
 }

@@ -47,7 +47,6 @@ public class HistoricalVoidComponent implements INBTSerializable<CompoundTag> {
     }
 
     public void resetBorrowing() {
-        this.historicalBorrowingCount = 0;
         this.activeSummonTimes.clear();
     }
 
