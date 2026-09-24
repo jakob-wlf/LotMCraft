@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.justiciar.ImprisonAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -75,12 +77,12 @@ public class DoorSubstitutionAbility extends Ability {
             2f
     );
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void takeDamage(LivingDamageEvent.Pre event) {
-        if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
-            return;
+        if (ImprisonAbility.IMPRISONED.contains(event.getEntity().getUUID())) return;
+        if (!figurineNumbers.containsKey(event.getEntity().getUUID())) return;
 
-        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+        if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
 
@@ -89,8 +91,11 @@ public class DoorSubstitutionAbility extends Ability {
 
         int num = figurineNumbers.get(event.getEntity().getUUID());
 
-        if(num <= 0)
-            return;
+        if (num <= 0) return;
+
+        // skip damage canceling if the damage was lower than 10% of the player's max health, or if the attack was not fatal
+        if (!(event.getNewDamage() / entity.getMaxHealth() >= 0.1)
+                && !(entity.getHealth() - event.getOriginalDamage() <= 0)) return;
 
         figurineNumbers.put(event.getEntity().getUUID(), num - 1);
         event.setNewDamage(0);

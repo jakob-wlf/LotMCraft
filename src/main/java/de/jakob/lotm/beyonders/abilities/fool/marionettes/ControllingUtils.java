@@ -273,8 +273,19 @@ public class ControllingUtils {
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        if(player.distanceToSqr(component.bodyDouble) > 10000) { // 100 blocks
+        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(BeyonderData.getSequence(player)) * 5) {
             cancel(player, 0, true, false);
         }
+    }
+
+    private static int getManipulationDistance(int sequence) {
+        return switch (sequence) {
+            default -> 7;
+            case 4 -> 75;
+            case 3 -> 200;
+            case 2 -> 500;
+            case 1 -> 2000;
+            case 0 -> 5000;
+        };
     }
 }
