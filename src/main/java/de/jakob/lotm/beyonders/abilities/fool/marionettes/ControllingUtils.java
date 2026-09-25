@@ -6,6 +6,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.network.PacketHandler;
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
@@ -57,8 +59,9 @@ public class ControllingUtils {
         ServerLevel level = player.serverLevel();
 
         component.captureAttributesFrom(player);
-
+        System.out.println("very first call");
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
+        System.out.println("this after");
         BeyonderDataTickHandler.invalidateCache(player);
 
         ControlBodyDouble controlBodyDouble = ControlBodyDouble.create(level, player, !spawnOriginalBody);
@@ -97,6 +100,7 @@ public class ControllingUtils {
     }
 
     public static void copyAttributesAndHealthFrom(LivingEntity source, LivingEntity target) {
+        System.out.println("ayyributes");
         for (Holder<Attribute> attributeHolder : BuiltInRegistries.ATTRIBUTE.asHolderIdMap()) {
 
             if (attributeHolder.is(Attributes.MOVEMENT_SPEED)) {
@@ -119,10 +123,11 @@ public class ControllingUtils {
                 }
             }
         }
-
+        System.out.println("health");
         float maxHealth = target.getMaxHealth();
         float sourceHealth = source.getHealth();
         target.setHealth(Math.min(sourceHealth, maxHealth));
+        System.out.println("health done");
     }
 
     public static PathwayData currentlyControlling(Player player) {
@@ -241,6 +246,15 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDimensionChange(EntityTravelToDimensionEvent event) {
         if (!(event.getEntity() instanceof Player player) || !isControlling(player)) return;
+        // let seq1/seq2 players control puppets that change dimensions to vanilla/unconcealed dimensions
+        if (getManipulationDistance(BeyonderData.getSequence(player)) < 0) {
+            if (event.getDimension().equals(Level.NETHER) ||
+                    event.getDimension().equals(Level.END) ||
+                    event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
+        }
+        // let puppets enter and leave the historical void/overworld
+        if (event.getDimension().equals(Level.OVERWORLD) ||
+                event.getDimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY)) return;
         event.setCanceled(true);
     }
 

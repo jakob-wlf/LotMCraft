@@ -80,7 +80,11 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide()) return;
 
-        recalculateEnhancements(entity);
+        Integer cached = lastKnownSequence.get(entity.getUUID());
+        if (cached == null || cached != getCurrentSequenceLevel(entity)) {
+            lastKnownSequence.put(entity.getUUID(), getCurrentSequenceLevel(entity));
+            recalculateEnhancements(entity);
+        }
 
         UUID uuid = entity.getUUID();
         Map<EnhancementType, Integer> enhancements = entityEnhancements.get(uuid);
@@ -101,35 +105,33 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
     }
 
     private void recalculateEnhancements(LivingEntity entity) {
+        System.out.println("e called");
         int sequenceLevel = getCurrentSequenceLevel(entity);
 
-        Integer cached = lastKnownSequence.get(entity.getUUID());
-        if (cached != null && cached == sequenceLevel) {
-            return;
-        }
-        lastKnownSequence.put(entity.getUUID(), sequenceLevel);
-
         List<PhysicalEnhancement> currentEnhancements = getEnhancementsForSequence(sequenceLevel, entity);
+        System.out.println("current 1 = " + currentEnhancements);
 
-        if (entity instanceof ServerPlayer player) {
-            var dataOp = BeyonderData.playerMap.get(entity);
+        var dataOp = BeyonderData.playerMap.get(entity);
 
-            if (dataOp.isPresent()) {
-                var data = dataOp.get();
+        if (dataOp.isPresent()) {
+            System.out.println("e called 2");
+            var data = dataOp.get();
 
-                if (Arrays.stream(data.charStack()).anyMatch(i -> i > 0) && !ControllingUtils.isControlling(player)) {
+            if (Arrays.stream(data.charStack()).anyMatch(i -> i > 0)) {
+                System.out.println("e called 3");
 
-                    if (sequenceLevel < 9) {
-                        currentEnhancements = currentEnhancements.stream()
-                                .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
-                                        new PhysicalEnhancement(EnhancementType.HEALTH,
-                                                recalculateHealthLevelWithStacks(sequenceLevel, obj.level, data.charStack()))
-                                        : obj)
-                                .toList();
-                    }
+                if (sequenceLevel < 9) {
+                    System.out.println("e called 4");
+                    currentEnhancements = currentEnhancements.stream()
+                            .map(obj -> obj.type.equals(EnhancementType.HEALTH) ?
+                                    new PhysicalEnhancement(EnhancementType.HEALTH,
+                                            recalculateHealthLevelWithStacks(sequenceLevel, obj.level, data.charStack()))
+                                    : obj)
+                            .toList();
                 }
             }
         }
+        System.out.println("current 2 = " + currentEnhancements);
 
         Map<EnhancementType, Integer> previousEnhancements = entityEnhancements.getOrDefault(entity.getUUID(), Collections.emptyMap());
 
@@ -415,12 +417,15 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
 
     public static void removeAllEnhancementsForEntity(LivingEntity entity) {
         for(PassiveAbility passiveAbility : PassiveAbilityHandler.passiveAbilities) {
-            if(passiveAbility instanceof PhysicalEnhancementsAbility physicalEnhancementsAbility)
+            if(passiveAbility instanceof PhysicalEnhancementsAbility physicalEnhancementsAbility){
+                System.out.println("enhance : " + physicalEnhancementsAbility);
                 physicalEnhancementsAbility.removeAllEnhancements(entity);
+            }
         }
     }
 
     private void removeAllEnhancements(LivingEntity entity) {
+        System.out.println("e1");
         Map<EnhancementType, Integer> enhancements = entityEnhancements.get(entity.getUUID());
         if (enhancements != null) {
             for (Map.Entry<EnhancementType, Integer> entry : enhancements.entrySet()) {
@@ -446,7 +451,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
         temporaryEnhancements.remove(entity.getUUID());
         enhancementBoosts.remove(entity.getUUID());
         reducedRegen.remove(entity.getUUID());
-        lastKnownSequence.remove(entity.getUUID());
+        recalculateEnhancements(entity);
     }
 
     private void applyEnhancement(LivingEntity entity, PhysicalEnhancement enhancement) {

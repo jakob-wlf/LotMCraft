@@ -1074,6 +1074,14 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         return getMaxSummonedForSequence(BeyonderData.getSequence(serverPlayer));
     }
 
+    public static int getSummonValue(int sequence){
+        return switch (sequence){
+            case 1 -> 3;
+            case 2 -> 2;
+            default -> 1;
+        };
+    }
+
     public static int getMaxSummonedForSequence(int sequence){
         return switch (sequence){
             case 0 -> 100;
