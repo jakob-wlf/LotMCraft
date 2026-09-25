@@ -1,8 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.addons.rituals.fool.Seq0;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.LocationGraftingEntity;
@@ -122,16 +120,16 @@ public class GraftingAbility extends SelectableAbility {
         LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 30, 2);
         LivingEntity graftingStartEntity = graftingTargetsEntities.get(entity.getUUID());
 
-        if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
-            if ((BeyonderData.getPathway(targetPlayer).equals("wheel_of_fortune") ||
-                    BeyonderData.getPathway(targetPlayer).equals("error")) &&
-                    BeyonderData.getSequence(targetPlayer) <= 0){
-                if(BeyonderData.getPathway(player).equals("fool")
-                        && BeyonderData.getSequence(player) == 1){
-                    Seq0.affected.add(player.getUUID());
-                }
-            }
-        }
+//        if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
+//            if ((BeyonderData.getPathway(targetPlayer).equals("wheel_of_fortune") ||
+//                    BeyonderData.getPathway(targetPlayer).equals("error")) &&
+//                    BeyonderData.getSequence(targetPlayer) <= 0){
+//                if(BeyonderData.getPathway(player).equals("fool")
+//                        && BeyonderData.getSequence(player) == 1){
+//                    Seq0.affected.add(player.getUUID());
+//                }
+//            }
+//        }
 
         if(graftingStartEntity == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.grafting.failed", targetEntity.getName().getString()).withColor(color));
@@ -222,16 +220,16 @@ public class GraftingAbility extends SelectableAbility {
             //targetEntity = entity;
         }
 
-        if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
-            if ((BeyonderData.getPathway(targetPlayer).equals("wheel_of_fortune") ||
-                    BeyonderData.getPathway(targetPlayer).equals("error")) &&
-                    BeyonderData.getSequence(targetPlayer) <= 0){
-                if(BeyonderData.getPathway(player).equals("fool")
-                        && BeyonderData.getSequence(player) == 1){
-                    Seq0.affected.add(player.getUUID());
-                }
-            }
-        }
+//        if(targetEntity instanceof ServerPlayer targetPlayer && entity instanceof ServerPlayer player) {
+//            if ((BeyonderData.getPathway(targetPlayer).equals("wheel_of_fortune") ||
+//                    BeyonderData.getPathway(targetPlayer).equals("error")) &&
+//                    BeyonderData.getSequence(targetPlayer) <= 0){
+//                if(BeyonderData.getPathway(player).equals("fool")
+//                        && BeyonderData.getSequence(player) == 1){
+//                    Seq0.affected.add(player.getUUID());
+//                }
+//            }
+//        }
 
         UUID targetUUID = targetEntity.getUUID();
         int color = BeyonderData.pathwayInfos.get("fool").color();

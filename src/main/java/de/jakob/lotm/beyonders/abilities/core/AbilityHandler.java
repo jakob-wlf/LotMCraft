@@ -365,13 +365,6 @@ public class AbilityHandler {
                 .toList();
     }
 
-    public List<String> getRegisteredAbilityIds() {
-        return abilities.stream()
-                .map(Ability::getId)
-                .sorted()
-                .toList();
-    }
-
     public HashSet<Ability> getAbilities() {
         return new HashSet<>(abilities);
     }

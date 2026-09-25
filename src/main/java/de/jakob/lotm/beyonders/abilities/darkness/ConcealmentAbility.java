@@ -2,8 +2,6 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.addons.rituals.door.Seq0;
-import de.jakob.lotm.addons.rituals.door.Seq1;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -324,13 +322,13 @@ public class ConcealmentAbility extends SelectableAbility {
                         return;
                 }
 
-                if(targetEntity instanceof ServerPlayer playerTarget){
-                    if(BeyonderData.getPathway(playerTarget).equals("door") && BeyonderData.getSequence(playerTarget) == 1){
-                        if(isDarkness0){
-                            Seq0.affected.add(playerTarget.getUUID());
-                        }
-                    }
-                }
+//                if(targetEntity instanceof ServerPlayer playerTarget){
+//                    if(BeyonderData.getPathway(playerTarget).equals("door") && BeyonderData.getSequence(playerTarget) == 1){
+//                        if(isDarkness0){
+//                            Seq0.affected.add(playerTarget.getUUID());
+//                        }
+//                    }
+//                }
 
                 int returnTime = AbilityUtil.isTargetSignificantlyWeaker(entitySeq, BeyonderData.getSequence(teleportedEntity)) ? 20 * 60 * 2 :
                         BeyonderData.getSequence(teleportedEntity) < entitySeq ? 20 * 5 : 20 * 25;

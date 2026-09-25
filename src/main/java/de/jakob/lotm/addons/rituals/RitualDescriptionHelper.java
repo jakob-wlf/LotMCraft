@@ -1,7 +1,5 @@
 package de.jakob.lotm.addons.rituals;
 
-import de.jakob.lotm.addons.rituals.red_priest.Seq4;
-import de.jakob.lotm.addons.rituals.tyrant.Seq3;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,8 +31,8 @@ public class RitualDescriptionHelper {
         Map<Integer, String> tyrant = new HashMap<>();
         tyrant.put(5, "Find an ancient ocean guardian while having the heart of the ocean");
         tyrant.put(4, "Drink potion while facing natural disaster in a near death experience");
-        tyrant.put(3, "Declare ocean as your domain, then kill a very significant amount of lives in it (if you kill a player - it will have greater effect). To declare - type this in chat:\n"+
-                Seq3.message);
+//        tyrant.put(3, "Declare ocean as your domain, then kill a very significant amount of lives in it (if you kill a player - it will have greater effect). To declare - type this in chat:\n"+
+//                Seq3.message);
         tyrant.put(2, "Make your faction win a war, but your faction must not be an aggressor");
         tyrant.put(1, "Kill 3 angel players. Alternatively: kill 1 True Deity or 2 King of Angles");
         tyrant.put(0, "Become leader of level 3 faction and survive direct attack of True Deity");
@@ -52,7 +50,7 @@ public class RitualDescriptionHelper {
 
         Map<Integer, String> red_priest = new HashMap<>();
         red_priest.put(5, "Capture weakened beyonder whose sequence is higher than yours");
-        red_priest.put(4, "Help at least " + Seq4.MIN_ALLY_AMOUNT + " allies progress to your sequence");
+//        red_priest.put(4, "Help at least " + Seq4.MIN_ALLY_AMOUNT + " allies progress to your sequence");
         red_priest.put(3, "Win a faction war");
         red_priest.put(2, "Forcefully provoke angelic materials to change the weather of a region without external aid");
         red_priest.put(1, "Win a war against far superior enemy nation");
@@ -80,8 +78,8 @@ public class RitualDescriptionHelper {
 
         Map<Integer, String> error = new HashMap<>();
         error.put(5, "Examine dreams of many players");
-        error.put(4, "Convince " + de.jakob.lotm.addons.rituals.error.Seq4.AMOUNT
-                + " targets to willingly sacrifice themselves and offer all they possess to sustain you");
+//        error.put(4, "Convince " + de.jakob.lotm.addons.rituals.error.Seq4.AMOUNT
+//                + " targets to willingly sacrifice themselves and offer all they possess to sustain you");
         error.put(3, "Without violence, find and exploit loopholes in faction rules");
         error.put(2, "Replace high-tier target in it's own social circle");
         error.put(1, "Plunge a faction into temporal disorder");

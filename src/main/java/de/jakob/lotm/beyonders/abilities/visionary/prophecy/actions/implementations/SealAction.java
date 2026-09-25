@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.implementations;
 
-import de.jakob.lotm.addons.rituals.wheel_of_fortune.Seq1;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
@@ -35,11 +34,11 @@ public class SealAction extends ActionBase {
         DisabledAbilitiesComponent comp = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
         comp.disableAbilityUsage("sealed_visionary");
 
-        Seq1.disabled.add(entity.getUUID());
+//        Seq1.disabled.add(entity.getUUID());
 
         ServerScheduler.scheduleDelayed(20 * 7, ()->{
             comp.enableAbilityUsage("sealed_visionary");
-            Seq1.disabled.remove(entity.getUUID());
+//            Seq1.disabled.remove(entity.getUUID());
         });
     }
 

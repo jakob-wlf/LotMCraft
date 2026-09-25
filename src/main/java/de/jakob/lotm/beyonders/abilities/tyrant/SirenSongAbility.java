@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
-import de.jakob.lotm.addons.rituals.fool.Seq5;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -120,26 +119,26 @@ public class SirenSongAbility extends SelectableAbility {
             loc.setPosition(entity.position());
             loc.setLevel(entity.level());
 
-            if(entity instanceof ServerPlayer playerEntity) {
-                var nearby = AbilityUtil.getNearbyEntities(playerEntity, (ServerLevel) playerEntity.level(), playerEntity.position(), 20);
-
-                for (var obj : nearby) {
-                    if(!(obj instanceof ServerPlayer target)) continue;
-
-                    if(BeyonderData.getSequence(target) == 6 && BeyonderData.getPathway(target).equals("fool")){
-                        Seq5.affected.add(target.getUUID());
-                        buff.add(target.getUUID());
-                    }
-                }
-            }
+//            if(entity instanceof ServerPlayer playerEntity) {
+//                var nearby = AbilityUtil.getNearbyEntities(playerEntity, (ServerLevel) playerEntity.level(), playerEntity.position(), 20);
+//
+//                for (var obj : nearby) {
+//                    if(!(obj instanceof ServerPlayer target)) continue;
+//
+//                    if(BeyonderData.getSequence(target) == 6 && BeyonderData.getPathway(target).equals("fool")){
+//                        Seq5.affected.add(target.getUUID());
+//                        buff.add(target.getUUID());
+//                    }
+//                }
+//            }
 
         }, level);
         ServerScheduler.scheduleDelayed(20 * 20, () -> {
             BeyonderData.removeModifier(entity, "buff_song");
-
-            for(var obj : buff){
-                Seq5.affected.remove(obj);
-            }
+//
+//            for(var obj : buff){
+//                Seq5.affected.remove(obj);
+//            }
         });
     }
 

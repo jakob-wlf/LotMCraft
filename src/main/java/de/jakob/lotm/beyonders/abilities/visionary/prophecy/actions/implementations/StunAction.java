@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.implementations;
 
-import de.jakob.lotm.addons.rituals.wheel_of_fortune.Seq1;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
@@ -34,14 +33,14 @@ public class StunAction extends ActionBase {
     public void action(Level level, LivingEntity entity, UUID casterId) {
         if (level.isClientSide) return;
 
-        Seq1.stunned.add(entity.getUUID());
+        //Seq1.stunned.add(entity.getUUID());
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 7, () -> {
             var pos = entity.position();
             entity.teleportTo(pos.x, pos.y, pos.z);
             entity.setDeltaMovement(new Vec3(0, 0, 0));
             entity.hurtMarked = true;
-        }, () -> {Seq1.stunned.remove(entity.getUUID());}, (ServerLevel) level);
+        });
     }
 
     public static StunAction load(CompoundTag tag, HolderLookup.Provider provider) {

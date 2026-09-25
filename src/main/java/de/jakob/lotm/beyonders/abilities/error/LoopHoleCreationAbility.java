@@ -2,7 +2,6 @@ package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.addons.factions.FactionCore;
-import de.jakob.lotm.addons.rituals.error.Seq1;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
@@ -144,45 +143,45 @@ public class LoopHoleCreationAbility extends Ability {
         }
 
         var ownerEntity = loopholeData.level.getEntity(loopholeData.creatorId);
-        if (ownerEntity instanceof ServerPlayer owner) {
-            if (!BeyonderData.getPathway(owner).equals("error") || BeyonderData.getSequence(owner) != 2) return;
-            var set = Seq1.map.get(ownerEntity.getUUID());
-            var factions = BeyonderData.factionStorage.getPartOfFaction(owner.getName().getString());
-
-            FactionCore nation = null;
-            FactionCore church = null;
-
-            switch (factions.size()) {
-                case 1 -> {
-                    nation = factions.getFirst();
-                }
-                case 2 -> {
-                    nation = factions.getFirst();
-                    church = factions.getLast();
-                }
-            }
-
-            boolean allGood = true;
-            for (var entity : entitiesInRange) {
-                if (entity instanceof ServerPlayer player) {
-                    if(BeyonderData.getSequence(player) > 4) continue;
-
-                    if (nation != null && nation.isPartOfFaction(player.getName().getString()))
-                        allGood = false;
-                    else if(church != null && church.isPartOfFaction(player.getName().getString()))
-                        allGood = false;
-
-                    if(allGood){
-                        allGood = !AllyUtil.areAllies(player, owner);
-                    }
-
-                    if(allGood)
-                        set.add(player.getUUID());
-                }
-            }
-
-            Seq1.map.put(owner.getUUID(), set);
-        }
+//        if (ownerEntity instanceof ServerPlayer owner) {
+//            if (!BeyonderData.getPathway(owner).equals("error") || BeyonderData.getSequence(owner) != 2) return;
+//            var set = Seq1.map.get(ownerEntity.getUUID());
+//            var factions = BeyonderData.factionStorage.getPartOfFaction(owner.getName().getString());
+//
+//            FactionCore nation = null;
+//            FactionCore church = null;
+//
+//            switch (factions.size()) {
+//                case 1 -> {
+//                    nation = factions.getFirst();
+//                }
+//                case 2 -> {
+//                    nation = factions.getFirst();
+//                    church = factions.getLast();
+//                }
+//            }
+//
+//            boolean allGood = true;
+//            for (var entity : entitiesInRange) {
+//                if (entity instanceof ServerPlayer player) {
+//                    if(BeyonderData.getSequence(player) > 4) continue;
+//
+//                    if (nation != null && nation.isPartOfFaction(player.getName().getString()))
+//                        allGood = false;
+//                    else if(church != null && church.isPartOfFaction(player.getName().getString()))
+//                        allGood = false;
+//
+//                    if(allGood){
+//                        allGood = !AllyUtil.areAllies(player, owner);
+//                    }
+//
+//                    if(allGood)
+//                        set.add(player.getUUID());
+//                }
+//            }
+//
+//            Seq1.map.put(owner.getUUID(), set);
+//        }
     }
 
     private static void removeLoophole(UUID loopholeId) {
