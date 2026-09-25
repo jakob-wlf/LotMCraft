@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedInventoryComponent;
 import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
@@ -601,6 +602,14 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             boolean isPlayer = entityTypeId.equals("minecraft:player");
 
             if(entityData.getBoolean("IsBeyonderNPC") || isPlayer) {
+                if (isPlayer && player != null && player.getServer() != null) {
+                    ServerPlayer targetPlayer = player.getServer().getPlayerList().getPlayerByName(entityData.getString("CustomName"));
+
+                    if (targetPlayer != null) {
+                        MetaAwarenessAbility.sendWithMessage(player, targetPlayer, "Someone summoned your historical projection");
+                    }
+                }
+
                 CompoundTag entityNBT = entityData.getCompound("EntityNBT");
                 CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
 

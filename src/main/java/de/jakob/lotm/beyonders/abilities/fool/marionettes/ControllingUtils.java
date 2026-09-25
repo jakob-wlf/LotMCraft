@@ -239,9 +239,13 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDimensionChange(EntityTravelToDimensionEvent event) {
         if (!(event.getEntity() instanceof Player player) || !isControlling(player)) return;
+        if (getManipulationDistance(BeyonderData.getSequence(player)) < 0 && BeyonderData.getPathway(player).equals("fool")) {
+            if (event.getDimension().equals(Level.NETHER) ||
+                    event.getDimension().equals(Level.END) ||
+                    event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
+        }
         if (event.getDimension().equals(Level.OVERWORLD) ||
-                event.getDimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY) ||
-                event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
+                event.getDimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY)) return;
         event.setCanceled(true);
     }
 

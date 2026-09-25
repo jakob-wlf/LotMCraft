@@ -44,7 +44,7 @@ public class RitualDescriptionHelper {
         sun.put(5, "Drink the potion in pure darkness and buried in packed ice");
         sun.put(4, "Drink the potion in a very unstable mental state");
         sun.put(3, "Kill at least 3 demigods from darker and evil pathways while following your justice");
-        sun.put(2, "Find an item with at least an Angel-rank authority and a deep connection to the Sun in mysticism");
+        sun.put(2, "Find an item with at least an Angel-rank authority or a deep connection to the Sun in mysticism");
         sun.put(1, "Hear a lot of prayers and become worshipped");
         sun.put(0, "Immerse into deep void while enveiled with true darkness that symbolizes the destination of all things.\n" +
                 "Note: you must be almost dead both physically and mentally");

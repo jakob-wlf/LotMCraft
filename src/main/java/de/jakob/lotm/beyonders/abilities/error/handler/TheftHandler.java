@@ -530,6 +530,31 @@ public class TheftHandler {
         BeyonderData.digest((ServerPlayer) entity, digestionToSteal * entityDigestionMultiplier,false);
     }
 
+    public static void performSpiritualityTheft(LivingEntity entity, LivingEntity target, Random random, Ability skill){
+        if (!BeyonderData.isBeyonder(target)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.not_beyonder").withColor(0x6d32a8));
+            return;
+        }
+
+        if (doesTheftFail(entity, target, random, skill) || !(target instanceof ServerPlayer)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.conceptual_theft.failed.spirituality").withColor(0x6d32a8));
+            return;
+        }
+
+        float targetSpirituality = BeyonderData.getMaxSpirituality((ServerPlayer) target);
+
+        float seqMultiplier = getSeqDifferenceMultiplier(AbilityUtil.getSeqWithArt(entity, skill), BeyonderData.getSequence(target));
+
+        float spiritualityToSteal = targetSpirituality * seqMultiplier * 2;
+
+        if(targetSpirituality - spiritualityToSteal < 0f){
+            spiritualityToSteal = spiritualityToSteal + (targetSpirituality - spiritualityToSteal);
+        }
+
+        BeyonderData.reduceSpirituality(target, spiritualityToSteal);
+        BeyonderData.incrementSpirituality(entity, spiritualityToSteal);
+    }
+
     public static void performLuckTheft(LivingEntity entity, LivingEntity target, Random random, Ability skill){
         if (!BeyonderData.isBeyonder(target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.not_beyonder").withColor(0x6d32a8));

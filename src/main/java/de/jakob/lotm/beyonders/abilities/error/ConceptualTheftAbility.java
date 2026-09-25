@@ -35,7 +35,6 @@ public class ConceptualTheftAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(5, 8));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(12000f, 7500f));
     }
 
     @Override
@@ -45,7 +44,7 @@ public class ConceptualTheftAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 10000;
+        return 0;
     }
 
     @Override
@@ -54,8 +53,9 @@ public class ConceptualTheftAbility extends SelectableAbility {
                 "ability.lotmcraft.conceptual_theft.day_night",
                 "ability.lotmcraft.conceptual_theft.area",
                 "ability.lotmcraft.conceptual_theft.digestion",
-                "ability.lotmcraft.conceptual_theft.sanity",
-                "ability.lotmcraft.conceptual_theft.luck"
+                "ability.lotmcraft.conceptual_theft.spirituality",
+                "ability.lotmcraft.conceptual_theft.sanity"
+                //"ability.lotmcraft.conceptual_theft.luck"
         };
     }
 
@@ -65,11 +65,23 @@ public class ConceptualTheftAbility extends SelectableAbility {
             return;
         }
 
+        int spiritualityCost;
+        switch (BeyonderData.getSequence(entity)) {
+            case 0 -> spiritualityCost = 12000;
+            default -> spiritualityCost = 7500;
+        }
+
+        if(abilityIndex == 0 || abilityIndex == 1 || abilityIndex == 2 || abilityIndex == 4) {
+            if(BeyonderData.getSpirituality(entity) < spiritualityCost) return;
+            BeyonderData.reduceSpirituality(entity, spiritualityCost);
+        }
+
         switch (abilityIndex) {
             case 0 -> stealDayNight(serverLevel, entity);
             case 1 -> stealArea(serverLevel, entity);
             case 2 -> stealDigestion(level, entity);
-            case 3 -> stealSanity(level, entity);
+            case 3 -> stealSpirituality(level, entity);
+            case 4 -> stealSanity(level, entity);
         }
     }
 
@@ -122,6 +134,23 @@ public class ConceptualTheftAbility extends SelectableAbility {
         }
 
         TheftHandler.performDigestionTheft(entity, target, random, this);
+    }
+
+    private void stealSpirituality(Level level, LivingEntity entity){
+        if(!(level instanceof ServerLevel serverLevel)) {
+            if(entity instanceof Player player) {
+                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
+            }
+            return;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 1.5f);
+        if(target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.conceptual_theft.no_target").withColor(0x4742c9));
+            return;
+        }
+
+        TheftHandler.performSpiritualityTheft(entity, target, random, this);
     }
 
     private void stealDayNight(ServerLevel serverLevel, LivingEntity entity) {

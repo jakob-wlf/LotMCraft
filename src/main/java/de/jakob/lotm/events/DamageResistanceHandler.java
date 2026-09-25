@@ -53,11 +53,11 @@ public class DamageResistanceHandler {
                 if (entitySeq >= 5 && sourceSeq >= 5)
                     baseStep = 0.1f;
                 else if (entitySeq >= 3 && sourceSeq >= 3)
-                    baseStep = 0.6f;
+                    baseStep = 0.4f;
                 else if(entitySeq >= 1 && sourceSeq >= 1)
-                    baseStep = 0.7f;
+                    baseStep = 0.5f;
                 else
-                    baseStep = 0.9f;
+                    baseStep = 0.8f;
 
 
                 if(CullAbility.active.contains(livingSource.getUUID()) && sourceSeq > entitySeq){

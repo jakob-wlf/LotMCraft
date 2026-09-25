@@ -25,7 +25,7 @@ import java.util.UUID;
 )
 public class Seq2 {
     private static Map<UUID, Integer> timer = new HashMap<>();
-    private static final int TIME_SEC = 20 * 60 * 10;
+    private static final int TIME_SEC = 20 * 60;
 
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event){
@@ -49,7 +49,7 @@ public class Seq2 {
                 }
             }
 
-            if(stack.getItem() instanceof SunItem sunItem){
+            if(stack.getItem() instanceof SunItem){
                 haveSun = true;
             }
         }
@@ -63,10 +63,6 @@ public class Seq2 {
             }
 
             timer.remove(player.getUUID());
-        }
-        else{
-            if(component.isCompleted())
-                RitualEffectHandlerEvent.removeRitualWithMessage(player);
         }
     }
 

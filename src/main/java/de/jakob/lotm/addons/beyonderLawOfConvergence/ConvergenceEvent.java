@@ -1,6 +1,7 @@
 package de.jakob.lotm.addons.beyonderLawOfConvergence;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -9,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -37,17 +37,15 @@ public class ConvergenceEvent {
 
         if(level.dimension() != Level.OVERWORLD) return;
 
-        if(!timer.containsKey(player.getUUID())){
-            timer.put(player.getUUID(), 0);
-        }
-
-        timer.put(player.getUUID(), timer.get(player.getUUID()) + 1);
+        var data = player.getData(ModAttachments.BEYONDER_COMPONENT);
+        int convergenceTimer = data.getConvergenceTimer();
+        data.setConvergenceTimer(convergenceTimer + 1);
 
         int seq = BeyonderData.getSequence(player);
 
         int spawnTime = 20 * getTime(seq);
 
-        if(timer.get(player.getUUID()) < spawnTime) {
+        if(convergenceTimer < spawnTime) {
             return;
         }
 
@@ -136,7 +134,7 @@ public class ConvergenceEvent {
         entity.setTarget(player);
         entity.setShouldIgnoreGamerule(true);
 
-        timer.remove(player.getUUID());
+        data.setConvergenceTimer(0);
     }
 
 

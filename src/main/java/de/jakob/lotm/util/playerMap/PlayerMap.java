@@ -302,7 +302,9 @@ public class PlayerMap extends SavedData {
         for (var obj : map.values()) {
             if (obj.pathway().equals(path) && obj.sequence() == seq) {
                 res++;
-                res += obj.charStack()[seq];
+                if (obj.sequence() == 1 || obj.sequence() == 0) {
+                    res += obj.charStack()[seq];
+                }
             }
         }
         return res;

@@ -6,16 +6,24 @@ import de.jakob.lotm.events.HonorificNamesEventHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.PendingPrayer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.Filterable;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.WritableBookContent;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -111,11 +119,11 @@ public class MetaAwarenessAbility extends PassiveAbility {
         triggerAutoPrayer(diviner, target, message);
     }
 
-   private static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
+    private static void triggerAutoPrayer(ServerPlayer sender, ServerPlayer target, String msg) {
         // Cooldown check on the target (prevent spam if their name is said repeatedly)
 
-       if(BeyonderData.getPathway(sender).equals("visionary") && BeyonderData.getSequence(sender) < BeyonderData.getSequence(target))
-           return;
+        if(BeyonderData.getPathway(sender).equals("visionary") && BeyonderData.getSequence(sender) < BeyonderData.getSequence(target))
+            return;
 
         long now = System.currentTimeMillis();
         Long lastTrigger = COOLDOWNS.get(target.getUUID());
@@ -154,5 +162,85 @@ public class MetaAwarenessAbility extends PassiveAbility {
         var data = dataOp.get();
 
         return data.sequence() <= 1 && data.pathway().equals("visionary");
+    }
+
+    public static void checkTextAndTriggerPrayer(ServerPlayer reader, String text, ServerLevel serverLevel) {
+        if (text == null || text.isBlank()) return;
+
+        for (ServerPlayer candidate : serverLevel.getServer().getPlayerList().getPlayers()) {
+            if (candidate.getUUID().equals(reader.getUUID())) continue;
+
+            // Check if this player has the MetaAwareness passive
+            if (!hasMetaAwareness(candidate)) continue;
+
+            String username = candidate.getName().getString();
+            boolean match = false;
+
+            for (int i = 0; i < username.length(); i++) {
+                for (int j = i + 2; j <= username.length(); j++) {
+                    String part = username.substring(i, j);
+
+                    if (COMMON_WORDS.contains(part)) continue;
+
+                    if (text.contains(part)) {
+                        match = true;
+                        break;
+                    }
+                }
+                if (match) break;
+            }
+
+            if (!match) {
+                if (!text.toLowerCase().contains(username.toLowerCase())
+                        && !BeyonderData.playerMap.containsHonorificNameWithLine(text)) continue;
+            }
+
+            triggerAutoPrayer(reader, candidate, text);
+        }
+    }
+
+
+    @SubscribeEvent
+    public static void onBookClicked(PlayerInteractEvent.RightClickItem event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
+
+        ItemStack stack = event.getItemStack();
+
+        if (stack.is(Items.WRITTEN_BOOK)) {
+            WrittenBookContent content = stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
+            if (content != null) {
+                for (Filterable<Component> page : content.pages()) {
+                    checkTextAndTriggerPrayer(player, page.raw().getString(), serverLevel);
+                }
+            }
+        }
+        else if (stack.is(Items.WRITABLE_BOOK)) {
+            WritableBookContent content = stack.get(DataComponents.WRITABLE_BOOK_CONTENT);
+            if (content != null) {
+                for (Filterable<String> page : content.pages()) {
+                    checkTextAndTriggerPrayer(player, page.raw(), serverLevel);
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onSignClicked(PlayerInteractEvent.RightClickBlock event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
+
+        BlockEntity block = serverLevel.getBlockEntity(event.getPos());
+
+        if (block instanceof SignBlockEntity sign) {
+
+            for (Component line : sign.getFrontText().getMessages(false)) {
+                checkTextAndTriggerPrayer(player, line.getString(), serverLevel);
+            }
+
+            for (Component line : sign.getBackText().getMessages(false)) {
+                checkTextAndTriggerPrayer(player, line.getString(), serverLevel);
+            }
+        }
     }
 }
