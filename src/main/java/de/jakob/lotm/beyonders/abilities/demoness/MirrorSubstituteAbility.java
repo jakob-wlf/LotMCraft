@@ -41,10 +41,10 @@ public class MirrorSubstituteAbility extends Ability {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(6, 7, 7, 8, 8, 10, 11, 12));
+        dynamicCooldown = new LinkedList<>(List.of(1, 3, 4, 8, 8, 10, 11, 12));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(6000f, 2500f, 1500f, 800f, 780f, 500f, 400f, 390f));
+        dynamicSpirituality = new LinkedList<>(List.of(9000f, 3800f, 2000f, 800f, 780f, 500f, 400f, 390f));
     }
 
     @Override

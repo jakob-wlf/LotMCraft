@@ -44,10 +44,10 @@ public class PaperFigurineSubstituteAbility extends Ability {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(6, 7, 7, 8, 8, 9, 10, 10));
+        dynamicCooldown = new LinkedList<>(List.of(1, 3, 4, 8, 8, 9, 10, 10));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(17500f, 7000f, 3800f, 2500f, 2275f, 1660f, 1400f, 1300f));
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 12000f, 5000f, 2500f, 2275f, 1660f, 1400f, 1300f));
 
     }
 
