@@ -1,13 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
+import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
@@ -66,6 +69,7 @@ public class SpiritVisionAbility extends ToggleAbility {
         if (!level.isClientSide) {
             if (entity instanceof ServerPlayer player) {
                 PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, -1));
+                AllyUtil.syncAllyData(player);
             }
             return;
         }
@@ -94,20 +98,21 @@ public class SpiritVisionAbility extends ToggleAbility {
         }
 
         PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
+        AllyComponent allyComponent = entity.getData(ModAttachments.ALLY_COMPONENT);
 
         if (lookedAt != null) {
-            if (shouldLooseControl(entity, lookedAt)) {
-                if (!entity.hasEffect(ModEffects.LOOSING_CONTROL))
-                    entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 25, 4, false, false, false));
-
-                return;
+            if (!allyComponent.isAlly(lookedAt.getUUID())) {
+                if (shouldLooseControl(entity, lookedAt)) {
+                    VisionaryLoosingControlHandler.applyEffect(lookedAt, entity, this);
+                    return;
+                }
             }
         }
 
         entity.addEffect(new MobEffectInstance(
                 MobEffects.NIGHT_VISION, 20 * 25, 1, false, false, false));
 
-        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
+        List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30, false, true)
                 .stream()
                 .filter(nearbyEntity -> {
                     return !VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), nearbyEntity);

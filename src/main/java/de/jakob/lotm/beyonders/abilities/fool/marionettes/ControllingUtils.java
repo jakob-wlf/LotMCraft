@@ -108,20 +108,23 @@ public class ControllingUtils {
 
             if (sourceInstance != null && targetInstance != null) {
                 targetInstance.setBaseValue(sourceInstance.getBaseValue());
+
+                // clear then copy all modifiers as well, to avoid health not updating and to avoid scheduling as well
+                for (AttributeModifier modifier : targetInstance.getModifiers()) {
+                    targetInstance.removeModifier(modifier);
+                }
+
+                for (AttributeModifier modifier : sourceInstance.getModifiers()) {
+                    targetInstance.addTransientModifier(modifier);
+                }
             }
         }
 
-        if(source.getAttribute(Attributes.MAX_HEALTH) == null && target.getAttribute(Attributes.MAX_HEALTH) != null) {
-            target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(source.getMaxHealth());
-        }
-
-        ServerScheduler.scheduleDelayed(60, () -> {
-            float maxHealth = target.getMaxHealth();
-            float sourceHealth = source.getHealth();
-            float newHealth = Math.min(sourceHealth, maxHealth);
-            target.setHealth(newHealth);
-        });
+        float maxHealth = target.getMaxHealth();
+        float sourceHealth = source.getHealth();
+        target.setHealth(Math.min(sourceHealth, maxHealth));
     }
+
     public static PathwayData currentlyControlling(Player player) {
         if(player.level().isClientSide()) {
             PacketHandler.sendToServer(new RequestControllingSyncPacket());
@@ -169,6 +172,7 @@ public class ControllingUtils {
                 }
 
                 AbilityWheelHelper.setAbilitiesForEntity(player, controlled, player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
+                AbilityBarHelper.setAbilities(controlled, player.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities());
             }
         }
 
@@ -269,8 +273,19 @@ public class ControllingUtils {
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        if(player.distanceToSqr(component.bodyDouble) > 10000) { // 100 blocks
+        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(BeyonderData.getSequence(player)) * 5) {
             cancel(player, 0, true, false);
         }
+    }
+
+    private static int getManipulationDistance(int sequence) {
+        return switch (sequence) {
+            default -> 7;
+            case 4 -> 75;
+            case 3 -> 200;
+            case 2 -> 500;
+            case 1 -> 2000;
+            case 0 -> 5000;
+        };
     }
 }

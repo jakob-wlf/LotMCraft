@@ -17,6 +17,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -475,20 +476,48 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
             if (entityData.contains("EntityNBT")) {
                 CompoundTag entityNBT = entityData.getCompound("EntityNBT");
-                CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
+                CompoundTag attachments = entityNBT.getCompound("neoforge:attachments");
+                CompoundTag beyonderAttachment = attachments.getCompound("lotmcraft:beyonder_component");
 
-                if (nfd.contains("pathway") && BeyonderData.pathwayInfos.get(nfd.get("pathway")) != null) {
-                    boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
-                    displayItem.set(
-                            DataComponents.LORE,
-                            new ItemLore(List.of(
-                                    Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
-                                    Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(nfd.getString("pathway")).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                    Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(nfd.getInt("sequence") + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                    Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(isMarionette + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
-                            )));
+                String pathway = "None Beyonder";
+                int sequence = 10;
+                boolean isMarionette = false;
+                boolean hasWorm = false;
+
+                if (beyonderAttachment.contains("pathway")) {
+                    if (BeyonderData.pathwayInfos.containsKey(beyonderAttachment.getString("pathway"))) {
+                        pathway = BeyonderData.pathwayInfos.get(beyonderAttachment.getString("pathway")).getSequenceName(9);
+                    } else {
+                        pathway = "None Beyonder";
+                    }
                 }
+
+                if (beyonderAttachment.contains("sequence")) {
+                    sequence = beyonderAttachment.getInt("sequence");
+                }
+
+                if (attachments.contains("lotmcraft:marionette_component")) {
+                    isMarionette = attachments.getCompound("lotmcraft:marionette_component")
+                            .getBoolean("isMarionette");
+                    hasWorm = attachments.getCompound("lotmcraft:marionette_component")
+                            .getBoolean("hasWorm");
+                }
+
+                displayItem.set(
+                        DataComponents.LORE,
+                        new ItemLore(List.of(
+                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
+                                Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(pathway)).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(String.valueOf(sequence))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(String.valueOf(isMarionette))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                Component.translatable("lotm.worm").append(Component.literal(": ")).append(Component.literal(String.valueOf(hasWorm))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
+                        )));
             }
+
+            CompoundTag itemData = new CompoundTag();
+            itemData.putInt("MarkedIndex", i);
+            displayItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemData));
+
             entityContainer.setItem(i + 1, displayItem);
         }
 
@@ -515,20 +544,26 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                 return;
                             }
 
-                            if(tag.contains("EntityData")) {
-                                CompoundTag entityData = tag.getCompound("EntityData");
-                                if(isDeleting) {
-                                    removedMarkedEntity(player, entityData);
-                                    player.closeContainer();
-                                } else {
-                                    if(getSummonedCount(player) < getMaxSummoned(player)) {
-                                        level.getServer().execute(() -> {
-                                            spawnTemporaryEntity(level, player, entityData);
-                                        });
+                            if(tag.contains("MarkedIndex")) {
+                                int index = tag.getInt("MarkedIndex");
+                                List<CompoundTag> currentMarked = getMarkedEntities(player);
+
+                                if(index >= 0 && index < currentMarked.size()) {
+                                    CompoundTag entityData = currentMarked.get(index);
+
+                                    if(isDeleting) {
+                                        removedMarkedEntity(player, entityData);
+                                        player.closeContainer();
                                     } else {
-                                        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                                        if(getSummonedCount(player) < getMaxSummoned(player)) {
+                                            level.getServer().execute(() -> {
+                                                spawnTemporaryEntity(level, player, entityData);
+                                            });
+                                        } else {
+                                            player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                                        }
+                                        player.closeContainer();
                                     }
-                                    player.closeContainer();
                                 }
                             }
                         }
@@ -607,6 +642,10 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
                 ((BeyonderNPCEntity) entity).setQuestId("");
                 entity.getPersistentData().putBoolean("Initialized", true);
+
+                if (sequence == 0) {
+                    entity = null;
+                }
             } else {
                 entity = entityType.create(level);
             }
@@ -795,30 +834,20 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private void markEntity(ServerLevel level, ServerPlayer player) {
-        // Find nearby entities
-        AABB searchBox = player.getBoundingBox().inflate(10);
-        List<LivingEntity> nearbyEntities = level.getEntitiesOfClass(LivingEntity.class, searchBox,
-                e -> e != player && e.isAlive());
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true);
 
-        if(nearbyEntities.isEmpty()) {
+        if(target == null){
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.no_nearby_entities").withStyle(ChatFormatting.RED));
             return;
         }
 
-        // Get closest entity
-        LivingEntity closest = nearbyEntities.stream()
-                .min(Comparator.comparingDouble(e -> e.distanceToSqr(player)))
-                .orElse(null);
-
-        if(closest == null) return;
-
         // Save entity data
         CompoundTag entityData = new CompoundTag();
-        entityData.putString("EntityType", EntityType.getKey(closest.getType()).toString());
-        entityData.putString("CustomName", closest.hasCustomName() ? closest.getCustomName().getString() : closest.getName().getString());
+        entityData.putString("EntityType", EntityType.getKey(target.getType()).toString());
+        entityData.putString("CustomName", target.hasCustomName() ? target.getCustomName().getString() : target.getName().getString());
 
         CompoundTag entityNBT = new CompoundTag();
-        closest.saveWithoutId(entityNBT);
+        target.saveWithoutId(entityNBT);
         entityData.put("EntityNBT", entityNBT);
 
         String entityTypeId = entityData.getString("EntityType");
@@ -830,7 +859,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         }
 
         // Special handling for BeyonderNPCEntity
-        if(closest instanceof BeyonderNPCEntity beyonderNPC) {
+        if(target instanceof BeyonderNPCEntity beyonderNPC) {
             entityData.putBoolean("IsBeyonderNPC", true);
             entityData.putString("BeyonderSkin", beyonderNPC.getSkinName());
             entityData.putBoolean("BeyonderHostile", beyonderNPC.isHostile());
@@ -840,7 +869,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         addMarkedEntity(player, entityData);
 
-        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.marked_entity", closest.getName().getString()).withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.marked_entity", target.getName().getString()).withStyle(ChatFormatting.GREEN));
     }
 
 

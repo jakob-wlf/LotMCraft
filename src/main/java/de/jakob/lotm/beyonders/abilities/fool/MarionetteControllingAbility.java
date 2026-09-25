@@ -36,7 +36,7 @@ public class MarionetteControllingAbility extends SelectableAbility {
 
     public static final Map<UUID, Integer> marionetteIndices = new HashMap<>();
 
-    private static final HashSet<UUID> swapOnDamageIsActive = new HashSet<>();
+    public static final HashSet<UUID> swapOnDamageIsActive = new HashSet<>();
 
     public MarionetteControllingAbility(String id) {
         super(id, .5f);

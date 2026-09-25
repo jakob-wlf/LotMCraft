@@ -41,7 +41,7 @@ public class DecryptionAbility extends ToggleAbility {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, (int) (40* multiplier(entity)), 1.2f);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, (int) (40* multiplier(entity)), 1.2f, true,true,true);
 
         if(lookedAt != null) {
             if(VisionaryHandler.shouldStayInvisible(AbilityUtil.getSeqWithArt(entity, this), lookedAt))

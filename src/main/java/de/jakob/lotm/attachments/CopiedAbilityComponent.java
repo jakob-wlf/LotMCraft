@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
 
-    public static final int MAX_ABILITIES = 24;
+    public static final int MAX_ABILITIES = 30;
 
     public record CopiedAbilityData(String abilityId, String copyType, int remainingUses, String originalOwnerUUID) {
 
@@ -51,6 +51,11 @@ public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
             abilities.remove(index);
         }
     }
+
+    public void removeAbility(String abilityId) {
+        abilities.removeIf(data -> data.abilityId().equalsIgnoreCase(abilityId));
+    }
+
 
     public CopiedAbilityData getAbility(int index) {
         if (index >= 0 && index < abilities.size()) {

@@ -18,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -71,13 +72,12 @@ public class MirrorSubstituteAbility extends Ability {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void takeDamage(LivingDamageEvent.Pre event) {
         if (ImprisonAbility.IMPRISONED.contains(event.getEntity().getUUID())) return;
-        if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
-            return;
+        if (!figurineNumbers.containsKey(event.getEntity().getUUID())) return;
 
-        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+        if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
 
@@ -86,8 +86,11 @@ public class MirrorSubstituteAbility extends Ability {
 
         int num = figurineNumbers.get(event.getEntity().getUUID());
 
-        if(num <= 0)
-            return;
+        if (num <= 0) return;
+
+        // skip damage canceling if the damage was lower than 10% of the player's max health, or if the attack was not fatal
+        if (!(event.getNewDamage() / entity.getMaxHealth() >= 0.1)
+                && !(entity.getHealth() - event.getOriginalDamage() <= 0)) return;
 
         figurineNumbers.put(event.getEntity().getUUID(), num - 1);
         event.setNewDamage(0);
@@ -118,5 +121,9 @@ public class MirrorSubstituteAbility extends Ability {
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ARMOR_STAND_HIT, SoundSource.BLOCKS, 3, 1);
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .6f, 1);
 
+    }
+
+    public static void setFigurineNumber(UUID uuid, int number) {
+        figurineNumbers.put(uuid, number);
     }
 }

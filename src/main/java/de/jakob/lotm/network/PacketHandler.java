@@ -965,7 +965,7 @@ public class PacketHandler {
 
         String[] history = BeyonderData.getPathwayHistory(player);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks, cowardWormAmount);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(player.getUUID(), pathway, sequence, spirituality, griefingEnabled, digestionProgress, history, charStacks, cowardWormAmount);
         sendToPlayer(player, packet);
     }
 
@@ -1019,7 +1019,7 @@ public class PacketHandler {
         int[] charStacks = BeyonderData.getCharStacks(targetPlayer);
         int wormAmount = BeyonderData.getCowardWormAmount(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount);
+        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(targetPlayer.getUUID(), pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
             sendToPlayer(player, packet);

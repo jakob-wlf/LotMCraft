@@ -355,6 +355,13 @@ public class AbilityHandler {
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }
 
+    public List<String> getRegisteredAbilityIds() {
+        return abilities.stream()
+                .map(Ability::getId)
+                .sorted()
+                .toList();
+    }
+
     public HashSet<Ability> getAbilities() {
         return new HashSet<>(abilities);
     }

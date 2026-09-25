@@ -30,6 +30,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -452,6 +453,8 @@ public class AbilityUtil {
                                                boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
         LivingEntity targetEntity = getTargetEntityInternal(entity, radius, entityDetectionRadius,
                 onlyAllowWithLineOfSight, allowAllies, targetMarionettes);
+
+        if (targetEntity instanceof ArmorStand) return null;
 
         // Only fire event if we're not being called from getTargetLocation
         if (!INSIDE_GET_TARGET_LOCATION.get()) {

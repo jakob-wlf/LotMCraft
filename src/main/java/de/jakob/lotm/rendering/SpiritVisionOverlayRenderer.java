@@ -2,11 +2,21 @@ package de.jakob.lotm.rendering;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.ShapeShiftComponent;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -61,16 +71,77 @@ public class SpiritVisionOverlayRenderer {
         renderPanel(guiGraphics, x, y, width, height);
 
         String name = entity.getName().getString();
-        guiGraphics.drawString(mc.font, name, x + width / 2 - mc.font.width(name) / 2 + 1, y + 7 + 1, 0x55000000);
-        guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 7, ACCENT_LIGHT);
+        float maxHealth = entity.getMaxHealth();
+        float health = entity.getHealth();
 
-        int barWidth = (int) (width / 1.3);
-        int barHeight = 12;
-        int barX = x + (width - barWidth) / 2;
-        int barY = y + height - barHeight - 7;
+        ShapeShiftComponent shapeShiftComponent = entity.getData(ModAttachments.SHAPE_SHIFT);
+        if (!shapeShiftComponent.getShape().isEmpty()) {
+            String entityType = shapeShiftComponent.getShape();
+            if (entityType.startsWith("player:")){
+                name = entityType.split(":")[1];
+            } else {
+                name = entityType.contains(":") ? entityType.split(":")[1] : entityType;
+            }
+            maxHealth = getEntityMaxHealth(entityType);
+            health = getEntityMaxHealth(entityType);
 
-        renderHealthBar(guiGraphics, mc.font, barX, barY, barWidth, barHeight,
-                entity.getHealth(), entity.getMaxHealth());
+            if ((ClientBeyonderCache.getPathway(mc.player.getUUID()).equals("fool") && ClientBeyonderCache.getSequence(mc.player.getUUID()) < ClientBeyonderCache.getSequence(entity.getUUID()))
+                    || (ClientBeyonderCache.getPathway(mc.player.getUUID()).equals("visionary") && ClientBeyonderCache.getSequence(mc.player.getUUID()) < ClientBeyonderCache.getSequence(entity.getUUID()))
+                    || AbilityUtil.isTargetSignificantlyStronger(ClientBeyonderCache.getSequence(entity.getUUID()), ClientBeyonderCache.getSequence(mc.player.getUUID()))) {
+
+                name = name + " (Shape Shifting)";
+                maxHealth = entity.getMaxHealth();
+                health = entity.getHealth();
+            }
+        }
+
+        if (!VisionaryHandler.shouldStayInvisible(ClientBeyonderCache.getSequence(mc.player.getUUID()), entity)){
+            guiGraphics.drawString(mc.font, name, x + width / 2 - mc.font.width(name) / 2 + 1, y + 7 + 1, 0x55000000);
+            guiGraphics.drawCenteredString(mc.font, name, x + width / 2, y + 7, ACCENT_LIGHT);
+
+            int barWidth = (int) (width / 1.3);
+            int barHeight = 12;
+            int barX = x + (width - barWidth) / 2;
+            int barY = y + height - barHeight - 7;
+
+            renderHealthBar(guiGraphics, mc.font, barX, barY, barWidth, barHeight,
+                    health, maxHealth);
+        }
+    }
+
+    private static float getEntityMaxHealth(String shapeKey) {
+        if (shapeKey == null || shapeKey.isEmpty()) return 20f;
+
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return 20f;
+
+        if (shapeKey.startsWith("player:")) {
+            String[] parts = shapeKey.split(":");
+            if (parts.length >= 3) {
+                try {
+                    UUID uuid = UUID.fromString(parts[2]);
+                    Player targetPlayer = level.getPlayerByUUID(uuid);
+                    if (targetPlayer != null) {
+                        return targetPlayer.getMaxHealth();
+                    }
+                } catch (IllegalArgumentException e) {
+                }
+            }
+            return 20f;
+        } else if (shapeKey.startsWith("lotmcraft:beyonder_npc:")) {
+            shapeKey = "lotmcraft:beyonder_npc";
+        }
+
+        EntityType<?> type = null;
+        ResourceLocation entityID = ResourceLocation.tryParse(shapeKey);
+        if (entityID != null) {
+            type = BuiltInRegistries.ENTITY_TYPE.get(entityID);
+        }
+        if (type == null) return 20f;
+
+        Entity entity = type.create(level);
+        if (!(entity instanceof LivingEntity livingEntity)) return 20f;
+        return livingEntity.getMaxHealth();
     }
 
     private static void renderPanel(GuiGraphics guiGraphics, int x, int y, int width, int height) {
