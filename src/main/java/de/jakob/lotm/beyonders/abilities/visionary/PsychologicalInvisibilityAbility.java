@@ -139,6 +139,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                                 new ClientboundPlayerInfoRemovePacket(List.of(targetPlayer.getUUID()))
                         );
                     }
+
                 }
             }
         }
@@ -342,6 +343,16 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        return !VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq);
     }
 
 }

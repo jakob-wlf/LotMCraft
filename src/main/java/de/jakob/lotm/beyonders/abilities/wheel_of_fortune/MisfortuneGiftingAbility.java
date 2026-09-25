@@ -61,4 +61,23 @@ public class MisfortuneGiftingAbility extends Ability {
         LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT.get());
         luckComponent.addLuckWithMax(amplifier, -amplifier);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        float multiplier = multiplier(entity);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 15 * (multiplier * multiplier))
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t)
+                        && AbilityUtil.getSequenceResistanceFactor(entitySeq, BeyonderData.getSequence(t)) < 1.0);
+    }
 }

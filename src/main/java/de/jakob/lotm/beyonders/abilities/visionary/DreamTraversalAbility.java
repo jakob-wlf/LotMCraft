@@ -322,4 +322,40 @@ public class DreamTraversalAbility extends SelectableAbility {
     public static boolean isHiding(UUID uuid) {
         return hideMap.containsKey(uuid);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        if (hideMap.containsKey(entity.getUUID())) {
+            return true;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
+        return target != null && !checkAsleep(entity, target);
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        if (hideMap.containsKey(entity.getUUID())) {
+            return 2;
+        }
+
+        if (!(entity instanceof ServerPlayer)) {
+            return 0;
+        }
+
+        return random.nextInt(2) == 0 ? 0 : 2;
+    }
 }

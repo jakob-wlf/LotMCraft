@@ -98,7 +98,7 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         }
     }
 
-    private static void performDivination(PlayerDivinationSelectedPacket packet, ServerPlayer player){
+    private static void performDivination(PlayerDivinationSelectedPacket packet, ServerPlayer player) {
         ServerPlayer targetPlayer = player.serverLevel().getServer().getPlayerList()
                 .getPlayer(packet.selectedPlayerUuid);
 
@@ -112,14 +112,14 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         int playerSequence = BeyonderData.getSequence(player);
         int targetSequence = BeyonderData.getSequence(targetPlayer);
 
-            int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
-            if (divinationDifference <= 0){
-                player.sendSystemMessage(Component.literal("§cDivination failed"));
-                if(playerSequence < 4 && targetSequence > 3){
-                    player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
-                }
-                return;
+        int divinationDifference = 3 + DivinationUtil.getDivinationPower(player) - DivinationUtil.getConcealmentPower(targetPlayer);
+        if (divinationDifference <= 0){
+            player.sendSystemMessage(Component.literal("§cDivination failed"));
+            if(playerSequence < 4 && targetSequence > 3){
+                player.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 200, 2));
             }
+            return;
+        }
 
         BlockPos playerPos = player.blockPosition();
         BlockPos targetPos = targetPlayer.blockPosition();

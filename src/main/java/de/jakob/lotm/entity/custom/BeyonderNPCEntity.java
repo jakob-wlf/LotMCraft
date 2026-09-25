@@ -287,7 +287,7 @@ public class BeyonderNPCEntity extends PathfinderMob {
         }
 
         if (tickCounter == 1) {
-            this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 20, 255, false, true, true));
+            this.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 80, 255, false, true, true));
         }
 
         tickCounter++;
@@ -301,6 +301,17 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 isPuppetWarrior() ||
                 isHostile() ||
                 getCurrentTarget() != null;
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if(getTarget() == null && source.getEntity() == null) {
+            Player nearestPlayer = this.level().getNearestPlayer(this, 24);
+            if(nearestPlayer != null) {
+                this.setTarget(nearestPlayer);
+            }
+        }
+        return super.hurt(source, amount);
     }
 
     // ========================= Loot and Drops =========================

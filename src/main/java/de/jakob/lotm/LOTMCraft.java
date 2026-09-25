@@ -79,6 +79,7 @@ import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardRenderer;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesRenderer;
 import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishRenderer;
 import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostRenderer;
+import de.jakob.lotm.entity.client.spirits.grim_reaper.GrimReaperRenderer;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthRenderer;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
@@ -339,6 +340,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthRenderer::new);
             EntityRenderers.register(ModEntities.ABSCESSED_HAND.get(), AbscessedHandRenderer::new);
             EntityRenderers.register(ModEntities.MURLOC.get(), MurlocRenderer::new);
+            EntityRenderers.register(ModEntities.GRIM_REAPER.get(), GrimReaperRenderer::new);
 
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);

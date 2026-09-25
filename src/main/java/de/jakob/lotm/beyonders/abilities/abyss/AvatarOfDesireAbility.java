@@ -114,4 +114,26 @@ public class AvatarOfDesireAbility extends ToggleAbility {
             scale.setBaseValue(1f);
         }
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        Level level = entity.level();
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        Location loc = new Location(entity.position(), level);
+        int seq = BeyonderData.getSequence(entity);
+        if (InteractionHandler.isInteractionPossible(loc, "purification", seq)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 3.75, false)
+                .stream()
+                .anyMatch(e -> !AbilityUtil.isTargetSignificantlyStronger(entity, e));
+    }
 }

@@ -521,10 +521,10 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .75, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 - 1, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
 
         poseStack.scale(2.4F, 2.4F, 2.4F);
 

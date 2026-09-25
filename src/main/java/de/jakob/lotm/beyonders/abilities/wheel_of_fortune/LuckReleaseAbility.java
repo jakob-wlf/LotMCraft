@@ -61,4 +61,14 @@ public class LuckReleaseAbility extends Ability {
         int additionalLuck = Math.round(ticks / (20 * 60 * 2f)) * 120;
         return Math.clamp(additionalLuck, 1, 8);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        LuckAccumulationComponent component = entity.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT.get());
+        return component.getTicksAccumulated() >= 20 * 60 * 2;
+    }
 }

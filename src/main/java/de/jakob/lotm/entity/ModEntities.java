@@ -395,6 +395,10 @@ public class ModEntities {
             ENTITY_TYPES.register("rabbit_of_knowledge", () -> EntityType.Builder.of(RabbitOfKnowledgeEntity::new, MobCategory.MONSTER)
                     .sized(1.3f, 1.3f).build("rabbit_of_knowledge"));
 
+    public static final Supplier<EntityType<SpiritGrimReaperEntity>> GRIM_REAPER =
+            ENTITY_TYPES.register("grim_reaper", () -> EntityType.Builder.of(SpiritGrimReaperEntity::new, MobCategory.MONSTER)
+                    .sized(1.3f, 2f).build("grim_reaper"));
+
 
     // NPCs and Living Entities
 

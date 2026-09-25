@@ -98,4 +98,21 @@ public class PsycheStormAbility extends Ability {
 
         return 1;
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        float multiplier = multiplier(entity);
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier / 2, 1))
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
 }

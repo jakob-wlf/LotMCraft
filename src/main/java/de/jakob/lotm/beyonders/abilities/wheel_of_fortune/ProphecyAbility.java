@@ -184,4 +184,15 @@ public class ProphecyAbility extends SelectableAbility {
             default -> new ItemStack(Items.DIAMOND, 1);
         };
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        return super.shouldUseAbility(entity) && entity.level() instanceof ServerLevel;
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        boolean hasTarget = AbilityUtil.getTargetEntity(entity, 40, 6) != null;
+        return hasTarget ? random.nextInt(getAbilityNames().length) : random.nextInt(2);
+    }
 }

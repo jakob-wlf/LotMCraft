@@ -183,4 +183,46 @@ public class SleepInducementAbility extends SelectableAbility {
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 80, 2);
+        if (target != null && !target.hasEffect(ModEffects.ASLEEP)) {
+            return true;
+        }
+
+        return hasNearbyDamageableTarget(entity, entity.position(), 10 * (int) Math.max(multiplier(entity) / 4, 1));
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (entitySeq > 3) {
+            return 0;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return 0;
+        }
+
+        long nearbyTargets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10 * (int) Math.max(multiplier(entity) / 4, 1))
+                .stream()
+                .filter(t -> AbilityUtil.mayDamage(entity, t) && !t.hasEffect(ModEffects.ASLEEP))
+                .count();
+
+        return nearbyTargets > 1 ? 1 : 0;
+    }
 }

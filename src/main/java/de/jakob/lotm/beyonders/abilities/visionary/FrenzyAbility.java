@@ -86,4 +86,23 @@ public class FrenzyAbility extends Ability {
 
         target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * Math.max(multiplier(entity), 1)), 2);
+        return target != null;
+    }
 }

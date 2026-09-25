@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -42,8 +44,6 @@ public class UnshadowedDomainAbility extends Ability {
         return 800;
     }
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1f, 185 / 255f, 3 / 255f), 10f);
-
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)
@@ -66,15 +66,18 @@ public class UnshadowedDomainAbility extends Ability {
 
         blocks.forEach(b -> level.setBlockAndUpdate(b, Blocks.LIGHT.defaultBlockState()));
 
-        double multiplier = multiplier(entity);
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        ServerScheduler.scheduleDelayed(2, () -> {
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket("unshadowed_domain", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false),
+                    (ServerLevel) level,
+                    startPos,
+                    512
+            );
+        });
 
-        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 20* multiplier(entity)), () -> {
-            ParticleUtil.spawnParticles((ServerLevel) level, dust, startPos, 120, 25, 5, 25, 0);
-            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, startPos, 120, 25, 5, 25, 0);
-
-            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, (int) (40* multiplier(entity)), startPos, new MobEffectInstance(MobEffects.GLOWING, 20 * 2, 1, false, false, false));
-            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, (int) (40* multiplier(entity)))
+        ServerScheduler.scheduleForDuration(0, 10, 20 * 30, () -> {
+            AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 40, startPos, new MobEffectInstance(MobEffects.GLOWING, 20 * 2, 1, false, false, false));
+            AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40)
                     .stream()
                     .filter(e -> (AbilityUtil.isUndead(e)) && (e instanceof Mob || e instanceof Player))
                     .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity), (float) (DamageLookup.lookupDps(4, .4, 10, 20) * multiplier(entity))));

@@ -26,6 +26,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -90,6 +91,12 @@ public class SefirahHandler {
         SefirotData sefirotData = SefirotData.get(player.server);
 
         return sefirotData.isInSefirot(player, sefirot);
+    }
+
+    public static boolean isInSefirot(ServerPlayer player) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        return sefirotData.isInSefirot(player);
     }
 
     public static void kickOutOfSefirot(ServerPlayer player, ServerPlayer kickedPlayer) {
@@ -361,6 +368,61 @@ public class SefirahHandler {
             case 1, 0 -> 4;
             default -> 1;
         };
+    }
+
+    public static ArrayList<String> getPerksForProgressAndSefirot(int progress, String sefirot) {
+        ArrayList<String> perks = getPerksForProgress(progress);
+        if(sefirot.equals("sefirah_castle")) {
+            if(progress >= 1) {
+            }
+            if(progress >= 2) {
+                perks.add("lotm.sefirot.luck");
+            }
+            if(progress >= 3) {
+            }
+            if(progress >= 4) {
+            }
+        }
+        else if(sefirot.equals("brood_hive")) {
+            if(progress >= 1) {
+            }
+            if(progress >= 2) {
+                perks.add("lotm.sefirot.regeneration");
+            }
+            if(progress >= 3) {
+            }
+            if(progress >= 4) {
+            }
+        }
+
+        return perks;
+    }
+
+    // 0 = normal, 1 = dark, 2 = light
+    public static int[] getColorsForSefirot(String sefirot) {
+        return switch (sefirot) {
+            case "sefirah_castle" -> new int[]{0x9873c9, 0x47217a, 0xd0b9f0};
+            case "brood_hive" -> new int[]{0xbf2434, 0x4f030b, 0xf77e8b};
+            default -> new int[]{0x555555, 0x000000, 0xffffff};
+        };
+    }
+
+    public static ArrayList<String> getPerksForProgress(int progress) {
+        ArrayList<String> perks = new ArrayList<>();
+        if(progress >= 1) {
+            perks.add("lotm.sefirot.anti_divination");
+            perks.add("lotm.sefirot.divination_boost");
+            perks.add("lotm.sefirot.invite_players");
+        }
+        if(progress >= 2) {
+            perks.add("lotm.sefirot.damage_boost");
+        }
+        if(progress >= 3) {
+            perks.add("lotm.sefirot.additional_pathways");
+        }
+        if(progress >= 4) {
+        }
+        return perks;
     }
 
     public static String[] getAdditionalPathwaysForPlayer(Player player) {

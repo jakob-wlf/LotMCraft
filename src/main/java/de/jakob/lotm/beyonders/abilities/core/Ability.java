@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
@@ -24,6 +25,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.Nullable;
 import de.jakob.lotm.beyonders.abilities.black_emperor.MausoleumDomainAbility;
@@ -208,6 +210,39 @@ public abstract class Ability {
 
     public void onHold(Level level, LivingEntity entity) {
 
+    }
+
+    protected boolean hasNearbyDamageableTarget(LivingEntity entity, double radius) {
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), radius)
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
+
+    protected boolean hasNearbyDamageableTarget(LivingEntity entity, Vec3 origin, double radius) {
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, origin, radius)
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
+
+    protected boolean hasValidTarget(LivingEntity entity, int range, float angle) {
+        return AbilityUtil.getTargetEntity(entity, range, angle) != null;
+    }
+
+    protected boolean isSealedByMindWorld(LivingEntity entity) {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        return VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq);
+    }
+
+    protected boolean isServerSide(LivingEntity entity) {
+        return entity.level() instanceof ServerLevel;
     }
 
     public boolean shouldUseAbility(LivingEntity entity) {

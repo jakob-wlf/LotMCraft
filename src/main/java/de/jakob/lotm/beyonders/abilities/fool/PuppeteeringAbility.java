@@ -274,10 +274,10 @@ public class PuppeteeringAbility extends SelectableAbility {
             Vec3 end = target.getEyePosition();
 
             if (entity instanceof ServerPlayer serverPlayer) {
-                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 0.5f, 0.1f, 0.7f));
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z()));
             }
             if (target instanceof ServerPlayer serverTarget && BeyonderData.getPathway(target).equals("fool")) {
-                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverTarget, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 1.0f, 0.0f, 0.0f));
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverTarget, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z()));
             }
 
             if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target, false) || targetSequence < BeyonderData.getSequence(entity) || (progress >= 0.5f && targetSequence == BeyonderData.getSequence(entity))) {

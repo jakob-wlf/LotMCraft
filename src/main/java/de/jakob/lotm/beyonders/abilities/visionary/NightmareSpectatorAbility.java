@@ -98,4 +98,23 @@ public class NightmareSpectatorAbility extends Ability {
         // Decrease Sanity
         target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
+        return target != null && !checkAsleep(entity, target);
+    }
 }

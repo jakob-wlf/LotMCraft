@@ -44,6 +44,7 @@ import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
 import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishModel;
 import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostModel;
+import de.jakob.lotm.entity.client.spirits.grim_reaper.GrimReaperModel;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthModel;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneModel;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
@@ -140,6 +141,7 @@ public class ModEvents {
         event.registerLayerDefinition(SpiritBaneModel.LAYER_LOCATION, SpiritBaneModel::createBodyLayer);
         event.registerLayerDefinition(SpiritMalmouthModel.LAYER_LOCATION, SpiritMalmouthModel::createBodyLayer);
         event.registerLayerDefinition(AbscessedHandModel.LAYER_LOCATION, AbscessedHandModel::createBodyLayer);
+        event.registerLayerDefinition(GrimReaperModel.LAYER_LOCATION, GrimReaperModel::createBodyLayer);
 
         // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
@@ -178,6 +180,7 @@ public class ModEvents {
         event.put(ModEntities.SPIRIT_BANE.get(), SpiritBaneEntity.createAttributes().build());
         event.put(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthEntity.createAttributes().build());
         event.put(ModEntities.ABSCESSED_HAND.get(), AbscessedHandEntity.createAttributes().build());
+        event.put(ModEntities.GRIM_REAPER.get(), SpiritGrimReaperEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -261,6 +264,13 @@ public class ModEvents {
         );
         event.register(
                 ModEntities.RABBIT_OF_KNOWLEDGE.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.GRIM_REAPER.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,

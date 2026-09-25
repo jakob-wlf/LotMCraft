@@ -150,4 +150,42 @@ public class DisasterFantasiaAbility extends SelectableAbility {
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier(entity)/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 45 * multiplier(entity))
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return 3;
+        }
+
+        long nearbyTargets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 45 * multiplier(entity))
+                .stream()
+                .filter(t -> AbilityUtil.mayDamage(entity, t))
+                .count();
+
+        if (nearbyTargets > 5) {
+            return 3;
+        }
+
+        return random.nextInt(3);
+    }
 }

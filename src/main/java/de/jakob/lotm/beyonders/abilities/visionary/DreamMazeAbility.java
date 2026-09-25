@@ -346,4 +346,32 @@ public class DreamMazeAbility extends SelectableAbility {
 
         event.setCanceled(true);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        if (!(entity instanceof ServerPlayer)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        if (serverLevel.dimension().equals(ModDimensions.DREAM_MAZE_DIMENSION_KEY)) {
+            return true;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), SURROUNDING_RADIUS, false, true)
+                .stream()
+                .anyMatch(t -> t.hasEffect(ModEffects.ASLEEP) && !t.getUUID().equals(entity.getUUID()));
+    }
 }

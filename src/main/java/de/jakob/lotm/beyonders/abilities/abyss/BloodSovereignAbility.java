@@ -263,4 +263,36 @@ public class BloodSovereignAbility extends SelectableAbility {
     public static void onTargetDeath(LivingDeathEvent event) {
         corrodedEntities.remove(event.getEntity().getUUID());
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10)
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t)
+                        && !AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(t)));
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        if (!(level instanceof ServerLevel serverLevel)) {
+            return 0;
+        }
+
+        long nearbyTargets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10)
+                .stream()
+                .filter(t -> AbilityUtil.mayDamage(entity, t))
+                .count();
+
+        return nearbyTargets > 1 ? 0 : 1;
+    }
 }

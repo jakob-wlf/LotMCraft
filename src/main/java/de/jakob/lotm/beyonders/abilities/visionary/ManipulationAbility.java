@@ -158,4 +158,34 @@ public class ManipulationAbility extends SelectableAbility {
             chosen.useAbility(level, player);
         }, level);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
+        if (target == null) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20, false, true)
+                .stream()
+                .anyMatch(e -> !e.getUUID().equals(entity.getUUID()) && !e.getUUID().equals(target.getUUID()));
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        return 0;
+    }
 }

@@ -32,7 +32,7 @@ public abstract class SelectableAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(!(entity instanceof Player)) {
-            castSelectedAbility(level, entity, random.nextInt(getAbilityNames().length));
+            castSelectedAbility(level, entity, getNPCSelectedAbility(entity, level));
             return;
         }
 
@@ -114,5 +114,9 @@ public abstract class SelectableAbility extends Ability {
         }
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        return random.nextInt(getAbilityNames().length);
     }
 }

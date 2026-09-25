@@ -1949,6 +1949,13 @@
   "lotm.sefirot.brood_hive_calling": "You feel like you are called by a realm of procreation, but something is missing",
   "lotm.sefirot.brood_hive_reaction": "You feel a vivid reaction, but your pathway does not align with the Brood Hive",
   "lotm.sefirot.not_strong_enough": "You are not strong enough yet.",
+  "lotm.sefirot.anti_divination": "Strong Anti-Divination",
+  "lotm.sefirot.divination_boost": "Stronger Divination",
+  "lotm.sefirot.invite_players": "Invite Players into your Sefirot",
+  "lotm.sefirot.damage_boost": "Your Beyonder Powers get enhanced",
+  "lotm.sefirot.additional_pathways": "Access to neighbouring Pathways",
+  "lotm.sefirot.regeneration": "Better Regeneration",
+  "lotm.sefirot.luck": "Increased Fortune",
 
   "lotm.ally.no_target": "No valid target found",
   "lotm.ally.added": "Allied with %s",

@@ -56,4 +56,19 @@ public class CalamityAttractionAbility extends Ability {
             calamity.spawnCalamity(serverLevel, targetPos, (float) multiplier, BeyonderData.isGriefingEnabled(entity));
         }, serverLevel);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 14)
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
 }

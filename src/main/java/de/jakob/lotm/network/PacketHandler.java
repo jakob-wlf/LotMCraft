@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -997,6 +998,10 @@ public class PacketHandler {
 
     public static void sendToAllPlayersInSameLevel(CustomPacketPayload payload, ServerLevel level) {
         level.players().forEach(player -> sendToPlayer(player, payload));
+    }
+
+    public static void sendToNearbyPlayers(CustomPacketPayload payload, ServerLevel level, Vec3 pos, double radius) {
+        PacketDistributor.sendToPlayersNear(level, null, pos.x, pos.y, pos.z, radius, payload);
     }
 
     public static void syncUniquenessToPlayer(ServerPlayer player) {

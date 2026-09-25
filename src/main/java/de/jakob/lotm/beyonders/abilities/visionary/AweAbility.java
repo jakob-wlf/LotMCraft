@@ -103,4 +103,25 @@ public class AweAbility extends Ability {
             }
         });
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10 * (int) Math.max(multiplier(entity) / 2, 1))
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
 }
