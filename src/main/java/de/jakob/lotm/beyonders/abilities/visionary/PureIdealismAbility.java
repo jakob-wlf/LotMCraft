@@ -23,10 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -44,6 +41,9 @@ public class PureIdealismAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         canAlwaysBeUsed = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 5));
     }
 
     @Override
@@ -87,7 +87,16 @@ public class PureIdealismAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        var target = AbilityUtil.getTargetEntity(player, 100, 1f);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.6f, true,
+                    true, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.6f, true, true);
+        }
+
         if (target == null) return;
 
         if (!BeyonderData.isBeyonder(target)) return;
@@ -185,7 +194,7 @@ public class PureIdealismAbility extends SelectableAbility {
     private static int getMeditationDuration(int seq, int targetSeq){
         int diff = 10 - (targetSeq - seq);
 
-        return 50 * diff;
+        return 360 * diff;
     }
 
     @SubscribeEvent

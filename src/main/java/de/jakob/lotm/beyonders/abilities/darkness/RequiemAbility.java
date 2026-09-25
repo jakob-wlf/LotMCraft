@@ -40,6 +40,12 @@ public class RequiemAbility extends Ability {
     public RequiemAbility(String id) {
         super(id, 3, "calming");
         postsUsedAbilityEventManually = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 4, 5, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3500f, 2000f, 1500f, 1040f, 725f, 400f));
     }
 
     @Override
@@ -57,6 +63,7 @@ public class RequiemAbility extends Ability {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
+
         if(level.isClientSide)
             return;
 
@@ -70,9 +77,11 @@ public class RequiemAbility extends Ability {
 
             animateParticleLine(new Location(startPos, level), targetLoc, 2, 0, duration);
         }
+
         float multiplier = multiplier(entity);
         level.playSound(null, BlockPos.containing(entity.position()), ModSounds.MIDNIGHT_POEM.get(), SoundSource.BLOCKS, 1, 1);
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16*(int) Math.max(multiplier/2,1), 2);
+
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity == null)
             return;
 
@@ -83,6 +92,7 @@ public class RequiemAbility extends Ability {
             }
             return;
         }
+
         Location currentLoc = new Location(entity.position(), serverLevel);
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         boolean purified = InteractionHandler.isInteractionPossible(currentLoc, "purification", seq);
@@ -96,14 +106,12 @@ public class RequiemAbility extends Ability {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);
-        if(entitySeq < targetEntitySeq) {
-            duration = (int) (20 * 65*multiplier/ multiplier_target);
+        if(entitySeq < targetEntitySeq && !BeyonderData.getPathway(targetEntity).equals("darkness")) {
+            duration = 20;
         }else if (entitySeq > targetEntitySeq){
-            if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = (int) (35*multiplier);
-            };
+            duration = 20 * 6;
         }else{
-            duration = (int) (20 * 15*multiplier/  multiplier_target);
+            duration = 20;
         };
 
         if(!BeyonderData.isBeyonder(targetEntity) || (targetEntitySeq >= entitySeq-1)) {
@@ -148,6 +156,7 @@ public class RequiemAbility extends Ability {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 60, 4, false, false, false));
             targetEntity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 60, 5, false, false, false));
             targetEntity.setOnGround(true);
+
             var pos = targetEntity.position();
             targetEntity.setDeltaMovement(new Vec3(0, 0, 0));
             targetEntity.hurtMarked = true;

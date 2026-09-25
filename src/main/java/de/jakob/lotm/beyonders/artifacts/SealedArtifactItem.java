@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.artifacts;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.DoorAuthorityData;
 import de.jakob.lotm.data.ModDataComponents;

@@ -4,6 +4,7 @@ package de.jakob.lotm.effect;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
@@ -47,12 +48,8 @@ public class MutationEffect extends MobEffect {
             return true;
         }
 
-        SanityComponent sanityComponent = livingEntity.getData(ModAttachments.SANITY_COMPONENT);
-        if(random.nextInt(100) < 5) {
-            sanityComponent.increaseSanityAndSync(-.01f, livingEntity);
-        }
-        if(random.nextInt(100) < 5) {
-            livingEntity.hurt(livingEntity.damageSources().generic(), (float) DamageLookup.lookupDamage(4, .5));
+        if(livingEntity.tickCount % 20 == 0) {
+            livingEntity.hurt(ModDamageTypes.source(livingEntity.level(), ModDamageTypes.MUTATION), amplifier);
         }
 
         if(livingEntity.tickCount % 10 == 0) {

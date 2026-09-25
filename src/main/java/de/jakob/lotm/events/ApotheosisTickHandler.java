@@ -17,6 +17,7 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -37,6 +38,11 @@ public class ApotheosisTickHandler {
 
         if(player.level().isClientSide) {
             ClientHandler.applyCameraShakeToPlayersInRadius(4, 20, (ClientLevel) player.level(), player.position(), 1064);
+            return;
+        }
+
+        if(player.level().dimension() != Level.OVERWORLD){
+            component.setApotheosisTicksLeftAndSync(-1, (ServerLevel) player.level(), player);
             return;
         }
 

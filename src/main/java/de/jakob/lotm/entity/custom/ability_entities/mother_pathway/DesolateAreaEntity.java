@@ -1,7 +1,9 @@
 package de.jakob.lotm.entity.custom.ability_entities.mother_pathway;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -14,6 +16,7 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -25,20 +28,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class DesolateAreaEntity extends Entity {
-    private static final int RADIUS = 200; // 200x200 area
+    private static final int RADIUS = 100; // 100x100 area
     private static final int EFFECT_RADIUS = 100; // Radius for entity effects
     private static final int BLOCKS_PER_TICK = 80; // How many blocks to corrupt per tick
     private static final int ENTITY_CHECK_INTERVAL = 20; // Check entities every second
+    private static final int MAX_LIFESPAN = 20 * 60 * 5; // 5 mins
 
     private int tickCounter = 0;
     private int corruptionProgress = 0;
     private Random random = new Random();
+    private float damage = 0f;
+    private LivingEntity owner = null;
+    private UUID ownerUUID = null;
 
     // Block conversion maps
     private static final Map<Block, Block> BLOCK_CONVERSIONS = new HashMap<>();
@@ -69,11 +73,14 @@ public class DesolateAreaEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
-    public DesolateAreaEntity(Level level, Vec3 pos) {
+    public DesolateAreaEntity(Level level, Vec3 pos, float damage, LivingEntity owner) {
         this(ModEntities.DESOLATE_AREA.get(), level);
         this.setPos(pos);
         this.setXRot(90);
         this.setYRot(0);
+        this.damage = damage;
+        this.owner = owner;
+        this.ownerUUID = owner.getUUID();
     }
 
     @Override
@@ -92,13 +99,20 @@ public class DesolateAreaEntity extends Entity {
             applyEntityEffects();
         }
 
+
         // Corrupt blocks gradually
-        corruptSurroundingBlocks();
+        if(owner != null && BeyonderData.isGriefingEnabled(owner)) {
+            corruptSurroundingBlocks();
+        }
 
         // Ambient sound effects every 5 seconds
         if (tickCounter % 100 == 0 && level() instanceof ServerLevel serverLevel) {
             serverLevel.playSound(null, blockPosition(), SoundEvents.WITHER_AMBIENT,
                     SoundSource.HOSTILE, 0.3f, 0.5f);
+        }
+
+        if(tickCounter >= MAX_LIFESPAN){
+            this.discard();
         }
     }
 
@@ -110,10 +124,21 @@ public class DesolateAreaEntity extends Entity {
 
         List<LivingEntity> entities = level().getEntitiesOfClass(LivingEntity.class, effectBox);
 
+        DamageSource damageSource;
+        if(owner == null){
+            damageSource = ModDamageTypes.source(level(), ModDamageTypes.LIFE_DEPRIVATION);
+        }
+        else
+            damageSource = ModDamageTypes.source(level(), ModDamageTypes.LIFE_DEPRIVATION, owner);
+
         for (LivingEntity entity : entities) {
             double distance = entity.distanceTo(this);
 
             if(BeyonderData.isBeyonder(entity) && BeyonderData.getPathway(entity).equals("mother") && BeyonderData.getSequence(entity) <= 2) {
+                continue;
+            }
+
+            if(ownerUUID != null && AllyUtil.isAlly(entity, ownerUUID)){
                 continue;
             }
 
@@ -123,16 +148,18 @@ public class DesolateAreaEntity extends Entity {
                 amplifier = Math.max(0, Math.min(3, amplifier));
 
                 // Apply negative effects
-                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, amplifier, false, false));
-                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, amplifier, false, false));
-                entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 60, amplifier, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, amplifier, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20, amplifier, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 20, amplifier, false, false));
 
-                entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 60, amplifier, false, false));
-                entity.addEffect(new MobEffectInstance(MobEffects.WITHER, 60, amplifier, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.HUNGER, 20, amplifier, false, false));
+                entity.addEffect(new MobEffectInstance(MobEffects.WITHER, 20, amplifier, false, false));
             }
 
             if(this.tickCount % 40 == 0) {
-                entity.hurt(entity.damageSources().generic(), (float) DamageLookup.lookupDamage(2, .5));
+                if((entity.getHealth() >= entity.getMaxHealth() * 0.6 && BeyonderData.getSequence(entity) <= 2)
+                        || BeyonderData.getPathway(entity).equals("death"))
+                    entity.hurt(damageSource, damage);
             }
         }
     }

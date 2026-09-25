@@ -36,6 +36,12 @@ public class PlayerTeleportationAbility extends SelectableAbility {
         canBeCopied = false;
         canBeReplicated = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(36000f, 20000f));
     }
 
     @Override
@@ -79,14 +85,16 @@ public class PlayerTeleportationAbility extends SelectableAbility {
             return;
         }
 
-        if (14 <= DivinationUtil.getConcealmentPower(targetPlayer)) {
-            player.sendSystemMessage(Component.literal("Failed to locate the target"));
-            return;
-        }
+//        if (50 <= DivinationUtil.getConcealmentPower(targetPlayer)) {
+//            player.sendSystemMessage(Component.literal("Failed to locate the target"));
+//            return;
+//        }
         if ((targetPlayer.level().dimension().location().equals(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY.location()))
-                || (targetPlayer.level().dimension().location().equals(ModDimensions.SPACE_TYPE_KEY.location()))
+                //|| (targetPlayer.level().dimension().location().equals(ModDimensions.SPACE_TYPE_KEY.location()))
                 || (targetPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY))
-                || (targetPlayer.level().dimension().location().equals(ModDimensions.WORLD_CREATION_LEVEL_KEY.location()))) {
+                //|| (targetPlayer.level().dimension().location().equals(ModDimensions.WORLD_CREATION_LEVEL_KEY.location()))
+                || (targetPlayer.level().dimension().equals(ModDimensions.DREAM_MAZE_DIMENSION_KEY))
+        ) {
             return;
         }
 

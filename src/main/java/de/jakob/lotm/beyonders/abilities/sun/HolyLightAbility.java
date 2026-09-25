@@ -22,10 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HolyLightAbility extends Ability {
@@ -33,6 +30,14 @@ public class HolyLightAbility extends Ability {
         super(id, 1.25f, "purification", "light_source", "light_weak");
         postsUsedAbilityEventManually = true;
         interactionRadius = 6;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 2, 2));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f, 50f));
+
+        baseDamage = 3;
     }
 
     @Override
@@ -47,8 +52,6 @@ public class HolyLightAbility extends Ability {
         return 35;
     }
 
-    final int radius = 16;
-
     DustParticleOptions dustOptions = new DustParticleOptions(
             new Vector3f(255 / 255f, 180 / 255f, 66 / 255f),
             2f
@@ -56,7 +59,7 @@ public class HolyLightAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, radius, .75f).add(0, 14, 0);
+        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, baseDistance, .75f).add(0, 14, 0);
 
         List<BlockPos> lights = new ArrayList<>();
 
@@ -65,6 +68,7 @@ public class HolyLightAbility extends Ability {
 
             level.playSound(null, initialPos.x, initialPos.y - 14, initialPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 3.0f, 1.0f);
 
+            int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
             ServerScheduler.scheduleForDuration(0, 1, 18, () -> {
                 Vec3 pos = currentPos.get();
@@ -77,7 +81,14 @@ public class HolyLightAbility extends Ability {
                     lights.add(blockPos);
                 }
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f* multiplier(entity), DamageLookup.lookupDamage(8, .8) * multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+                if(entitySeq <= 4){
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.PURIFICATION, baseDamage * 0.33, pos, true, false, true, 0);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.LIGHT, baseDamage * 0.34, pos, true, false, true, 0);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.FAITH, baseDamage * 0.33, pos, true, false, true, 0);
+                }
+                else{
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.LIGHT, baseDamage, pos, true, false, true, 0);
+                }
 
                 currentPos.set(pos.subtract(0, 2.5, 0));
             }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

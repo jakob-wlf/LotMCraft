@@ -257,7 +257,7 @@ public class SefirahHandler {
                         yaw,
                         0);
 
-                sefirotLevel.setBlockAndUpdate(BlockPos.containing(21, -58, 0), ModBlocks.SEFIRAH_BLOCK.get().defaultBlockState());
+                //sefirotLevel.setBlockAndUpdate(BlockPos.containing(21, -58, 0), ModBlocks.SEFIRAH_BLOCK.get().defaultBlockState());
 
                 if(playTeleportEffect) {
                     playCorrectEffect(BlockPos.containing(x, y, z), sefirot, isOwner, sefirotLevel);

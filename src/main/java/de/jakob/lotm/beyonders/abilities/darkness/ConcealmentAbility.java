@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.door.Seq0;
+import de.jakob.lotm.addons.rituals.door.Seq1;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -44,6 +46,12 @@ public class ConcealmentAbility extends SelectableAbility {
         autoClear = false;
         cannotBeStolen = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 4, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 10000f, 6500f));
     }
 
     @Override
@@ -58,10 +66,10 @@ public class ConcealmentAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.concealment.surroundings",
+        return new String[]{
+                "ability.lotmcraft.concealment.surroundings",
                 "ability.lotmcraft.concealment.enter_concealed_area",
                 "ability.lotmcraft.concealment.conceal_thoughts"
-
         };
     }
 
@@ -83,6 +91,12 @@ public class ConcealmentAbility extends SelectableAbility {
 
         // Only works for server players
         if(!(entity instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        if(BeyonderData.getSpirituality(entity) <= BeyonderData.
+                getMaxSpirituality(BeyonderData.getPathway(entity),
+                        BeyonderData.getSequence(entity)) * 0.7f){
             return;
         }
 
@@ -234,10 +248,18 @@ public class ConcealmentAbility extends SelectableAbility {
             return;
         }
 
+        if(BeyonderData.getSpirituality(entity) <= BeyonderData.
+                getMaxSpirituality(BeyonderData.getPathway(entity),
+                        BeyonderData.getSequence(entity)) * 0.7f){
+            return;
+        }
+
         EffectManager.playEffect(EffectIds.CONCEALMENT, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
 
         AtomicDouble radius = new AtomicDouble(2 * (int) (Math.max(multiplier(entity)/2,1)));
         Vec3 finalTargetLoc = entity.position();
+
+        boolean isDarkness0 = BeyonderData.getSequence(entity) == 0 && BeyonderData.getPathway(entity).equals("darkness");
 
         final HashSet<BlockPos> processedBlocks = new HashSet<>();
 
@@ -279,7 +301,7 @@ public class ConcealmentAbility extends SelectableAbility {
 
                 BlockPos safePos = findSafePosition(destinationLevel, targetEntity.getX(), targetEntity.blockPosition().getY(), targetEntity.getZ(), false);
 
-                TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
+                //TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
 
                 targetEntity.teleportTo(destinationLevel,
                         safePos.getX() + 0.5,
@@ -300,6 +322,14 @@ public class ConcealmentAbility extends SelectableAbility {
                     teleportedEntity.setHealth(1);
                     if(!(targetEntity instanceof Player))
                         return;
+                }
+
+                if(targetEntity instanceof ServerPlayer playerTarget){
+                    if(BeyonderData.getPathway(playerTarget).equals("door") && BeyonderData.getSequence(playerTarget) == 1){
+                        if(isDarkness0){
+                            Seq0.affected.add(playerTarget.getUUID());
+                        }
+                    }
                 }
 
                 int returnTime = AbilityUtil.isTargetSignificantlyWeaker(entitySeq, BeyonderData.getSequence(teleportedEntity)) ? 20 * 60 * 2 :
@@ -348,20 +378,17 @@ public class ConcealmentAbility extends SelectableAbility {
             return;
         }
         thoughtconcealedEntities.add(targetEntity.getUUID());
-        float multiplier_target = multiplier(targetEntity);
         int duration = 0;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);
-        if(entitySeq < targetEntitySeq) {
-            duration = 20 * 25*(int) Math.max(multiplier/2,1);
+        if(entitySeq < targetEntitySeq && !BeyonderData.getPathway(targetEntity).equals("darkness")) {
+            duration = 20;
         }else if (entitySeq > targetEntitySeq){
-            if (!BeyonderData.getPathway(targetEntity).equals("darkness")){
-                duration = 80*(int) Math.max(multiplier/2,1);
-            };
+            duration = 20 * 10;
         }else{
-            duration = (int) (20 * 10*(int) Math.max(multiplier/2,1)/  multiplier_target);
-        };
+            duration = 20 * 4;
+        }
 
         if(!BeyonderData.isBeyonder(targetEntity) || targetEntitySeq > entitySeq-1 ) {
             if(targetEntity instanceof Mob) {

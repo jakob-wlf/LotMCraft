@@ -68,7 +68,7 @@ public class PaperDaggersAbility extends PassiveAbility {
         Vec3 startPos = VectorUtil.getRelativePosition(player.getEyePosition().add(player.getLookAngle().normalize().multiply(1.5, 1.5, 1.5)), player.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
         Vec3 direction = AbilityUtil.getTargetLocation(player, 50, 1.4f).subtract(startPos).normalize();
 
-        PaperDaggerProjectileEntity dagger = new PaperDaggerProjectileEntity(level, player, 9.5);
+        PaperDaggerProjectileEntity dagger = new PaperDaggerProjectileEntity(level, player, 3);
         dagger.setPos(startPos.x, startPos.y, startPos.z);
         dagger.shoot(direction.x, direction.y, direction.z, 1.2f, 0);
         level.addFreshEntity(dagger);

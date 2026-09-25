@@ -19,6 +19,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class FogOfWarAbility extends ToggleAbility {
@@ -26,6 +28,9 @@ public class FogOfWarAbility extends ToggleAbility {
         super(id, "fog");
         interactionRadius = 20;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(150f, 85f, 55f, 35f));
     }
 
     @Override
@@ -46,18 +51,6 @@ public class FogOfWarAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-        BeyonderData.reduceSpirituality(entity, 15);
-
-        if (BeyonderData.getSpirituality(entity) <= 0) {
-            if (entity instanceof ServerPlayer player) {
-                player.connection.send(new ClientboundSetActionBarTextPacket(Component.literal("Your spirituality is exhausted.").withColor(0xFF422a2a)));
-            }
-
-            stop(level, entity);
-
-
-            return;
-        }
 
         // Fog of War is weakened by light_source interactions
         Location fogLoc = new Location(entity.getEyePosition(), level);

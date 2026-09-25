@@ -65,11 +65,13 @@ import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.SpawnPlacementTypes;
@@ -82,6 +84,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 import net.neoforged.neoforge.event.entity.RegisterSpawnPlacementsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
+import net.neoforged.neoforge.event.level.LevelEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,6 +97,13 @@ public class ModEvents {
 
     public static final Map<UUID, Integer> leoderoUsesLeft = new ConcurrentHashMap<>();
     private static final LightningStormAbility LIGHTNING_STORM = new LightningStormAbility("lightning_storm_leodero");
+
+    @SubscribeEvent
+    public static void onWorldLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            BeyonderData.initBeyonderMap(serverLevel);
+        }
+    }
 
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
@@ -289,7 +299,11 @@ public class ModEvents {
         UniquenessCommand.register(event.getDispatcher());
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
+        FactionCommand.register(event.getDispatcher());
+        FactionAdminCommand.register(event.getDispatcher());
+        AnchoringCommand.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
+        RitualCommand.register(event.getDispatcher());
         CopiedAbilitiesCommand.register(event.getDispatcher());
         ResetPlayerShapeCommand.register(event.getDispatcher());
         event.getDispatcher().register(

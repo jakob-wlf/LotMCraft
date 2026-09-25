@@ -20,11 +20,21 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class FrenzyAbility extends Ability {
     public FrenzyAbility(String id) {
         super(id, 5f, "corruption");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3, 3, 4, 5, 5, 6, 10, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -55,7 +65,15 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * Math.max(multiplier(entity), 1)), 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
 
         if (level.isClientSide) {
             if(target != null)
@@ -71,9 +89,7 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-            return;
-        }
+        VisionaryHandler.shouldTrigger(entitySeq, entity, target, this);
 
         VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
@@ -82,8 +98,9 @@ public class FrenzyAbility extends Ability {
                 BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, target, entitySeq);
         }
 
-        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * (int) Math.max(multiplier(entity)/4,1)));
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), baseDamage);
 
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.05f), target, entitySeq, BeyonderData.getSequence(target));
+
     }
 }

@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.projectiles;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -112,9 +113,9 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
         level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, false, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(this.damageSources().mobAttack(livingOwner), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, livingOwner), (float) damage);
         } else {
-            target.hurt(this.damageSources().thrown(this, null), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT), (float) damage);
         }
         postAbilityUsedEvent(target.position());
     }

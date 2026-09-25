@@ -133,6 +133,11 @@ public class HonorificNamesEventHandler {
             storePendingPrayer(event.getPlayer(), target);
 
             target.sendSystemMessage(formNotification(event.getPlayer()));
+
+            if(BeyonderData.getSequence(target) == 2 && BeyonderData.getPathway(target).equals("sun")){
+                var component = target.getData(ModAttachments.RITUALS.get());
+                component.setStage(component.getStage() + 1);
+            }
         }
     }
 

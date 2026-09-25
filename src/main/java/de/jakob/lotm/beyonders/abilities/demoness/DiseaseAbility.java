@@ -16,11 +16,21 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class DiseaseAbility extends Ability {
     public DiseaseAbility(String id) {
         super(id, 120, "disease");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 20, 25, 30, 35, 50));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7500f, 2500f, 1450f, 1000f, 975f, 950f));
+
+        baseDamage = 1.3f;
     }
 
     @Override
@@ -38,7 +48,7 @@ public class DiseaseAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        ServerScheduler.scheduleForDuration(0, 20, (int) (20 * 40*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 20, (20 * 10), () -> {
             if(entity.level().isClientSide)
                 return;
 
@@ -54,7 +64,13 @@ public class DiseaseAbility extends Ability {
 
             ParticleUtil.spawnParticles((ServerLevel) entity.level(), ModParticles.DISEASE.get(), entity.position(), 160, 30, 0.02);
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 20*multiplier(entity), entity.position(), new MobEffectInstance(MobEffects.POISON, 20, 0, false, false, false));
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 20*multiplier(entity), (float) DamageLookup.lookupDps(5, .2, 35, 20) *(int) Math.max(multiplier(entity)/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity,
+                    20, baseDamage * damageMult,
+                    entity.position(), true, false,
+                    true, 0,
+                    ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
+
         }, () -> clearArtifactScaling(entity), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

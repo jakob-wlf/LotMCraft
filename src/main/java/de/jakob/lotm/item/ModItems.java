@@ -105,9 +105,9 @@ public class ModItems {
                     .stacksTo(1)
                     .fireResistant()));
 
-    public static final DeferredItem<BlockItem> MYSTICAL_RING = ITEMS.register("mystical_ring",
-            () -> new BlockItem(ModBlocks.MYSTICAL_RING.get(), new Item.Properties())
-    );
+//    public static final DeferredItem<BlockItem> MYSTICAL_RING = ITEMS.register("mystical_ring",
+//            () -> new BlockItem(ModBlocks.MYSTICAL_RING.get(), new Item.Properties())
+//    );
 
     // Uniquenesses (registered, so I can use them in the renderer for the Uniqueness Entity)
     public static final DeferredItem<Item> RED_PRIEST_UNIQUENESS = ITEMS.register("red_priest_uniqueness",

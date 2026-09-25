@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -18,15 +19,20 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WallOfLightAbility extends Ability {
     public WallOfLightAbility(String id) {
         super(id, 15);
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 800f, 500f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 2, 3));
+
+        baseDamage = 3;
     }
 
     @Override
@@ -47,7 +53,7 @@ public class WallOfLightAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 
@@ -71,7 +77,7 @@ public class WallOfLightAbility extends Ability {
                 if(random.nextBoolean())
                     ParticleUtil.spawnParticles((ServerLevel) level, random.nextBoolean() ? dust : ParticleTypes.END_ROD, pos.getCenter(), 1, 0.5, 0.02);
 
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, DamageLookup.lookupDamage(3, .35) * multiplier(entity), pos.getCenter(), true, false, false, 15);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, ModDamageTypes.LIGHT, baseDamage , pos.getCenter(), true, false, false, 15);
 
                 for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, pos.getCenter(), 1f)) {
                     Vec3 knockback = target.position().subtract(pos.getCenter()).normalize().add(0, .2, 0).scale(1.4f);

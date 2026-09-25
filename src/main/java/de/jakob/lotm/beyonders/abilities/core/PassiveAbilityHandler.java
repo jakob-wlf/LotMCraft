@@ -24,7 +24,6 @@ import de.jakob.lotm.beyonders.abilities.error.passives.PhysicalEnhancementsErro
 import de.jakob.lotm.beyonders.abilities.fool.passives.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
-import de.jakob.lotm.beyonders.abilities.justiciar.passives.OrderJusticiarAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
 import de.jakob.lotm.beyonders.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.passive.FireResistanceAbility;
@@ -71,9 +70,12 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new PhysicalEnhancementsJusticiarAbility("physical_enhancements_justiciar_ability"));
         passiveAbilities.add(new PhysicalEnhancementsBlackEmperorAbility("physical_enhancements_black_emperor_ability"));
         passiveAbilities.add(new PhysicalEnhancementsDeathAbility("physical_enhancements_death_ability"));
+        passiveAbilities.add(new ChaosHuntingAbility("chaos_hunting_justiciar_ability"));
+
+        passiveAbilities.add(new FlamingHitAbility("flaming_hit_ability"));
+        passiveAbilities.add(new FireResistanceAbility("fire_resistance_ability"));
 
         // Justiciar
-        passiveAbilities.add(new OrderJusticiarAbility("order_justiciar_ability"));
         passiveAbilities.add(new EnhancedMentalAttributesAbility("enhanced_mental_attributes_justiciar_ability"));
         passiveAbilities.add(new ChaosHuntingAbility("chaos_hunting_justiciar_ability"));
 

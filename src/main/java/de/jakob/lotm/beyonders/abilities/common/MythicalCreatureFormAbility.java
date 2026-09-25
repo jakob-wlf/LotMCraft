@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -51,10 +52,10 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         int seq = BeyonderData.getSequence(entity);
         if(seq > 2){
             var sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get());
-            sanity.setSanityAndSync(Math.max(0.0f, sanity.getSanity() - (seq == 4 ? 0.01f : 0.005f)), entity);
+            sanity.decreaseSanityAndSync(seq == 4 ? 0.01f : 0.005f, entity);
         }
 
-        int range = 200;
+        int range = 100;
 
         // Make all entities lower than you loose control when seeing you
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), range).forEach(e -> {
@@ -66,9 +67,13 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                         int entitySeq = BeyonderData.getSequence(entity);
 
                         if(!VisionaryHandler.isInvisible(entity) && ! entity.hasEffect(MobEffects.INVISIBILITY)) {
-                            e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
-                                    getAmount(entitySeq), e,
-                                    BeyonderData.getSequence(e), entitySeq);
+                            if(entitySeq < BeyonderData.getSequence(e)) {
+                                e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
+                                        getAmount(entitySeq), e,
+                                        BeyonderData.getSequence(e), entitySeq);
+
+                                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
+                            }
                         }
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);
@@ -172,7 +177,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         switch (pathway){
             case "tyrant":
                 if(random.nextInt(6) == 0) {
-                    LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, DamageLookup.lookupDamage(4, .7) * multiplier(entity), false, 4, 200, 0x11A8DD);
+                    LightningEntity lightning = new LightningEntity(level, entity, e.position(), 50, 6, 13, false, 0, 200, 0x11A8DD);
                     level.addFreshEntity(lightning);
                 }
                 break;

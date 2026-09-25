@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CopiedAbilityComponent implements INBTSerializable<CompoundTag> {
 
-    public static final int MAX_ABILITIES = 30;
+    public static final int MAX_ABILITIES = 36;
 
     public record CopiedAbilityData(String abilityId, String copyType, int remainingUses, String originalOwnerUUID) {
 

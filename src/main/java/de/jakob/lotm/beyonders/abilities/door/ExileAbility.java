@@ -12,12 +12,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ExileAbility extends Ability {
     public ExileAbility(String id) {
         super(id, 18, "sealing");
         canBeCopied = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 7, 8, 10, 13));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 6700f, 3750f, 2500f, 2340f));
     }
 
     @Override
@@ -35,9 +43,9 @@ public class ExileAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (20*multiplier(entity)), 2);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
-        ExileDoorsEntity door = new ExileDoorsEntity(ModEntities.EXILE_DOORS.get(), level, 20 * 20, entity, AbilityUtil.getSeqWithArt(entity, this), multiplier(entity));
+        ExileDoorsEntity door = new ExileDoorsEntity(ModEntities.EXILE_DOORS.get(), level, 20 * 5, entity, AbilityUtil.getSeqWithArt(entity, this), multiplier(entity));
         door.setPos(targetPos.x, targetPos.y, targetPos.z);
         level.addFreshEntity(door);
 

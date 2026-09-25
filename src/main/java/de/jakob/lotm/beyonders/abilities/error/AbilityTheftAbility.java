@@ -15,33 +15,23 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
-public class AbilityTheftAbility extends Ability {
+public class AbilityTheftAbility extends SelectableAbility {
     public AbilityTheftAbility(String id) {
         super(id, 3f);
         canBeCopied = false;
         canBeReplicated = false;
         canBeShared = false;
-    }
 
-    @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
-        if (!(level instanceof ServerLevel)) {
-            if (entity instanceof Player player) {
-                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
-            }
-            return;
-        }
-        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 2);
-        if (target == null) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_target").withColor(0x6d32a8));
-            return;
-        }
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3));
 
-        TheftHandler.performAbilityTheft(level, entity, target, random, false, this);
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 1000f, 670f, 650f, 430f, 400f));
     }
 
     @Override
@@ -54,4 +44,45 @@ public class AbilityTheftAbility extends Ability {
         return 200;
     }
 
+    @Override
+    protected String[] getAbilityNames() {
+        return new String[]{
+                "ability.lotmcraft.ability_theft_ability.theft",
+                "ability.lotmcraft.ability_theft_ability.use_stolen",
+        };
+    }
+
+
+    @Override
+    protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
+        if (selectedAbility == 0) {
+            performTheft(level, entity);
+        } else if (selectedAbility == 1) {
+            openCopiedAbilityWheel(level, entity);
+        }
+    }
+
+    private void openCopiedAbilityWheel(Level level, LivingEntity entity) {
+        if (!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
+        CopiedAbilityHelper.openCopiedAbilityWheel(player);
+    }
+
+    public void performTheft(Level level, LivingEntity entity){
+        if (!(level instanceof ServerLevel)) {
+            if (entity instanceof Player player) {
+                player.playSound(SoundEvents.BELL_RESONATE, 1, 1);
+            }
+            return;
+        }
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+
+        if (target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.ability_theft.no_target").withColor(0x6d32a8));
+            return;
+        }
+
+        TheftHandler.performAbilityTheft(level, entity, target, random, false, this);
+    }
 }

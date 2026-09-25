@@ -3,16 +3,24 @@ package de.jakob.lotm.util.helper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionItemHandler;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
@@ -38,6 +46,8 @@ public class PureIdealismUtil {
         component.setPreviousWheel(wheelData.copy());
         component.setPreviousBar(barData.copy());
 
+        component.setHasUniqueness(BeyonderData.hasUniqueness(player));
+
         var pair = component.getAbilitiesInBars(path, sequence);
         AbilityWheelComponent savedWheelData = pair.getFirst();
         AbilityBarComponent savedBarData = pair.getSecond();
@@ -47,11 +57,11 @@ public class PureIdealismUtil {
         component.setPathway(path);
 
         // Temporary discernment form, not a real advancement — must not trigger the acting cap
-        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        ActingCapHelper.skipNextCapApplication = true;
         try {
             BeyonderData.setBeyonder(entity, path, sequence,true, false, false, false, true, false);
         } finally {
-            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+            ActingCapHelper.skipNextCapApplication = false;
         }
         component.setDiscerning(true);
 
@@ -83,15 +93,17 @@ public class PureIdealismUtil {
 
         String path = component.getPathway();
 
+        float health = player.getMaxHealth() / player.getHealth();
+
         component.setSeq(LOTMCraft.NON_BEYONDER_SEQ);
         component.setPathway("none");
 
         // Restoring the real form after discernment — must not trigger the acting cap
-        de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = true;
+        ActingCapHelper.skipNextCapApplication = true;
         try {
             BeyonderData.setBeyonder(entity, "visionary", component.getPreviosSeq(),true, false, false, false, true, false);
         } finally {
-            de.jakob.lotm.beyonders.acting.ActingCapHelper.skipNextCapApplication = false;
+            ActingCapHelper.skipNextCapApplication = false;
         }
         component.setDiscerning(false);
 
@@ -101,9 +113,18 @@ public class PureIdealismUtil {
 
         component.syncData(player);
 
+        player.setHealth(player.getMaxHealth() * health);
+
         if(shouldDie) {
             entity.kill();
             died.put(entity.getUUID(), path);
+            return;
+        }
+
+        if(component.getUniqueness()){
+            var uniqueness = player.getData(ModAttachments.UNIQUENESS_COMPONENT.get());
+            uniqueness.setHasUniqueness(true);
+            uniqueness.setUniquenessPathway("visionary");
         }
     }
 
@@ -156,12 +177,50 @@ public class PureIdealismUtil {
         float current = player.getHealth();
         float limit = max * 0.6f;
 
-        if(current <= limit){
+        var sanity = player.getData(ModAttachments.SANITY_COMPONENT.get());
+
+        if(current <= limit || sanity.getSanity() <= 0.6f){
             PureIdealismUtil.stopDiscernment(player);
         }
 
         if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(component.getPreviosSeq())){
             PureIdealismUtil.stopDiscernment(player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDamage(LivingIncomingDamageEvent event){
+        var entity = event.getEntity();
+
+        if(!(entity instanceof ServerPlayer player)) return;
+
+        var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(!component.isDiscerning()) return;
+
+        float max = player.getMaxHealth();
+        float current = player.getHealth();
+        float damage = event.getAmount();
+
+        if(damage >= current || damage >= max){
+            PureIdealismUtil.stopDiscernment(player);
+
+            event.setAmount(0);
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        Player player = event.getEntity();
+
+        var component = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(!component.isDiscerning()) return;
+
+        ItemStack stack = event.getItemStack();
+
+        if(stack.getItem() instanceof BeyonderPotion ||
+                stack.getItem() instanceof BeyonderCharacteristicItem){
+            event.setCanceled(true);
         }
     }
 }

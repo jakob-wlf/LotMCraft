@@ -28,13 +28,19 @@ import java.util.*;
 public class SpaceTimeLabyrinthAbility extends Ability {
     public SpaceTimeLabyrinthAbility(String id) {
         super(id,20);
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(40000f, 20000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 20));
     }
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(getColorForPathway("door")));
             return;
@@ -54,7 +60,7 @@ public class SpaceTimeLabyrinthAbility extends Ability {
         doorEntity.setRotation((float) Math.toDegrees(Math.atan2(target.getZ() - doorPos.z, target.getX() - doorPos.x)) - 90);
         level.addFreshEntity(doorEntity);
 
-        level.playSound(null, BlockPos.containing(doorPos), SoundEvents.ENDER_CHEST_OPEN, entity.getSoundSource(), .75f, 2f);
+        level.playSound(null, BlockPos.containing(doorPos), SoundEvents.ENDER_CHEST_OPEN, entity.getSoundSource(), .35f, 2f);
 
         ServerScheduler.scheduleForDuration(0, 1, 25, () -> {
             target.setDeltaMovement(doorEntity.getEyePosition().subtract(target.position()).normalize().scale(0.3));

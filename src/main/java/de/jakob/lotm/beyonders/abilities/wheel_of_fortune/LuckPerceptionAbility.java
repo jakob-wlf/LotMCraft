@@ -27,7 +27,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
 
         if (entity.tickCount % 10 != 0) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 1.5f, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true);
         if(target == null){
             LuckComponent luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
             String name = entity.hasCustomName()
@@ -79,7 +79,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("wheel_of_fortune", 5));
+        return new HashMap<>(Map.of("wheel_of_fortune", 8));
     }
 
     @Override

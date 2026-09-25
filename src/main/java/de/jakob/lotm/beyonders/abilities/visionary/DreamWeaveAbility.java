@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.visionary.Seq2;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -12,6 +13,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -30,6 +32,12 @@ public class DreamWeaveAbility extends SelectableAbility {
 
     public DreamWeaveAbility(String id) {
         super(id, 20f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 6, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7500f, 3000f, 2000f, 1600f));
     }
 
     @Override
@@ -81,7 +89,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         mob.setPuppetWarrior(true);
         mob.setMaxLifetimeIfPuppet(20 * 10);
         // No target set yet — mob is passive until harmed
-
+        mob.setShouldIgnoreGamerule(true);
         serverLevel.addFreshEntity(mob);
 
         if (target instanceof Mob targetMob) {
@@ -100,7 +108,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 *multiplier(entity)), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
@@ -123,6 +131,20 @@ public class DreamWeaveAbility extends SelectableAbility {
             if (!mob.isRemoved()) mob.discard();
             removeMob(target.getUUID(), mob);
         });
+
+        if(!BeyonderData.getPathway(entity).equals("visionary") ||
+                BeyonderData.getSequence(entity) != 3) return;
+
+        if(entity instanceof ServerPlayer player) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                if(!(target.hasEffect(ModEffects.ASLEEP))) return;
+
+                var component = player.getData(ModAttachments.RITUALS.get());
+                if (component.isCompleted()) return;
+
+                component.addTargetUuid(targetPlayer.getUUID());
+            }
+        }
     }
 
     // Spawns 3 mobs, 3 sequences below the caster
@@ -130,7 +152,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         if (level.isClientSide) return;
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
@@ -165,6 +187,18 @@ public class DreamWeaveAbility extends SelectableAbility {
             }
             removeAllMobs(target.getUUID(), mobs);
         });
+
+        if(!BeyonderData.getPathway(entity).equals("visionary") ||
+                BeyonderData.getSequence(entity) != 3) return;
+
+        if(entity instanceof ServerPlayer player) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                var component = player.getData(ModAttachments.RITUALS.get());
+                if (component.isCompleted()) return;
+
+                component.addTargetUuid(targetPlayer.getUUID());
+            }
+        }
     }
 
 

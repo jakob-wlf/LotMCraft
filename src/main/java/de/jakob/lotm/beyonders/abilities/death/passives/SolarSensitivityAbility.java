@@ -47,7 +47,7 @@ public class SolarSensitivityAbility extends PassiveAbility {
         if (damageTypeKey.isEmpty()) return;
 
         var key = damageTypeKey.get();
-        if (key.equals(ModDamageTypes.PURIFICATION) || key.equals(ModDamageTypes.PURIFICATION_INDIRECT)) {
+        if (key.equals(ModDamageTypes.PURIFICATION)) {
             event.setAmount(event.getAmount() * 1.5f);
         }
     }

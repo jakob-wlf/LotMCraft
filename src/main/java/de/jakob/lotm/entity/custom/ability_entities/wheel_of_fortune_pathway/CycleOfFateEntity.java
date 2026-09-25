@@ -208,7 +208,6 @@ public class CycleOfFateEntity extends Entity {
         }
 
 
-
         // Remove entities that weren't in the recording
         AABB boundingBox = new AABB(centerPos).inflate(RECORD_RADIUS);
         List<Entity> currentEntities = serverLevel.getEntities(this, boundingBox, entity ->

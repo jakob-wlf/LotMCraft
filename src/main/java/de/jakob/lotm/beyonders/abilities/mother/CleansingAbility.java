@@ -1,11 +1,14 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.RingEffectManager;
+import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,12 +16,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 //TODO: Rework effects using geckolib
 public class CleansingAbility extends SelectableAbility {
     public CleansingAbility(String id) {
         super(id, 14, "cleansing");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 4, 5, 7, 8, 9, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1200f, 800f, 470f, 280f, 260f, 160f, 134f, 100f, 66f));
     }
 
     @Override
@@ -33,7 +44,10 @@ public class CleansingAbility extends SelectableAbility {
 
     @Override
     public String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.cleansing.self", "ability.lotmcraft.cleansing.others"};
+        return new String[]{
+                "ability.lotmcraft.cleansing.self",
+                "ability.lotmcraft.cleansing.others"
+        };
     }
 
     @Override
@@ -55,18 +69,7 @@ public class CleansingAbility extends SelectableAbility {
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
-            e.setRemainingFireTicks(0);
-
-            e.getActiveEffects()
-                    .stream()
-                    .map(MobEffectInstance::getEffect)
-                    .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                    .forEach(e::removeEffect);
-
-            if(e instanceof Player player) {
-                player.getFoodData().setSaturation(20);
-                player.getFoodData().setFoodLevel(20);
-            }
+            cleanEntity(e);
         }
     }
 
@@ -80,18 +83,49 @@ public class CleansingAbility extends SelectableAbility {
         
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
+        cleanEntity(entity);
+    }
+
+    private void cleanEntity(LivingEntity entity) {
+        if (entity == null || entity.isRemoved()) {
+            return;
+        }
+
         entity.setRemainingFireTicks(0);
 
-        entity.getActiveEffects().stream()
-                .map(MobEffectInstance::getEffect)
-                .filter(effect -> effect.value().getCategory() == MobEffectCategory.HARMFUL)
-                .toList()
-                .forEach(entity::removeEffect);
+        List<MobEffectInstance> buff = new LinkedList<>();
 
+        for(var effect : entity.getActiveEffects()){
+            if(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL &&
+            !effect.equals(ModEffects.LOOSING_CONTROL))
+                buff.add(effect);
 
-        if(entity instanceof Player player) {
-            player.getFoodData().setSaturation(20);
-            player.getFoodData().setFoodLevel(20);
         }
+
+        for (var effect : buff) {
+            entity.removeEffect(effect.getEffect());
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int value = getValue(entitySeq);
+
+        if (entity instanceof Player player) {
+            var foodData = player.getFoodData();
+
+            player.getFoodData().setSaturation(foodData.getSaturationLevel() + value);
+            player.getFoodData().setFoodLevel(foodData.getFoodLevel() + value);
+        }
+    }
+
+    private static int getValue(int seq){
+        return switch (seq){
+          case 9, 8 -> 3;
+          case 7,6 -> 5;
+          case 5 -> 6;
+          case 4 -> 10;
+          case 3 -> 12;
+          case 2, 1, 0 -> 20;
+            default -> 0;
+        };
     }
 }

@@ -21,6 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
@@ -35,6 +36,10 @@ public class DoorTransfigurationAbility extends ToggleAbility {
         super(id, "escape");
 
         this.tickRate = 1;
+        canBeReplicated = false;
+        canBeCopied = false;
+        canBeUsedInArtifact = false;
+        canBeShared = false;
     }
 
     @Override
@@ -52,14 +57,14 @@ public class DoorTransfigurationAbility extends ToggleAbility {
             return;
         }
 
-        float spiritualityCost = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(entity), BeyonderData.getSequence(entity)) / 10f;
+        float spiritualityCost = getCost(BeyonderData.getSequence(entity));
         if(BeyonderData.getSpirituality(entity) < spiritualityCost) {
             cancel((ServerLevel) level, entity);
             return;
         }
 
-        entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 30, 10, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 15, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20, 10, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 15, false, false, false));
     }
 
     @Override
@@ -90,6 +95,17 @@ public class DoorTransfigurationAbility extends ToggleAbility {
         }
     }
 
+    private static float getCost(int seq){
+        return switch (seq){
+            case 4 -> 1170f;
+            case 3 -> 1150f;
+            case 2 -> 1875;
+            case 1 -> 3150f;
+            case 0 -> 8100f;
+            default -> 10000f;
+        };
+    }
+
     @Override
     public Map<String, Integer> getRequirements() {
         return Map.of("door", 4);
@@ -101,7 +117,7 @@ public class DoorTransfigurationAbility extends ToggleAbility {
     }
 
     @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
+    public static void onIncomingDamage(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();
         if(entity.level().isClientSide) {
             return;
@@ -123,12 +139,12 @@ public class DoorTransfigurationAbility extends ToggleAbility {
             transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.DOOR_TRANSFIGURATION.getIndex() + sizeModifier, entity);
         }
 
-        float spiritualityCost = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(entity), BeyonderData.getSequence(entity)) / 10f;
+        float spiritualityCost = getCost(BeyonderData.getSequence(entity));
         if(BeyonderData.getSpirituality(entity) >= spiritualityCost) {
             BeyonderData.reduceSpirituality(entity, spiritualityCost);
         }
 
-        event.setCanceled(true);
+        event.setNewDamage(0);
 
         entity.level().playSound(null, entity.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, entity.getSoundSource(), .1f, 1f);
 

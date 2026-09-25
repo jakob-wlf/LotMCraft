@@ -19,11 +19,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class RoarAbility extends Ability {
     public RoarAbility(String id) {
         super(id, 12);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 7, 8, 9, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7000f, 3000f, 2000f, 1200f, 1000f));
+
+        baseDamage = 15f;
     }
 
     @Override
@@ -43,12 +53,15 @@ public class RoarAbility extends Ability {
 
         Vec3 startPos = entity.position();
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
+        double multiplier = multiplier(entity);
+        float damage = baseDamage;
 
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 3, 1);
 
-        double multiplier = multiplier(entity);
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 19* multiplier(entity)).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(4, .85) * multiplier(entity)));
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.WIND, entity), (float) damage/2);
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.AWE, entity), (float) damage/2);
+
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(1.5);
             e.setDeltaMovement(knockBack);
         });
@@ -56,12 +69,12 @@ public class RoarAbility extends Ability {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos.add(0, 1, 0), 600, .75, .75, .75, .15);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos, 600, 7, .2, 7, .005);
 
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5* multiplier(entity)).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3* multiplier(entity)).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5* multiplier(entity)).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3* multiplier(entity)).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
     }
 
     private void spawnFallingBlocks(Level level, Vec3 startPos, BlockPos b, boolean griefing) {
@@ -76,13 +89,13 @@ public class RoarAbility extends Ability {
         Vec3 vectorFromCenter = new Vec3(b.getX() + 0.5 - startPos.x, 0, b.getZ() + 0.5 - startPos.z).normalize();
         Vec3 movement = (new Vec3(vectorFromCenter.x, 1, vectorFromCenter.z)).normalize().scale(.75);
 
-        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
-        block.setDeltaMovement(movement);
-        if(!griefing)
-            block.disableDrop();
-        else {
-            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-        }
-        block.hurtMarked = true;
+//        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
+//        block.setDeltaMovement(movement);
+//        if(!griefing)
+//            block.disableDrop();
+//        else {
+//            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
+//        }
+//        block.hurtMarked = true;
     }
 }

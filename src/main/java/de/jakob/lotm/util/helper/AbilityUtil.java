@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -20,12 +21,14 @@ import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -50,6 +53,8 @@ public class AbilityUtil {
     //if bool is true - it will not clear the map after skill usage
     public static Map<UUID, Boolean> ignoreAllies = new ConcurrentHashMap<UUID, Boolean>();
 
+    //invul for skills
+    public static Map<UUID, Integer> invul = new ConcurrentHashMap<>();
 
     // ==================== SEQUENCE UTILITY METHODS ====================
 
@@ -204,6 +209,9 @@ public class AbilityUtil {
         if (target instanceof Player player && player.isCreative()) return false;
         if (!source.canAttack(target)) return false;
 
+        if(invul.containsKey(target.getUUID()))
+            return false;
+
         // Check ally relationship - allies cannot damage each other
         if (AllyUtil.areAllies(source, target)) {
             return false;
@@ -248,6 +256,11 @@ public class AbilityUtil {
         if (source == null || target == null) return true;
 
         if(source == target) return false;
+
+        TransformationComponent transformationComponent = target.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        if(transformationComponent.isTransformed()
+                && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex()) return false;
+
 
         if(ignoreAllies.containsKey(source.getUUID())) allowAllies = true;
 
@@ -425,19 +438,19 @@ public class AbilityUtil {
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, false, false, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, false, false, false, false);
     }
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
                                                boolean onlyAllowWithLineOfSight) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, false, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, false, false, false);
     }
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
                                                boolean onlyAllowWithLineOfSight, boolean allowAllies) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, allowAllies, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, allowAllies, false, false);
     }
 
     /**
@@ -450,9 +463,12 @@ public class AbilityUtil {
      */
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
-                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes,
+                                               boolean ignoreBlocks) {
         LivingEntity targetEntity = getTargetEntityInternal(entity, radius, entityDetectionRadius,
-                onlyAllowWithLineOfSight, allowAllies, targetMarionettes);
+                onlyAllowWithLineOfSight, allowAllies, targetMarionettes, ignoreBlocks);
+
+        if (targetEntity instanceof ArmorStand) return null;
 
         if (targetEntity instanceof ArmorStand) return null;
 
@@ -489,7 +505,8 @@ public class AbilityUtil {
      */
     @Nullable
     private static LivingEntity getTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
-                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes,
+                                                        boolean ignoreBlocks) {
         // Check for existing targets first (unless line of sight only)
         if (!onlyAllowWithLineOfSight) {
             LivingEntity currentTarget = getCurrentTarget(entity);
@@ -524,9 +541,11 @@ public class AbilityUtil {
             }
 
             // Check for blocks
-            BlockState block = entity.level().getBlockState(BlockPos.containing(currentPosition));
-            if (!block.getCollisionShape(entity.level(), BlockPos.containing(currentPosition)).isEmpty()) {
-                break;
+            if(!ignoreBlocks) {
+                BlockState block = entity.level().getBlockState(BlockPos.containing(currentPosition));
+                if (!block.getCollisionShape(entity.level(), BlockPos.containing(currentPosition)).isEmpty()) {
+                    break;
+                }
             }
         }
 
@@ -788,6 +807,7 @@ public class AbilityUtil {
                 .filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
                 .filter(entity -> entity != exclude)
+                .filter(entity -> !(entity instanceof ArmorStand))
                 .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le, allowAllies, false)))
                 .toList();
     }
@@ -806,6 +826,34 @@ public class AbilityUtil {
         return source != null
                 ? ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, source)
                 : ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC);
+    }
+
+    private static DamageSource createDamageSource(Level level, LivingEntity source, ResourceKey<DamageType> type){
+        return source != null
+                ? ModDamageTypes.source(level, type, source)
+                : ModDamageTypes.source(level, type);
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius, ResourceKey<DamageType> type,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, 0, createDamageSource(level, source, type));
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius, ResourceKey<DamageType> type,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, int fireTicks) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, false, -1, fireTicks, createDamageSource(level, source, type));
+    }
+
+    public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source,double radius, ResourceKey<DamageType> type,
+                                               double damage, Vec3 center, boolean ignoreSource,
+                                               boolean distanceFalloff, boolean ignoreCooldown,
+                                               int cooldownTicks) {
+        return damageNearbyEntities(level, source, 0, radius, damage, center, ignoreSource,
+                distanceFalloff, ignoreCooldown, cooldownTicks, 0, createDamageSource(level, source, type));
     }
 
     public static boolean damageNearbyEntities(ServerLevel level, LivingEntity source, double radius,
@@ -1276,11 +1324,17 @@ public class AbilityUtil {
         player.connection.send(packet);
     }
 
-    public static boolean isUndead(LivingEntity entity) {
-        return switch (BeyonderData.getPathway(entity)) {
-            case "death", "abyss", "chained", "hanged_man" -> true;
-            default -> entity.getType().is(EntityTypeTags.UNDEAD);
-        };
+    public static boolean isUndead(LivingEntity entity){
+        if(BeyonderData.getPathway(entity).equals("death")) return true;
+
+        return entity.getType().is(EntityTypeTags.UNDEAD);
+    }
+
+    public static boolean isUndeadOrEvil(LivingEntity entity) {
+        if(BeyonderData.isEvilPathway(entity))
+            return true;
+
+        return entity.getType().is(EntityTypeTags.UNDEAD);
     }
 
     public static void setArtifactScaling(LivingEntity entity, String path, int seq){

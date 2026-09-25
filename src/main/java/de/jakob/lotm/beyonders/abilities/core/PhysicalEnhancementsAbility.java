@@ -45,13 +45,13 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
     private static final Map<UUID, Map<String, EnhancementBoost>> enhancementBoosts = new ConcurrentHashMap<>();
     public static final Map<UUID, Long> reducedRegen = new ConcurrentHashMap<>();
 
-    public static void suppressRegen(LivingEntity entity, long durationMs) {
-        long expiry = System.currentTimeMillis() + durationMs;
-        if (!reducedRegen.containsKey(entity.getUUID()) || reducedRegen.get(entity.getUUID()) < expiry) {
-            reducedRegen.put(entity.getUUID(), expiry);
-        }
-        entity.removeEffect(MobEffects.REGENERATION);
-    }
+//    public static void suppressRegen(LivingEntity entity, long durationMs) {
+//        long expiry = System.currentTimeMillis() + durationMs;
+//        if (!reducedRegen.containsKey(entity.getUUID()) || reducedRegen.get(entity.getUUID()) < expiry) {
+//            reducedRegen.put(entity.getUUID(), expiry);
+//        }
+//        entity.removeEffect(MobEffects.REGENERATION);
+//    }
 
     private static final Map<UUID, Integer> lastKnownSequence = new ConcurrentHashMap<>();
 
@@ -100,13 +100,26 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
         updateEnhancementBoosts(entity);
     }
 
+    public static void recalculateAllEnhancementsForEntity(LivingEntity entity) {
+        for (PassiveAbility passiveAbility : PassiveAbilityHandler.passiveAbilities) {
+            if (passiveAbility instanceof PhysicalEnhancementsAbility pe) {
+                pe.recalculateEnhancements(entity, true);
+            }
+        }
+    }
     private void recalculateEnhancements(LivingEntity entity) {
+        recalculateEnhancements(entity, false);
+    }
+    private void recalculateEnhancements(LivingEntity entity, boolean forceRecanculate) {
         int sequenceLevel = getCurrentSequenceLevel(entity);
 
-        Integer cached = lastKnownSequence.get(entity.getUUID());
-        if (cached != null && cached == sequenceLevel) {
-            return;
+        if (!forceRecanculate) {
+            Integer cached = lastKnownSequence.get(entity.getUUID());
+            if (cached != null && cached == sequenceLevel) {
+                return;
+            }
         }
+
         lastKnownSequence.put(entity.getUUID(), sequenceLevel);
 
         List<PhysicalEnhancement> currentEnhancements = getEnhancementsForSequence(sequenceLevel, entity);
@@ -390,16 +403,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
 
         if(entity.getData(ModAttachments.REGEN_DISABLER.get()).isDisabled()) return;
 
-        if (reducedRegen.containsKey(entity.getUUID())) {
-            long expiryTime = reducedRegen.get(entity.getUUID());
-            if (System.currentTimeMillis() >= expiryTime) {
-                reducedRegen.remove(entity.getUUID());
-            } else {
-                regenLevel = regenLevel - 5;
-                if (regenLevel <= 0) return;
-            }
-        }
-
         entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 300, regenLevel - 1, false, false, false));
     }
 
@@ -650,17 +653,17 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
             }
         }
 
-        @SubscribeEvent
-        public static void onLivingHeal(LivingHealEvent event) {
-            UUID uuid = event.getEntity().getUUID();
-            Long expiry = reducedRegen.get(uuid);
-            if (expiry == null) return;
-            if (System.currentTimeMillis() >= expiry) {
-                reducedRegen.remove(uuid);
-                return;
-            }
-            event.setCanceled(true);
-        }
+//        @SubscribeEvent
+//        public static void onLivingHeal(LivingHealEvent event) {
+//            UUID uuid = event.getEntity().getUUID();
+//            Long expiry = reducedRegen.get(uuid);
+//            if (expiry == null) return;
+//            if (System.currentTimeMillis() >= expiry) {
+//                reducedRegen.remove(uuid);
+//                return;
+//            }
+//            event.setCanceled(true);
+//        }
 
         @SubscribeEvent
         public static void onLivingDamagePost(LivingDamageEvent.Post event) {
@@ -671,10 +674,10 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
             LivingEntity target = event.getEntity();
             if (!BeyonderData.isBeyonder(target) || !BeyonderData.isBeyonder(source)) return;
 
-            if (!reducedRegen.containsKey(target.getUUID()) ||
-                    (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
-                target.removeEffect(MobEffects.REGENERATION);
-            }
+//            if (!reducedRegen.containsKey(target.getUUID()) ||
+//                    (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
+//                target.removeEffect(MobEffects.REGENERATION);
+//            }
 
             reducedRegen.put(target.getUUID(), System.currentTimeMillis() + 10000);
         }

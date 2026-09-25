@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.events.ProhibitionHandler;
@@ -9,6 +10,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,9 +25,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -36,6 +36,12 @@ public class FateSiphoningAbility extends Ability {
     public FateSiphoningAbility(String id) {
         super(id, 20);
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 20));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 10000f, 6700f));
     }
 
     @Override
@@ -54,10 +60,29 @@ public class FateSiphoningAbility extends Ability {
             return;
         }
         if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30*multiplier(entity)), 2);
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.fate_siphoning.no_target").withColor(0x6d32a8));
             return;
+        }
+
+        if(entity instanceof ServerPlayer player){
+            if(BeyonderData.getPathway(player).equals("error")
+                    && BeyonderData.getSequence(player) == 1){
+                if(target instanceof ServerPlayer targetPlayer){
+                    var targetComponent = targetPlayer.getData(ModAttachments.APOTHEOSIS_COMPONENT.get());
+
+                    if(targetComponent.getApotheosisTicksLeft() > 0){
+                        targetComponent.setApotheosisTicksLeftAndSync(0, serverLevel, targetPlayer);
+                        RitualEffectHandlerEvent.removeRitual(targetPlayer);
+                        targetPlayer.sendSystemMessage(Component.literal("Your apotheosis was stolen!").withStyle(ChatFormatting.DARK_RED));
+
+                        player.getData(ModAttachments.RITUALS.get()).setStage(1);
+                    }
+                }
+            }
         }
 
         if(linkedEntities.containsKey(target.getUUID()) &&
@@ -86,7 +111,7 @@ public class FateSiphoningAbility extends Ability {
                 40, serverLevel, entity);
 
         linkedEntities.put(entity.getUUID(), target.getUUID());
-        ServerScheduler.scheduleDelayed((int) (20 * 7*multiplier(entity)), () -> linkedEntities.remove(entity.getUUID()));
+        ServerScheduler.scheduleDelayed((int) (20 * 10), () -> linkedEntities.remove(entity.getUUID()));
     }
 
     @SubscribeEvent

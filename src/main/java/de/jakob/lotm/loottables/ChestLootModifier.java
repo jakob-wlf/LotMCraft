@@ -3,7 +3,7 @@ package de.jakob.lotm.loottables;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
-import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
+//import de.jakob.lotm.gui.custom.ritualistic_table.RitualMenu;
 import de.jakob.lotm.item.ModIngredients;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;

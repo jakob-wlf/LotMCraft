@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ShapeShiftComponent;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
+import de.jakob.lotm.rendering.DiscernmentRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -103,6 +104,8 @@ public abstract class PlayerRendererMixin extends LivingEntityRenderer<AbstractC
             }
             lastShapeType = shapeType;
             lastShapeKey = shapeKey;
+
+            DiscernmentRenderer.shapeshifter.add(cachedRenderEntity.getUUID());
         } else {
             applySkinIfNeeded(cachedRenderEntity, shapeKey);
         }

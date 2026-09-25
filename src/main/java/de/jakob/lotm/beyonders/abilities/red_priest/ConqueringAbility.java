@@ -6,7 +6,9 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,12 +18,20 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ConqueringAbility extends Ability {
     public ConqueringAbility(String id) {
         super(id, 40, "morale_boost");
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(16000f, 8000f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 25));
     }
 
     @Override
@@ -49,16 +59,19 @@ public class ConqueringAbility extends Ability {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        double radius = 4*multiplier(entity);
+        double radius = 15;
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), radius, false).forEach(e -> {
-            if(entitySeq < BeyonderData.getSequence(e)) {
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, (int) (20 * 30 *multiplier(entity)), 18));
-            }else if (entitySeq > BeyonderData.getSequence(e)){
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, 20, 1));
-            }else{
-                e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, (int) (35*multiplier(entity)/multiplier(e)), 2));
-            };
+            int targetSeq = BeyonderData.getSequence(e);
+
+            if(!(BeyonderData.getPathway(e).equals("death") && entitySeq + 2 >= targetSeq)){
+                if(entitySeq < targetSeq) {
+                    e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, (int) (20 * 15), 11));
+                }
+                else{
+                    e.addEffect(new MobEffectInstance(ModEffects.CONQUERED, (int) (20 * 4), 5));
+                }
+            }
         });
     }
 }

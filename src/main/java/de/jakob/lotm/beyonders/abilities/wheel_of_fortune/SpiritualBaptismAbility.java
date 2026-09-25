@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class SpiritualBaptismAbility extends SelectableAbility {
     public SpiritualBaptismAbility(String id) {
         super(id, 5, "cleansing");
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7000f, 3500f, 2300f, 1750f));
     }
 
     @Override

@@ -1,8 +1,12 @@
 package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.factions.FactionCore;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -20,6 +24,10 @@ import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.parsing.packrat.Atom;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,6 +37,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class TravelersDoorEntity extends Entity {
     private double destX;
@@ -45,6 +54,7 @@ public class TravelersDoorEntity extends Entity {
 
     private static final double TELEPORT_RANGE = 1.0;
 
+    private ServerPlayer owner = null;
 
     public TravelersDoorEntity(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -60,7 +70,7 @@ public class TravelersDoorEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
-    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use, int casterSeq) {
+    public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, int use, int casterSeq, ServerPlayer owner) {
         this(type, level);
 
         Vec3 dir = new Vec3(facing.x, 0.0, facing.z);
@@ -71,41 +81,42 @@ public class TravelersDoorEntity extends Entity {
         this.moveTo(center.x, center.y, center.z, yaw, pitch);
 
         this.use = use;
+        this.owner = owner;
     }
 
     public TravelersDoorEntity(EntityType<? extends TravelersDoorEntity> type, Level level, Vec3 facing, Vec3 center, double destX, double destY, double destZ) {
-        this(type, level, facing, center, 0, 5);
+        this(type, level, facing, center, 0, 5, null);
         this.destX = destX;
         this.destY = destY;
         this.destZ = destZ;
 
-        while(!level.getBlockState(BlockPos.containing(destX, this.destY, destZ)).getCollisionShape(level, BlockPos.containing(destX, this.destY, destZ)).isEmpty()) {
+        while (!level.getBlockState(BlockPos.containing(destX, this.destY, destZ)).getCollisionShape(level, BlockPos.containing(destX, this.destY, destZ)).isEmpty()) {
             this.destY += 1.0;
         }
     }
 
     private static float yawFromVector(Vec3 dir) {
         if (dir.lengthSqr() < 1.0E-6) return 0.0F;
-        return (float)(Math.toDegrees(Math.atan2(-dir.x, dir.z)));
+        return (float) (Math.toDegrees(Math.atan2(-dir.x, dir.z)));
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if(!(level() instanceof ServerLevel serverLevel)) {
+        if (!(level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
         serverLevel.setChunkForced(chunkPosition().x, chunkPosition().z, true);
 
 
-        if(tickCount > 20 * 6) {
+        if (tickCount > 20 * 6) {
             this.discard();
             return;
         }
 
-        switch(use) {
+        switch (use) {
             case 0 -> teleportNearbyEntities();
             case 2 -> spiritWorldHandling();
         }
@@ -118,6 +129,23 @@ public class TravelersDoorEntity extends Entity {
             ServerLevel spiritWorldLevel = serverLevel.getServer().getLevel(spiritWorld);
             if (spiritWorldLevel == null) return;
 
+            String name = owner == null ? null : owner.getName().getString();
+            var factions = BeyonderData.factionStorage.getPartOfFaction(name);
+
+            FactionCore nation = null;
+            FactionCore church = null;
+
+            switch (factions.size()) {
+                case 1 -> {
+                    nation = factions.getFirst();
+                }
+                case 2 -> {
+                    nation = factions.getFirst();
+                    church = factions.getLast();
+                }
+            }
+
+            boolean allGood = true;
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
@@ -137,6 +165,26 @@ public class TravelersDoorEntity extends Entity {
 
                     entity.teleportTo(spiritWorldLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5,
                             Set.of(), entity.getYRot(), entity.getXRot());
+
+
+                    if (owner != null) {
+                        if (BeyonderData.getPathway(owner).equals("door") && BeyonderData.getSequence(owner) == 5) {
+                            if (entity instanceof ServerPlayer target) {
+                                if (nation != null && nation.isPartOfFaction(target.getName().getString()))
+                                    allGood = false;
+                                if (church != null && church.isPartOfFaction(target.getName().getString()))
+                                    allGood = false;
+
+                                if (allGood)
+                                    allGood = !AllyUtil.areAllies(target, owner);
+
+                                if (allGood && BeyonderData.getSequence(target) <= 4) {
+                                    if (target.getHealth() <= (target.getMaxHealth() * 0.5f))
+                                        owner.getData(ModAttachments.RITUALS.get()).setStage(1);
+                                }
+                            }
+                        }
+                    }
 
                 } else {
                     ResourceKey<Level> OVERWORLD = Level.OVERWORLD;
@@ -173,7 +221,7 @@ public class TravelersDoorEntity extends Entity {
         ServerLevel spiritWorldLevel = level.getServer().getLevel(spiritWorld);
         if (spiritWorldLevel == null) return;
 
-        if(level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
+        if (level.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, position().add(0, .5, 0), 35, .4, .1);
             ParticleUtil.spawnParticles(level, new DustParticleOptions(
                     new Vector3f(99 / 255f, 255 / 255f, 250 / 255f),
@@ -191,7 +239,7 @@ public class TravelersDoorEntity extends Entity {
         Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize();
 
         for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
-            if(!(entity instanceof LivingEntity) || casterSeq <= 2) {
+            if (!(entity instanceof LivingEntity living) || casterSeq <= 2) {
                 entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
                 continue;
             }
@@ -199,11 +247,26 @@ public class TravelersDoorEntity extends Entity {
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
 
+            AtomicBoolean stopped = new AtomicBoolean(false);
+
             ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
+                if (stopped.get()) {
+                    return;
+                }
+
+                if (!entity.isAlive()) {
+                    stopped.set(true);
+                }
+
                 ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
+
+                entity.fallDistance = 0;
+                entity.setOnGround(true);
+
+                living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 20 * 5, 5));
 
                 ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, currentEntityPos[0].add(0, .5, 0), 35, .4, .1);
                 ParticleUtil.spawnParticles(level, ParticleTypes.PORTAL, currentEntityPos[0].add(0, .5, 0), 35, .7, .1);
@@ -233,7 +296,7 @@ public class TravelersDoorEntity extends Entity {
         if (compoundTag.contains("DestZ")) {
             this.destZ = compoundTag.getDouble("DestZ");
         }
-        if(compoundTag.contains("Use")) {
+        if (compoundTag.contains("Use")) {
             this.use = compoundTag.getInt("Use");
         }
     }

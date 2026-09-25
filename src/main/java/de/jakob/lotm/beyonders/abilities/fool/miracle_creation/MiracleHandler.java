@@ -3,6 +3,9 @@ package de.jakob.lotm.beyonders.abilities.fool.miracle_creation;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
+import de.jakob.lotm.beyonders.abilities.fool.MiracleCreationAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
@@ -64,14 +67,18 @@ public class MiracleHandler {
     }
 
     private static void summonLightning(ServerLevel level, LivingEntity caster) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, 70, 2, true);
-        for(int i = 0; i < 35; i++) {
+        MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
+
+        float damage = ability.baseDamage * 30;
+
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2, true);
+        for (int i = 0; i < 35; i++) {
             BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
-            if(state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())
+            if (state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        GiantLightningEntity lightning = new GiantLightningEntity(level, caster, targetLoc, 50, 6, DamageLookup.lookupDamage(2, 1)  * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), BeyonderData.isGriefingEnabled(caster), 13, 200, 0x6522a8);
+        GiantLightningEntity lightning = new GiantLightningEntity(level, caster, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(caster), 0, 200, 0x6522a8);
         level.addFreshEntity(lightning);
     }
 
@@ -81,19 +88,22 @@ public class MiracleHandler {
         EffectManager.playEffect(EffectIds.MIRACLE, center.x, center.y, center.z, level);
 
         float timeMultiplier = .2f;
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 15, caster.getUUID(), 50, timeMultiplier);
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 6, caster.getUUID(), 30, timeMultiplier);
         timeChangeEntity.setPos(caster.getX(), caster.getY(), caster.getZ());
         level.addFreshEntity(timeChangeEntity);
     }
 
     private static void makeGroundHot(ServerLevel level, LivingEntity caster) {
+        MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
+
+        float damage = ability.baseDamage * 7.0f;
         Vec3 center = caster.position();
 
         // Affect entities
-        ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
+        ServerScheduler.scheduleForDuration(0, 4, 20 * 10, () -> {
             AbilityUtil.getNearbyEntities(caster, level, center, 70).forEach(e -> {
-                if(AbilityUtil.distanceToGround(level, e) <= 1.4) {
-                    e.hurt(level.damageSources().onFire(), (float) (DamageLookup.lookupDps(2, .7, 4, 25) * BeyonderData.getMultiplier(caster)));
+                if (AbilityUtil.distanceToGround(level, e) <= 1.4) {
+                    e.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, caster), damage);
                     e.setRemainingFireTicks(40);
                 }
             });
@@ -153,7 +163,7 @@ public class MiracleHandler {
         Vec3 center = caster.position();
 
         // Affect entities
-        ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
+        ServerScheduler.scheduleForDuration(0, 4, 20 * 10, () -> {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, caster, 70,
                     center, new MobEffectInstance(MobEffects.BLINDNESS, 20 * 10, 5, false, false, false));
 
@@ -221,30 +231,30 @@ public class MiracleHandler {
 
         HashSet<LivingEntity> affectedEntities = new HashSet<>();
 
-        ServerScheduler.scheduleForDuration(0, 2, 20 * 30, () -> {
+        ServerScheduler.scheduleForDuration(0, 2, 20 * 15, () -> {
             AbilityUtil.getAllNearbyEntities(caster, level, centerPos, 60).forEach(e -> {
-                if(!(e instanceof LivingEntity living)) {
+                if (!(e instanceof LivingEntity living)) {
                     e.setDeltaMovement(0, .2, 0);
                     e.hurtMarked = true;
                     return;
                 }
 
-                AttributeInstance attribute =  living.getAttribute(Attributes.GRAVITY);
-                if(attribute == null) {
+                AttributeInstance attribute = living.getAttribute(Attributes.GRAVITY);
+                if (attribute == null) {
                     e.setDeltaMovement(0, .2, 0);
                     e.hurtMarked = true;
                     return;
                 }
 
-                if(!affectedEntities.contains(living) && ! attribute.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "reverse_gravity"))) {
+                if (!affectedEntities.contains(living) && !attribute.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "reverse_gravity"))) {
                     affectedEntities.add(living);
                     attribute.addTransientModifier(new AttributeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "reverse_gravity"), -2, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
                 }
             });
         }, () -> {
-            for(LivingEntity e : affectedEntities) {
-                AttributeInstance attribute =  e.getAttribute(Attributes.GRAVITY);
-                if(attribute != null && attribute.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "reverse_gravity"))) {
+            for (LivingEntity e : affectedEntities) {
+                AttributeInstance attribute = e.getAttribute(Attributes.GRAVITY);
+                if (attribute != null && attribute.hasModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "reverse_gravity"))) {
                     attribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "reverse_gravity"));
                 }
             }
@@ -252,25 +262,55 @@ public class MiracleHandler {
     }
 
     private static void summonVolcano(ServerLevel level, LivingEntity caster) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(caster, 60, 2);
+        MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
+
+        float damage = ability.baseDamage * 7.5f;
+        Vec3 targetPos = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2);
 
         EffectManager.playEffect(EffectIds.MIRACLE, targetPos.x, targetPos.y, targetPos.z, level);
 
-        VolcanoEntity volcano = new VolcanoEntity(level, targetPos, (float) DamageLookup.lookupDamage(2, .5) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster);
+        VolcanoEntity volcano = new VolcanoEntity(level, targetPos, damage, caster);
         level.addFreshEntity(volcano);
     }
 
     private static void summonTornados(ServerLevel level, LivingEntity caster) {
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, 12, 3);
+        MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
-        Vec3 pos = AbilityUtil.getTargetLocation(caster, 12, 2);
+        float damage = ability.baseDamage * 3.0f;
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, ability.baseDistance, 3);
 
-        TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, 32.5f * (float) BeyonderData.getMultiplier(caster), caster, target, 5);
+        Vec3 pos = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2);
+
+        TornadoEntity tornado = target == null ?
+                new TornadoEntity(ModEntities.TORNADO.get(),
+                        level,
+                        .15f,
+                        damage,
+                        caster)
+                : new TornadoEntity(ModEntities.TORNADO.get(),
+                level,
+                .15f,
+                damage,
+                caster,
+                target,
+                5
+        );
+
         tornado.setPos(pos);
         level.addFreshEntity(tornado);
 
-        for(int i = 0; i < 5; i++) {
-            TornadoEntity additionalTornado = target == null || (new Random()).nextInt(4) != 0 ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster) : new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, (float) DamageLookup.lookupDamage(2, .75) * (float) BeyonderData.getMultiplier(caster), caster, target, 4);
+        for (int i = 0; i < 5; i++) {
+            TornadoEntity additionalTornado = target == null
+                    || (new Random()).nextInt(4) != 0 ?
+                    new TornadoEntity(ModEntities.TORNADO.get(),
+                            level,
+                            .15f,
+                            damage,
+                            caster)
+                    : new TornadoEntity(ModEntities.TORNADO.get(),
+                    level, .15f,
+                    damage, caster, target, 4);
+
             Vec3 randomOffset = new Vec3((level.random.nextDouble() - 0.5) * 70, 3, (level.random.nextDouble() - 0.5) * 70);
             additionalTornado.setPos(pos.add(randomOffset));
             level.addFreshEntity(additionalTornado);
@@ -279,12 +319,18 @@ public class MiracleHandler {
 
 
     private static void summonMeteor(ServerLevel level, LivingEntity caster) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, 85, 3);
+        MiracleCreationAbility ability = (MiracleCreationAbility) LOTMCraft.abilityHandler.getById("miracle_creation_ability");
 
+        float damage = ability.baseDamage * 40;
+
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 3);
 
         EffectManager.playEffect(EffectIds.MIRACLE, targetLoc.x, targetLoc.y, targetLoc.z, level);
 
-        MeteorEntity meteor = new MeteorEntity(level, 3.25f,  (float) DamageLookup.lookupDamage(2, 1) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), 4, caster, BeyonderData.isGriefingEnabled(caster), 17, 45);
+        MeteorEntity meteor = new MeteorEntity(level,
+                3.25f, damage, 4, caster, BeyonderData.isGriefingEnabled(caster),
+                0, 45);
+
         meteor.setPosition(targetLoc);
         level.addFreshEntity(meteor);
     }

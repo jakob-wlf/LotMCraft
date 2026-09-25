@@ -22,6 +22,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.RITUALISTIC_TABLE.get());
         this.dropSelf(ModBlocks.SEFIRAH_BLOCK.get());
         this.dropOther(ModBlocks.MYSTICAL_RING.get(), Items.DIAMOND);
+        this.dropSelf(ModBlocks.BREEDING_BLOCK.get());
     }
 
     @Override

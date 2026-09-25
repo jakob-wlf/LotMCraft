@@ -25,7 +25,7 @@ public class MoonItem extends Item {
         player.getCooldowns().addCooldown(this, 20 * 35);
 
         setTimeToMidnight(serverLevel);
-        BigMoonEntity moonEntity = new BigMoonEntity(serverLevel, (float) DamageLookup.lookupDps(2, .7f, 2, 20) * (float) BeyonderData.getMultiplierForSequence(2), BeyonderData.isGriefingEnabled(player), player.getUUID(), 20 * 30);
+        BigMoonEntity moonEntity = new BigMoonEntity(serverLevel, 4f, BeyonderData.isGriefingEnabled(player), player.getUUID(), 20 * 15);
         moonEntity.setPos(player.getX(), player.getY() + 25, player.getZ());
         serverLevel.addFreshEntity(moonEntity);
 

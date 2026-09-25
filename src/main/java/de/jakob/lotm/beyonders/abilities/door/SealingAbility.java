@@ -26,12 +26,12 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SealingAbility extends Ability {
+    private static HashMap<UUID, Integer> durationMap = new HashMap<>();
+
     public SealingAbility(String id) {
         super(id, 25, "sealing");
         canBeCopied = false;
@@ -39,6 +39,12 @@ public class SealingAbility extends Ability {
         interactionCacheTicks = 20 * 14;
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 25));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f));
     }
 
     @Override
@@ -56,12 +62,12 @@ public class SealingAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return;
 
-        int radius = (int) (5*multiplier(entity));
+        int radius = 10;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (20*multiplier(entity)), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
@@ -69,31 +75,24 @@ public class SealingAbility extends Ability {
 
         List<LivingEntity> sealedEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetLoc, radius, false);
         sealedEntities.forEach(e -> {
-            int duration =0;
-            if(AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e))+1 < 0) {
-                //LOTMCraft.LOGGER.info("Cant seal normal");
-                return;
-            }
-            if((BeyonderData.getPathway(e).equals("door") && AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e)) <= 0)) {
-                return;
-            }else{
-                duration = 20*14;
-            };
+            int duration = 0;
 
-            BeyonderData.addModifierWithTimeLimit(e, "sealed", .3,duration);
-            int seq = AbilityUtil.getSeqWithArt(entity, this);
-            if  (seq<=1)
-                {
-                   if (!(BeyonderData.getSequence(e) ==0)) {
-                       DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                       component.disableAbilityUsageForTime("sealed", duration, e);
-                   };
-                };
-            if(BeyonderData.isBeyonder(e) && BeyonderData.getSequence(e) > entitySeq) {
-                DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                component.disableAbilityUsageForTime("sealed", duration, e);
+            if ((BeyonderData.getPathway(e).equals("door") && AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e)) <= 0)) {
+                return;
+            } else if (entitySeq > BeyonderData.getSequence(e)) {
+                duration = 20;
+            } else {
+                duration = 20 * 10;
             }
-            if(!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
+
+            BeyonderData.addModifierWithTimeLimit(e, "sealed", .6, duration);
+
+            DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+            component.disableAbilityUsageForTime("sealed", duration, e);
+
+            durationMap.put(e.getUUID(), duration);
+
+            if (!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
                 mob.setNoAi(true);
             }
         });
@@ -101,25 +100,27 @@ public class SealingAbility extends Ability {
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.BLOCKS, 1f, 1f);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1f, 1f);
 
+        AtomicInteger totalDuration = new AtomicInteger(0);
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, 20 * 14, () -> {
+
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, 20 * 10, () -> {
             Location sealLoc = new Location(targetLoc, level);
 
-            if(InteractionHandler.isInteractionPossible(sealLoc, "explosion", entitySeq) || InteractionHandler.isInteractionPossible(sealLoc, "sealing_malfunction", entitySeq)) {
+            if (InteractionHandler.isInteractionPossible(sealLoc, "explosion", entitySeq) || InteractionHandler.isInteractionPossible(sealLoc, "sealing_malfunction", entitySeq)) {
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, 200, 2, .2);
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.PORTAL, targetLoc, 200, 2, .2);
 
                 sealedEntities.forEach(e -> {
                     e.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
-                    if(BeyonderData.isBeyonder(e)) {
+                    if (BeyonderData.isBeyonder(e)) {
                         DisabledAbilitiesComponent comp = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
                         comp.enableAbilityUsage("sealed");
                     }
-                    if(!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
+                    if (!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
                         mob.setNoAi(false);
                     }
                 });
-                if(taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
+                if (taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
                 return;
             }
 
@@ -128,23 +129,21 @@ public class SealingAbility extends Ability {
             ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions2, targetLoc, radius, 40);
 
             sealedEntities.forEach(e -> {
-                int duration=0;
-                if(AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e))+1 < 0) {
-                    return;
-                }
-                if((BeyonderData.getPathway(e).equals("door") && AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e)) <= 0)) {
-                    return;
-                }else{
-                    duration = 20*14;
-                };
+                if(!durationMap.containsKey(e.getUUID())) return;
+
+                int duration = durationMap.get(e.getUUID());
+
+                if(totalDuration.get() >= duration) return;
+
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 100, false, false, false));
                 e.setDeltaMovement(new Vec3(0, 0, 0));
                 e.hurtMarked = true;
                 ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.STAR.get(), e.getEyePosition().subtract(0, .5, 0), 15, .4, .9, .4, .05);
             });
+            totalDuration.set(totalDuration.get() + 1);
         }, () -> {
             sealedEntities.forEach(e -> {
-                if(!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
+                if (!(e instanceof Player) && !BeyonderData.isBeyonder(e) && e instanceof Mob mob) {
                     mob.setNoAi(false);
                 }
             });

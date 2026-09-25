@@ -22,6 +22,8 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import static de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler.checkAsleep;
@@ -30,6 +32,14 @@ public class NightmareSpectatorAbility extends Ability {
 
     public NightmareSpectatorAbility(String id) {
         super(id, 10f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 8, 10, 10, 10, 10, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3000f, 1000f, 500f, 350f, 250f, 150f, 100f, 40f, 40f));
+
+        baseDamage = 9f;
     }
 
     @Override
@@ -58,7 +68,15 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 200, 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
 
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
@@ -74,9 +92,7 @@ public class NightmareSpectatorAbility extends Ability {
             return;
         }
 
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-            return;
-        }
+        VisionaryHandler.shouldTrigger(entitySeq, entity, target, this);
 
         if(checkAsleep(entity, target)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
@@ -85,17 +101,8 @@ public class NightmareSpectatorAbility extends Ability {
 
         VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
-        // Damage target
-        target.hurt(new DamageSource(
-                serverLevel.registryAccess()
-                        .registryOrThrow(Registries.DAMAGE_TYPE)
-                        .getHolderOrThrow(ModDamageTypes.LOOSING_CONTROL)
-        ), (float) DamageLookup.lookupDamage(5, 1.1) * multiplier(entity));
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, entity), baseDamage);
 
-        // Add effect
-        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 4, 1));
-
-        // Decrease Sanity
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0165f* (int) Math.max(multiplier(entity)/4,1)), target, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(target));
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.085f), target, entitySeq, BeyonderData.getSequence(target));
     }
 }

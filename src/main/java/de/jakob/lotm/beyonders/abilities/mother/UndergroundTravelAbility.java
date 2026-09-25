@@ -9,6 +9,7 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -21,11 +22,19 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class UndergroundTravelAbility extends Ability {
     public UndergroundTravelAbility(String id) {
         super(id, 3f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1300f, 1000f, 625f, 550f, 380f));
     }
 
     @Override
@@ -44,6 +53,12 @@ public class UndergroundTravelAbility extends Ability {
 
         BlockParticleOption dirt = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.DIRT.defaultBlockState());
         Vec3 origin = entity.position();
+
+        if(AbilityUtil.distanceToGround(level, entity) > 2){
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.underground_travel_ability.not_on_ground")
+                    .withColor(0x8abd93));
+            return;
+        }
 
         level.playSound(null, origin.x, origin.y, origin.z, SoundEvents.STONE_BREAK, SoundSource.PLAYERS, 1f, .7f);
         ParticleUtil.spawnCircleParticles((ServerLevel) level, dirt, origin, 1.2, 30);

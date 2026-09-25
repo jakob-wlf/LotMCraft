@@ -45,13 +45,14 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderEventHandler {
+
+    private static Map<UUID, Long> regressInvul = new HashMap<>();
 
     @SubscribeEvent
     public static void onPlayerJoinWorld(PlayerEvent.PlayerLoggedInEvent event) {
@@ -149,26 +150,6 @@ public class BeyonderEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onLivingDamageLiving(LivingIncomingDamageEvent event) {
-        if (!(event.getSource().getEntity() instanceof LivingEntity source)) return;
-        LivingEntity target = event.getEntity();
-
-        if (!BeyonderData.isBeyonder(target)) return;
-
-        int targetSeq = BeyonderData.getSequence(target);
-        int sourceSeq = BeyonderData.getSequence(source);
-
-        if (targetSeq >= sourceSeq) return;
-
-        float baseMultiplier = 1f / (1f + (sourceSeq - targetSeq) * 0.175f);
-        if (AbilityUtil.isTargetSignificantlyStronger(sourceSeq, targetSeq)) {
-            baseMultiplier *= 0.35f;
-        }
-
-        event.setAmount(event.getAmount() * baseMultiplier);
-    }
-
     // Disable Flight while in combat
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {
@@ -237,6 +218,7 @@ public class BeyonderEventHandler {
     @SubscribeEvent
     public static void onPlayerDrops(LivingDropsEvent event) {
         // sorry nihil i have to mess with your method :)
+        // ok ;-;
         // cancel the drop of items completely for summoned entities
         if (event.getEntity().getPersistentData().contains("VoidSummoned")) {
             event.setCanceled(true);
@@ -262,10 +244,14 @@ public class BeyonderEventHandler {
 
         var data = playerMap.get(player).get();
 
-        BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
-                .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+        BeyonderCharacteristicItem charItem = null;
 
-        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+        if(!regressInvul.containsKey(player.getUUID())) {
+            charItem = BeyonderCharacteristicItemHandler
+                    .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+
+            BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+        }
 
         if (charItem == null) return;
 
@@ -286,6 +272,8 @@ public class BeyonderEventHandler {
             );
 
             event.getDrops().add(itemEntity);
+
+            regressInvul.put(player.getUUID(), System.currentTimeMillis());
         }
     }
 
@@ -305,10 +293,24 @@ public class BeyonderEventHandler {
 
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
+
             if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
             && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
+            }
+
+            if(regressInvul.containsKey(player.getUUID())){
+                long expirationTime = regressInvul.get(player.getUUID())
+                        + player.level().getGameRules().getInt(ModGameRules
+                        .AFTER_DEATH_REGRESSION_INVULNERABILITY) * 1000L;
+
+                if (System.currentTimeMillis() >= expirationTime) {
+                    regressInvul.remove(player.getUUID());
+                }
+                else{
+                    return;
+                }
             }
 
             StoredData data = playerMap.get(player).get();
@@ -448,7 +450,7 @@ public class BeyonderEventHandler {
 
         // Indirect = ticking AoEs (PURIFICATION_INDIRECT). Everything else — melee, projectiles,
         // spawned entities — counts as direct (PURIFICATION or any other damage type).
-        boolean isDirect = !event.getSource().is(ModDamageTypes.PURIFICATION_INDIRECT);
+        boolean isDirect = !event.getSource().is(ModDamageTypes.PURIFICATION);
 
         // seqDiff > 0 means attacker is stronger (lower seq number), < 0 means weaker
 
@@ -503,7 +505,7 @@ public class BeyonderEventHandler {
             }
 
             // Either way, reset digestion to full so the victim isn't immediately vulnerable again
-            victimPlayer.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(1);
+            victimPlayer.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(1);
             if (victim instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
         }
     }
@@ -601,14 +603,13 @@ public class BeyonderEventHandler {
         int seq = BeyonderData.getSequence(entity);
         String path =  BeyonderData.getPathway(entity);
 
-
         if (target == Level.NETHER && seq > 7){
             event.setCanceled(true);
         }
         else if (target == Level.END){
-            if(path.equals("door") && seq > 3)
+            if(path.equals("door") && seq > 4)
                 event.setCanceled(true);
-            else if(seq > 2)
+            else if(seq > 3)
                 event.setCanceled(true);
         }
     }

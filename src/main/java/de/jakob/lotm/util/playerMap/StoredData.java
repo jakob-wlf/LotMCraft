@@ -91,7 +91,7 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         }
 
         int newSequence = sequence + 1;
-        boolean becomesNonBeyonder = (newSequence == LOTMCraft.NON_BEYONDER_SEQ);
+        boolean becomesNonBeyonder = (newSequence >= LOTMCraft.NON_BEYONDER_SEQ);
         String sefirot = claimedSefirot;
 
         // Revert pathway from history if a domain-switch was recorded here
