@@ -3,6 +3,7 @@ package de.jakob.lotm.entity.custom.spirits;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -64,22 +65,22 @@ public class HeadlessBrideEntity extends Monster {
     private static final int GROUND_SCAN_DEPTH = 16;
 
     private static final int MELEE_COOLDOWN = 25;
-    private static final double MELEE_RANGE = 2.5;
+    private static final double MELEE_RANGE = 4;
     private static final int MELEE_WINDUP_TICKS = 6;
 
     private static final int CURSE_COOLDOWN = 110;
     private static final double CURSE_MIN_RANGE = 4.0;
     private static final double CURSE_MAX_RANGE = 16.0;
     private static final int CURSE_WINDUP_TICKS = 14;
-    private static final float CURSE_DAMAGE = 35.0F;
+    private static final float CURSE_DAMAGE = 80.0F;
     private static final int CURSE_WITHER_DURATION = 100;
     private static final int CURSE_UNLUCK_DURATION = 600;
     private static final int CURSE_WEAKNESS_DURATION = 150;
 
     private static final double KITE_TOO_CLOSE_RANGE = 5.0;
     private static final double KITE_RETREAT_DISTANCE = 8.0;
-    private static final float MELEE_COMMIT_CHANCE = 0.25F;
-    private static final int MELEE_DECISION_COOLDOWN = 40;
+    private static final float MELEE_COMMIT_CHANCE = 0.5F;
+    private static final int MELEE_DECISION_COOLDOWN = 30;
 
     private int meleeCooldown = 0;
     private int curseCooldown = CURSE_COOLDOWN / 2;
@@ -123,7 +124,7 @@ public class HeadlessBrideEntity extends Monster {
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
                 .add(Attributes.FLYING_SPEED, 1.0)
                 .add(Attributes.SCALE, 1.15)
-                .add(Attributes.ATTACK_DAMAGE, 100.0)
+                .add(Attributes.ATTACK_DAMAGE, 110.0)
                 .add(Attributes.ARMOR, 10.0)
                 .add(Attributes.FOLLOW_RANGE, 100.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.7);
@@ -379,60 +380,35 @@ public class HeadlessBrideEntity extends Monster {
             bride.playSound(SoundEvents.WITCH_CELEBRATE, 1.0F, 0.8F);
 
             if(bride.level() instanceof ServerLevel serverLevel) {
-                BlockPos originBlock = BlockPos.containing(bride.position());
-
-                Vec3 blockCenter = Vec3.atCenterOf(originBlock);
-                Vec3 entityCorrection = bride.position().subtract(blockCenter);
-
-                float yawRad = bride.getYRot() * Mth.DEG_TO_RAD;
-                Vec3 forward = new Vec3(-Mth.sin(yawRad), 0.0, Mth.cos(yawRad));
-
-                double distanceInFront = .8;
-                Vec3 frontOffset = forward.scale(distanceInFront);
-
-                double heightOffset = bride.getBbHeight() * 0.5;
-
-                Vec3 totalOffset = entityCorrection
-                        .add(frontOffset)
-                        .add(new Vec3(0.0, heightOffset, 0.0));
-
-                PlayPhotonBlockEffectPacket packet = new PlayPhotonBlockEffectPacket(
+                Vec3 lookOffset = new Vec3(bride.getLookAngle().x, 0, bride.getLookAngle().z).normalize().scale(0.5);
+                Vec3 effectOrigin = new Vec3(0, bride.getBbHeight() * 0.2, 0).add(lookOffset);
+                PacketHandler.sendToNearbyPlayers(new PlayPhotonEntityEffectPacket(
                         "headless_bride_curse_start",
-                        originBlock,
-                        totalOffset.x,
-                        totalOffset.y,
-                        totalOffset.z,
+                        bride.getId(),
+                        effectOrigin.x,
+                        effectOrigin.y,
+                        effectOrigin.z,
                         1.25,
                         null,
-                        -1,
-                        false,
+                        true,
                         false
-                );
-
-                PacketHandler.sendToNearbyPlayers(packet, serverLevel, bride.position(), 128);
+                ), serverLevel, bride.position(), 128);
             }
 
             LivingEntity target = bride.getTarget();
             if(target != null && target.level() instanceof ServerLevel serverLevel) {
-                BlockPos originBlock = BlockPos.containing(target.position());
-
-                Vec3 blockCenter = Vec3.atCenterOf(originBlock);
-                Vec3 entityCorrection = target.position().subtract(blockCenter);
-
-                PlayPhotonBlockEffectPacket packet = new PlayPhotonBlockEffectPacket(
+                Vec3 effectOrigin = new Vec3(0, -target.getBbHeight(), 0);
+                PacketHandler.sendToNearbyPlayers(new PlayPhotonEntityEffectPacket(
                         "headless_bride_curse",
-                        originBlock,
-                        entityCorrection.x,
-                        entityCorrection.y,
-                        entityCorrection.z,
-                        2,
+                        target.getId(),
+                        effectOrigin.x,
+                        effectOrigin.y,
+                        effectOrigin.z,
+                        1.75,
                         null,
-                        -1,
-                        false,
+                        true,
                         false
-                );
-
-                PacketHandler.sendToNearbyPlayers(packet, serverLevel, target.position(), 128);
+                ), serverLevel, target.position(), 128);
             }
         }
 

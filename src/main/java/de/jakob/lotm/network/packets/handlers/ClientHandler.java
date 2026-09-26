@@ -722,7 +722,7 @@ public class ClientHandler {
     }
 
     public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath());
         FX fx = FXHelper.getFX(id);
 
         Entity entity = getById(packet.entityId());
