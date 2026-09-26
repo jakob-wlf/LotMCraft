@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.death.NationOfTheDeadAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.ImprisonAbility;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -33,7 +34,7 @@ public class PaperFigurineSubstituteAbility extends Ability {
     private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
 
     public PaperFigurineSubstituteAbility(String id) {
-        super(id, 10f);
+        super(id, 10f, "substitution");
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
@@ -74,6 +75,7 @@ public class PaperFigurineSubstituteAbility extends Ability {
     @SubscribeEvent
     public static void takeDamage(LivingDamageEvent.Pre event) {
         if (ImprisonAbility.IMPRISONED.contains(event.getEntity().getUUID())) return;
+        if (NationOfTheDeadAbility.SUBSTITUTION_SUPPRESSED.contains(event.getEntity().getUUID())) return;
         if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
             return;
 

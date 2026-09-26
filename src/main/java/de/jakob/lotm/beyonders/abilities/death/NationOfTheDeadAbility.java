@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.joml.Vector3f;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,6 +58,7 @@ public class NationOfTheDeadAbility extends Ability {
             new DustParticleOptions(new Vector3f(0.85f, 0.82f, 0.78f), 0.7f);
 
     private static final Map<UUID, ActiveDomain> activeDomains = new HashMap<>();
+    public static final Set<UUID> SUBSTITUTION_SUPPRESSED = ConcurrentHashMap.newKeySet();
 
     public NationOfTheDeadAbility(String id) {
         super(id, 180f, "death");
@@ -201,11 +203,12 @@ public class NationOfTheDeadAbility extends Ability {
         }
 
         taskId.set(ServerScheduler.scheduleForDuration(0, 1, DURATION_TICKS, () -> {
-            Vec3 tickCenter = domain.currentCenter();
-            Location loc = new Location(tickCenter, serverLevel);
+            Location loc = new Location(center, serverLevel);
 
             if (InteractionHandler.isInteractionPossibleStrictlyHigher(loc, "purification_holy", casterSeq, -1)) {
                 activeDomains.remove(entity.getUUID());
+                SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+                domain.substitutionSuppressed.clear();
                 ServerScheduler.cancel(taskId.get());
                 return;
             }
@@ -214,66 +217,66 @@ public class NationOfTheDeadAbility extends Ability {
             double helixAngle = tick * 0.08;
 
             if (tick % 5 == 0) {
-                spawnShellParticles(serverLevel, VOID_DUST, tickCenter, domainRadius, 18);
-                spawnShellParticles(serverLevel, ParticleTypes.SOUL, tickCenter, domainRadius, 12);
+                spawnShellParticles(serverLevel, VOID_DUST, center, domainRadius, 18);
+                spawnShellParticles(serverLevel, ParticleTypes.SOUL, center, domainRadius, 12);
             }
 
             if (tick % 4 == 0) {
-                spawnShellParticles(serverLevel, SOUL_DUST, tickCenter, domainRadius * 0.65, 14);
+                spawnShellParticles(serverLevel, SOUL_DUST, center, domainRadius * 0.65, 14);
             }
 
-            spawnRingParticles(serverLevel, DEATH_DUST, tickCenter, domainRadius,
+            spawnRingParticles(serverLevel, DEATH_DUST, center, domainRadius,
                     48, 0, 0.15);
-            spawnRingParticles(serverLevel, DEATH_DUST, tickCenter, domainRadius,
+            spawnRingParticles(serverLevel, DEATH_DUST, center, domainRadius,
                     48, 2.5, 0.12);
-            spawnRingParticles(serverLevel, DEATH_DUST, tickCenter, domainRadius,
+            spawnRingParticles(serverLevel, DEATH_DUST, center, domainRadius,
                     48, -2.5, 0.12);
 
             if (tick % 2 == 0) {
-                spawnRingParticles(serverLevel, SOUL_DUST, tickCenter, domainRadius * 0.6,
+                spawnRingParticles(serverLevel, SOUL_DUST, center, domainRadius * 0.6,
                         36, 0, 0.10);
-                spawnRingParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, tickCenter, domainRadius * 0.6,
+                spawnRingParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, center, domainRadius * 0.6,
                         24, 1.5, 0.08);
             }
 
             if (tick % 3 == 0) {
-                spawnRingParticles(serverLevel, BONE_DUST, tickCenter, domainRadius * 0.3,
+                spawnRingParticles(serverLevel, BONE_DUST, center, domainRadius * 0.3,
                         28, 0, 0.08);
-                spawnRingParticles(serverLevel, PALE_SOUL_DUST, tickCenter, domainRadius * 0.45,
+                spawnRingParticles(serverLevel, PALE_SOUL_DUST, center, domainRadius * 0.45,
                         32, 0.8, 0.07);
             }
 
-            spawnHelixParticles(serverLevel, SOUL_DUST, tickCenter,
+            spawnHelixParticles(serverLevel, SOUL_DUST, center,
                     domainRadius * 0.25, 18, 3, 60, helixAngle);
-            spawnHelixParticles(serverLevel, DEATH_DUST, tickCenter,
+            spawnHelixParticles(serverLevel, DEATH_DUST, center,
                     domainRadius * 0.25, 18, 3, 60, helixAngle + Math.PI);
 
             if (tick % 2 == 0) {
-                spawnHelixParticles(serverLevel, VOID_DUST, tickCenter,
+                spawnHelixParticles(serverLevel, VOID_DUST, center,
                         domainRadius * 0.55, 22, 2, 48, helixAngle * 0.5);
-                spawnHelixParticles(serverLevel, PALE_SOUL_DUST, tickCenter,
+                spawnHelixParticles(serverLevel, PALE_SOUL_DUST, center,
                         domainRadius * 0.55, 22, 2, 48, helixAngle * 0.5 + Math.PI);
             }
 
             if (tick % 8 == 0) {
-                spawnSoulColumns(serverLevel, tickCenter, domainRadius, 6, 5);
+                spawnSoulColumns(serverLevel, center, domainRadius, 6, 5);
             }
 
             if (tick % 3 == 0) {
-                spawnAmbientFog(serverLevel, tickCenter, domainRadius, 20);
+                spawnAmbientFog(serverLevel, center, domainRadius, 20);
             }
 
             if (tick % 10 == 0) {
-                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, tickCenter,
+                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, center,
                         domainRadius * 0.85, 30);
-                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, tickCenter,
+                spawnShellParticles(serverLevel, ParticleTypes.SOUL_FIRE_FLAME, center,
                         domainRadius * 0.40, 20);
             }
 
             if (tick % 40 == 0) {
-                spawnShockwaveRing(serverLevel, tickCenter, domainRadius, 72);
-                spawnShockwaveRing(serverLevel, tickCenter, domainRadius * 0.7, 56);
-                spawnShockwaveRing(serverLevel, tickCenter, domainRadius * 0.4, 40);
+                spawnShockwaveRing(serverLevel, center, domainRadius, 72);
+                spawnShockwaveRing(serverLevel, center, domainRadius * 0.7, 56);
+                spawnShockwaveRing(serverLevel, center, domainRadius * 0.4, 40);
             }
 
             if (tick % 6 == 0) {
@@ -282,9 +285,9 @@ public class NationOfTheDeadAbility extends Ability {
                     double angle = rng.nextDouble() * 2 * Math.PI;
                     double dist = rng.nextDouble() * domainRadius;
                     serverLevel.sendParticles(ParticleTypes.ASH,
-                            tickCenter.x + dist * Math.cos(angle),
-                            tickCenter.y + rng.nextDouble() * 3.0,
-                            tickCenter.z + dist * Math.sin(angle),
+                            center.x + dist * Math.cos(angle),
+                            center.y + rng.nextDouble() * 3.0,
+                            center.z + dist * Math.sin(angle),
                             1, 0.5, 0.1, 0.5, 0.01);
                 }
             }
@@ -299,9 +302,13 @@ public class NationOfTheDeadAbility extends Ability {
                         SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD.value(), SoundSource.PLAYERS, 1.2f, 0.8f);
             }
 
-            AbilityUtil.getNearbyEntities(entity, serverLevel, tickCenter, (int) domainRadius).forEach(target -> {
+            Set<UUID> nowSuppressed = new HashSet<>();
+
+            AbilityUtil.getNearbyEntities(entity, serverLevel, center, (int) domainRadius).forEach(target -> {
                 if (AllyUtil.areAllies(entity, target)) return;
                 if (subordinateMobs.contains(target.getUUID())) return;
+
+                nowSuppressed.add(target.getUUID());
 
                 int targetSeq = BeyonderData.getSequence(target);
                 int seqDiff = targetSeq - casterSeq;
@@ -339,11 +346,18 @@ public class NationOfTheDeadAbility extends Ability {
                         targetPos.x, targetPos.y + 0.5, targetPos.z, 8, 0.3, 0.3, 0.3, 0);
             });
 
+            SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+            domain.substitutionSuppressed.clear();
+            domain.substitutionSuppressed.addAll(nowSuppressed);
+            SUBSTITUTION_SUPPRESSED.addAll(nowSuppressed);
+
             ticks.getAndIncrement();
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel))));
 
         ServerScheduler.scheduleDelayed(DURATION_TICKS, () -> {
             activeDomains.remove(entity.getUUID());
+            SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+            domain.substitutionSuppressed.clear();
         }, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel)));
     }
 
@@ -359,8 +373,7 @@ public class NationOfTheDeadAbility extends Ability {
             if (dying.getUUID().equals(domain.casterUUID)) continue;
             if (domain.subordinateMobs.contains(dying.getUUID())) continue;
 
-            Vec3 domainCenter = domain.currentCenter();
-            double dist = deathPos.distanceTo(domainCenter);
+            double dist = deathPos.distanceTo(domain.center);
             double domainRadius = 35.0; // base radius (multiplier not accessible statically)
             if (dist > domainRadius) continue;
 
@@ -425,23 +438,16 @@ public class NationOfTheDeadAbility extends Ability {
 
     private static class ActiveDomain {
         final UUID casterUUID;
-        Vec3 center;
+        final Vec3 center;
         final ServerLevel level;
         final List<UUID> subordinateMobs;
+        final Set<UUID> substitutionSuppressed = new HashSet<>();
 
         ActiveDomain(UUID casterUUID, Vec3 center, ServerLevel level, List<UUID> subordinateMobs) {
             this.casterUUID = casterUUID;
             this.center = center;
             this.level = level;
             this.subordinateMobs = subordinateMobs;
-        }
-
-        Vec3 currentCenter() {
-            LivingEntity caster = (LivingEntity) level.getEntity(casterUUID);
-            if (caster != null && caster.isAlive()) {
-                center = caster.position();
-            }
-            return center;
         }
     }
 }

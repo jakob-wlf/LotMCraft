@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.death.NationOfTheDeadAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -33,7 +34,7 @@ public class DoorSubstitutionAbility extends Ability {
     private static final HashMap<UUID, Integer> figurineNumbers = new HashMap<>();
 
     public DoorSubstitutionAbility(String id) {
-        super(id, 5f);
+        super(id, 5f, "substitution");
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
@@ -77,6 +78,7 @@ public class DoorSubstitutionAbility extends Ability {
 
     @SubscribeEvent
     public static void takeDamage(LivingDamageEvent.Pre event) {
+        if (NationOfTheDeadAbility.SUBSTITUTION_SUPPRESSED.contains(event.getEntity().getUUID())) return;
         if(!figurineNumbers.containsKey(event.getEntity().getUUID()))
             return;
 
