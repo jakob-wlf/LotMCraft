@@ -42,7 +42,7 @@ public class HandOfDeathAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 2000;
+        return 128;
     }
 
     @Override

@@ -40,25 +40,9 @@ On hit, applies the **Endpoint** marker to the target permanently (does not expi
 
 ---
 
-### Instant Death
-**Sequence Requirement:** 1  
-**Spirituality Cost:** 30,000  
-**Cooldown:** 5 minutes  
-*(Cannot be copied, replicated, or stolen)*
-
-- **Targeting Range:** 3 blocks (single target)
-
-Blocked entirely if `purification` is active nearby (same sequence-weakness rule as Endpoint).
-
-On hit:
-- If the target is **not** Sequence 0: instant kill.
-- If the target **is** Sequence 0: instead deals true damage equal to **50%** of their max HP (a small `hurt()` call is fired alongside the true damage so it still counts as combat and suppresses the target's regeneration).
-
----
-
 ### Soul Control
 **Sequence Requirement:** 1  
-**Spirituality Cost:** 25,000  
+**Spirituality Cost:** 10,000  
 **Cooldown:** 45 seconds  
 *(Cannot be copied, replicated, or stolen; not usable in artifacts)*
 
@@ -78,11 +62,29 @@ Blocked entirely if `purification` is active nearby (same sequence-weakness rule
 
 ---
 
+### Death Decree
+**Sequence Requirement:** 1  
+**Spirituality Cost:** 15,000  
+*(Cannot be copied, replicated, or stolen; not usable by NPCs or in artifacts)*
+
+- **Targeting Range:** 3 blocks (single target)
+
+Blocked entirely if `purification` is active nearby (same sequence-weakness rule as Endpoint).
+
+On hit:
+- Target is **2+ sequences weaker** than the caster: instant kill (true damage equal to max HP).
+- Target is **stronger** or **1 sequence weaker**: too tough to kill outright — deals true damage equal to **50%** of max HP instead.
+- Target is the **same sequence**: applies a stacking Death Decree mark (a small `hurt()` call accompanies each stack so it counts as combat).
+  - At **3 stacks**, the target is instantly killed (true damage equal to max HP) and the mark is consumed.
+
+---
+
 ### Divine Kingdom
 **Sequence Requirement:** 1  
-**Spirituality Cost:** 30, 000
+**Spirituality Cost:** 20,000  
 **Cooldown:** 5 minutes  
 *(Cannot be copied, replicated, or stolen)*
+*(Currently disabled — commented out of ability registration)*
 
 - **Radius:** 120 blocks
 - **Duration:** 3 minutes (3,600 ticks)
@@ -116,11 +118,17 @@ Blocked entirely if `purification` is active nearby (same sequence-weakness rule
 **Sequence Requirement:** 2  
 **Spirituality Cost:** 8,000  
 **Cooldown:** 3 minutes  
-*(Cannot be copied, replicated, or stolen)*
+*(Cannot be copied, replicated, or stolen; not usable in artifacts)*
 
 - **Radius:** `35 × max(multiplier/4, 1)` blocks (scales with multiplier)
-- **Duration:** 1 minute 40 seconds (2,000 ticks)
+- **Duration:** 85 seconds (1,700 ticks)
 - **Effect Interval:** Every tick; damage every 20 ticks (once per second)
+
+Blocked/ended early if `purification_holy` of sufficient strength (same sequence or up to 1 sequence weaker than the caster) is active nearby — the domain is torn down immediately.
+
+**Substitution Block:**
+- All non-allied entities currently inside the domain are marked as substitution-suppressed for that tick — they cannot use Paper Figurine Substitute (Fool), Door Substitution (Door), or Mirror Substitute (Demoness) to escape death while inside.
+- The suppression set is refreshed every tick and fully cleared when the domain ends.
 
 **Instant Kill:**
 - Entities that are **2+ sequences weaker** than the caster are killed instantly on the first tick they are in range.
@@ -228,23 +236,30 @@ While active, each tick:
 
 ### Hand of Death
 **Sequence Requirement:** 3  
+**Spirituality Cost:** 128 every 5 ticks (0.25s) — 512/sec while active  
+*(Toggle — not shareable)*
+
+At Sequence 3 (15,000 max spirituality, 180/sec regen), sustaining the toggle continuously drains the pool in roughly **45 seconds**.
+
+While active:
+- Every melee/ability hit the caster lands deals bonus true-ish damage on top of the normal hit, added directly to the damage event:
+  - Same sequence as victim: **+30%** of the victim's max HP.
+  - Each sequence the victim is weaker (higher sequence number): **+10%** more per step.
+  - Each sequence the victim is stronger: **−10%** per step (no bonus below 0%).
+- Player victims get a large soul/reverse-portal particle-and-sound burst on hit; non-player victims get a smaller soul burst and a Wither hurt sound.
+- Automatically deactivates if `purification` of sufficient strength comes within range (same sequence-weakness rule as Endpoint).
+
+---
+
+### Hand of Life
+**Sequence Requirement:** 3  
 **Spirituality Cost:** 2000  
 **Cooldown:** 60 seconds  
-*(Cannot be copied)*
+*(Not shareable)*
 
-Three selectable sub-abilities:
+Blocked entirely if `purification` is active nearby (same sequence-weakness rule as Endpoint).
 
-**Left Hand** *(targeted)*
-- **Targeting Range:** 30 blocks (line-of-sight)
-- Applies to the target for 30 seconds:
-  - **Wither II**
-  - **Weakness II**
-  - **Blindness II**
-- After the 30-second duration expires, deals damage as a percentage of the target's max HP, scaled by the sequence difference at the moment of casting, and suppresses **regeneration for 10 seconds**:
-  - Base (same sequence): **25%**
-  - Each sequence weaker: **+10%** (e.g. 1 weaker → 35%, 2 weaker → 45%)
-  - Each sequence stronger: **−10%** (e.g. 1 stronger → 15%, 2 stronger → 5%), minimum 0%
-- Re-casting on the same target cancels the pending hit and restarts the timer.
+Two selectable modes:
 
 **Right Hand — Self**
 - Heals the caster for **25%** of their max HP instantly.
@@ -256,12 +271,11 @@ Three selectable sub-abilities:
 ---
 
 ### Internal Underworld
-**Sequence Requirement:** 4  
-**Spirituality Cost:** 3000
-**Cooldown:** 1 tick (effectively instant)  
-*(Cannot be copied, replicated, or stolen)*
+**Sequence Requirement:** 5  
+**Spirituality Cost:** 400  
+*(Cannot be copied, replicated, or stolen; not usable by NPCs or in artifacts)*
 
-- **Capture Chance:** 50%
+Requires Death pathway at Sequence 5 or stronger to actually capture (checked at interaction time, not just cast time).
 
 **Soul Capacity by Sequence:**
 
@@ -274,18 +288,32 @@ Three selectable sub-abilities:
 | 1        | 45              |
 | 0        | 53              |
 
-**Soul Capture** (passive, triggered on kill):
-- When the caster kills a Beyonder NPC of higher sequence (weaker), there is a 50% chance to absorb their soul into the Internal Underworld.
-- Cannot capture souls of equal or stronger sequence.
-- Captured soul data includes entity type, display name, pathway, and sequence.
+Four selectable modes:
 
-**Summon Soul** (active sub-ability):
-- Opens a GUI to select and summon a stored soul as a subordinate.
-- Summons appear near the caster and can be released or recalled.
+**Capture**
+- Arms "capture mode" for the caster's next entity interaction (right-click); the mode is consumed whether or not the attempt succeeds.
+- Right-clicking an eligible entity attempts capture:
+  - **Eligible entities:** most undead (Zombie, Husk, Drowned, Zombie Villager, Zombified Piglin, Skeleton, Wither Skeleton, Stray, Phantom, Vex, Hoglin), most spirit mobs (Dervish, Blue Wizard, Malmouth, Translucent Wizard, Ghost), and **ghost beyonders** (see below).
+  - Fails immediately if storage is already full for the caster's sequence.
+  - **Ghost beyonders additionally require** the caster to hold a Beyonder Characteristic item matching the ghost's exact pathway and sequence — capture fails (with a message) if it's missing, and the matching item is **consumed** on any capture attempt (success or failure).
+  - **Capture chance:** `55% + 5% × caster's sequence` — counterintuitively *weaker* casters (higher sequence number) have better odds: 80% at Seq 5 down to 55% at Seq 0.
+  - On success: the entity is discarded and its data (entity type, display name, full NBT) is stored.
+  - On failure: normal mobs simply escape (no permanent loss). **Ghost beyonders are destroyed outright on a failed attempt** — they only get one shot at capture — and the consumed characteristic item is refunded to the caster.
 
-**Summon All Souls** (active sub-ability):
-- Instantly summons all stored souls simultaneously as subordinates, up to the caster's current sequence capacity.
-- Each soul is removed from storage upon summoning.
+**Release** *(opens a GUI)*
+- Lists stored souls as player-head items; click one to summon it near the caster as a subordinate ally to any other currently-summoned souls.
+- A "Release All" item summons every stored soul at once.
+- A "Discard Mode" toggle switches clicks to permanently deleting the selected soul instead of summoning it.
+- Summoned souls spawn with `VoidSummoned` and an internal "underworld soul" tag (always treated as undead for other effects) and have invisibility stripped if present.
+
+**Release All** *(direct cast, no GUI)*
+- Immediately summons every currently stored soul as described above.
+
+**Recall**
+- Instantly discards all of the caster's currently-summoned active souls and returns them to storage (subject to the capacity cap).
+- Also triggered automatically on logout; on the caster's death, active souls are discarded outright instead of returned to storage.
+
+**Ghost Beyonders:** killing a Beyonder NPC has a chance to leave behind an invisible "ghost" copy of it (same pathway/sequence/skin) that lingers in the world. Ghosts are only visible via Eye of Death's glow highlight and only capturable through this ability's Capture mode, consuming a matching characteristic item.
 
 ---
 
@@ -472,9 +500,11 @@ On deactivation, all bonuses and appearance changes are reverted.
 
 While active:
 - Grants **Night Vision** (refreshed every 25 seconds).
-- All nearby entities within **30 blocks** glow for the caster only.
 - Highlights the looked-at entity for the caster's HUD within **40 blocks**.
-- **+35% damage** to all undead and spirit entities while active.
+- If the looked-at entity is a **ghost beyonder** (an invisible remnant sometimes left behind when a Beyonder NPC dies — see Internal Underworld), it glows for the caster only, for as long as they keep looking at it.
+- **+35% damage** to all undead (including summoned Internal Underworld souls) and spirit entities while active.
+
+Deactivates automatically if `purification` of sufficient strength comes within range (same sequence-weakness rule as Endpoint).
 
 ---
 

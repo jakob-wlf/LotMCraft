@@ -49,7 +49,7 @@ public class SoulControlAbility extends Ability {
 
     @Override
     protected float getSpiritualityCost() {
-        return 25000;
+        return 10000;
     }
 
     @Override
