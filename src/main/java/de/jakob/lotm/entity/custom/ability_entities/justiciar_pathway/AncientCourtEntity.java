@@ -11,7 +11,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -141,7 +140,7 @@ public class AncientCourtEntity extends Entity {
                 if (!(e instanceof Player)) pushOut(e);
             });
             case UNDEAD -> getEntitiesInCourt(serverLevel).forEach(e -> {
-                if (e.getType().is(EntityTypeTags.UNDEAD)) pushOut(e);
+                if (AbilityUtil.isUndead(e)) pushOut(e);
             });
             case ESCAPING -> {
                 AABB searchBox = AABB.ofSize(position(), (RADIUS + 10) * 2.0, (RADIUS + 10) * 2.0, (RADIUS + 10) * 2.0);

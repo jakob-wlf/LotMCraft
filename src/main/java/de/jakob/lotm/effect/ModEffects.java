@@ -46,6 +46,12 @@ public class ModEffects {
     public static final Holder<MobEffect> FOOLING = MOB_EFFECTS.register("fooling",
             () -> new FoolingEffect(MobEffectCategory.HARMFUL, 0xE040FB));
 
+    public static final Holder<MobEffect> ENDPOINT = MOB_EFFECTS.register("endpoint",
+            () -> new EndpointEffect(MobEffectCategory.HARMFUL, 0x1a0d24));
+
+    public static final Holder<MobEffect> DEATH_DECREE_MARK = MOB_EFFECTS.register("death_decree_mark",
+            () -> new DeathDecreeMarkEffect(MobEffectCategory.HARMFUL, 0x334f23));
+
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);
     }

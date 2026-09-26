@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -167,7 +166,7 @@ public class LawAbility extends SelectableAbility {
 
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(caster, serverLevel, caster.position(), 40 * multiplier(caster));
         for (LivingEntity e : nearby) {
-            if (!e.getType().is(EntityTypeTags.UNDEAD)) continue;
+            if (!AbilityUtil.isUndead(e)) continue;
 
             Vec3 ep = e.position().add(0, 1, 0);
             ParticleUtil.spawnSphereParticles(serverLevel, HOLY_DUST, ep, 1.0, 24);

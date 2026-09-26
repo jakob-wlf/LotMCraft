@@ -31,7 +31,7 @@ public class DivineKingdomAbility extends Ability {
 
     @Override
     protected float getSpiritualityCost() {
-        return 30000;
+        return 20000;
     }
 
     @Override

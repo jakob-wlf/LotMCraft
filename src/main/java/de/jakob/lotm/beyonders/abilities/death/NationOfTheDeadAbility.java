@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import org.joml.Vector3f;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,6 +58,7 @@ public class NationOfTheDeadAbility extends Ability {
             new DustParticleOptions(new Vector3f(0.85f, 0.82f, 0.78f), 0.7f);
 
     private static final Map<UUID, ActiveDomain> activeDomains = new HashMap<>();
+    public static final Set<UUID> SUBSTITUTION_SUPPRESSED = ConcurrentHashMap.newKeySet();
 
     public NationOfTheDeadAbility(String id) {
         super(id, 180f, "death");
@@ -205,6 +207,8 @@ public class NationOfTheDeadAbility extends Ability {
 
             if (InteractionHandler.isInteractionPossibleStrictlyHigher(loc, "purification_holy", casterSeq, -1)) {
                 activeDomains.remove(entity.getUUID());
+                SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+                domain.substitutionSuppressed.clear();
                 ServerScheduler.cancel(taskId.get());
                 return;
             }
@@ -298,9 +302,13 @@ public class NationOfTheDeadAbility extends Ability {
                         SoundEvents.AMBIENT_SOUL_SAND_VALLEY_MOOD.value(), SoundSource.PLAYERS, 1.2f, 0.8f);
             }
 
+            Set<UUID> nowSuppressed = new HashSet<>();
+
             AbilityUtil.getNearbyEntities(entity, serverLevel, center, (int) domainRadius).forEach(target -> {
                 if (AllyUtil.areAllies(entity, target)) return;
                 if (subordinateMobs.contains(target.getUUID())) return;
+
+                nowSuppressed.add(target.getUUID());
 
                 int targetSeq = BeyonderData.getSequence(target);
                 int seqDiff = targetSeq - casterSeq;
@@ -326,6 +334,7 @@ public class NationOfTheDeadAbility extends Ability {
                 if (damagePercent <= 0) return;
 
                 float damage = target.getMaxHealth() * damagePercent;
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), 0.01f);
                 ModDamageTypes.trueDamage(target, damage, serverLevel, entity);
 
                 Vec3 targetPos = target.position();
@@ -337,11 +346,18 @@ public class NationOfTheDeadAbility extends Ability {
                         targetPos.x, targetPos.y + 0.5, targetPos.z, 8, 0.3, 0.3, 0.3, 0);
             });
 
+            SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+            domain.substitutionSuppressed.clear();
+            domain.substitutionSuppressed.addAll(nowSuppressed);
+            SUBSTITUTION_SUPPRESSED.addAll(nowSuppressed);
+
             ticks.getAndIncrement();
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel))));
 
         ServerScheduler.scheduleDelayed(DURATION_TICKS, () -> {
             activeDomains.remove(entity.getUUID());
+            SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+            domain.substitutionSuppressed.clear();
         }, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel)));
     }
 
@@ -361,12 +377,7 @@ public class NationOfTheDeadAbility extends Ability {
             double domainRadius = 35.0; // base radius (multiplier not accessible statically)
             if (dist > domainRadius) continue;
 
-            LivingEntity caster = serverLevel.getEntitiesOfClass(LivingEntity.class,
-                            new net.minecraft.world.phys.AABB(
-                                    domain.center.subtract(1, 1, 1),
-                                    domain.center.add(1, 1, 1)))
-                    .stream().filter(e -> e.getUUID().equals(domain.casterUUID))
-                    .findFirst().orElse((LivingEntity) serverLevel.getEntity(domain.casterUUID));
+            LivingEntity caster = (LivingEntity) serverLevel.getEntity(domain.casterUUID);
 
             spawnDomainSkeleton(serverLevel, deathPos, caster, domain);
 
@@ -430,6 +441,7 @@ public class NationOfTheDeadAbility extends Ability {
         final Vec3 center;
         final ServerLevel level;
         final List<UUID> subordinateMobs;
+        final Set<UUID> substitutionSuppressed = new HashSet<>();
 
         ActiveDomain(UUID casterUUID, Vec3 center, ServerLevel level, List<UUID> subordinateMobs) {
             this.casterUUID = casterUUID;

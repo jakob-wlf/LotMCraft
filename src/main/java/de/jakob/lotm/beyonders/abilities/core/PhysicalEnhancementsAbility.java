@@ -675,8 +675,6 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
                     (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {
                 target.removeEffect(MobEffects.REGENERATION);
             }
-
-            reducedRegen.put(target.getUUID(), System.currentTimeMillis() + 10000);
         }
     }
 
