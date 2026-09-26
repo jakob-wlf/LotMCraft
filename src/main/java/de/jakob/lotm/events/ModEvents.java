@@ -13,7 +13,8 @@ import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
-import de.jakob.lotm.entity.client.knowledge_rabbit.RabbitOfKnowledgeModel;
+import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideModel;
+import de.jakob.lotm.entity.client.spirits.knowledge_rabbit.RabbitOfKnowledgeModel;
 import de.jakob.lotm.entity.client.murloc.MurlocModel;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileModel;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileModel;
@@ -39,15 +40,18 @@ import de.jakob.lotm.entity.client.ability_entities.wheel_of_fortune_pathway.mis
 import de.jakob.lotm.entity.client.beyonder_npc.QuestMarkerModel;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenModel;
 import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandModel;
+import de.jakob.lotm.entity.client.spirits.asmann.AsmannModel;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneModel;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardModel;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesModel;
 import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishModel;
 import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostModel;
 import de.jakob.lotm.entity.client.spirits.grim_reaper.GrimReaperModel;
+import de.jakob.lotm.entity.client.spirits.knowledge_demon.KnowledgeDemonModel;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthModel;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneModel;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardModel;
+import de.jakob.lotm.entity.client.stone_golem.StoneGolemModel;
 import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
@@ -142,6 +146,10 @@ public class ModEvents {
         event.registerLayerDefinition(SpiritMalmouthModel.LAYER_LOCATION, SpiritMalmouthModel::createBodyLayer);
         event.registerLayerDefinition(AbscessedHandModel.LAYER_LOCATION, AbscessedHandModel::createBodyLayer);
         event.registerLayerDefinition(GrimReaperModel.LAYER_LOCATION, GrimReaperModel::createBodyLayer);
+        event.registerLayerDefinition(AsmannModel.LAYER_LOCATION, AsmannModel::createBodyLayer);
+        event.registerLayerDefinition(KnowledgeDemonModel.LAYER_LOCATION, KnowledgeDemonModel::createBodyLayer);
+        event.registerLayerDefinition(StoneGolemModel.LAYER_LOCATION, StoneGolemModel::createBodyLayer);
+        event.registerLayerDefinition(HeadlessBrideModel.LAYER_LOCATION, HeadlessBrideModel::createBodyLayer);
 
         // Mythical Creature Forms
         event.registerLayerDefinition(TyrantMythicalCreatureModel.LAYER_LOCATION, TyrantMythicalCreatureModel::createBodyLayer);
@@ -181,6 +189,10 @@ public class ModEvents {
         event.put(ModEntities.SPIRIT_MALMOUTH.get(), SpiritMalmouthEntity.createAttributes().build());
         event.put(ModEntities.ABSCESSED_HAND.get(), AbscessedHandEntity.createAttributes().build());
         event.put(ModEntities.GRIM_REAPER.get(), SpiritGrimReaperEntity.createAttributes().build());
+        event.put(ModEntities.ASMANN.get(), AsmannEntity.createAttributes().build());
+        event.put(ModEntities.KNOWLEDGE_DEMON.get(), KnowledgeDemonEntity.createAttributes().build());
+        event.put(ModEntities.STONE_GOLEM.get(), StoneGolemEntity.createAttributes().build());
+        event.put(ModEntities.HEADLESS_BRIDE.get(), HeadlessBrideEntity.createAttributes().build());
     }
 
     @SubscribeEvent
@@ -271,6 +283,34 @@ public class ModEvents {
         );
         event.register(
                 ModEntities.GRIM_REAPER.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.ASMANN.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.OCEAN_FLOOR,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.KNOWLEDGE_DEMON.get(),
+                SpawnPlacementTypes.NO_RESTRICTIONS,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Mob::checkMobSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.STONE_GOLEM.get(),
+                SpawnPlacementTypes.ON_GROUND,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                StoneGolemEntity::checkStoneGolemSpawnRules,
+                RegisterSpawnPlacementsEvent.Operation.REPLACE
+        );
+        event.register(
+                ModEntities.HEADLESS_BRIDE.get(),
                 SpawnPlacementTypes.NO_RESTRICTIONS,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Mob::checkMobSpawnRules,

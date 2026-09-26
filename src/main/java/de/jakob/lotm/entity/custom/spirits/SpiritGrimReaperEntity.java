@@ -43,7 +43,6 @@ public class SpiritGrimReaperEntity extends Monster {
     public final AnimationState WALK_ANIMATION = new AnimationState();
     public final AnimationState ATTACK_ANIMATION = new AnimationState();
 
-    // --- tuning ---
     private static final float LIFESTEAL_PERCENT = 0.35F;
     private static final int WITHER_DURATION = 100;
     private static final int WITHER_AMPLIFIER = 1;
@@ -59,8 +58,6 @@ public class SpiritGrimReaperEntity extends Monster {
     private static final float SOUL_PULSE_DAMAGE = 6.0F;
     private static final int SOUL_PULSE_WEAKNESS_DURATION = 140;
 
-    // cooldowns live on the entity so they tick down even while the
-    // corresponding goal isn't the one currently running
     private int deathTouchCooldown = DEATH_TOUCH_COOLDOWN / 2;
     private int soulPulseCooldown = SOUL_PULSE_COOLDOWN / 2;
 
@@ -83,7 +80,6 @@ public class SpiritGrimReaperEntity extends Monster {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        // roughly twice the ghost: 140 -> 280 hp, 45 -> 90 attack
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 280.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
@@ -165,11 +161,6 @@ public class SpiritGrimReaperEntity extends Monster {
         return SoundEvents.WITHER_SKELETON_DEATH;
     }
 
-    /**
-     * Death Touch: a burst attack. The reaper blinks to a spot right next to its
-     * target from range, lands an empowered strike with a heavier wither, then
-     * goes back to normal melee behavior. On a cooldown independent of distance.
-     */
     private static class DeathTouchGoal extends Goal {
 
         private final SpiritGrimReaperEntity spirit;
@@ -191,7 +182,7 @@ public class SpiritGrimReaperEntity extends Monster {
 
         @Override
         public boolean canContinueToUse() {
-            return false; // one-shot burst, all handled in start()
+            return false;
         }
 
         @Override
@@ -229,10 +220,6 @@ public class SpiritGrimReaperEntity extends Monster {
         }
     }
 
-    /**
-     * Soul Pulse: an AOE burst around the reaper that weakens and chips away at
-     * anything standing too close, rewarding kiting it instead of surrounding it.
-     */
     private static class SoulPulseGoal extends Goal {
 
         private final SpiritGrimReaperEntity spirit;
@@ -252,7 +239,7 @@ public class SpiritGrimReaperEntity extends Monster {
 
         @Override
         public boolean canContinueToUse() {
-            return false; // one-shot pulse, all handled in start()
+            return false;
         }
 
         @Override

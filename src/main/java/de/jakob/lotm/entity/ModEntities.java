@@ -397,7 +397,23 @@ public class ModEntities {
 
     public static final Supplier<EntityType<SpiritGrimReaperEntity>> GRIM_REAPER =
             ENTITY_TYPES.register("grim_reaper", () -> EntityType.Builder.of(SpiritGrimReaperEntity::new, MobCategory.MONSTER)
-                    .sized(1.3f, 2f).build("grim_reaper"));
+                    .sized(1.6f, 2.7f).build("grim_reaper"));
+
+    public static final Supplier<EntityType<AsmannEntity>> ASMANN =
+            ENTITY_TYPES.register("asmann", () -> EntityType.Builder.of(AsmannEntity::new, MobCategory.MONSTER)
+                    .sized(1.6f, 1.6f).build("asmann"));
+
+    public static final Supplier<EntityType<KnowledgeDemonEntity>> KNOWLEDGE_DEMON =
+            ENTITY_TYPES.register("knowledge_demon", () -> EntityType.Builder.of(KnowledgeDemonEntity::new, MobCategory.MONSTER)
+                    .sized(1.6f, 1.6f).build("knowledge_demon"));
+
+    public static final Supplier<EntityType<StoneGolemEntity>> STONE_GOLEM =
+            ENTITY_TYPES.register("stone_golem", () -> EntityType.Builder.of(StoneGolemEntity::new, MobCategory.MONSTER)
+                    .sized(1.5f, 3.25f).build("stone_golem"));
+
+    public static final Supplier<EntityType<HeadlessBrideEntity>> HEADLESS_BRIDE =
+            ENTITY_TYPES.register("headless_bride", () -> EntityType.Builder.of(HeadlessBrideEntity::new, MobCategory.MONSTER)
+                    .sized(1.25f, 2f).build("headless_bride"));
 
 
     // NPCs and Living Entities

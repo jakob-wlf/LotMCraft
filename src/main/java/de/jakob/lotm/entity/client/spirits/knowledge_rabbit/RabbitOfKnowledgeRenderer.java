@@ -1,9 +1,7 @@
-package de.jakob.lotm.entity.client.knowledge_rabbit;
+package de.jakob.lotm.entity.client.spirits.knowledge_rabbit;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.murloc.MurlocModel;
-import de.jakob.lotm.entity.custom.MurlocEntity;
 import de.jakob.lotm.entity.custom.spirits.RabbitOfKnowledgeEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -17,7 +15,7 @@ public class RabbitOfKnowledgeRenderer extends MobRenderer<RabbitOfKnowledgeEnti
 
     @Override
     public ResourceLocation getTextureLocation(RabbitOfKnowledgeEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/knowledge_rabbit/knowledge_rabbit.png");
+        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/spirits/knowledge_rabbit/knowledge_rabbit.png");
     }
 
     @Override
