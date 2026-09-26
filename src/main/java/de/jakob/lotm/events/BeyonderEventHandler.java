@@ -585,6 +585,8 @@ public class BeyonderEventHandler {
                 BeyonderData.digest(player, (0.01f + (diff * 0.1f)), false);
             }
 
+            BeyonderData.setDigestionProgress(player, 1.0f);
+
             if (victim instanceof Player && BeyonderData.getDigestionProgress(player) >= 1.0f) {
                 long gameTime = player.level().getGameTime();
                 long lastKillAdvance = player.getPersistentData().getLong(LAST_KILL_ADVANCE_KEY);

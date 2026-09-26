@@ -32,6 +32,7 @@ public class SequenceAdvancementItem extends Item {
         }
 
         BeyonderData.setBeyonder(player, BeyonderData.getPathway(player), sequence - 1);
+        BeyonderData.setDigestionProgress(player, 1.0f);
 
         if (!player.getAbilities().instabuild) {
             stack.shrink(1);
