@@ -224,6 +224,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                CameraShakePacket.TYPE,
+                CameraShakePacket.STREAM_CODEC,
+                CameraShakePacket::handle
+        );
+
+        registrar.playToClient(
                 AddEffectPacket.TYPE,
                 AddEffectPacket.STREAM_CODEC,
                 AddEffectPacket::handle

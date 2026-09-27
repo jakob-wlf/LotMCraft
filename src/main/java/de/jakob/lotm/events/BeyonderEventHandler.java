@@ -426,29 +426,29 @@ public class BeyonderEventHandler {
         if (event.getEntity().level().isClientSide()) return;
 
         // Attacker must be a Sun Pathway Beyonder at seq 3 or stronger
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
-        if (!BeyonderData.isBeyonder(attacker)) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) { LOTMCraft.LOGGER.info("[SunDigestion] exit: no living attacker"); return; }
+        if (!BeyonderData.isBeyonder(attacker)) { LOTMCraft.LOGGER.info("[SunDigestion] exit: attacker not beyonder"); return; }
 
         int attackerSeq;
         if (BeyonderData.getPathway(attacker).equals("sun")) {
             attackerSeq = BeyonderData.getSequence(attacker);
-            if (attackerSeq > 3) return;
+            if (attackerSeq > 3) { LOTMCraft.LOGGER.info("[SunDigestion] exit: attacker seq {} > 3", attackerSeq); return; }
         } else {
             // Allow shared Sun abilities: attacker must have a Sun team member (seq <= 3) who contributed an ability.
-            if (!(attacker instanceof ServerPlayer attackerPlayer)) return;
+            if (!(attacker instanceof ServerPlayer attackerPlayer)) { LOTMCraft.LOGGER.info("[SunDigestion] exit: attacker pathway {} not sun", BeyonderData.getPathway(attacker)); return; }
             attackerSeq = getSunContributorSeq(attackerPlayer);
-            if (attackerSeq < 0) return;
+            if (attackerSeq < 0) { LOTMCraft.LOGGER.info("[SunDigestion] exit: attacker pathway {} not sun, no sun contributor", BeyonderData.getPathway(attacker)); return; }
         }
 
         // Victim must be a Beyonder Player with digestion
         LivingEntity victim = event.getEntity();
-        if (!(victim instanceof Player victimPlayer)) return;
-        if (!BeyonderData.isBeyonder(victim)) return;
+        if (!(victim instanceof Player victimPlayer)) { LOTMCraft.LOGGER.info("[SunDigestion] exit: victim not a player"); return; }
+        if (!BeyonderData.isBeyonder(victim)) { LOTMCraft.LOGGER.info("[SunDigestion] exit: victim not beyonder"); return; }
         if (victim.level().isClientSide()) return;
 
         // Sacrifice ability protects the victim from digestion drain and regression while active
         if (victim instanceof ServerPlayer victimSp
-                && victimSp.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT).isActive()) return;
+                && victimSp.getData(ModAttachments.SACRIFICE_REVERT_COMPONENT).isActive()) { LOTMCraft.LOGGER.info("[SunDigestion] exit: victim sacrifice active"); return; }
 
         int victimSeq = BeyonderData.getSequence(victim);
 
@@ -457,8 +457,6 @@ public class BeyonderEventHandler {
         boolean isDirect = !event.getSource().is(ModDamageTypes.PURIFICATION_INDIRECT);
 
         // seqDiff > 0 means attacker is stronger (lower seq number), < 0 means weaker
-
-        if (victimSeq <= 2) return;
 
         int seqDiff = victimSeq - attackerSeq;
 
@@ -474,6 +472,8 @@ public class BeyonderEventHandler {
         float currentDigestion = BeyonderData.getDigestionProgress(victimPlayer);
         float newDigestion = Math.max(0f, currentDigestion - digestionDrain);
         BeyonderData.setDigestionProgress(victimPlayer, newDigestion);
+        LOTMCraft.LOGGER.info("[SunDigestion] drained {} (attackerSeq={}, victimSeq={}, direct={}): {} -> {}",
+                digestionDrain, attackerSeq, victimSeq, isDirect, currentDigestion, newDigestion);
         if (victim instanceof ServerPlayer sp) {
             PacketHandler.syncBeyonderDataToPlayer(sp);
         }

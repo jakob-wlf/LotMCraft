@@ -5,7 +5,8 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
-import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.CameraShakePacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -13,6 +14,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -193,8 +195,8 @@ public class SanityEventHandler {
                         random.nextBoolean() ? 2 : -2, false, false));
             }
 
-            if(entity instanceof Player player && random.nextInt(10) == 0) {
-                ClientHandler.applyCameraShakeToPlayer(1, 20, player);
+            if(entity instanceof ServerPlayer player && random.nextInt(10) == 0) {
+                PacketHandler.sendToPlayer(player, new CameraShakePacket(1, 20));
             }
 
             if(random.nextInt(100) >= 80) {

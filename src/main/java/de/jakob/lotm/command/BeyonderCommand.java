@@ -34,7 +34,7 @@ public class BeyonderCommand {
                         CommandSourceStack source = context.getSource();
                         int count = 0;
                         for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
-                            count += executeBeyonderCommand(source, player, "none", LOTMCraft.NON_BEYONDER_SEQ, false);
+                            count += clearBeyonderStatus(source, player);
                         }
                         final int total = count;
                         source.sendSuccess(() -> Component.literal("Removed Beyonder status from " + total + " player(s)"), true);
@@ -78,6 +78,32 @@ public class BeyonderCommand {
                 )
             )
         );
+    }
+
+    // Mirrors the regression-on-death path (BeyonderEventHandler.onPlayerDrops) for a Seq 9 -> non-Beyonder drop
+    private static int clearBeyonderStatus(CommandSourceStack source, ServerPlayer player) {
+        if (!BeyonderData.isBeyonder(player)) return 0;
+
+        try {
+            ActingCapHelper.skipNextCapApplication = true;
+            try {
+                BeyonderData.setBeyonder(player, "none", LOTMCraft.NON_BEYONDER_SEQ, true, false, false, false);
+            } finally {
+                ActingCapHelper.skipNextCapApplication = false;
+            }
+
+            ActingCapHelper.clearCap(player);
+
+            String playerName = player.getGameProfile().getName();
+            SetBeyonderAuditLog.get(source.getLevel()).addEntry(source.getTextName(), playerName,
+                    "none", LOTMCraft.NON_BEYONDER_SEQ, "beyonder none all");
+
+            return 1;
+        } catch (Exception e) {
+            source.sendFailure(Component.literal("Failed to clear beyonder data for "
+                    + player.getGameProfile().getName() + ": " + e.getMessage()));
+            return 0;
+        }
     }
 
     private static int executeBeyonderCommand(CommandSourceStack source, LivingEntity target, String pathway, int sequence, boolean announce) {
