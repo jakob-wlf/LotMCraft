@@ -357,8 +357,7 @@ public class AbilityHandler {
         abilities.add(new DeathDecreeAbility("death_decree_ability"));
         abilities.add(new SoulControlAbility("soul_control_ability"));
         abilities.add(new EndpointAbility("endpoint_ability"));
-
-        //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
+        abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }
 
     public List<String> getRegisteredAbilityIds() {

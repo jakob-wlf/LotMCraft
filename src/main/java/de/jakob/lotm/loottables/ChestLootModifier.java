@@ -34,6 +34,7 @@ public class ChestLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+        /*
         if (context.getQueriedLootTableId().getPath().contains("chests/")) {
             if (context.getRandom().nextFloat() < 0.45f) {
 
@@ -46,6 +47,7 @@ public class ChestLootModifier extends LootModifier {
                 }
             }
         }
+        */
 
         return generatedLoot;
     }

@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.SetBeyonderAuditLog;
@@ -14,6 +15,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -26,6 +28,20 @@ public class BeyonderCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("beyonder")
             .requires(source -> source.hasPermission(2)) // Requires OP level 2
+            .then(Commands.literal("none")
+                .then(Commands.literal("all")
+                    .executes(context -> {
+                        CommandSourceStack source = context.getSource();
+                        int count = 0;
+                        for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
+                            count += executeBeyonderCommand(source, player, "none", LOTMCraft.NON_BEYONDER_SEQ, false);
+                        }
+                        final int total = count;
+                        source.sendSuccess(() -> Component.literal("Removed Beyonder status from " + total + " player(s)"), true);
+                        return count;
+                    })
+                )
+            )
             .then(Commands.argument("pathway", StringArgumentType.string())
                 .suggests(PATHWAY_SUGGESTIONS)
                 .then(Commands.argument("sequence", IntegerArgumentType.integer(0, 9))
@@ -40,7 +56,7 @@ public class BeyonderCommand {
                         String pathway = StringArgumentType.getString(context, "pathway");
                         int sequence = IntegerArgumentType.getInteger(context, "sequence");
                         
-                        return executeBeyonderCommand(source, livingEntity, pathway, sequence);
+                        return executeBeyonderCommand(source, livingEntity, pathway, sequence, true);
                     })
                     .then(Commands.argument("target", EntityArgument.entity())
                         .executes(context -> {
@@ -56,15 +72,15 @@ public class BeyonderCommand {
                             String pathway = StringArgumentType.getString(context, "pathway");
                             int sequence = IntegerArgumentType.getInteger(context, "sequence");
                             
-                            return executeBeyonderCommand(source, livingEntity, pathway, sequence);
+                            return executeBeyonderCommand(source, livingEntity, pathway, sequence, true);
                         })
                     )
                 )
             )
         );
     }
-    
-    private static int executeBeyonderCommand(CommandSourceStack source, LivingEntity target, String pathway, int sequence) {
+
+    private static int executeBeyonderCommand(CommandSourceStack source, LivingEntity target, String pathway, int sequence, boolean announce) {
         try {
             // Validate pathway exists in the list
             if (!BeyonderData.pathways.contains(pathway)) {
@@ -100,7 +116,9 @@ public class BeyonderCommand {
 
             // Send success message
             String targetName = target instanceof Player player ? player.getGameProfile().getName() : target.getDisplayName().getString();
-            source.sendSuccess(() -> Component.literal("Set " + targetName + " to " + pathway + " sequence " + sequence), true);
+            if (announce) {
+                source.sendSuccess(() -> Component.literal("Set " + targetName + " to " + pathway + " sequence " + sequence), true);
+            }
 
             // Audit log
             String executorName = source.getTextName();

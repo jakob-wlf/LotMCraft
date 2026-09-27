@@ -174,7 +174,7 @@ public class AdvancementUtil {
     }
 
     private static double calculateFailureChanceForFirstTime(int sequence, float sanity) {
-        if (sequence >= 7) return 0.0;
+        if (sequence >= 5) return 0.0;
 
         if (sanity < 0.2f) return 1.0;
 

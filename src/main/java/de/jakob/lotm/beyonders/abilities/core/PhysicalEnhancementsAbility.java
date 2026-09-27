@@ -306,7 +306,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
             }
         }
 
-        if (hasEffect || (BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 2)) {
+        if (hasEffect || (BeyonderData.isBeyonder(entity))) {
             if (entity instanceof Player player) {
                 player.getFoodData().setSaturation(20);
                 player.getFoodData().setFoodLevel(20);

@@ -399,9 +399,9 @@ public class PuppeteeringAbility extends SelectableAbility {
             default -> 7;
             case 4 -> 75;
             case 3 -> 200;
-            case 2 -> 500;
-            case 1 -> 2000;
-            case 0 -> 5000;
+            case 2 -> 300;
+            case 1 -> 400;
+            case 0 -> 500;
         };
     }
 
