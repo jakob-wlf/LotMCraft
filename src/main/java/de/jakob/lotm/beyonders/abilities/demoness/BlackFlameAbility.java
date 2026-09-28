@@ -4,6 +4,8 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -19,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.SoulFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -95,19 +98,27 @@ public class BlackFlameAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 startPos = entity.getEyePosition().add(0, .5, 0);
+        Vec3 startPos = entity.position().add(0, .35, 0);
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
         AtomicDouble i = new AtomicDouble(0.6);
         ServerScheduler.scheduleForDuration(0, 2, 80, () -> {
-            double ySubtraction = i.get() <= 1.5 ? 2 * ((1/((10 * i.get()) - 9)) - 1) : -2;
-            Vec3 currentPos = startPos.add(0, ySubtraction, 0);
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), currentPos, radius, (int) (radius * 27));
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, DamageLookup.lookupDamage(7, .8) *multiplier(entity), startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
             i.set(i.get() + .1);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+        BlockPos blockPos = BlockPos.containing(startPos);
+
+        double offsetX = startPos.x - (blockPos.getX() + 0.5);
+        double offsetY = startPos.y - (blockPos.getY() + 0.5);
+        double offsetZ = startPos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("black_flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, startPos, 128
+        );
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, startPos, entity, this, interactionFlags, 9, 50));
     }
@@ -159,7 +170,16 @@ public class BlackFlameAbility extends SelectableAbility {
                 return;
             }
 
-            ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), pos, 45, 0.25, 0.02);
+            BlockPos blockPos = BlockPos.containing(pos);
+
+            double offsetX = pos.x - (blockPos.getX() + 0.5);
+            double offsetY = pos.y - (blockPos.getY() + 0.5);
+            double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket("black_flame_particle", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                    (ServerLevel) level, pos, 128
+            );
 
             currentPos.set(pos.add(direction));
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

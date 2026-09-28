@@ -401,8 +401,8 @@ public class SefirahHandler {
     // 0 = normal, 1 = dark, 2 = light
     public static int[] getColorsForSefirot(String sefirot) {
         return switch (sefirot) {
-            case "sefirah_castle" -> new int[]{0x9873c9, 0x47217a, 0xd0b9f0};
-            case "brood_hive" -> new int[]{0xbf2434, 0x4f030b, 0xf77e8b};
+            case "sefirah_castle" -> new int[]{0x3e4145, 0x101113, 0xbbbabb};
+            case "brood_hive" -> new int[]{0x813737, 0x160505, 0xe86868};
             default -> new int[]{0x555555, 0x000000, 0xffffff};
         };
     }

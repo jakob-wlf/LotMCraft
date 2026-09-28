@@ -5,12 +5,15 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -134,7 +137,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(targetPos, level)));
     }
 
-    //TODO: PLace flame blocks on griefing
+    //TODO: Place flame blocks on griefing
     private void flameWave(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
@@ -143,19 +146,19 @@ public class PyrokinesisAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        double multiplier = multiplier(entity);
+        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 6, DamageLookup.lookupDamage(7, 1.2) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0, 20 * 5));
 
-        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, 1.2) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0, 20 * 5));
+        Vec3 pos = entity.position();
+        BlockPos blockPos = BlockPos.containing(pos);
 
-        AtomicDouble i = new AtomicDouble(0.6);
-        ServerScheduler.scheduleForDuration(0, 1, 24, () -> {
-            double ySubtraction = 2 * ((1/((10 * i.get()) - 9)) - 1);
-            Vec3 currentPos = startPos.add(0, ySubtraction, 0);
-            double radius = i.get() < .71 ? i.get() : i.get() * 2;
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.FLAME, currentPos, radius, (int) (radius * 25));
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.SMOKE, currentPos, radius, (int) (radius * 6));
-            i.set(i.get() + .1);
-        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(startPos, level)));
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, pos, 128
+        );
     }
 
     private void fireball(Level level, LivingEntity entity) {
