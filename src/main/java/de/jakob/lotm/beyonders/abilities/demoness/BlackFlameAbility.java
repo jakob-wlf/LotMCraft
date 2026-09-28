@@ -127,6 +127,12 @@ public class BlackFlameAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
+        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f).subtract(startPos).normalize();
+
+        AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
+
+        AtomicBoolean hasHit = new AtomicBoolean(false);
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
