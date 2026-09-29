@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -66,16 +68,9 @@ public class TorrentialDownpourAbility extends Ability {
             return;
 
         ServerLevel serverLevel = (ServerLevel) level;
-        serverLevel.setWeatherParameters(
-                0,          // clearDuration (0 = start immediately)
-                20 * 30,       // rainDuration (ticks → 2400 = 2 minutes)
-                true,       // raining
-                true        // thundering
-        );
 
         Vec3 startPos = AbilityUtil.getTargetLocation(entity, 25, 2);
-        Vec3 cloudPos = startPos.add(0, 12, 0);
-        Vec3 rainPos = startPos.add(0, 7, 0);
+        Vec3 cloudPos = startPos.add(0, 9, 0);
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
 
@@ -91,22 +86,16 @@ public class TorrentialDownpourAbility extends Ability {
         TorrentialDownpourData data = new TorrentialDownpourData(new Location(startPos, level), downpourId, false, BeyonderData.getSequence(entity));
         activeDownpours.add(data);
 
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("torrential_downpour", BlockPos.containing(cloudPos), 0, 0, 0, 1.8, null, -1, false, true),
+                (ServerLevel) level, startPos, 128
+        );
+
         // Scheduler for Animations
         ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
             boolean isFrozen = isFrozen(downpourId);
 
-            level.playSound(null, rainPos.x, rainPos.y, rainPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
-
-            if(!isFrozen) {
-                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions2, cloudPos, 700, 20, .4, 20, 0);
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.RAIN, rainPos, 300, 20, 10, 20, 0);
-                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, rainPos, 100, 20, 10, 20, 0);
-            } else {
-                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions2, cloudPos, 700, 20, .4, 20, 0);
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.RAIN, rainPos, 300, 20, 10, 20, 0);
-                ParticleUtil.spawnParticles((ServerLevel) level, iceDust, rainPos, 100, 20, 10, 20, 0);
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, rainPos, 500, 20, 10, 20, 0);
-            }
+            level.playSound(null, cloudPos.x, cloudPos.y, cloudPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
 
             if(griefing) {
                 for (int i = 0; i < 10; i++) {

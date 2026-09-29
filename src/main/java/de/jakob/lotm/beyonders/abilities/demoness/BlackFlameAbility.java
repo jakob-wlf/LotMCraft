@@ -70,7 +70,6 @@ public class BlackFlameAbility extends SelectableAbility {
         }
     }
 
-    DustParticleOptions dust = new DustParticleOptions(new Vector3f(0, 0, 0), 2f);
 
     private void burn(Level level, LivingEntity entity) {
         if(level.isClientSide)
@@ -79,17 +78,28 @@ public class BlackFlameAbility extends SelectableAbility {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (10*multiplier(entity)), 1.4f);
         level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 2.0f, .5f);
 
-        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), targetPos.subtract(0, .75, 0), 700, .3, 1.3, .3, .01);
-        ParticleUtil.spawnParticles((ServerLevel) level, dust, targetPos.subtract(0, .75, 0), 190, .3, 1.3, .3, .02);
-
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) *multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
-
         BlockState block = level.getBlockState(BlockPos.containing(targetPos));
         if(block.isAir()) {
             level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.LIGHT.defaultBlockState());
         }
 
-        ServerScheduler.scheduleDelayed(25, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
+
+        BlockPos blockPos = BlockPos.containing(targetPos);
+
+        double offsetX = targetPos.x - (blockPos.getX() + 0.5);
+        double offsetY = targetPos.y - (blockPos.getY() + 0.5) + 1;
+        double offsetZ = targetPos.z - (blockPos.getZ() + 0.5);
+
+        ServerScheduler.scheduleDelayed(2, () -> {
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket("black_flame_burn", blockPos, offsetX, offsetY, offsetZ, 2.75, null, -1, false, true),
+                    (ServerLevel) level, targetPos, 128
+            );
+        });
+
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) *multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+
+        ServerScheduler.scheduleDelayed(51, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, 4, 10));
     }
 

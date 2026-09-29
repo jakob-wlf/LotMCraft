@@ -20,6 +20,8 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -110,26 +112,38 @@ public class PyrokinesisAbility extends SelectableAbility {
 
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 10, 1.4f);
 
-        Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
+        Vec3 lookAngle = new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z).normalize();
+        Vec3 perpendicular = VectorUtil.getPerpendicularVector(lookAngle).normalize();
 
-        double multiplier = multiplier(entity);
+        Vec3 pos = targetPos.add(0, 1, 0);
+        BlockPos blockPos = BlockPos.containing(pos);
+
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        Quaternionf rotation = new Quaternionf().rotateTo(
+                new Vector3f(0, 0, 1),
+                new Vector3f((float) lookAngle.x, (float) lookAngle.y, (float) lookAngle.z)
+        );
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true),
+                (ServerLevel) level, pos, 128
+        );
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 20, () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-
             for(int i = -1; i < 6; i++) {
                 for(int j = -7; j < 8; j++) {
-                    Vec3 pos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
+                    Vec3 currentPos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
 
-                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, pos, 1, 0.5, 0.02);
-                    ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos, 1, 0.5, 0.02);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1f, DamageLookup.lookupDamage(7, .4) * multiplier(entity), currentPos, true, false, false, 15, 20 * 4);
 
-                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1f, DamageLookup.lookupDamage(7, .4) * multiplier(entity), pos, true, false, false, 15, 20 * 4);
-
-                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, pos, 1f)) {
-                        Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(0.8f);
+                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, currentPos, 1f)) {
+                        Vec3 knockback = target.position().subtract(currentPos).normalize().add(0, .2, 0).scale(0.8f);
                         target.setDeltaMovement(knockback);
                     }
                 }
