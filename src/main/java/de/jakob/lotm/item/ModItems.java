@@ -25,7 +25,10 @@ public class ModItems {
             BlockTags.INCORRECT_FOR_IRON_TOOL, 15, 6.0F, 2.0F, 14, () -> {
         return Ingredient.of(Items.PAPER);
     });
-
+    private static final Tier CONJURED_TOOL_TIER = new SimpleTier(
+            BlockTags.INCORRECT_FOR_IRON_TOOL, 2000, 12.0F, 8.0F, 14, () -> {
+        return Ingredient.EMPTY;
+    });
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(LOTMCraft.MOD_ID);
 
     public static final DeferredItem<Item> FOOL_Card = ITEMS.registerItem("fool_card", Item::new, new Item.Properties());
@@ -58,6 +61,7 @@ public class ModItems {
     public static final DeferredItem<Item> PAPER_PICKAXE = ITEMS.registerItem("paper_pickaxe", props -> new PickaxeItem(PAPER_TOOL_TIER, props.attributes(PickaxeItem.createAttributes(PAPER_TOOL_TIER, 1, -2.8f))), new Item.Properties().durability(15));
     public static final DeferredItem<Item> PAPER_AXE = ITEMS.registerItem("paper_axe", props -> new AxeItem(PAPER_TOOL_TIER, props.attributes(AxeItem.createAttributes(PAPER_TOOL_TIER, 6, -3.1f))), new Item.Properties().durability(15));
     public static final DeferredItem<Item> PAPER_SHOVEL = ITEMS.registerItem("paper_shovel", props -> new ShovelItem(PAPER_TOOL_TIER, props.attributes(ShovelItem.createAttributes(PAPER_TOOL_TIER, 1.5f, -3))), new Item.Properties().durability(15));
+    public static final DeferredItem<Item> CONJURED_SWORD = ITEMS.registerItem("conjured_sword", props -> new SwordItem(CONJURED_TOOL_TIER, props.attributes(SwordItem.createAttributes(CONJURED_TOOL_TIER, 8, -2.4f))), new Item.Properties());
 
 
     public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",
