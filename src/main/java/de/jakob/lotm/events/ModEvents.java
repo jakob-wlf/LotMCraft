@@ -12,6 +12,7 @@ import de.jakob.lotm.entity.client.ability_entities.door_pathway.travelers_door.
 import de.jakob.lotm.entity.client.ability_entities.meteor.MeteorModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area.BloomingAreaModel;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinModel;
+import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.fire_plate.FirePlateModel;
 import de.jakob.lotm.entity.client.beyonder_npc.TradeIndicatorModel;
 import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideModel;
 import de.jakob.lotm.entity.client.spirits.knowledge_rabbit.RabbitOfKnowledgeModel;
@@ -103,6 +104,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
         event.registerLayerDefinition(FlamingSpearProjectileModel.LAYER_LOCATION, FlamingSpearProjectileModel::createBodyLayer);
+        event.registerLayerDefinition(FirePlateModel.LAYER_LOCATION, FirePlateModel::createBodyLayer);
         event.registerLayerDefinition(UnshadowedSpearProjectileModel.LAYER_LOCATION, UnshadowedSpearProjectileModel::createBodyLayer);
         event.registerLayerDefinition(FireballModel.LAYER_LOCATION, FireballModel::createBodyLayer);
         event.registerLayerDefinition(WindBladeModel.LAYER_LOCATION, WindBladeModel::createBodyLayer);

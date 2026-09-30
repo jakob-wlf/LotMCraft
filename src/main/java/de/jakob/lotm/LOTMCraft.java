@@ -33,6 +33,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
+import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.fire_plate.FirePlateRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
 import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideRenderer;
 import de.jakob.lotm.entity.client.spirits.knowledge_rabbit.RabbitOfKnowledgeRenderer;
@@ -274,6 +275,7 @@ public class LOTMCraft
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.FLAMING_SPEAR.get(), FlamingSpearProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.FIRE_PLATE.get(), FirePlateRenderer::new);
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);
