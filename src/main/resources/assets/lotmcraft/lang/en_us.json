@@ -232,15 +232,31 @@
 
   "lotmcraft.trap_ability": "Trap",
   "lotmcraft.trap_ability.description": "Set an explosive Trap",
+
   "lotmcraft.provoking_ability": "Provoking",
   "lotmcraft.provoking_ability.description": "Provoke and weaken your enemies",
+
   "lotmcraft.pyrokinesis_ability": "Pyrokinesis",
   "lotmcraft.pyrokinesis_ability.description": "Control flames, throwing fireballs, making walls made of fire, summoning fire ravens, condensing spears made of fire and let fire engulf everything in area",
   "ability.lotmcraft.pyrokinesis.fireball": "Fireball",
+  "ability.lotmcraft.pyrokinesis.giant_fireball": "Giant Fireball",
   "ability.lotmcraft.pyrokinesis.wall_of_fire": "Wall of Fire",
   "ability.lotmcraft.pyrokinesis.fire_ravens": "Fire Ravens",
   "ability.lotmcraft.pyrokinesis.flaming_spear": "Flaming Spear",
   "ability.lotmcraft.pyrokinesis.flame_wave": "Flame Wave",
+
+  "lotmcraft.compression_ability": "Compression",
+  "lotmcraft.compression_ability.description": "Compress the mighty flames into crimson fireballs, compressing three fireballs unlocks a greater fireball",
+  "lotm.charges": "Reserve",
+  "ability.lotmcraft.pyrokinesis.compress": "Compress",
+  "ability.lotmcraft.pyrokinesis.release": "Release",
+
+  "lotmcraft.fire_armor_ability": "Fire Armor",
+  "lotmcraft.fire_armor_ability.description": "Conjure plates of fire that grants you defense against normal attacks, and completely burn through beyonder attacks\nCosts 10% of your spirituality to initialize.",
+
+  "lotmcraft.conjure_ability": "Weapon Augmentation",
+  "lotmcraft.conjure_ability.description": "With the might of crimson flames, conjure a mighty sword that burns everything it touches and deals increased Area of Effect damage",
+  "item.lotmcraft.conjured_sword": "Augmented Sword",
   "lotmcraft.cull_ability": "Cull",
   "lotmcraft.cull_ability.description": "Discover your enemies and their weaknesses, to increase your damage against them",
   "lotmcraft.flame_mastery_ability": "Flame Mastery",
