@@ -113,6 +113,7 @@ public class TransformationComponent {
         PARASITATION(8),
         COFFIN(9),
         DREAM_DIVINATION(10),
+        FLAME_TRANSFORMATION(11),
         DOOR_TRANSFIGURATION(200), // In the ability another number gets added to the 200 to convey door scale
         MYTHICAL_CREATURE(101);
 
