@@ -706,10 +706,8 @@ public class ClientHandler {
     }
 
     public static void playPhotonBlockEffect(PlayPhotonBlockEffectPacket packet) {
-        System.out.println("Received photon block effect packet: " + packet.effectPath() + " at position: " + packet.pos());
         FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath()));
         if (fx != null) {
-            System.out.println("Playing photon block effect: " + packet.effectPath() + " at position: " + packet.pos());
             BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
             fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
             fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());

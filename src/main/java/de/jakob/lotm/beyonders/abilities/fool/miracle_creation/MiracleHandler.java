@@ -12,6 +12,7 @@ import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightnin
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
 import de.jakob.lotm.network.packets.toClient.HotGroundEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -76,9 +77,17 @@ public class MiracleHandler {
     }
 
     private static void slowTime(ServerLevel level, LivingEntity caster) {
-        Vec3 center = caster.position();
+        Vec3 pos = caster.position();
+        BlockPos blockPos = BlockPos.containing(pos);
 
-        EffectManager.playEffect(EffectIds.MIRACLE, center.x, center.y, center.z, level);
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, pos, 128
+        );
 
         float timeMultiplier = .2f;
         TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 15, caster.getUUID(), 50, timeMultiplier);
@@ -217,7 +226,17 @@ public class MiracleHandler {
     private static void reverseGravity(ServerLevel level, LivingEntity caster) {
         Vec3 centerPos = caster.position();
 
-        EffectManager.playEffect(EffectIds.MIRACLE, centerPos.x, centerPos.y, centerPos.z, level);
+        Vec3 pos = caster.position();
+        BlockPos blockPos = BlockPos.containing(pos);
+
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, pos, 128
+        );
 
         HashSet<LivingEntity> affectedEntities = new HashSet<>();
 
@@ -254,7 +273,17 @@ public class MiracleHandler {
     private static void summonVolcano(ServerLevel level, LivingEntity caster) {
         Vec3 targetPos = AbilityUtil.getTargetLocation(caster, 60, 2);
 
-        EffectManager.playEffect(EffectIds.MIRACLE, targetPos.x, targetPos.y, targetPos.z, level);
+        Vec3 pos = caster.position();
+        BlockPos blockPos = BlockPos.containing(pos);
+
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, pos, 128
+        );
 
         VolcanoEntity volcano = new VolcanoEntity(level, targetPos, (float) DamageLookup.lookupDamage(2, .5) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), caster);
         level.addFreshEntity(volcano);
@@ -281,8 +310,17 @@ public class MiracleHandler {
     private static void summonMeteor(ServerLevel level, LivingEntity caster) {
         Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, 85, 3);
 
+        Vec3 pos = caster.position();
+        BlockPos blockPos = BlockPos.containing(pos);
 
-        EffectManager.playEffect(EffectIds.MIRACLE, targetLoc.x, targetLoc.y, targetLoc.z, level);
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, pos, 128
+        );
 
         MeteorEntity meteor = new MeteorEntity(level, 3.25f,  (float) DamageLookup.lookupDamage(2, 1) * (int) Math.max(BeyonderData.getMultiplier(caster)/2,1), 4, caster, BeyonderData.isGriefingEnabled(caster), 17, 45);
         meteor.setPosition(targetLoc);
@@ -329,7 +367,17 @@ public class MiracleHandler {
             return;
         }
 
-        EffectManager.playEffect(EffectIds.MIRACLE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, level);
+        Vec3 center = caster.position();
+        BlockPos blockPos = BlockPos.containing(center);
+
+        double offsetX = center.x - (blockPos.getX() + 0.5);
+        double offsetY = center.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = center.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                (ServerLevel) level, center, 128
+        );
 
         // Calculate the chunk range needed
         BoundingBox boundingBox = structureStart.getBoundingBox();

@@ -74,9 +74,9 @@ public class TorrentialDownpourAbility extends Ability {
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
 
-        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, -2, 0), 27* multiplier(entity)));
+        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, -2, 0), 36));
         for(int i = -12; i < 13; i++) {
-            blocks.addAll(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, i, 0), 27* multiplier(entity)));
+            blocks.addAll(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, i, 0), 36));
         }
 
         List<BlockPos> validBlocks = blocks.stream().filter(b -> !level.getBlockState(b).getCollisionShape(level, b).isEmpty() && level.getBlockState(b.above()).getCollisionShape(level, b).isEmpty() && !level.getBlockState(b).is(Blocks.WATER)).toList();
@@ -87,12 +87,12 @@ public class TorrentialDownpourAbility extends Ability {
         activeDownpours.add(data);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("torrential_downpour", BlockPos.containing(cloudPos), 0, 0, 0, 1.8, null, -1, false, true),
+                new PlayPhotonBlockEffectPacket("torrential_downpour", BlockPos.containing(cloudPos), 0, 0, 0, 1.6, null, -1, false, true),
                 (ServerLevel) level, startPos, 128
         );
 
         // Scheduler for Animations
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30), () -> {
             boolean isFrozen = isFrozen(downpourId);
 
             level.playSound(null, cloudPos.x, cloudPos.y, cloudPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
@@ -110,8 +110,7 @@ public class TorrentialDownpourAbility extends Ability {
         }, () -> activeDownpours.remove(data), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
 
         // Scheduler for Damage
-        double multiplier = multiplier(entity);
-        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 30* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 30), () -> {
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, DamageLookup.lookupDps(3, .75, 5, 20) * multiplier(entity), startPos, true, false, true, 0);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
     }
