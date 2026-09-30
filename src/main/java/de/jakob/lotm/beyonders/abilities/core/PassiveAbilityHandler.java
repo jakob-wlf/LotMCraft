@@ -34,6 +34,7 @@ import de.jakob.lotm.beyonders.abilities.sun.passives.PhysicalEnhancementsSunAbi
 import de.jakob.lotm.beyonders.abilities.tyrant.passives.LightningArrowAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.passives.PhysicalEnhancementsTyrantAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.passives.RiptideAbility;
+import de.jakob.lotm.beyonders.abilities.tyrant.passives.SeaCreaturesAffinityAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.PureIdealism;
@@ -117,6 +118,7 @@ public class PassiveAbilityHandler {
         // Tyrant
         passiveAbilities.add(new LightningArrowAbility("lightning_arrow_ability"));
         passiveAbilities.add(new RiptideAbility("riptide_ability"));
+        passiveAbilities.add(new SeaCreaturesAffinityAbility("sea_creatures_affinity_ability"));
 
         // Death
         passiveAbilities.add(new UndeadIgnoranceAbility("undead_ignorance_ability"));

@@ -19,11 +19,21 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.util.data.Location;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class RoarOfTheThunderGodAbility extends Ability {
+    private static final int HORROR_DURATION_TICKS = 20 * 6;
+    private static final Set<String> PURIFIED_PATHWAYS = Set.of("darkness", "death", "abyss","hanged_man");
+
     public RoarOfTheThunderGodAbility(String id) {
         super(id, 20);
         canBeShared = false;
@@ -54,10 +64,28 @@ public class RoarOfTheThunderGodAbility extends Ability {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 10, 1);
 
+        int casterSeq = AbilityUtil.getSeqWithArt(entity, this);
+        ServerLevel serverLevel = (ServerLevel) level;
+
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 50* multiplier(entity)).forEach(e -> {
             e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(1, 0.4) * multiplier(entity)));
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(2.75);
             e.setDeltaMovement(knockBack);
+
+            String targetPathway = BeyonderData.getPathway(e);
+
+            if (targetPathway != null && PURIFIED_PATHWAYS.contains(targetPathway)) {e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity), (float) (DamageLookup.lookupDamage(1, 0.5) * multiplier(entity)));}
+            //unsure if Darkness beyonders should be immuine to horror
+            //int targetSeq = BeyonderData.getSequence(e);
+            //if ("darkness".equals(targetPathway) && targetSeq <= 3) return;
+            Location targetLoc = new Location(e.position(), serverLevel);
+            if (InteractionHandler.isInteractionPossible(targetLoc, "purification", casterSeq)) return;
+            e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, HORROR_DURATION_TICKS, 5, false, false, false));
+            e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, HORROR_DURATION_TICKS, 4, false, false, false));
+            e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, HORROR_DURATION_TICKS, 4, false, false, false));
+
+            SanityComponent sanity = e.getData(ModAttachments.SANITY_COMPONENT);
+            sanity.decreaseSanityWithSequenceDifference(0.15f * multiplier(entity), e, casterSeq, BeyonderData.getSequence(e));
         });
 
         EffectManager.playEffect(EffectIds.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
