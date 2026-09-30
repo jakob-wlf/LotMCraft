@@ -69,6 +69,9 @@ public class AbilityHandler {
         abilities.add(new TrapAbility("trap_ability"));
         abilities.add(new ProvokingAbility("provoking_ability"));
         abilities.add(new PyrokinesisAbility("pyrokinesis_ability"));
+        abilities.add(new CompressionAbility("compression_ability"));
+        abilities.add(new FireArmorAbility("fire_armor_ability"));
+        abilities.add(new ConjureAbility("conjure_ability"));
         abilities.add(new CullAbility("cull_ability"));
         abilities.add(new FlameMasteryAbility("flame_mastery_ability"));
         abilities.add(new SteelMasteryAbility("steel_mastery_ability"));
