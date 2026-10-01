@@ -48,8 +48,7 @@ public class FireArmorAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
-//        if(ARMOR_SHARDS) return;
-        if (ARMOR_SHARDS <= 0) {
+        if (ARMOR_SHARDS <= 0 || player == null) {
             cancel((ServerLevel) level, entity);
         }
     }
@@ -137,13 +136,13 @@ public class FireArmorAbility extends ToggleAbility {
         if(plates.isEmpty()) return;
         plates.getLast().discard();
         plates.removeLast();
+        BeyonderData.reduceSpirituality(event.getEntity(), (BeyonderData.getSpirituality(event.getEntity())/2));
     }
 
     @SubscribeEvent
     public static void onPlayerHurt(LivingIncomingDamageEvent event) {
         if(!(event.getEntity() instanceof ServerPlayer)) return;
         if (player == null) return;
-        if(event.getEntity() == null) return;
         if(event.getEntity().level().isClientSide) return;
         if(event.getEntity().equals(player) && ARMOR_SHARDS >= 1) {
             if(event.getSource().getEntity() == null) return;

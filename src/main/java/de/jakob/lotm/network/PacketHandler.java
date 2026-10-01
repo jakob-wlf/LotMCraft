@@ -584,6 +584,13 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                WhipSlashPayload.TYPE,
+                WhipSlashPayload.STREAM_CODEC,
+                WhipSlashPayload::handle
+        );
+
+
+        registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
                 RequestSefirotSyncPacket.STREAM_CODEC,
                 RequestSefirotSyncPacket::handle

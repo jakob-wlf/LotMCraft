@@ -252,11 +252,14 @@
   "ability.lotmcraft.pyrokinesis.release": "Release",
 
   "lotmcraft.fire_armor_ability": "Fire Armor",
-  "lotmcraft.fire_armor_ability.description": "Conjure plates of fire that grants you defense against normal attacks, and completely burn through beyonder attacks\nCosts 10% of your spirituality to initialize.",
-
+  "lotmcraft.fire_armor_ability.description": "Conjure plates of fire that grants you defense against normal attacks, and completely burn through beyonder attacks\nCosts 10% of your spirituality to initialize and 2% everytime is protect you.",
+  "ability.lotmcraft.conjure.sword": "Sword",
+  "ability.lotmcraft.conjure.whip": "Whip",
+  "ability.lotmcraft.conjure.saber": "Saber",
   "lotmcraft.conjure_ability": "Weapon Augmentation",
-  "lotmcraft.conjure_ability.description": "With the might of crimson flames, conjure a mighty sword that burns everything it touches and deals increased Area of Effect damage",
-  "item.lotmcraft.conjured_sword": "Augmented Sword",
+  "lotmcraft.conjure_ability.description": "With the might of crimson flames, conjure mighty weapons that burns everything they touches and deals increased Area of Effect damage",
+  "item.lotmcraft.conjured_sword": "Fire Sword",
+  "item.lotmcraft.conjured_whip": "Fire Whip",
   "lotmcraft.cull_ability": "Cull",
   "lotmcraft.cull_ability.description": "Discover your enemies and their weaknesses, to increase your damage against them",
   "lotmcraft.flame_mastery_ability": "Flame Mastery",
