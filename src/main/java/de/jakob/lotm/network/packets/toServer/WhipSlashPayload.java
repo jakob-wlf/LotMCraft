@@ -3,8 +3,6 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.red_priest.ConjureAbility;
 import de.jakob.lotm.item.ModItems;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -39,6 +37,6 @@ public record WhipSlashPayload() implements CustomPacketPayload {
                 ? hit.getLocation()
                 : start.add(player.getLookAngle().scale(reach));
 
-        ConjureAbility.makeFireSlash(level, player, start, end);
+        ConjureAbility.makeFireSlash(level, start, end);
     }
 }

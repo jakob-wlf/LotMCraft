@@ -37,6 +37,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -158,6 +159,34 @@ public class ConjureAbility extends SelectableAbility {
         }
     }
 
+    @SubscribeEvent
+    public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
+        if(event.getEntity().level().isClientSide) return;
+        if(!sword) return;
+        for (ItemStack itemStack: event.getEntity().getInventory().items) {
+            if(itemStack.getItem() instanceof TieredItem tieredItem) {
+                if (tieredItem.getTier() == ModItems.CONJURED_TOOL_TIER) {
+                    event.getEntity().getInventory().removeItem(itemStack);
+                }
+            }
+        }
+
+    }
+
+    @SubscribeEvent
+    public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
+        if(event.getEntity().level().isClientSide) return;
+        if(!sword) return;
+        for (ItemStack itemStack: event.getEntity().getInventory().items) {
+            if(itemStack.getItem() instanceof TieredItem tieredItem) {
+                if (tieredItem.getTier() == ModItems.CONJURED_TOOL_TIER) {
+                    event.getEntity().getInventory().removeItem(itemStack);
+                }
+            }
+        }
+
+    }
+
     // Sword Usage
 
     // Burn blocks
@@ -184,7 +213,6 @@ public class ConjureAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
         Player player = event.getEntity();
-        Level level = player.level();
         if (player.getMainHandItem().is(ModItems.CONJURED_WHIP)) {
             PacketDistributor.sendToServer(new WhipSlashPayload());
         }
@@ -207,7 +235,7 @@ public class ConjureAbility extends SelectableAbility {
                             target.getY() + target.getBbHeight() * 0.5,
                             target.getZ()
                     );
-                    makeFireSlash(serverLevel, player, start, end);
+                    makeFireSlash(serverLevel, start, end);
                 }
             }
             ExplosionDamageCalculator zeroDamageCalc = new ExplosionDamageCalculator() {
@@ -234,6 +262,9 @@ public class ConjureAbility extends SelectableAbility {
 
         }
     }
+
+
+
     private boolean hasSword(Player player, DeferredItem<Item> weapon) {
         for(ItemStack item: player.getInventory().items) {
             if(item.is(weapon)) return true;
@@ -296,7 +327,7 @@ public class ConjureAbility extends SelectableAbility {
         return false;
     }
 
-    public static void makeFireSlash(ServerLevel level, Player player, Vec3 start, Vec3 end) {
+    public static void makeFireSlash(ServerLevel level, Vec3 start, Vec3 end) {
         Vec3 axis = end.subtract(start);
         double dist = Math.max(axis.length(), 0.1);
         Vec3 dir = axis.normalize();
