@@ -80,7 +80,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
         PacketDistributor.sendToPlayersNear(
                 serverLevel, null,
                 startPos.x, startPos.y, startPos.z, 2056,
-                new PlayPhotonBlockEffectPacket("ice_age", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false)
+                new PlayPhotonBlockEffectPacket("ice_age", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false, null)
         );
 
         ServerScheduler.scheduleForDuration(0, 2, 110, () -> {

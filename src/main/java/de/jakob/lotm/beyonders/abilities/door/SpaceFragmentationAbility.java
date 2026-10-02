@@ -42,7 +42,7 @@ public class SpaceFragmentationAbility extends Ability {
         double offsetZ = targetLoc.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("space_fragmentation", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                new PlayPhotonBlockEffectPacket("space_fragmentation", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, targetLoc, 128
         );
 
@@ -61,7 +61,14 @@ public class SpaceFragmentationAbility extends Ability {
                         DamageLookup.lookupDamage(1, 2f) * mult, targetLoc, true, true);
 
                 if (BeyonderData.isGriefingEnabled(entity)) {
-                    AbilityUtil.getBlocksInSphereRadius(level, targetLoc, 25, true, true, false).forEach(pos -> {
+                    AbilityUtil.getBlocksInSphereRadius(level, targetLoc, 37, true, true, false).forEach(pos -> {
+                        if (level.getBlockState(pos).getDestroySpeed(level, pos) >= 0
+                                && !pos.getCenter().equals(BlockPos.containing(entity.position().subtract(0, 1, 0)).getCenter())
+                                && level.random.nextFloat() < 0.75f) {
+                            level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                        }
+                    });
+                    AbilityUtil.getBlocksInSphereRadius(level, targetLoc, 32, true, true, false).forEach(pos -> {
                         if (level.getBlockState(pos).getDestroySpeed(level, pos) >= 0
                                 && !pos.getCenter().equals(BlockPos.containing(entity.position().subtract(0, 1, 0)).getCenter())) {
                             level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
@@ -98,11 +105,11 @@ public class SpaceFragmentationAbility extends Ability {
                 if (t < PHASE2_END) {
                     radius = 3 + 3 * (t - GRIEF_START) / (float) (PHASE2_END - GRIEF_START);
                 } else {
-                    radius = 10 + 2 * (t - PHASE2_END) / (float) (BLOW_TICK - PHASE2_END);
+                    radius = 7 + 2 * (t - PHASE2_END) / (float) (BLOW_TICK - PHASE2_END);
                 }
 
                 AbilityUtil.getBlocksInSphereRadius(level, targetLoc, radius, true, true, false).forEach(pos -> {
-                    if (level.random.nextFloat() < 0.5f
+                    if (level.random.nextFloat() < 0.3f
                             && level.getBlockState(pos).getDestroySpeed(level, pos) >= 0
                             && !pos.getCenter().equals(BlockPos.containing(entity.position().subtract(0, 1, 0)).getCenter())) {
                         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());

@@ -92,7 +92,7 @@ public class BlackFlameAbility extends SelectableAbility {
 
         ServerScheduler.scheduleDelayed(2, () -> {
             PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("black_flame_burn", blockPos, offsetX, offsetY, offsetZ, 2.75, null, -1, false, true),
+                    new PlayPhotonBlockEffectPacket("black_flame_burn", blockPos, offsetX, offsetY, offsetZ, 2.75, null, -1, false, true, null),
                     (ServerLevel) level, targetPos, 128
             );
         });
@@ -126,7 +126,7 @@ public class BlackFlameAbility extends SelectableAbility {
         double offsetZ = startPos.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("black_flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                new PlayPhotonBlockEffectPacket("black_flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, startPos, 128
         );
 
@@ -187,7 +187,7 @@ public class BlackFlameAbility extends SelectableAbility {
             double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
             PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("black_flame_particle", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                    new PlayPhotonBlockEffectPacket("black_flame_particle", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                     (ServerLevel) level, pos, 128
             );
 

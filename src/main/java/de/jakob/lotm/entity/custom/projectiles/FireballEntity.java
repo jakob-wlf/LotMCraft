@@ -121,7 +121,7 @@ public class FireballEntity extends AbstractArrow {
             double offsetZ = lastPos.z - (blockPos.getZ() + 0.5);
 
             PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true),
+                    new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
                     (ServerLevel) level, lastPos, 128
             );
 
@@ -136,7 +136,7 @@ public class FireballEntity extends AbstractArrow {
                 offsetZ = halfwayPos.z - (blockPos.getZ() + 0.5);
 
                 PacketHandler.sendToNearbyPlayers(
-                        new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true),
+                        new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
                         (ServerLevel) level, lastPos, 128
                 );
             }

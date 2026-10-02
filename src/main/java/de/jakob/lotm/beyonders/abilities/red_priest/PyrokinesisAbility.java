@@ -128,7 +128,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         );
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true),
+                new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
 
@@ -170,7 +170,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
     }

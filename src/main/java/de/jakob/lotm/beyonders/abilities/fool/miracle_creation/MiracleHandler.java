@@ -55,7 +55,7 @@ public class MiracleHandler {
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
 
