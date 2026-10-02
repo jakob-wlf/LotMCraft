@@ -328,7 +328,8 @@ public class SefirahHandler {
                             null,
                             -1,
                             true,
-                            false
+                            false,
+                            null
                     ), sefirotLevel);
 
                 }
@@ -342,7 +343,8 @@ public class SefirahHandler {
                         null,
                         -1,
                         true,
-                        false
+                        false,
+                        null
                 ), sefirotLevel);
             }
         }

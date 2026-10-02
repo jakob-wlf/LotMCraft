@@ -1,7 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -11,7 +15,9 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -82,15 +88,26 @@ public class FlameMasteryAbility extends SelectableAbility {
         transformedEntities.add(entityId);
         AtomicBoolean shouldStop = new AtomicBoolean(false);
 
-        ServerScheduler.scheduleUntil(level, () -> {
-            de.jakob.lotm.util.BeyonderData.reduceSpirituality(entity, 25);
+        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        transformationComponent.setTransformedAndSync(true, entity);
+        transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.FLAME_TRANSFORMATION, entity);
 
-            if (de.jakob.lotm.util.BeyonderData.getSpirituality(entity) <= 0) {
-                if (entity instanceof net.minecraft.server.level.ServerPlayer player) {
-                    player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
+        ServerScheduler.scheduleUntil(level, () -> {
+            BeyonderData.reduceSpirituality(entity, 25);
+
+            if (BeyonderData.getSpirituality(entity) <= 0) {
+                if (entity instanceof ServerPlayer player) {
+                    player.connection.send(new ClientboundSetActionBarTextPacket(
                             net.minecraft.network.chat.Component.literal("Your spirituality is exhausted.").withColor(0xFF422a2a)
                     ));
                 }
+                transformedEntities.remove(entityId);
+                shouldStop.set(true);
+                return;
+            }
+
+            TransformationComponent transformationComponent2 = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+            if (!transformationComponent2.isTransformed() || transformationComponent2.getTransformationIndex() != TransformationComponent.TransformationType.FLAME_TRANSFORMATION.getIndex()) {
                 transformedEntities.remove(entityId);
                 shouldStop.set(true);
                 return;
@@ -101,16 +118,30 @@ public class FlameMasteryAbility extends SelectableAbility {
                 return;
             }
 
-            de.jakob.lotm.util.helper.ParticleUtil.spawnParticles(level, net.minecraft.core.particles.ParticleTypes.FLAME, entity.getEyePosition(), 60, 1.2, .05);
-            de.jakob.lotm.util.helper.ParticleUtil.spawnParticles(level, dust, entity.getEyePosition(), 30, 1.2, .05);
+            Vec3 pos = entity.position();
+            BlockPos blockPos = BlockPos.containing(pos);
+
+            double offsetX = pos.x - (blockPos.getX() + 0.5);
+            double offsetY = pos.y - (blockPos.getY() + 0.5) + .145;
+            double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket("flame_transformation", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, false, true, null),
+                    (ServerLevel) level, pos, 128
+            );
 
             if(!entity.isShiftKeyDown())
-                entity.setDeltaMovement(entity.getLookAngle().normalize());
+                entity.setDeltaMovement(entity.getLookAngle().normalize().scale(.5));
             else
                 entity.setDeltaMovement(0, 0, 0);
 
             entity.hurtMarked = true;
-        }, 2, null, shouldStop);
+        }, 1, () -> {
+            TransformationComponent transformationComponent2 = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+            if(transformationComponent2.isTransformed() && transformationComponent2.getTransformationIndex() == TransformationComponent.TransformationType.FLAME_TRANSFORMATION.getIndex()) {
+                transformationComponent2.setTransformedAndSync(false, entity);
+            }
+        }, shouldStop);
     }
 
     private void eruption(ServerLevel level, LivingEntity entity) {

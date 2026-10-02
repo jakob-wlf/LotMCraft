@@ -63,7 +63,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
         Vec3 startPos = entity.position();
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flamevortex", BlockPos.containing(startPos), 0, 0, 0, .1, null, -1, true, false),
+                new PlayPhotonBlockEffectPacket("flamevortex", BlockPos.containing(startPos), 0, 0, 0, .1, null, -1, true, false, null),
                 serverLevel,
                 startPos,
                 512
@@ -85,7 +85,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 5, 20 * 7, () -> serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 10.0f, random.nextFloat()));
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("inferno", BlockPos.containing(pos), 0, 0, 0, .2, null, -1, true, false),
+                new PlayPhotonBlockEffectPacket("inferno", BlockPos.containing(pos), 0, 0, 0, .2, null, -1, true, false, null),
                 serverLevel,
                 pos,
                 512

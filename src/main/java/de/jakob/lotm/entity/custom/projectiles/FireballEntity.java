@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.projectiles;
 
+import com.jcraft.jorbis.Block;
 import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
 import com.lowdragmc.photon.client.fx.FX;
 import com.lowdragmc.photon.client.fx.FXHelper;
@@ -43,6 +44,7 @@ public class FireballEntity extends AbstractArrow {
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(FireballEntity.class, EntityDataSerializers.FLOAT);
 
     Vec3 lastPos = null;
+    Double blocksPerTick = null;
 
     private int ticks = 0;
     private int petrifiedTicks = 0;
@@ -119,26 +121,28 @@ public class FireballEntity extends AbstractArrow {
             double offsetZ = lastPos.z - (blockPos.getZ() + 0.5);
 
             PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true),
+                    new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
                     (ServerLevel) level, lastPos, 128
             );
 
-            double velocity = this.getDeltaMovement().length();
-            double blocksPerTick = velocity * 20;
-            Vec3 halfwayPos = lastPos.add(this.getDeltaMovement().normalize().scale(blocksPerTick * -0.5));
+            if(blocksPerTick != null && blocksPerTick > 0) {
+                double velocity = blocksPerTick;
+                Vec3 halfwayPos = lastPos.add(this.getDeltaMovement().normalize().scale(velocity * -0.5));
 
-            blockPos = BlockPos.containing(halfwayPos);
+                blockPos = BlockPos.containing(halfwayPos);
 
-            offsetX = lastPos.x - (blockPos.getX() + 0.5);
-            offsetY = lastPos.y - (blockPos.getY() + 0.5);
-            offsetZ = lastPos.z - (blockPos.getZ() + 0.5);
+                offsetX = halfwayPos.x - (blockPos.getX() + 0.5);
+                offsetY = halfwayPos.y - (blockPos.getY() + 0.5);
+                offsetZ = halfwayPos.z - (blockPos.getZ() + 0.5);
 
-            PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true),
-                    (ServerLevel) level, lastPos, 128
-            );
+                PacketHandler.sendToNearbyPlayers(
+                        new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
+                        (ServerLevel) level, lastPos, 128
+                );
+            }
         }
 
+        blocksPerTick = lastPos != null ? lastPos.distanceTo(position()) : null;
         lastPos = position();
     }
 
