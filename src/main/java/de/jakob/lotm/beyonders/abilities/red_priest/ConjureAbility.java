@@ -223,7 +223,8 @@ public class ConjureAbility extends SelectableAbility {
     public static void onAttack(AttackEntityEvent event) {
         if (event.getEntity().level().isClientSide()) return;
         if(!sword) return;
-        if (((TieredItem) event.getEntity().getMainHandItem().getItem()).getTier() == ModItems.CONJURED_TOOL_TIER) {
+        if(!(event.getEntity().getMainHandItem().getItem() instanceof TieredItem tieredItem)) return;
+        if (tieredItem.getTier() == ModItems.CONJURED_TOOL_TIER) {
             Level level = event.getEntity().level();
             Player player = event.getEntity();
             Entity target = event.getTarget();
