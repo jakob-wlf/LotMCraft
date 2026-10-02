@@ -119,7 +119,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         BlockPos blockPos = BlockPos.containing(pos);
 
         double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .6;
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         Quaternionf rotation = new Quaternionf().rotateTo(
