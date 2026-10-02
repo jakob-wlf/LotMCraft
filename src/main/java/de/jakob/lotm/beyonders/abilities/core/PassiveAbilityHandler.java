@@ -1,9 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
-import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.*;
 import de.jakob.lotm.beyonders.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
@@ -85,7 +82,14 @@ public class PassiveAbilityHandler {
         // Abyss
         passiveAbilities.add(new CriminalProficiencyAbility("criminal_proficiency_ability"));
         passiveAbilities.add(new FireResistanceAbyssAbility("fire_resistance_abyss_ability"));
+        passiveAbilities.add(new PoisonResistanceAbility("poison_resistance_ability"));
+        passiveAbilities.add(new CurseResistanceAbility("curse_resistance_ability"));
+        passiveAbilities.add(new MentalResistanceAbility("mental_resistane_ability"));
+        passiveAbilities.add(new DemonofTheBodyAbility("demon_of_the_body_ability"));
         passiveAbilities.add(new WordImmunityAbility("word_immunity_abyss_ability"));
+        passiveAbilities.add(new DomainofBodyAbility("domain_of_body_ability"));
+        passiveAbilities.add(new MaliceAuthorityAbility("malice_authority_ability"));
+        passiveAbilities.add(new SinLordAbility("sin_lord_ability"));
 
         // Door
         passiveAbilities.add(new SpiritWorldAwarenessAbility("spirit_world_awareness_ability"));
