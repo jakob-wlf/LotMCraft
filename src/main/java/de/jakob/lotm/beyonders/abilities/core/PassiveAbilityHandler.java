@@ -1,9 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
-import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.*;
 import de.jakob.lotm.beyonders.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
@@ -34,6 +31,7 @@ import de.jakob.lotm.beyonders.abilities.sun.passives.PhysicalEnhancementsSunAbi
 import de.jakob.lotm.beyonders.abilities.tyrant.passives.LightningArrowAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.passives.PhysicalEnhancementsTyrantAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.passives.RiptideAbility;
+import de.jakob.lotm.beyonders.abilities.tyrant.passives.SeaCreaturesAffinityAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.PhysicalEnhancementsVisionaryAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.PureIdealism;
@@ -84,7 +82,14 @@ public class PassiveAbilityHandler {
         // Abyss
         passiveAbilities.add(new CriminalProficiencyAbility("criminal_proficiency_ability"));
         passiveAbilities.add(new FireResistanceAbyssAbility("fire_resistance_abyss_ability"));
+        passiveAbilities.add(new PoisonResistanceAbility("poison_resistance_ability"));
+        passiveAbilities.add(new CurseResistanceAbility("curse_resistance_ability"));
+        passiveAbilities.add(new MentalResistanceAbility("mental_resistane_ability"));
+        passiveAbilities.add(new DemonofTheBodyAbility("demon_of_the_body_ability"));
         passiveAbilities.add(new WordImmunityAbility("word_immunity_abyss_ability"));
+        passiveAbilities.add(new DomainofBodyAbility("domain_of_body_ability"));
+        passiveAbilities.add(new MaliceAuthorityAbility("malice_authority_ability"));
+        passiveAbilities.add(new SinLordAbility("sin_lord_ability"));
 
         // Door
         passiveAbilities.add(new SpiritWorldAwarenessAbility("spirit_world_awareness_ability"));
@@ -117,6 +122,7 @@ public class PassiveAbilityHandler {
         // Tyrant
         passiveAbilities.add(new LightningArrowAbility("lightning_arrow_ability"));
         passiveAbilities.add(new RiptideAbility("riptide_ability"));
+        passiveAbilities.add(new SeaCreaturesAffinityAbility("sea_creatures_affinity_ability"));
 
         // Death
         passiveAbilities.add(new UndeadIgnoranceAbility("undead_ignorance_ability"));
