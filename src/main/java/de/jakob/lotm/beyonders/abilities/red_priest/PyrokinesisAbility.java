@@ -117,7 +117,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         BlockPos blockPos = BlockPos.containing(pos);
 
         double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .6;
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         Quaternionf rotation = new Quaternionf().rotateTo(
@@ -126,7 +126,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         );
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true),
+                new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
 
@@ -168,7 +168,7 @@ public class PyrokinesisAbility extends SelectableAbility {
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true),
+                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
     }

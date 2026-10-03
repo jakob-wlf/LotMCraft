@@ -126,7 +126,7 @@ public class FlameMasteryAbility extends SelectableAbility {
             double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
             PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("flame_transformation", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, false, true),
+                    new PlayPhotonBlockEffectPacket("flame_transformation", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, false, true, null),
                     (ServerLevel) level, pos, 128
             );
 

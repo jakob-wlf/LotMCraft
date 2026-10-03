@@ -1,0 +1,19 @@
+{
+  "vertex": "spacefrag:sf_model",
+  "fragment": "spacefrag:sf_disc",
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "ColorHot", "type": "float", "count": 4, "values": [3.0, 2.6, 2.0, 1] },
+    { "name": "ColorMid", "type": "float", "count": 4, "values": [3.0, 1.4, 0.4, 1] },
+    { "name": "ColorOuter", "type": "float", "count": 4, "values": [1.6, 0.2, 0.18, 1] },
+    { "name": "Intensity", "type": "float", "count": 1, "values": [1.0] },
+    { "name": "Spin", "type": "float", "count": 1, "values": [1.0] },
+    { "name": "Arms", "type": "float", "count": 1, "values": [5] },
+    { "name": "Twist", "type": "float", "count": 1, "values": [9] },
+    { "name": "InnerFade", "type": "float", "count": 1, "values": [0.06] },
+    { "name": "Seed", "type": "float", "count": 1, "values": [3] }
+  ]
+}
