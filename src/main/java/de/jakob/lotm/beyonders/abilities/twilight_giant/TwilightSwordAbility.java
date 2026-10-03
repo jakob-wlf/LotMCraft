@@ -118,15 +118,19 @@ public class TwilightSwordAbility extends Ability {
 
     @SubscribeEvent
     public static void onAttack(AttackEntityEvent event) {
-        if (holds(event.getEntity()) && event.getTarget() instanceof LivingEntity target) {
-            target.invulnerableTime = 0;
-            if (event.getEntity() instanceof ServerPlayer player) TwilightAuthorityAbility.onSwordLeftClick(player, target);
+        if (!holds(event.getEntity()) || !(event.getTarget() instanceof LivingEntity target)) return;
+        if (!AbilityUtil.mayDamage(event.getEntity(), target)) {
+            event.setCanceled(true);
+            return;
         }
+        target.invulnerableTime = 0;
+        if (event.getEntity() instanceof ServerPlayer player) TwilightAuthorityAbility.onSwordLeftClick(player, target);
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (!event.isCanceled() || !(event.getSource().getEntity() instanceof LivingEntity attacker) || !holds(attacker)) return;
+        if (!(event.getEntity() instanceof LivingEntity target) || !AbilityUtil.mayDamage(attacker, target)) return;
         event.setCanceled(false);
     }
 
@@ -200,6 +204,7 @@ public class TwilightSwordAbility extends Ability {
     }
 
     private static void pierce(ServerLevel level, LivingEntity attacker, LivingEntity target, float damage) {
+        if (!AbilityUtil.mayDamage(attacker, target)) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         float before = target.getHealth();
         target.invulnerableTime = 0;

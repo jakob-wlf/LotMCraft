@@ -245,7 +245,7 @@ public class SilverRapierAbility extends SelectableAbility {
         }
         if (!isValidTarget(owner, target)) return;
         target.invulnerableTime = 0;
-        target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), (float) DamageLookup.lookupDamage(3, DAMAGE_SCALE));
+        target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), (float) DamageLookup.lookupDamage(4, DAMAGE_SCALE));
         level.sendParticles(ParticleTypes.SWEEP_ATTACK, target.getX(), target.getY(0.6), target.getZ(), 1, 0, 0, 0, 0);
         level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, owner.getSoundSource(), 0.6f, 1.6f);
     }

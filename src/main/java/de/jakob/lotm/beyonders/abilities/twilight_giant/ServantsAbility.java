@@ -9,11 +9,9 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.OpenPlayerDivinationScreenPacket;
+import de.jakob.lotm.gui.custom.marionettes.MarionetteMenu;
+import de.jakob.lotm.gui.custom.marionettes.MarionetteMenuProvider;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.PlayerInfo;
-import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.commands.CommandSourceStack;
@@ -125,13 +123,15 @@ public class ServantsAbility extends SelectableAbility {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.servants.empty").withColor(TwilightAging.TWILIGHT_TEXT));
             return;
         }
-        List<PlayerInfo> list = new ArrayList<>();
+        List<MarionetteMenu.ServantRow> rows = new ArrayList<>();
         for (Map.Entry<UUID, Mark> entry : owned.entrySet()) {
             LivingEntity servant = find(player, entry.getKey());
+            boolean visible = servant != null && !hidden(player, servant);
+            boolean beyonder = visible && BeyonderData.isBeyonder(servant);
             String detail = servant == null ? Component.translatable("ability.lotmcraft.servants.away").getString() : describe(player, servant);
-            list.add(new PlayerInfo(entry.getKey(), entry.getValue().name + " " + detail));
+            rows.add(new MarionetteMenu.ServantRow(entry.getKey(), entry.getValue().name, detail, beyonder, beyonder ? BeyonderData.getPathway(servant) : "", beyonder ? BeyonderData.getSequence(servant) : -1));
         }
-        PacketHandler.sendToPlayer(player, new OpenPlayerDivinationScreenPacket(list, PlayerSelectionWorkType.SERVANT_MANAGE));
+        player.openMenu(MarionetteMenuProvider.servants(), buf -> MarionetteMenu.writeServants(buf, rows));
     }
 
     private static int choose(ServerPlayer servant, String masterId, boolean boost) {

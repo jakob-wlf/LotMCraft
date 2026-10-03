@@ -22,8 +22,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,6 +54,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
@@ -298,6 +302,25 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         if (kind(stack).isEmpty() || isShareable(stack)) return;
         event.setCanceled(true);
         event.getPlayer().getInventory().add(stack);
+    }
+
+    @SubscribeEvent
+    public static void onPlaceGear(PlayerInteractEvent.EntityInteract event) {
+        if (!displayWeapon(event.getItemStack(), event.getTarget())) return;
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.FAIL);
+    }
+
+    @SubscribeEvent
+    public static void onPlaceGearSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
+        if (!displayWeapon(event.getItemStack(), event.getTarget())) return;
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.FAIL);
+    }
+
+    private static boolean displayWeapon(ItemStack stack, Entity target) {
+        if (!is(stack, WEAPONS) && !is(stack, TWILIGHT)) return false;
+        return target instanceof ItemFrame || target instanceof ArmorStand;
     }
 
     @SubscribeEvent

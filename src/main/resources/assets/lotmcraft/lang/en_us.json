@@ -2573,6 +2573,8 @@
   "gui.lotm.marionette_control.none": "No marionettes",
   "gui.lotm.marionette_control.close": "Close",
   "gui.lotm.marionette_control.title": "Marionettes (Same Dimension only)",
+  "gui.lotm.servants.title": "Servants",
+  "gui.lotm.servants.none": "No servants",
   "gui.lotm.marionette.release": "Release",
   "gui.lotm.marionette.attack": "Attack",
 
