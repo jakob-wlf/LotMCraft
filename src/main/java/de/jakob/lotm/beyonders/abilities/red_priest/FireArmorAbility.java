@@ -218,7 +218,7 @@ public class FireArmorAbility extends ToggleAbility {
 
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
-       if(FLAME_CLOAK_ACTIVE.contains(event.getEntity().getUUID())) FLAME_CLOAK_ACTIVE.remove(event.getEntity().getUUID());
+        FLAME_CLOAK_ACTIVE.remove(event.getEntity().getUUID());
     }
 
     private static void spawnFlameCloak(ServerLevel level, Player player) {
