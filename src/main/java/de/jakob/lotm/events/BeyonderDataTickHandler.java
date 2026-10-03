@@ -161,7 +161,7 @@ public class BeyonderDataTickHandler {
         }
         if(entity.tickCount % 20 == 0) {
             BeyonderComponent beyonderComponent = entity.getData(ModAttachments.BEYONDER_COMPONENT);
-            SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), BeyonderData.getPathway(livingEntity), BeyonderData.getSequence(livingEntity), beyonderComponent.getSpirituality(), false, 0.0f, beyonderComponent.getPathwayHistory(), beyonderComponent.getCharacteristicStack(), getMaxWormAmount(BeyonderData.getSequence(livingEntity)), ProxyAbility.pledgedSefirot(livingEntity), ProxyAbility.hasPlayerPatron(livingEntity));
+            SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), BeyonderData.getPathway(livingEntity), BeyonderData.getSequence(livingEntity), beyonderComponent.getSpirituality(), false, 0.0f, beyonderComponent.getPathwayHistory(), beyonderComponent.getCharacteristicStack(), getMaxWormAmount(BeyonderData.getSequence(livingEntity)), BeyonderData.pledgedSefirot(livingEntity), BeyonderData.hasPlayerPatron(livingEntity));
             PacketHandler.sendToTrackingAndSelf(entity, packet);
         }
     }

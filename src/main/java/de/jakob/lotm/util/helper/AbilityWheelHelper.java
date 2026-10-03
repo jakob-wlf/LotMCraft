@@ -137,7 +137,7 @@ public class AbilityWheelHelper {
         AbilityWheelComponent component = entity.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
         PacketHandler.sendToPlayer(
                 player,
-                new SyncAbilityWheelPacket(new ArrayList<>(component.getAbilities()), component.getSelectedAbility())
+                new SyncAbilityWheelPacket(component.getAbilities(), component.getSelectedAbility())
         );
     }
 

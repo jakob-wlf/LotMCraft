@@ -717,7 +717,11 @@ public class ClientHandler {
         if (fx != null) {
             BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
             fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
-            fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            if(packet.scaleVector() != null) {
+                fxExecutor.setScale(packet.scaleVector().x(), packet.scaleVector().y(), packet.scaleVector().z());
+            } else {
+                fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            }
             if(packet.rot() != null) {
                 fxExecutor.setRotation(packet.rot());
             }

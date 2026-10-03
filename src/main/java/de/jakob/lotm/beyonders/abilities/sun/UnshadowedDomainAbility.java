@@ -68,7 +68,7 @@ public class UnshadowedDomainAbility extends Ability {
 
         ServerScheduler.scheduleDelayed(2, () -> {
             PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("unshadowed_domain", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false),
+                    new PlayPhotonBlockEffectPacket("unshadowed_domain", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false, null),
                     (ServerLevel) level,
                     startPos,
                     512

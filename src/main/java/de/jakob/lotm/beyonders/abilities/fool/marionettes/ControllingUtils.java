@@ -99,7 +99,7 @@ public class ControllingUtils {
     public static void copyAttributesAndHealthFrom(LivingEntity source, LivingEntity target) {
         for (Holder<Attribute> attributeHolder : BuiltInRegistries.ATTRIBUTE.asHolderIdMap()) {
 
-            if (attributeHolder.unwrapKey().equals(Attributes.MOVEMENT_SPEED.unwrapKey())) {
+            if (attributeHolder.is(Attributes.MOVEMENT_SPEED)) {
                 continue;
             }
 

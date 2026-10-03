@@ -278,7 +278,7 @@ public class DivinationUtil {
         if (activeAbilities.stream().anyMatch(ability -> ability instanceof MindConcealmentAbility)) {
             addedValue += MindConcealmentAbility.CONCEALMENT_POWER;
         }
-        
+
         return addedValue;
     }
 

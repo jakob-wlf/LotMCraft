@@ -2,7 +2,6 @@ package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
-import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
@@ -60,7 +59,7 @@ public class BeyonderData {
         //implementedRecipes.put("black_emperor", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("death", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
         implementedRecipes.put("justiciar", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
-        implementedRecipes.put("twilight_giant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}));
+        implementedRecipes.put("twilight_giant", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
 
     }
 
@@ -110,8 +109,7 @@ public class BeyonderData {
 
     public static int getHighestImplementedSequence(String pathway) {
         return switch (pathway) {
-            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar" -> 1;
-            case "twilight_giant" -> 0;
+            case "mother", "darkness", "fool", "wheel_of_fortune", "error", "visionary", "demoness", "red_priest", "sun", "tyrant", "door", "abyss", "death","justiciar","twilight_giant" -> 1;
            // case "black_emperor" -> 7;
             default -> 9;
         };
@@ -283,7 +281,7 @@ public class BeyonderData {
                 if(putIntoMap)
                     playerMap.put(serverPlayer);
 
-                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence), ProxyAbility.pledgedSefirot(serverPlayer), ProxyAbility.hasPlayerPatron(serverPlayer));
+                SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(entity.getUUID(), pathway, sequence, component.getSpirituality(), false, 0.0f, component.getPathwayHistory(), component.getCharacteristicStack(), getMaxWormAmount(sequence), pledgedSefirot(entity), hasPlayerPatron(entity));
                 PacketHandler.sendToAllPlayers(packet);
 
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
@@ -431,6 +429,16 @@ public class BeyonderData {
         if (!entity.level().isClientSide() && entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.syncBeyonderDataToPlayer(serverPlayer);
         }
+    }
+
+    public static String pledgedSefirot(LivingEntity entity) {
+        if (playerMap == null) return "";
+        return playerMap.get(entity.getUUID()).map(data -> data.pledgedSefirot() == null ? "" : data.pledgedSefirot()).orElse("");
+    }
+
+    public static boolean hasPlayerPatron(LivingEntity entity) {
+        if (playerMap == null) return false;
+        return playerMap.get(entity.getUUID()).map(data -> data.patron() != null && !data.patron().isEmpty()).orElse(false);
     }
 
     public static Optional<HonorificName> getHonorificName(LivingEntity entity){

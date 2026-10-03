@@ -84,18 +84,9 @@ public class HolyImpactEffect extends ActiveEffect {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
 
-        float r = 1f;
-        float g = 1f;
-        float b = 0.85f;
-        boolean tinted = params != null && params.length > 2 && params[0] >= 0f;
-        if (tinted) {
-            r = params[0];
-            g = params[1];
-            b = params[2];
-        }
-        renderFlash(m, age, right, up, r, g, b);
-        renderBurst(m, age, right, up, tinted, r, g, b);
-        renderDrift(m, age, right, up, tinted, r, g, b);
+        renderFlash(m, age, right, up);
+        renderBurst(m, age, right, up);
+        renderDrift(m, age, right, up);
 
         RenderSystem.enableCull();
         RenderSystem.depthMask(true);
@@ -105,16 +96,16 @@ public class HolyImpactEffect extends ActiveEffect {
         poseStack.popPose();
     }
 
-    private void renderFlash(Matrix4f m, float age, Vector3f right, Vector3f up, float r, float g, float b) {
+    private void renderFlash(Matrix4f m, float age, Vector3f right, Vector3f up) {
         final float MAX = 5f;
         if (age >= MAX) return;
         float t     = age / MAX;
         float alpha = (1f - t) * (1f - t) * 0.85f;
         float size  = 0.4f + t * 2.2f;
-        quad(m, 0f, 0f, 0f, size, right, up, r, g, b, alpha);
+        quad(m, 0f, 0f, 0f, size, right, up, 1f, 1f, 0.85f, alpha);
     }
 
-    private void renderBurst(Matrix4f m, float age, Vector3f right, Vector3f up, boolean tinted, float tintR, float tintG, float tintB) {
+    private void renderBurst(Matrix4f m, float age, Vector3f right, Vector3f up) {
         BufferBuilder buf = Tesselator.getInstance()
                 .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         int drawn = 0;
@@ -130,21 +121,20 @@ public class HolyImpactEffect extends ActiveEffect {
             float pz = bVz[i] * age;
             float size = bSize[i] * (1f + t * 0.4f);
 
-            float g = tinted ? tintG * (0.75f + bWhite[i] * 0.25f) : 0.85f + bWhite[i] * 0.15f;
-            float b = tinted ? tintB * (0.75f + bWhite[i] * 0.25f) : 0.55f + bWhite[i] * 0.45f;
-            float red = tinted ? tintR : 1f;
+            float g = 0.85f + bWhite[i] * 0.15f;
+            float b = 0.55f + bWhite[i] * 0.45f;
 
-            buf.addVertex(m, px - right.x*size - up.x*size, py - right.y*size - up.y*size, pz - right.z*size - up.z*size).setColor(red, g, b, alpha);
-            buf.addVertex(m, px + right.x*size - up.x*size, py + right.y*size - up.y*size, pz + right.z*size - up.z*size).setColor(red, g, b, alpha);
-            buf.addVertex(m, px + right.x*size + up.x*size, py + right.y*size + up.y*size, pz + right.z*size + up.z*size).setColor(red, g, b, alpha);
-            buf.addVertex(m, px - right.x*size + up.x*size, py - right.y*size + up.y*size, pz - right.z*size + up.z*size).setColor(red, g, b, alpha);
+            buf.addVertex(m, px - right.x*size - up.x*size, py - right.y*size - up.y*size, pz - right.z*size - up.z*size).setColor(1f, g, b, alpha);
+            buf.addVertex(m, px + right.x*size - up.x*size, py + right.y*size - up.y*size, pz + right.z*size - up.z*size).setColor(1f, g, b, alpha);
+            buf.addVertex(m, px + right.x*size + up.x*size, py + right.y*size + up.y*size, pz + right.z*size + up.z*size).setColor(1f, g, b, alpha);
+            buf.addVertex(m, px - right.x*size + up.x*size, py - right.y*size + up.y*size, pz - right.z*size + up.z*size).setColor(1f, g, b, alpha);
             drawn++;
         }
 
         if (drawn > 0) BufferUploader.drawWithShader(buf.buildOrThrow());
     }
 
-    private void renderDrift(Matrix4f m, float age, Vector3f right, Vector3f up, boolean tinted, float tintR, float tintG, float tintB) {
+    private void renderDrift(Matrix4f m, float age, Vector3f right, Vector3f up) {
         BufferBuilder buf = Tesselator.getInstance()
                 .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         int drawn = 0;
@@ -161,13 +151,10 @@ public class HolyImpactEffect extends ActiveEffect {
             float pz = dVz[i] * local;
             float size = dSize[i] * (1f + t * 1.2f);
 
-            float red = tinted ? tintR : 1f;
-            float green = tinted ? tintG : 0.95f;
-            float blue = tinted ? tintB : 0.6f;
-            buf.addVertex(m, px - right.x*size - up.x*size, py - right.y*size - up.y*size, pz - right.z*size - up.z*size).setColor(red, green, blue, alpha);
-            buf.addVertex(m, px + right.x*size - up.x*size, py + right.y*size - up.y*size, pz + right.z*size - up.z*size).setColor(red, green, blue, alpha);
-            buf.addVertex(m, px + right.x*size + up.x*size, py + right.y*size + up.y*size, pz + right.z*size + up.z*size).setColor(red, green, blue, alpha);
-            buf.addVertex(m, px - right.x*size + up.x*size, py - right.y*size + up.y*size, pz - right.z*size + up.z*size).setColor(red, green, blue, alpha);
+            buf.addVertex(m, px - right.x*size - up.x*size, py - right.y*size - up.y*size, pz - right.z*size - up.z*size).setColor(1f, 0.95f, 0.6f, alpha);
+            buf.addVertex(m, px + right.x*size - up.x*size, py + right.y*size - up.y*size, pz + right.z*size - up.z*size).setColor(1f, 0.95f, 0.6f, alpha);
+            buf.addVertex(m, px + right.x*size + up.x*size, py + right.y*size + up.y*size, pz + right.z*size + up.z*size).setColor(1f, 0.95f, 0.6f, alpha);
+            buf.addVertex(m, px - right.x*size + up.x*size, py - right.y*size + up.y*size, pz - right.z*size + up.z*size).setColor(1f, 0.95f, 0.6f, alpha);
             drawn++;
         }
 

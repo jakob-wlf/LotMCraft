@@ -3,7 +3,6 @@ package de.jakob.lotm.rendering.effectRendering.impl;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import de.jakob.lotm.rendering.effectRendering.ActiveEffect;
-import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -69,21 +68,9 @@ public class HolyBeamEffect extends ActiveEffect {
         VertexConsumer consumer = bufferSource.getBuffer(RenderType.lightning());
         Matrix4f matrix = poseStack.last().pose();
 
-        float[] core = WHITE;
-        float[] mid = YELLOW;
-        float[] edge = BRIGHT_YELLOW;
-        if (params != null && params.length > EffectParams.END_Z + 3 && params[6] >= 0f) {
-            float r = params[6];
-            float g = params[7];
-            float b = params[8];
-            core = new float[] { r, g, b };
-            mid = new float[] { r * 0.72f, g * 0.72f, b * 0.72f };
-            edge = new float[] { r * 0.45f, g * 0.45f, b * 0.45f };
-        }
-
-        renderCylinder(consumer, matrix, 0.18f, core, intensity * 0.9f);
-        renderCylinder(consumer, matrix, 0.35f, mid,  intensity * 0.55f);
-        renderCylinder(consumer, matrix, 0.55f, edge, intensity * 0.25f);
+        renderCylinder(consumer, matrix, 0.18f, WHITE,         intensity * 0.9f);
+        renderCylinder(consumer, matrix, 0.35f, YELLOW,        intensity * 0.55f);
+        renderCylinder(consumer, matrix, 0.55f, BRIGHT_YELLOW, intensity * 0.25f);
 
         poseStack.popPose();
     }

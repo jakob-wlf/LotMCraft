@@ -3,6 +3,8 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -94,7 +96,10 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, new String[]{"explosion", "burning"}, 12, 20 * 10));
     }
 
-    // ── Spell 2: Pillars of the Abyss ────────────────────────────────────────
+
+    private static final int RING_PILLAR_COUNT = 5;
+    private static final double RING_RADIUS = 9.0;
+    private static final int RANDOM_PILLAR_COUNT = 17;
 
     private void abyssPillars(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
@@ -107,41 +112,37 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
 
         List<Vec3> pillarPositions = new ArrayList<>();
 
-        for (int i = 0; i < 12; i++) {
-            double angle = (i / 12.0) * Math.PI * 2;
-            double dist = 3 + random.nextDouble() * 7;
-            Vec3 candidate = new Vec3(
-                    entity.getX() + Math.cos(angle) * dist,
-                    entity.getY(),
-                    entity.getZ() + Math.sin(angle) * dist
-            );
-            BlockPos ground = findGroundPos(level, candidate);
-            pillarPositions.add(new Vec3(ground.getX(), ground.getY(), ground.getZ()));
+        double angleOffset = random.nextDouble() * Math.PI * 2; // optional: random rotation of the ring
+        for (int i = 0; i < RING_PILLAR_COUNT; i++) {
+            double angle = angleOffset + (i / (double) RING_PILLAR_COUNT) * Math.PI * 2;
+            pillarPositions.add(getPillarPosition(level, entity, angle, RING_RADIUS, false));
         }
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < RANDOM_PILLAR_COUNT; i++) {
             double angle = random.nextDouble() * Math.PI * 2;
-            double dist = random.nextDouble() * 16;
-            Vec3 candidate = new Vec3(
-                    entity.getX() + Math.cos(angle) * dist,
-                    entity.getY(),
-                    entity.getZ() + Math.sin(angle) * dist
-            );
-            BlockPos ground = findGroundPos(level, candidate);
-            pillarPositions.add(new Vec3(ground.getX(), ground.getY(), ground.getZ()));
+            double dist = 10 + random.nextDouble() * 64;
+            pillarPositions.add(getPillarPosition(level, entity, angle, dist, true));
         }
 
         for (int i = 0; i < pillarPositions.size(); i++) {
             Vec3 pos = pillarPositions.get(i);
-
             int delay = i * 2;
 
             ServerScheduler.scheduleDelayed(delay, () -> {
-                EffectManager.playEffect(EffectIds.ACID_SWAMP, pos.x, pos.y, pos.z, serverLevel);
+                BlockPos blockPos = BlockPos.containing(pos);
+
+                double offsetX = pos.x - (blockPos.getX() + 0.5);
+                double offsetY = pos.y - (blockPos.getY() + 0.5) - 1;
+                double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+                PacketHandler.sendToNearbyPlayers(
+                        new PlayPhotonBlockEffectPacket("abyss_pillars", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, new Vec3(1.5, 2.5, 1.5)),
+                        serverLevel, pos, 128
+                );
             }, serverLevel);
 
             ServerScheduler.scheduleForDuration(delay, 4, 20 * 7, () -> {
-                AbilityUtil.damageNearbyEntities(serverLevel, entity, 1.5, damage, pos, true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, entity, 9, damage, pos, true, false);
                 AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 1.5).forEach(e -> {
                     e.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 20, 4));
                     e.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * 6, 1));
@@ -151,19 +152,56 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
             }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, serverLevel)));
         }
 
-        NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, entity.position(), entity, this,
+        NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, entity.position(), entity, this,
                 new String[]{"corruption", "burning"}, 7, 20 * 3));
     }
 
     private BlockPos findGroundPos(Level level, Vec3 xzPos) {
-        int startY = (int) Math.floor(xzPos.y) + 4;
-        for (int dy = 0; dy <= 8; dy++) {
-            BlockPos check = new BlockPos((int) Math.floor(xzPos.x), startY - dy, (int) Math.floor(xzPos.z));
+        int x = (int) Math.floor(xzPos.x);
+        int z = (int) Math.floor(xzPos.z);
+
+        if (!level.hasChunkAt(new BlockPos(x, 0, z))) return null;
+
+        int baseY = (int) Math.floor(xzPos.y);
+        int startY = baseY + 8;
+        int minY = Math.max(level.getMinBuildHeight(), baseY - 24);
+
+        for (int y = startY; y >= minY; y--) {
+            BlockPos check = new BlockPos(x, y, z);
             BlockPos below = check.below();
-            if (level.getBlockState(below).isSolidRender(level, below)) {
+            if (!level.getBlockState(check).blocksMotion()
+                    && level.getBlockState(below).blocksMotion()) {
                 return check;
             }
         }
-        return new BlockPos((int) Math.floor(xzPos.x), startY, (int) Math.floor(xzPos.z));
+        return null; // no ground found
+    }
+
+    private Vec3 getPillarPosition(Level level, LivingEntity entity, double angle, double dist, boolean randomRetry) {
+        int attempts = randomRetry ? 6 : 1;
+
+        for (int i = 0; i < attempts; i++) {
+            double a = (i == 0) ? angle : random.nextDouble() * Math.PI * 2;
+            double d = (i == 0) ? dist : 10 + random.nextDouble() * 64;
+
+            Vec3 candidate = new Vec3(
+                    entity.getX() + Math.cos(a) * d,
+                    entity.getY(),
+                    entity.getZ() + Math.sin(a) * d
+            );
+            BlockPos ground = findGroundPos(level, candidate);
+            if (ground != null) {
+                return new Vec3(ground.getX(), ground.getY(), ground.getZ());
+            }
+        }
+
+        if (!randomRetry) {
+            return new Vec3(
+                    Math.floor(entity.getX() + Math.cos(angle) * dist),
+                    Math.floor(entity.getY()),
+                    Math.floor(entity.getZ() + Math.sin(angle) * dist)
+            );
+        }
+        return null;
     }
 }

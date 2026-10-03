@@ -1,0 +1,13 @@
+{
+  "vertex": "ldlib2:fast_blit",
+  "fragment": "spacefrag:postfx/sf_shake",
+  "samplers": [ { "name": "DiffuseSampler" } ],
+  "uniforms": [
+    { "name": "DiffuseSampler_TexelSize", "type": "float", "count": 4, "values": [1, 1, 1, 1] },
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "Strength", "type": "float", "count": 1, "values": [0] },
+    { "name": "Amplitude", "type": "float", "count": 1, "values": [0.034] },
+    { "name": "Frequency", "type": "float", "count": 1, "values": [24] },
+    { "name": "Chroma", "type": "float", "count": 1, "values": [0.012] }
+  ]
+}
