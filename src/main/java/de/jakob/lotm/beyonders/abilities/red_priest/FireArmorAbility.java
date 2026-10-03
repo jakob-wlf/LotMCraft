@@ -39,6 +39,8 @@ public class FireArmorAbility extends ToggleAbility {
     private static final int IFRAME_DELAY = 2;
     private static final int[] LIMITS = new int[]{3,4,5,6};
     private static final int[] INTERVALS = new int[]{40,30,24,20};
+    private static final HashMap<Integer, Integer[]> COSTS_ONE = new HashMap<>();
+    private static final HashMap<Integer, Integer[]> COSTS_ALL = new HashMap<>();
     private static List<FirePlateEntity> plates = new ArrayList<>();
     private static final Set<UUID> FLAME_CLOAK_ACTIVE = new HashSet<>();
     private static int ARMOR_SHARDS;
@@ -63,6 +65,8 @@ public class FireArmorAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
+        setupOneCosts();
+        setupMaxCosts();
         player = entity;
         int Seq = BeyonderData.getSequence(entity);
         ARMOR_SHARDS = (Seq <= 1) ? LIMITS[3] : (Seq <= 3) ? LIMITS[2] : (Seq <= 5) ? LIMITS[1] : LIMITS[0];
@@ -101,6 +105,8 @@ public class FireArmorAbility extends ToggleAbility {
         }
     }
 
+
+
     @Override
     public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
@@ -138,8 +144,8 @@ public class FireArmorAbility extends ToggleAbility {
         return 0;
     }
 
-    private static void negateDamage(LivingIncomingDamageEvent event) {
-        ARMOR_SHARDS--;
+    private static void negateDamage(LivingIncomingDamageEvent event, int COST) {
+        ARMOR_SHARDS-=COST;
         IN_IFRAME=true;
         event.getEntity().playSound(SoundEvents.BELL_RESONATE, 1.0F, 1.0F);
         if (ARMOR_SHARDS > 0) event.getEntity().sendSystemMessage(Component.literal("Your fire armor protected you.").withStyle(ChatFormatting.RED));
@@ -156,14 +162,16 @@ public class FireArmorAbility extends ToggleAbility {
         if(!(event.getEntity() instanceof ServerPlayer)) return;
         if (player == null) return;
         if(event.getEntity().level().isClientSide) return;
-        if(event.getEntity().equals(player) && ARMOR_SHARDS >= 1) {
+        int COST;
+        if(event.getEntity().equals(player)) {
+
             if(event.getSource().getEntity() == null) return;
             if(BeyonderData.isBeyonder((LivingEntity) event.getSource().getEntity())) {
                 int playerSeq =  BeyonderData.getSequence(event.getEntity());
                 int enemySeq =   BeyonderData.getSequence((LivingEntity) event.getSource().getEntity());
-                if(playerSeq >= 6 && enemySeq <= 4) return;
-                if(playerSeq >= 5 && enemySeq <= 3) return;
-                if(playerSeq >=3 && enemySeq <= 1) return;
+                COST = estimateCost(playerSeq, enemySeq);
+                if(COST == 0) return;
+                if(ARMOR_SHARDS < COST) return;
                 if(IN_IFRAME) {
                     event.setCanceled(true);
                     return;
@@ -173,10 +181,39 @@ public class FireArmorAbility extends ToggleAbility {
                     return;
                 }
 
-                negateDamage(event);
+                negateDamage(event, COST);
 
             }
         }
+    }
+
+    private static int estimateCost(int playerSeq, int enemySeq) {
+        if(playerSeq <= enemySeq) return 1;
+        if(Arrays.asList(COSTS_ALL.get(playerSeq)).contains(enemySeq)) return ARMOR_SHARDS;
+        else if(Arrays.asList(COSTS_ONE.get(playerSeq)).contains(enemySeq)) return 1;
+        else return 0;
+    }
+
+    private void setupMaxCosts() {
+        FireArmorAbility.COSTS_ALL.put(7, new Integer[]{5});
+        FireArmorAbility.COSTS_ALL.put(6, new Integer[]{});
+        FireArmorAbility.COSTS_ALL.put(5, new Integer[]{4});
+        FireArmorAbility.COSTS_ALL.put(4, new Integer[]{});
+        FireArmorAbility.COSTS_ALL.put(3, new Integer[]{2});
+        FireArmorAbility.COSTS_ALL.put(2, new Integer[]{});
+        FireArmorAbility.COSTS_ALL.put(1, new Integer[]{0});
+        FireArmorAbility.COSTS_ALL.put(0, new Integer[]{});
+    }
+
+    private void setupOneCosts() {
+        FireArmorAbility.COSTS_ONE.put(7, new Integer[]{9, 8, 7, 6});
+        FireArmorAbility.COSTS_ONE.put(6, new Integer[]{9, 8, 7, 6, 5});
+        FireArmorAbility.COSTS_ONE.put(5, new Integer[]{9, 8, 7, 6, 5});
+        FireArmorAbility.COSTS_ONE.put(4, new Integer[]{9, 8, 7, 6, 5, 4, 3});
+        FireArmorAbility.COSTS_ONE.put(3, new Integer[]{9, 8, 7, 6, 5, 4, 3});
+        FireArmorAbility.COSTS_ONE.put(2, new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1});
+        FireArmorAbility.COSTS_ONE.put(1, new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1});
+        FireArmorAbility.COSTS_ONE.put(0, new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1, 0});
     }
 
     @SubscribeEvent
