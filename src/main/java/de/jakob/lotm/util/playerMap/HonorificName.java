@@ -1,0 +1,127 @@
+package de.jakob.lotm.util.playerMap;
+
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+
+import java.util.LinkedList;
+import java.util.List;
+
+public record HonorificName(LinkedList<String> lines) {
+    static public final String NBT_LINES = "honorific_name_lines";
+
+    static public final HonorificName EMPTY = new HonorificName(new LinkedList<>());
+
+    static public LinkedList<String> getMustHaveWords(String path){
+        return new LinkedList<String>(
+                switch (path){
+                    case "fool" -> List.of("History", "Mystery", "Bizarreness", "Change", "Wishes", "Miracles", "Drama", "Performances", "Fools");
+                    case "error" -> List.of("Time", "Deceit", "Trickery", "Loopholes", "Tampering", "Exploitation", "Bugs", "Theft", "Errors");
+                    case "door" -> List.of("Space", "Stars", "Cosmos", "Worlds", "Concealment", "Seals", "Travels", "Chronicles", "Doors");
+                    case "visionary" -> List.of("Mind", "Dreams", "Visions", "Fantasies", "Imagination", "Discernment", "Psyche", "Coincidence", "Arrangements");
+                    case "sun" -> List.of( "Light", "Order", "Holiness", "Contracts", "Justice", "Energy", "Sun", "Daytime", "Inextinguishable");
+                    case "tyrant" -> List.of("Storms", "Calamities", "Seas", "Skies", "Tsunamis", "Undersea", "Creatures", "Tyranny", "Wrath");
+                    case "white_tower" -> List.of("Knowledge", "Observation", "Reasoning", "Cognition", "Wisdom", "Reason", "Omniscience", "Learning", "Madness");
+                    case "hanged_man" -> List.of("Degeneration", "Corruption", "Mutation", "Shadows", "Darkness", "Whispers", "Sacrifice", "Depravity", "Words");
+                    case "darkness" -> List.of("Darkness", "Dreams", "Silence", "Horror", "Repose", "Misfortune", "Concealment", "Stars", "Night");
+                    case "death" -> List.of("Death", "Undeath", "Spirits", "Underworld", "Pallor", "Styx", "Dead", "Eternal", "Rest");
+                    case "twilight_light" -> List.of("Twilight", "Decay", "Glory", "Passage","Time", "Dawn", "Dusk", "Power", "Combat");
+                    case "demoness" -> List.of("Chaos", "Catastrophes","Mirror", "Disasters", "Apocalypse", "Strife", "Plagues", "Primordium", "Femininity");
+                    case "red_priest" -> List.of("War", "Calamity", "Iron","Blood", "Battlefield", "Strife", "Chaos", "Destruction", "Masculinity");
+                    case "hermit" -> List.of("Knowledge", "Information", "Symbols", "Magic", "Data", "Numbers", "Education", "Stories", "Mysticism");
+                    case "paragon" -> List.of("Technology", "Logic", "Machinery", "Physics", "Civilizations", "Structure", "Essence", "Education", "Enlightenment");
+                    case "wheel_of_fortune" -> List.of("Fate", "Luck", "Lucky", "Misfortune", "Fortune", "River", "Calamities", "Probability", "Madness", "Chaos");
+                    case "mother" -> List.of("Earth", "Fertility", "Reproduction", "Desolation", "Nature", "Origin", "Life", "Harvest", "Bounty");
+                    case "moon" -> List.of("Moon", "Fertility", "Reproduction", "Spirituality", "Beauty", "Proliferation", "Moonlight", "Silver", "Crimson");
+                    case "abyss" -> List.of("Devils", "Evil", "Desires", "Corruption", "Blood", "Malice", "Blathers", "Corrosion", "Filth");
+                    case "chained" -> List.of("Chains", "Temperance", "Deviants", "Restraint", "Indulgence", "Unity", "Binding", "Curses", "Thorns");
+                    case "black_emperor" -> List.of("Disorder", "Distortion", "Exploitation", "Entropy", "Abolition", "Frenzy", "Domination", "Black", "Shadow");
+                    case "justiciar" -> List.of("Laws", "Rules", "Balance", "Discipline", "Justice", "Judgement", "Order", "White", "Punishment");
+                    default -> List.of();
+        });
+    }
+
+    public static int MAX_LENGTH = 200;
+
+    public boolean contains(String str) {return lines.contains(str);}
+
+    public static boolean validate(String path, LinkedList<String> list){
+        var mustHave = getMustHaveWords(path);
+
+        for (var str : list){
+            var words = List.of(str.split("[ ,]"));
+            if(!words.stream().
+                    anyMatch(input -> mustHave.stream().
+                            anyMatch(target -> target.equalsIgnoreCase(input))))
+                return false;
+        }
+
+        return true;
+    }
+
+    public boolean isEmpty(){
+        return lines.isEmpty();
+    }
+
+    public HonorificName addLine(String str){
+        LinkedList<String> result = new LinkedList<>(lines);
+        result.add(str);
+
+        return new HonorificName(result);
+    }
+
+    public String getAllInfo(){
+        return !lines.isEmpty()?
+                ("\n  Line 1: " + lines.get(0)
+                + "\n  Line 2: " + lines.get(1)
+                + "\n  Line 3: " + lines.get(2)
+                + ((lines.size() >= 4) ? ("\n  Line 4: " + lines.get(3)) : "")
+                + ((lines.size() == 5) ? ("\n  Line 5: " + lines.get(4)) : ""))
+                : "None";
+    }
+
+    public CompoundTag toNBT(){
+        CompoundTag tag = new CompoundTag();
+
+        ListTag list = new ListTag();
+        for (var value : lines) {
+            list.add(StringTag.valueOf(value));
+        }
+
+        tag.put(NBT_LINES, list);
+
+        return tag;
+    }
+
+    static public HonorificName fromNBT(CompoundTag tag){
+        LinkedList<String> list = new LinkedList<>();
+
+        if (tag.contains(NBT_LINES, Tag.TAG_LIST)) {
+            ListTag listTag = tag.getList(NBT_LINES, Tag.TAG_STRING);
+
+            for (var obj : listTag) {
+                list.add(obj.getAsString());
+            }
+        }
+
+        return new HonorificName(list);
+    }
+
+    public static HonorificName fromNetwork(FriendlyByteBuf buf) {
+        int size = buf.readVarInt();
+        LinkedList<String> list = new LinkedList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(buf.readUtf(MAX_LENGTH));
+        }
+        return new HonorificName(list);
+    }
+
+    public void toNetwork(FriendlyByteBuf buf) {
+        buf.writeVarInt(lines.size());
+        for (String line : lines) {
+            buf.writeUtf(line, MAX_LENGTH);
+        }
+    }
+}

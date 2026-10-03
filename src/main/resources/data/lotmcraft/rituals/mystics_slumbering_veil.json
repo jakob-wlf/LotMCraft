@@ -1,0 +1,30 @@
+{
+  "id": "lotm:mystics_slumbering_veil",
+  "discovered_from": "lotm:dreamwalkers_diary",
+  "candle": "minecraft:blue_candle",
+  "sacrifices": [
+    { "item": "minecraft:phantom_membrane", "count": 2 },
+    { "item": "minecraft:sugar", "count": 3 },
+    { "item": "minecraft:poppy", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Wanderer who walks the corridors between dreaming minds",
+      "Keeper of the hush that falls before sweet sleep",
+      "Draw the nearest waking foe into your slumber's hold."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.2, "g": 0.2, "b": 0.6 },
+  "book_color": "BLUE",
+  "duration_ticks": 200,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:slowness", "duration_ticks": 200, "amplifier": 2, "target": "nearest", "max_distance": 10 },
+        { "id": "minecraft:nausea", "duration_ticks": 200, "amplifier": 1, "target": "nearest", "max_distance": 10 }
+      ]
+    }
+  }
+}

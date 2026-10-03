@@ -1,0 +1,32 @@
+{
+  "midnight_poem": {
+    "subtitle": "sounds.lotmcraft.midnight_poem",
+    "sounds": [
+      "lotmcraft:midnight_poem"
+    ]
+  },
+  "melody_of_death": {
+    "subtitle": "sounds.lotmcraft.melody_of_death",
+    "sounds": [
+      "lotmcraft:melody_of_death"
+    ]
+  },
+  "dazing_song": {
+    "subtitle": "sounds.lotmcraft.dazing_song",
+    "sounds": [
+      "lotmcraft:dazing_sounds"
+    ]
+  },
+  "song_of_courage": {
+    "subtitle": "sounds.lotmcraft.song_of_courage",
+    "sounds": [
+      "lotmcraft:song_of_courage"
+    ]
+  },
+  "bad_sound": {
+    "subtitle": "sounds.lotmcraft.loud_sound_1",
+    "sounds": [
+      "lotmcraft:loud_sound_1"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_calamity",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:thunder_god_potion"
+    },
+    "title": "Wrath of the Heavens",
+    "description": "Consume a Potion and advance to Thunder God.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

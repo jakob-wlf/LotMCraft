@@ -1,0 +1,1317 @@
+package de.jakob.lotm.rendering;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.entity.client.ability_entities.door_pathway.return_portal.HighSequenceDoorsModel;
+import de.jakob.lotm.rendering.models.darkness.DarknessMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.death.DeathMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.demoness.DemonessMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.door.DoorHighMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.error.ErrorMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.fool.FoolMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.justiciar.JusticiarMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.mother.MotherMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
+import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
+
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
+public class TransformationRenderer {
+
+    private static TyrantMythicalCreatureModel<Entity> tyrantMythicalCreatureModel;
+    private static final ResourceLocation tyrantMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/tyrant.png");
+
+    private static DoorMythicalCreatureModel<Entity> doorMythicalCreatureModel;
+    private static final ResourceLocation doorMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/door.png");
+
+    private static FoolMythicalCreatureModel<Entity> foolMythicalCreatureModel;
+    private static final ResourceLocation foolMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/fool.png");
+
+    private static WheelOfFortuneMythicalCreatureModel<Entity> wofMythicalCreatureModel;
+    private static final ResourceLocation wofMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/wheel_of_fortune.png");
+
+    private static RedPriestMythicalCreatureModel<Entity> redPriestMythicalCreatureModel;
+    private static final ResourceLocation redPriestMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/red_priest.png");
+
+    private static SunMythicalCreatureModel<Entity> sunMythicalCreatureModel;
+    private static final ResourceLocation sunMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/sun.png");
+
+    private static DoorHighMythicalCreatureModel<Entity> doorHighMythicalCreatureModel;
+    private static final ResourceLocation doorHighMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/door_high.png");
+
+    private static MotherMythicalCreatureModel<Entity> motherMythicalCreatureModel;
+    private static final ResourceLocation motherMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/mother.png");
+
+    private static DarknessMythicalCreatureModel<Entity> darknessMythicalCreatureModel;
+    private static final ResourceLocation darknessMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/darkness.png");
+
+    private static DemonessMythicalCreatureModel<Entity> demonessMythicalCreatureModel;
+    private static final ResourceLocation demonessMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/demoness.png");
+
+    private static ErrorMythicalCreatureModel<Entity> errorMythicalCreatureModel;
+    private static final ResourceLocation errorMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/error.png");
+
+    private static VisionaryMythicalCreatureModel<Entity> visionaryMythicalCreatureModel;
+    private static final ResourceLocation visionaryMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/visionary.png");
+
+    private static JusticiarMythicalCreatureModel<Entity> justiciarMythicalCreatureModel;
+    private static final ResourceLocation justiciarMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/justiciar.png");
+
+    private static DeathMythicalCreatureModel<Entity> deathMythicalCreatureModel;
+    private static final ResourceLocation deathMythicalCreatureTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/mythical_creatures/death.png");
+
+    private static HighSequenceDoorsModel<Entity> mysticalDoorsModel;
+    private static final ResourceLocation mysticalDoorsTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_1.png");
+    private static final ResourceLocation mysticalDoorsTexture2 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_2.png");
+    private static final ResourceLocation mysticalDoorsTexture3 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_3.png");
+    private static final ResourceLocation mysticalDoorsTexture4 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_4.png");
+    private static final ResourceLocation mysticalDoorsTexture5 = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/doors/mystical_door_5.png");
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
+        LivingEntity entity = event.getEntity();
+        TransformationComponent component = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+
+        if (!component.isTransformed()) {
+            return;
+        }
+
+        if(component.shouldCancelDefaultRendering()) {
+            event.setCanceled(true);
+        }
+
+        // Mystical Doors: The digit after 200 shows the size of the mystical doors, allowing the doors to grow bigger when hit more often
+        if(component.getTransformationIndex() >= 200 && component.getTransformationIndex() <= 220) {
+            renderMysticalDoor(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick(), Math.clamp(component.getTransformationIndex() - 200, 1, 12));
+        }
+
+        switch (component.getTransformationIndex()) {
+            case 1 -> renderDesireApostleMass(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick());
+            case 3 -> renderSolarEnvoy(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick());
+            case 4 -> renderAngelicWings(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick());
+            case 6 -> renderEnergyMass(event.getPoseStack(), event.getMultiBufferSource(),
+                    event.getPackedLight(), entity, event.getPartialTick());
+            case 101 -> {
+                if(!renderMythicalCreature(component.getAdditionalData(), event.getPoseStack(), event.getMultiBufferSource(),
+                        event.getPackedLight(), entity, event.getPartialTick()))
+                    event.setCanceled(false);
+            }
+
+        }
+    }
+
+    private static void renderMysticalDoor(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick, int sizeMultiplier) {
+        if (mysticalDoorsModel == null) {
+            mysticalDoorsModel = new HighSequenceDoorsModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(HighSequenceDoorsModel.LAYER_LOCATION)
+            );
+        }
+
+        RandomSource random = RandomSource.create(sizeMultiplier * 1000L);
+        int textureIndex = random.nextInt(5) + 1;
+        ResourceLocation selectedTexture = switch (textureIndex) {
+            case 2 -> mysticalDoorsTexture2;
+            case 3 -> mysticalDoorsTexture3;
+            case 4 -> mysticalDoorsTexture4;
+            case 5 -> mysticalDoorsTexture5;
+            default -> mysticalDoorsTexture;
+        };
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + (sizeMultiplier * .125f) - .25, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        float actualSize = Math.clamp(sizeMultiplier * .125f, .75f, 3.5f);
+
+        renderMysticalDoorParticles(poseStack, multiBufferSource, packedLight, entity, partialTick, actualSize);
+
+        poseStack.scale(actualSize, -actualSize, actualSize);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(selectedTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        mysticalDoorsModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        mysticalDoorsModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static final ResourceLocation WHITE_TEXTURE = ResourceLocation.withDefaultNamespace("textures/misc/white.png");
+
+    private static void renderMysticalDoorParticles(PoseStack poseStack, MultiBufferSource multiBufferSource,
+                                                    int packedLight, LivingEntity entity, float partialTick, float doorSize) {
+        float time = entity.tickCount + partialTick;
+
+        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+        Quaternionf camOrientation = new Quaternionf(dispatcher.cameraOrientation());
+
+        VertexConsumer consumer = multiBufferSource.getBuffer(
+                RenderType.entityTranslucentEmissive(WHITE_TEXTURE)
+        );
+
+        int particleCount = 18;
+        float spread = doorSize * 1.15f;
+
+        for (int i = 0; i < particleCount; i++) {
+            float seed = i * 17.231f;
+            float h1 = hash(seed);
+            float h2 = hash(seed + 4.71f);
+            float h3 = hash(seed + 9.13f);
+
+            float orbitRadius = spread * (0.35f + h1 * 0.85f);
+            float orbitSpeed = (0.022f + h2 * 0.03f) * (i % 2 == 0 ? 1f : -1f);
+            float phase = h3 * Mth.TWO_PI;
+
+            float cycleLength = 80f + h1 * 50f;
+            float riseSpeed = (doorSize * 1.7f) / cycleLength;
+            float cycle = (time + seed * 23f) % cycleLength;
+
+            float angle = time * orbitSpeed + phase;
+            float wobble = Mth.sin(time * 0.05f + seed) * 0.18f;
+
+            float x = Mth.cos(angle) * (orbitRadius + wobble);
+            float z = Mth.sin(angle) * (orbitRadius + wobble);
+            float y = cycle * riseSpeed - doorSize * 0.25f;
+
+            float lifeProgress = cycle / cycleLength;
+            float fade = Mth.sin(lifeProgress * Mth.PI);
+            if (fade <= 0.01f) continue;
+
+            boolean isPurple = h3 > 0.5f;
+            float r = isPurple ? 0.78f : 0.30f;
+            float g = isPurple ? 0.30f : 0.70f;
+            float b = 1.0f;
+            float alpha = Mth.clamp(0.55f + fade * 0.45f, 0f, 0.92f);
+
+            float size = (0.14f + h2 * 0.12f) * doorSize * (0.6f + fade * 0.6f);
+
+            poseStack.pushPose();
+            poseStack.translate(x, y, z);
+            poseStack.mulPose(camOrientation);
+
+            Matrix4f matrix = poseStack.last().pose();
+            Matrix3f normal = poseStack.last().normal();
+
+            addParticleVertex(consumer, matrix, normal, -size, -size, 0, 0, 1, r, g, b, alpha, packedLight); // BL
+            addParticleVertex(consumer, matrix, normal,  size, -size, 0, 1, 1, r, g, b, alpha, packedLight); // BR
+            addParticleVertex(consumer, matrix, normal,  size,  size, 0, 1, 0, r, g, b, alpha, packedLight); // TR
+            addParticleVertex(consumer, matrix, normal, -size,  size, 0, 0, 0, r, g, b, alpha, packedLight); // TL
+
+            poseStack.popPose();
+        }
+    }
+
+    private static void addParticleVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normal,
+                                          float x, float y, float z, float u, float v,
+                                          float r, float g, float b, float alpha, int packedLight) {
+        consumer.addVertex(matrix, x, y, z)
+                .setColor(r, g, b, alpha)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(0f, 1f, 0f);
+    }
+
+    private static float hash(float n) {
+        float val = Mth.sin(n) * 43758.5453F;
+        return val - Mth.floor(val);
+    }
+
+    private static boolean renderMythicalCreature(String path,
+                                                  PoseStack poseStack, MultiBufferSource multiBufferSource,
+                                                  int packedLight, LivingEntity entity, float partialTick)
+    {
+        switch (path){
+            case "tyrant" -> renderTyrantMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "door" -> renderDoorMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "door_high" -> renderDoorHighMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "fool" -> renderFoolMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "wheel_of_fortune" -> renderWofMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "red_priest" -> renderRedPriestMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "sun" -> renderSunMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "mother" -> renderMotherMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "darkness" -> renderDarknessMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "demoness" -> renderDemonessMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "error" -> renderErrorMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "visionary" -> renderVisionaryMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "justiciar" -> renderJusticiarMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            case "death" -> renderDeathMythicalCreature(poseStack, multiBufferSource,
+                    packedLight, entity, partialTick);
+            default -> {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static void renderDeathMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (deathMythicalCreatureModel == null) {
+            deathMythicalCreatureModel = new DeathMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DeathMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.5, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(4, -4, 4);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityTranslucent(deathMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        deathMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        deathMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderJusticiarMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (justiciarMythicalCreatureModel == null) {
+            justiciarMythicalCreatureModel = new JusticiarMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(JusticiarMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.7, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(3.5F, -3.5F, 3.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(justiciarMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        justiciarMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        justiciarMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderVisionaryMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (visionaryMythicalCreatureModel == null) {
+            visionaryMythicalCreatureModel = new VisionaryMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(VisionaryMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 - 1, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(1, -1, 1);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(visionaryMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        visionaryMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        visionaryMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderErrorMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (errorMythicalCreatureModel == null) {
+            errorMythicalCreatureModel = new ErrorMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(ErrorMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.3, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - yaw));
+
+        poseStack.scale(3.5F, -3.5F, 3.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(errorMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        errorMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        errorMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderDemonessMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (demonessMythicalCreatureModel == null) {
+            demonessMythicalCreatureModel = new DemonessMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DemonessMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.2, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.5F, -2.5F, 2.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityTranslucent(demonessMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        demonessMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        demonessMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderDarknessMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (darknessMythicalCreatureModel == null) {
+            darknessMythicalCreatureModel = new DarknessMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DarknessMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .25, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(90 - yaw));
+
+        poseStack.scale(2F, -2F, 2F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(darknessMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        darknessMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        darknessMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderMotherMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (motherMythicalCreatureModel == null) {
+            motherMythicalCreatureModel = new MotherMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(MotherMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 - 1, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
+
+        poseStack.scale(2.4F, 2.4F, 2.4F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(motherMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        motherMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        motherMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderSunMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (sunMythicalCreatureModel == null) {
+            sunMythicalCreatureModel = new SunMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(SunMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2.5, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(3.5F, -3.5F, 3.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(sunMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        sunMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        sunMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderRedPriestMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (redPriestMythicalCreatureModel == null) {
+            redPriestMythicalCreatureModel = new RedPriestMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(RedPriestMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.45, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.8F, -2.8F, 2.8F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(redPriestMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        redPriestMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        redPriestMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderWofMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (wofMythicalCreatureModel == null) {
+            wofMythicalCreatureModel = new WheelOfFortuneMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(WheelOfFortuneMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.7, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.4F, -2.4F, 2.4F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(wofMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        wofMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        wofMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderFoolMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        if (foolMythicalCreatureModel == null) {
+            foolMythicalCreatureModel = new FoolMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(FoolMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.6, 0.0);
+
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+
+        poseStack.scale(2.5F, -2.5F, 2.5F);
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(foolMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        foolMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        foolMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderDoorMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        // Lazy initialization - only bake the model when first needed
+        if (doorMythicalCreatureModel == null) {
+            doorMythicalCreatureModel = new DoorMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DoorMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        // Position at entity center
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 1.4, 0.0);
+
+        // Rotate with the player's body rotation
+        // Use yBodyRot for smooth rotation, or getYRot() for instant rotation
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+
+        // Scale if needed
+        poseStack.scale(3.5F, -3.5F, 3.5F);
+
+        // Get the vertex consumer with your texture
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(doorMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        doorMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        // Render the model
+        doorMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderDoorHighMythicalCreature(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        // Lazy initialization - only bake the model when first needed
+        if (doorHighMythicalCreatureModel == null) {
+            doorHighMythicalCreatureModel = new DoorHighMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(DoorHighMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        // Position at entity center
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + 2, 0.0);
+
+        // Rotate with the player's body rotation
+        // Use yBodyRot for smooth rotation, or getYRot() for instant rotation
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yaw)); // 180.0F to face the correct direction
+
+        // Scale if needed
+        poseStack.scale(3.5F, -3.5F, -3.5F);
+
+        // Get the vertex consumer with your texture
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(doorHighMythicalCreatureModel.renderType(doorHighMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        doorHighMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        // Render the model
+        doorHighMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderTyrantMythicalCreature(PoseStack poseStack, MultiBufferSource bufferSource,
+                                                     int packedLight, LivingEntity entity, float partialTick) {
+        // Lazy initialization - only bake the model when first needed
+        if (tyrantMythicalCreatureModel == null) {
+            tyrantMythicalCreatureModel = new TyrantMythicalCreatureModel<>(
+                    Minecraft.getInstance().getEntityModels().bakeLayer(TyrantMythicalCreatureModel.LAYER_LOCATION)
+            );
+        }
+
+        poseStack.pushPose();
+
+        // Position at entity center
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .5, 0.0);
+
+        // Rotate with the player's body rotation
+        // Use yBodyRot for smooth rotation, or getYRot() for instant rotation
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - yaw)); // 180.0F to face the correct direction
+
+        // Scale if needed
+        poseStack.scale(1.75F, -1.75F, 1.75F);
+
+        // Get the vertex consumer with your texture
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutoutNoCull(tyrantMythicalCreatureTexture));
+
+        float limbSwing = 0;
+        float limbSwingAmount = 0;
+
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        tyrantMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+
+        // Render the model
+        tyrantMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
+                OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);
+
+        poseStack.popPose();
+    }
+
+    private static void renderEnergyMass(PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, LivingEntity entity, float partialTick) {
+        poseStack.pushPose();
+
+        float entityHeight = entity.getBbHeight();
+        float entityWidth = entity.getBbWidth();
+
+        poseStack.translate(0, entityHeight / 2, 0);
+
+        long gameTime = entity.level().getGameTime();
+        float time = (gameTime + partialTick) * 0.05F;
+
+        // === ASYMMETRIC PULSING — different frequencies per axis ===
+        float scaleX = 1.0F + Mth.sin(time * 1.7F) * 0.18F + Mth.sin(time * 3.1F) * 0.07F;
+        float scaleY = 1.0F + Mth.sin(time * 2.3F + 1.2F) * 0.22F + Mth.sin(time * 4.7F) * 0.05F;
+        float scaleZ = 1.0F + Mth.sin(time * 1.1F + 2.4F) * 0.15F + Mth.sin(time * 3.8F) * 0.09F;
+        poseStack.scale(scaleX, scaleY, scaleZ);
+
+        // Slow tumbling rotation on multiple axes — not just Y
+        poseStack.mulPose(Axis.YP.rotationDegrees(time * 15.0F));
+        poseStack.mulPose(Axis.XP.rotationDegrees(time * 7.3F));
+
+        VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.energySwirl(
+                ResourceLocation.withDefaultNamespace("textures/entity/creeper/creeper_armor.png"),
+                time * 0.01F,
+                time * 0.01F
+        ));
+
+        // === OUTER SHELL — coarse, irregular geometry ===
+        renderDistortedEnergyMass(poseStack, vertexConsumer, packedLight, entityWidth * 1.5F, 12, 6, time, 0.25F);
+
+        // === MID LAYER — counter-rotating, different distortion phase ===
+        poseStack.pushPose();
+        poseStack.mulPose(Axis.YP.rotationDegrees(-time * 25.0F));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(time * 11.0F));
+        renderDistortedEnergyMass(poseStack, vertexConsumer, packedLight, entityWidth * 1.1F, 10, 5, time + 1.5F, 0.35F);
+        poseStack.popPose();
+
+        // === ENERGY TENDRILS — jagged arms shooting outward ===
+        for (int i = 0; i < 6; i++) {
+            poseStack.pushPose();
+
+            float tendrilAngleY = (360.0F / 6) * i + time * 30.0F * (i % 2 == 0 ? 1 : -1);
+            float tendrilAngleX = Mth.sin(time * 1.3F + i * 1.1F) * 40.0F;
+
+            poseStack.mulPose(Axis.YP.rotationDegrees(tendrilAngleY));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(tendrilAngleX));
+
+            // Tendrils vary in length with noise-like flicker
+            float tendrilLength = entityWidth * (0.6F + Mth.sin(time * 2.5F + i * 0.9F) * 0.4F);
+            renderEnergyTendril(poseStack, vertexConsumer, packedLight, tendrilLength, time + i * 0.7F);
+
+            poseStack.popPose();
+        }
+
+        // === INNER CORE — bright, tight, fast-pulsing ===
+        VertexConsumer coreConsumer = multiBufferSource.getBuffer(RenderType.eyes(
+                ResourceLocation.withDefaultNamespace("textures/entity/enderman/enderman_eyes.png")
+        ));
+        float coreScale = 0.7F + Mth.sin(time * 6.0F) * 0.15F; // fast flicker
+        poseStack.pushPose();
+        poseStack.scale(coreScale, coreScale * 1.3F, coreScale); // elongate core vertically
+        renderDistortedEnergyMass(poseStack, coreConsumer, 15728880, entityWidth * 0.6F, 8, 4, time * 2.0F, 0.15F);
+        poseStack.popPose();
+
+        poseStack.popPose();
+    }
+
+    /**
+     * Renders an irregular, distorted energy mass instead of a clean sphere.
+     * Vertex positions are displaced by layered sine waves based on their angle,
+     * breaking the spherical silhouette into a lumpy, shifting energy shape.
+     *
+     * @param distortionAmount 0 = perfect sphere, 0.5 = very irregular
+     */
+    private static void renderDistortedEnergyMass(PoseStack poseStack, VertexConsumer consumer,
+                                                  int packedLight, float radius, int stacks, int slices, float time, float distortionAmount) {
+
+        Matrix4f matrix = poseStack.last().pose();
+        Matrix3f normal = poseStack.last().normal();
+
+        for (int i = 0; i < stacks; i++) {
+            float phi0 = (float) Math.PI * i / stacks;
+            float phi1 = (float) Math.PI * (i + 1) / stacks;
+
+            for (int j = 0; j < slices; j++) {
+                float theta0 = 2.0F * (float) Math.PI * j / slices;
+                float theta1 = 2.0F * (float) Math.PI * (j + 1) / slices;
+
+                // Render two triangles per quad
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi0, theta0, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi1, theta0, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi1, theta1, time, distortionAmount);
+
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi0, theta0, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi1, theta1, time, distortionAmount);
+                renderDistortedVertex(matrix, normal, consumer, packedLight, radius, phi0, theta1, time, distortionAmount);
+            }
+        }
+    }
+
+    private static void renderDistortedVertex(Matrix4f matrix, Matrix3f normal, VertexConsumer consumer,
+                                              int packedLight, float baseRadius, float phi, float theta, float time, float distortionAmount) {
+
+        // Layered sine displacement — creates irregular, organic surface
+        float distortion = 1.0F
+                + Mth.sin(phi * 3.0F + time * 1.1F) * distortionAmount
+                + Mth.sin(theta * 4.0F + time * 0.7F) * distortionAmount * 0.6F
+                + Mth.sin(phi * 7.0F + theta * 5.0F + time * 2.3F) * distortionAmount * 0.3F;
+
+        float r = baseRadius * distortion;
+
+        float x = r * Mth.sin(phi) * Mth.cos(theta);
+        float y = r * Mth.cos(phi);
+        float z = r * Mth.sin(phi) * Mth.sin(theta);
+
+        float u = theta / ((float) Math.PI * 2);
+        float v = phi / (float) Math.PI;
+
+        consumer.addVertex(matrix, x, y, z)
+                .setColor(1.0F, 1.0F, 1.0F, 0.85F)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(x / r, y / r, z / r);
+    }
+
+    /**
+     * Renders a tapered, segmented tendril that jags slightly at each segment.
+     */
+    private static void renderEnergyTendril(PoseStack poseStack, VertexConsumer consumer,
+                                            int packedLight, float length, float time) {
+
+        int segments = 6;
+        float segmentLength = length / segments;
+
+        for (int i = 0; i < segments; i++) {
+            poseStack.pushPose();
+
+            float progress = (float) i / segments;
+            float thickness = 0.06F * (1.0F - progress); // taper toward tip
+
+            // Each segment kinks slightly off-axis
+            float kinkX = Mth.sin(time * 3.0F + i * 1.4F) * 18.0F;
+            float kinkZ = Mth.cos(time * 2.7F + i * 1.1F) * 18.0F;
+            poseStack.translate(0, segmentLength * i, 0);
+            poseStack.mulPose(Axis.XP.rotationDegrees(kinkX));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(kinkZ));
+
+            renderEnergyOrb(poseStack, consumer, packedLight, thickness);
+
+            poseStack.popPose();
+        }
+    }
+
+    private static void renderEnergySphere(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float radius, int longitudeSegments, int latitudeSegments) {
+        Matrix4f matrix = poseStack.last().pose();
+        Matrix3f normal = poseStack.last().normal();
+
+        for (int lat = 0; lat < latitudeSegments; lat++) {
+            float theta1 = (lat * Mth.PI) / latitudeSegments;
+            float theta2 = ((lat + 1) * Mth.PI) / latitudeSegments;
+
+            for (int lon = 0; lon < longitudeSegments; lon++) {
+                float phi1 = (lon * 2.0F * Mth.PI) / longitudeSegments;
+                float phi2 = ((lon + 1) * 2.0F * Mth.PI) / longitudeSegments;
+
+                // Calculate vertices for quad
+                float x1 = radius * Mth.sin(theta1) * Mth.cos(phi1);
+                float y1 = radius * Mth.cos(theta1);
+                float z1 = radius * Mth.sin(theta1) * Mth.sin(phi1);
+
+                float x2 = radius * Mth.sin(theta1) * Mth.cos(phi2);
+                float y2 = radius * Mth.cos(theta1);
+                float z2 = radius * Mth.sin(theta1) * Mth.sin(phi2);
+
+                float x3 = radius * Mth.sin(theta2) * Mth.cos(phi2);
+                float y3 = radius * Mth.cos(theta2);
+                float z3 = radius * Mth.sin(theta2) * Mth.sin(phi2);
+
+                float x4 = radius * Mth.sin(theta2) * Mth.cos(phi1);
+                float y4 = radius * Mth.cos(theta2);
+                float z4 = radius * Mth.sin(theta2) * Mth.sin(phi1);
+
+                // Calculate UVs
+                float u1 = (float) lon / longitudeSegments;
+                float u2 = (float) (lon + 1) / longitudeSegments;
+                float v1 = (float) lat / latitudeSegments;
+                float v2 = (float) (lat + 1) / latitudeSegments;
+
+                // Render quad
+                addVertex(vertexConsumer, matrix, normal, x1, y1, z1, u1, v1, packedLight);
+                addVertex(vertexConsumer, matrix, normal, x2, y2, z2, u2, v1, packedLight);
+                addVertex(vertexConsumer, matrix, normal, x3, y3, z3, u2, v2, packedLight);
+                addVertex(vertexConsumer, matrix, normal, x4, y4, z4, u1, v2, packedLight);
+            }
+        }
+    }
+
+    private static void renderEnergyOrb(PoseStack poseStack, VertexConsumer vertexConsumer, int packedLight, float radius) {
+        renderEnergySphere(poseStack, vertexConsumer, packedLight, radius, 8, 4);
+    }
+
+    private static void addVertex(VertexConsumer vertexConsumer, Matrix4f matrix, Matrix3f normal, float x, float y, float z, float u, float v, int packedLight) {
+        // Calculate normal vector
+        float length = Mth.sqrt(x * x + y * y + z * z);
+        float nx = x / length;
+        float ny = y / length;
+        float nz = z / length;
+
+        vertexConsumer.addVertex(matrix, x, y, z)
+                .setColor(255, 255, 255, 255)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(packedLight)
+                .setNormal(nx, ny, nz);
+    }
+
+    private static void renderAngelicWings(PoseStack poseStack, MultiBufferSource buffer,
+                                           int packedLight, LivingEntity entity, float partialTick) {
+        poseStack.pushPose();
+
+        // Position at shoulder height
+        float entityHeight = entity.getBbHeight();
+        poseStack.translate(0, entityHeight * 0.75f, 0);
+
+        // Apply ONLY the body rotation - no camera adjustments
+        // This keeps wings fixed to the player's back regardless of camera angle
+        float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180 - yaw));
+
+        // Move wings behind the player
+        poseStack.translate(0, 0, .3f);
+
+        // Animation parameters
+        float time = entity.tickCount + partialTick;
+        float flapAngle = Mth.sin(time * 0.08f) * 15f; // Gentle flapping motion
+        float glowPulse = 0.85f + Mth.sin(time * 0.12f) * 0.15f; // Pulsing glow
+
+        // Wing dimensions
+        float wingSpan = 2.2f; // How far out the wing extends
+        float wingHeight = 2.8f; // Height of the wing
+
+        // Use entity translucent emissive for glowing effect
+        RenderType renderType = RenderType.entityTranslucentEmissive(
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/sun/gold.png")
+        );
+        VertexConsumer consumer = buffer.getBuffer(renderType);
+
+        // Render left wing
+        poseStack.pushPose();
+        poseStack.translate(-0.2f, 0, 0); // Offset from center
+        poseStack.mulPose(Axis.YP.rotationDegrees(-35 - flapAngle)); // Angle outward with flap
+        poseStack.mulPose(Axis.ZP.rotationDegrees(10)); // Slight upward tilt
+        renderDetailedWing(poseStack, consumer, wingSpan, wingHeight, packedLight, glowPulse, false);
+        poseStack.popPose();
+
+        // Render right wing (mirrored)
+        poseStack.pushPose();
+        poseStack.translate(0.2f, 0, 0); // Offset from center
+        poseStack.mulPose(Axis.YP.rotationDegrees(35 + flapAngle)); // Angle outward with flap (opposite)
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-10)); // Slight upward tilt (mirrored)
+        renderDetailedWing(poseStack, consumer, wingSpan, wingHeight, packedLight, glowPulse, true);
+        poseStack.popPose();
+
+        // Add outer glow layer for extra radiance
+        RenderType glowType = RenderType.energySwirl(
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/sun/gold.png"),
+                0, 0
+        );
+        VertexConsumer glowConsumer = buffer.getBuffer(glowType);
+
+        // Left wing glow (slightly larger)
+        poseStack.pushPose();
+        poseStack.translate(-0.2f, 0, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(-35 - flapAngle));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(10));
+        poseStack.scale(1.15f, 1.15f, 1.0f);
+        renderDetailedWing(poseStack, glowConsumer, wingSpan, wingHeight, 15728880, glowPulse * 0.5f, false);
+        poseStack.popPose();
+
+        // Right wing glow
+        poseStack.pushPose();
+        poseStack.translate(0.2f, 0, 0);
+        poseStack.mulPose(Axis.YP.rotationDegrees(35 + flapAngle));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(-10));
+        poseStack.scale(1.15f, 1.15f, 1.0f);
+        renderDetailedWing(poseStack, glowConsumer, wingSpan, wingHeight, 15728880, glowPulse * 0.5f, true);
+        poseStack.popPose();
+
+        poseStack.popPose();
+    }
+
+    private static void renderDetailedWing(PoseStack poseStack, VertexConsumer consumer,
+                                           float span, float height, int light, float glowIntensity, boolean mirror) {
+        Matrix4f matrix = poseStack.last().pose();
+        Matrix3f normalMat = poseStack.last().normal();
+
+        // Create a wing with proper feather-like shape
+        // Wings are wider at the base and taper to a point at the top
+        int horizontalSegments = 12; // More segments for smoother curve
+        int verticalSegments = 16;
+
+        for (int v = 0; v < verticalSegments; v++) {
+            float v1 = (float) v / verticalSegments;
+            float v2 = (float) (v + 1) / verticalSegments;
+
+            for (int h = 0; h < horizontalSegments; h++) {
+                float u1 = (float) h / horizontalSegments;
+                float u2 = (float) (h + 1) / horizontalSegments;
+
+                // Create wing shape points
+                Vec3 p1 = getWingPoint(u1, v1, span, height, mirror);
+                Vec3 p2 = getWingPoint(u2, v1, span, height, mirror);
+                Vec3 p3 = getWingPoint(u2, v2, span, height, mirror);
+                Vec3 p4 = getWingPoint(u1, v2, span, height, mirror);
+
+                // Calculate alpha fade towards edges
+                float edgeFade = 1.0f - (u1 * 0.3f); // Fade at wing tip
+                float tipFade = 1.0f - (v1 * v1 * 0.4f); // Fade at top
+                float alpha = glowIntensity * edgeFade * tipFade;
+                int alphaValue = (int) (Mth.clamp(alpha, 0, 1) * 255);
+
+                // Add vertices for this quad
+                addWingVertex(consumer, matrix, normalMat, p1, u1, v1, light, alphaValue);
+                addWingVertex(consumer, matrix, normalMat, p2, u2, v1, light, alphaValue);
+                addWingVertex(consumer, matrix, normalMat, p3, u2, v2, light, alphaValue);
+                addWingVertex(consumer, matrix, normalMat, p4, u1, v2, light, alphaValue);
+            }
+        }
+    }
+
+    private static Vec3 getWingPoint(float u, float v, float span, float height, boolean mirror) {
+        // u (0 = near back), 1 = wing tip
+        // v (0 = lower feathers), 1 = top taper
+
+        // Quadratic wing taper (keeps thickness at base)
+        float widthAtHeight = 1.0f - (v * v * 0.85f);
+
+        // --- Main silhouette shape --- //
+        // Bold shoulder, sweeping primaries
+        float shoulderCurve = Mth.sin(u * 1.3f) * 0.55f;       // bulge near body
+        float backwardSweep = -(u * u * 0.85f);                // swept primaries
+        float primaryDip = Mth.sin((1 - u) * 1.1f) * 0.25f;    // dip outer feathers slightly
+
+        float xOffset = ((shoulderCurve + u * span * widthAtHeight) * (mirror ? 1 : -1));
+        float yOffset = (v * height) + primaryDip - (height * 0.2f);
+        float zOffset = backwardSweep + v * 0.15f;
+
+        // --- Feather band simulation (3 subtle rows) --- //
+        float band = (float) Math.floor(v * 3f) / 3f;
+        float bandOffset = (v - band) * 0.12f; // Small stagger between layers
+        yOffset -= bandOffset;
+
+        // --- Soft angelic ripple --- //
+        // Much smoother + less noisy than before
+        float ripple = Mth.sin(u * 6f + v * 2.5f) * 0.025f * (1.0f - v);
+        zOffset += ripple;
+
+        // --- Wing twist for organic flow --- //
+        float twistDegrees = (u - 0.4f) * v * 14f;
+        Quaternionf twist = Axis.XP.rotationDegrees(twistDegrees);
+
+        Vector3f pos = new Vector3f(xOffset, yOffset, zOffset);
+        pos.rotate(twist);
+
+        return new Vec3(pos.x(), pos.y(), pos.z());
+    }
+
+
+    private static void addWingVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normalMat,
+                                      Vec3 pos, float u, float v, int light, int alpha) {
+        // Calculate normal based on position for proper lighting
+        Vec3 normal = pos.normalize();
+
+        consumer.addVertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(255, 255, 255, alpha)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal((float) normal.x, (float) normal.y, (float) normal.z);
+    }
+
+    private static void renderSolarEnvoy(PoseStack poseStack, MultiBufferSource buffer, int packedLight, LivingEntity entity, float partialTick) {
+        poseStack.pushPose();
+
+        float radius = 2.5f;
+        float height = 2.5f;
+
+        RenderType renderType = RenderType.entitySolid(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/entity/sun/gold.png"));
+        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
+
+        // Render sphere using latitude/longitude rings
+        int segments = 24; // Horizontal segments (around)
+        int rings = 18; // Vertical segments (up and down)
+
+        for (int ring = 0; ring < rings; ring++) {
+            float theta1 = ((float) ring / rings) * Mth.PI;
+            float theta2 = ((float) (ring + 1) / rings) * Mth.PI;
+
+            for (int seg = 0; seg < segments; seg++) {
+                float phi1 = ((float) seg / segments) * Mth.TWO_PI;
+                float phi2 = ((float) (seg + 1) / segments) * Mth.TWO_PI;
+
+                // Calculate vertices for the quad
+                Vec3 v1 = getSpherePoint(radius, height, theta1, phi1, 1);
+                Vec3 v2 = getSpherePoint(radius, height, theta1, phi2, 1);
+                Vec3 v3 = getSpherePoint(radius, height, theta2, phi2, 1);
+                Vec3 v4 = getSpherePoint(radius, height, theta2, phi1, 1);
+
+                Matrix4f matrix = poseStack.last().pose();
+                Matrix3f normalMat = poseStack.last().normal();
+
+                // Render the quad with slight transparency for depth
+                int alpha = 200; // Slightly transparent
+                addVertex(vertexConsumer, matrix, normalMat, v1, 0, 0, packedLight, alpha);
+                addVertex(vertexConsumer, matrix, normalMat, v2, 1, 0, packedLight, alpha);
+                addVertex(vertexConsumer, matrix, normalMat, v3, 1, 1, packedLight, alpha);
+                addVertex(vertexConsumer, matrix, normalMat, v4, 0, 1, packedLight, alpha);
+            }
+        }
+
+        poseStack.popPose();
+    }
+
+    private static void renderDesireApostleMass(PoseStack poseStack, MultiBufferSource buffer,
+                                                int packedLight, LivingEntity entity, float partialTick) {
+        poseStack.pushPose();
+
+        // Calculate the actual ground position
+        // The entity's Y position minus its height gets us to the ground
+        double groundOffset = -(entity.getBbHeight() / 15) + 0.01; // Slightly above ground
+        poseStack.translate(0, groundOffset, 0);
+
+        float radius = 3.5f;
+        float height = .75f; // Make it slightly flattened
+
+        // Optional: Add pulsing animation
+        float pulse = 1.0f + (Mth.sin(entity.tickCount * 0.1f) * 0.05f);
+
+        // Use a solid translucent render type for a more ethereal look
+        RenderType renderType = RenderType.entitySolid(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,"textures/entity/black_hole/black.png"));
+        VertexConsumer vertexConsumer = buffer.getBuffer(renderType);
+
+        // Render sphere using latitude/longitude rings
+        int segments = 16; // Horizontal segments (around)
+        int rings = 12; // Vertical segments (up and down)
+
+        for (int ring = 0; ring < rings; ring++) {
+            float theta1 = ((float) ring / rings) * Mth.PI;
+            float theta2 = ((float) (ring + 1) / rings) * Mth.PI;
+
+            for (int seg = 0; seg < segments; seg++) {
+                float phi1 = ((float) seg / segments) * Mth.TWO_PI;
+                float phi2 = ((float) (seg + 1) / segments) * Mth.TWO_PI;
+
+                // Calculate vertices for the quad
+                Vec3 v1 = getSpherePoint(radius, height, theta1, phi1, pulse);
+                Vec3 v2 = getSpherePoint(radius, height, theta1, phi2, pulse);
+                Vec3 v3 = getSpherePoint(radius, height, theta2, phi2, pulse);
+                Vec3 v4 = getSpherePoint(radius, height, theta2, phi1, pulse);
+
+                // Calculate normal (pointing outward from center)
+                Vec3 normal1 = getNormal(v1, v2, v3);
+
+                Matrix4f matrix = poseStack.last().pose();
+                Matrix3f normalMat = poseStack.last().normal();
+
+                // Render the quad with slight transparency for depth
+                int alpha = 200; // Slightly transparent
+                addVertex(vertexConsumer, matrix, normalMat, v1, 0, 0, packedLight, alpha);
+                addVertex(vertexConsumer, matrix, normalMat, v2, 1, 0, packedLight, alpha);
+                addVertex(vertexConsumer, matrix, normalMat, v3, 1, 1, packedLight, alpha);
+                addVertex(vertexConsumer, matrix, normalMat, v4, 0, 1, packedLight, alpha);
+            }
+        }
+
+        poseStack.popPose();
+    }
+
+    private static Vec3 getSpherePoint(float radius, float height, float theta, float phi, float pulse) {
+        float x = radius * Mth.sin(theta) * Mth.cos(phi) * pulse;
+        float y = height * Mth.cos(theta) * pulse; // Use height for vertical axis
+        float z = radius * Mth.sin(theta) * Mth.sin(phi) * pulse;
+        return new Vec3(x, y, z);
+    }
+
+    private static Vec3 getNormal(Vec3 v1, Vec3 v2, Vec3 v3) {
+        Vec3 edge1 = v2.subtract(v1);
+        Vec3 edge2 = v3.subtract(v1);
+        return edge1.cross(edge2).normalize();
+    }
+
+    private static void addVertex(VertexConsumer consumer, Matrix4f matrix, Matrix3f normalMat,
+                                  Vec3 pos, float u, float v, int light, int alpha) {
+        consumer.addVertex(matrix, (float) pos.x, (float) pos.y, (float) pos.z)
+                .setColor(255, 255, 255, alpha)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setLight(light)
+                .setNormal(0, 1, 0);
+    }
+}

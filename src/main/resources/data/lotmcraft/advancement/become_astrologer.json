@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_trickmaster",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:astrologer_potion"
+    },
+    "title": "Written in the Stars",
+    "description": "Consume a Potion and advance to Astrologer.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": "#c:is_overworld",
+  "spawners": [
+    {
+      "type": "lotmcraft:beyonder_npc",
+      "weight": 6,
+      "minCount": 1,
+      "maxCount": 1,
+      "category": "creature"
+    }
+  ]
+}

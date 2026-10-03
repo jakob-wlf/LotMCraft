@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_misfortune_mage",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:chaoswalker_potion"
+    },
+    "title": "Into the Chaos",
+    "description": "Consume a Potion and advance to Chaoswalker.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

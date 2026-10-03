@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_demoness_of_despair",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:demoness_of_unaging_potion"
+    },
+    "title": "Eternal Beauty",
+    "description": "Consume a Potion and advance to Demoness of Unaging.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:beyonder_house_mountain",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+
+    "salt": 23768776,
+    "spacing": 40,
+    "separation": 12,
+    "heightmap": "MOTION_BLOCKING_NO_LEAVES",
+    "max_tries": 10
+  }
+}

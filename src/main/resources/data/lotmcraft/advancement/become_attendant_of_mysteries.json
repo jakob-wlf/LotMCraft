@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_miracle_invoker",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:attendant_of_mysteries_potion"
+    },
+    "title": "A Fraud?",
+    "description": "Consume a Potion and advance to Attendant of Mysteries.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "lotm:sun_sovereigns_grace",
+  "discovered_from": "lotm:sunlit_scripture",
+  "candle": "minecraft:yellow_candle",
+  "sacrifices": [
+    { "item": "minecraft:glowstone_dust", "count": 4 },
+    { "item": "minecraft:magma_cream", "count": 2 },
+    { "item": "minecraft:blaze_powder", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Sovereign whose light drives back the crawling dark",
+      "Flame that warms the faithful and sears the wicked",
+      "Wrap me in your radiance and mend what is broken."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 1.0, "g": 0.9, "b": 0.3 },
+  "book_color": "YELLOW",
+  "duration_ticks": 300,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:regeneration", "duration_ticks": 200, "amplifier": 1, "target": "self", "max_distance": -1 },
+        { "id": "minecraft:fire_resistance", "duration_ticks": 1200, "amplifier": 0, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

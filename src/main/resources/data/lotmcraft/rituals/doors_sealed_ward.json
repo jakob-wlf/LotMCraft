@@ -1,0 +1,28 @@
+{
+  "id": "lotm:doors_sealed_ward",
+  "discovered_from": "lotm:warders_liturgy",
+  "candle": "minecraft:light_blue_candle",
+  "sacrifices": [
+    { "item": "minecraft:iron_ingot", "count": 3 },
+    { "item": "minecraft:amethyst_shard", "count": 1 }
+  ],
+  "honorific": {
+    "lines": [
+      "Warden who bars the threshold against all intrusion",
+      "Wall that has never once been breached",
+      "Seal this ground against harm as you seal every door."
+    ]
+  },
+  "conditions": { "min_sequence": 10 },
+  "particle_color": { "r": 0.7, "g": 0.7, "b": 0.9 },
+  "book_color": "LIGHT_GRAY",
+  "duration_ticks": 250,
+  "result": {
+    "type": "potion_effect",
+    "params": {
+      "effects": [
+        { "id": "minecraft:resistance", "duration_ticks": 1200, "amplifier": 1, "target": "self", "max_distance": -1 }
+      ]
+    }
+  }
+}

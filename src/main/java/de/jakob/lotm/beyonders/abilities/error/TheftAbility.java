@@ -1,0 +1,48 @@
+package de.jakob.lotm.beyonders.abilities.error;
+
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.events.ProhibitionHandler;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class TheftAbility extends Ability {
+    public TheftAbility(String id) {
+        super(id, 1.75f);
+
+        canBeUsedByNPC = false;
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("error", 8));
+    }
+
+    @Override
+    public float getSpiritualityCost() {
+        return 40f;
+    }
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        if(!(level instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) {
+            return;
+        }
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 8 * (int) (multiplier(entity) * multiplier(entity)), 1.5f);
+        if(target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.theft.no_target").withColor(0x4742c9));
+            return;
+        }
+
+        TheftHandler.stealItemsFromEntity(target, player, this);
+       // PacketHandler.sendToPlayer(player, new SendPassiveTheftEffectPacket(target.getEyePosition().x, target.getEyePosition().y, target.getEyePosition().z));
+    }
+}

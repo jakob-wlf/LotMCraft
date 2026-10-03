@@ -1,0 +1,756 @@
+package de.jakob.lotm.network.packets.handlers;
+
+import com.lowdragmc.photon.client.fx.BlockEffectExecutor;
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
+import com.zigythebird.playeranimcore.math.Vec3f;
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.VisionaryAbilityMenus;
+import de.jakob.lotm.beyonders.acting.ActingCapHelper;
+import de.jakob.lotm.beyonders.acting.ActingHelper;
+import de.jakob.lotm.attachments.AllyComponent;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.gui.custom.coordinate_input.CoordinateInputScreen;
+import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
+import de.jakob.lotm.gui.custom.quest.QuestAcceptanceScreen;
+import de.jakob.lotm.gui.custom.selection_gui.*;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.*;
+import de.jakob.lotm.network.packets.toServer.ShapeShiftingPlayerModelPacket;
+import de.jakob.lotm.beyonders.quest.Quest;
+import de.jakob.lotm.beyonders.quest.QuestRegistry;
+import de.jakob.lotm.rendering.*;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
+import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
+import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.ClientSacrificeCache;
+import de.jakob.lotm.util.data.ClientSpiritCache;
+import de.jakob.lotm.util.helper.AnimationUtil;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.RingExpansionRenderer;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.joml.Random;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@OnlyIn(Dist.CLIENT)
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
+public class ClientHandler {
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Player player = Minecraft.getInstance().player;
+        ClientBeyonderCache.setLocalSequence(player == null ? LOTMCraft.NON_BEYONDER_SEQ : ClientBeyonderCache.getSequence(player.getUUID()));
+    }
+
+    public static void openCoordinateScreen(Player player, String use) {
+        Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
+    }
+
+    public static void syncLivingEntityBeyonderData(SyncLivingEntityBeyonderDataPacket packet) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (entity instanceof LivingEntity living) {
+            ClientBeyonderCache.updateData(
+                    living.getUUID(),
+                    packet.pathway(),
+                    packet.sequence(),
+                    packet.spirituality(),
+                    false,
+                    false,
+                    0.0f,
+                    0
+            );
+        }
+    }
+
+    public static void closeGUI() {
+        Minecraft.getInstance().setScreen(null);
+    }
+
+    public static Minecraft getMinecraftInstance() {
+        return Minecraft.getInstance();
+    }
+
+    public static void handleSyncPlayerData(SyncPlayerActingDataPayload payload, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            Player player = Minecraft.getInstance().player;
+            if (player != null) {
+                player.getPersistentData().put(ActingHelper.NBT_UNLOCKED_KEY, payload.data());
+            }
+        });
+    }
+
+    public static void reloadChunks(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        Minecraft.getInstance().levelRenderer.setBlocksDirty(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    public static void syncSpectatingAbility(SyncSpectatingAbilityPacket packet, Player player) {
+        if(packet.active()) {
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
+            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
+            SpectatingOverlayRenderer.entitiesLookedAtByPlayerWithActiveSpectating.put(player.getUUID(), living);
+        }
+        else {
+            SpectatingOverlayRenderer.entitiesLookedAtByPlayerWithActiveSpectating.remove(player.getUUID());
+        }
+    }
+
+    public static void syncSpiritVisionAbility(SyncSpiritVisionAbilityPacket packet, Player player) {
+        if(packet.active()) {
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
+            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
+            SpiritVisionOverlayRenderer.entitiesLookedAt.put(player.getUUID(), living);
+        }
+        else {
+            SpiritVisionOverlayRenderer.entitiesLookedAt.remove(player.getUUID());
+        }
+    }
+
+    public static void playActingEffect() {
+        Player player = Minecraft.getInstance().player;
+        ClientLevel level = Minecraft.getInstance().level;
+        ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, player.getEyePosition(), 60, .7, .1);
+        player.level().playSound(player, BlockPos.containing(player.getEyePosition()), SoundEvents.ENCHANTMENT_TABLE_USE, player.getSoundSource(), .5f, 1);
+    }
+
+    public static void syncEyeOfDeathAbility(SyncEyeOfDeathAbilityPacket packet, Player player) {
+        if (packet.active()) {
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
+            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
+            EyeOfDeathOverlayRenderer.entitiesLookedAt.put(player.getUUID(), living);
+        } else {
+            EyeOfDeathOverlayRenderer.entitiesLookedAt.remove(player.getUUID());
+        }
+    }
+
+    public static void handleRingPacket(RingEffectPacket packet) {
+        RingExpansionRenderer.handleRingEffectPacket(packet);
+    }
+
+    public static void syncTelepathyAbility(SyncTelepathyAbilityPacket packet, Player player) {
+        if(packet.active()) {
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            TelepathyOverlayRenderer.entitiesLookedAtByPlayerWithActiveTelepathy.put(player.getUUID(), packet.goalNames());
+        }
+        else {
+            TelepathyOverlayRenderer.entitiesLookedAtByPlayerWithActiveTelepathy.remove(player.getUUID());
+        }
+    }
+
+    private static float shakeIntensity = 0;
+    private static int shakeDuration = 0;
+    private static final Random random = new Random();
+
+    public static void applyCameraShake(float intensity, int duration) {
+        shakeIntensity = intensity;
+        shakeDuration = duration;
+    }
+
+    public static void applyCameraShakeToPlayersInRadius(float intensity, int duration, ClientLevel level, Vec3 center, float radius) {
+        Player player = Minecraft.getInstance().player;
+        if (player == null) return;
+
+        if (player.position().distanceTo(new Vec3(center.x(), center.y(), center.z())) <= radius && level == Minecraft.getInstance().level) {
+            applyCameraShake(intensity, duration);
+        }
+    }
+
+    public static void applyCameraShakeToPlayer(float intensity, int duration, Player player) {
+        if(Minecraft.getInstance().player == null) return;
+        if(player.getUUID().equals(Minecraft.getInstance().player.getUUID())) {
+             applyCameraShake(intensity, duration);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
+        if (shakeDuration > 0) {
+            float currentIntensity = shakeIntensity * (shakeDuration / 20f); // Fade out
+
+            float shakeX = (random.nextFloat() - 0.5f) * currentIntensity;
+            float shakeY = (random.nextFloat() - 0.5f) * currentIntensity;
+            float shakeZ = (random.nextFloat() - 0.5f) * currentIntensity * 0.5f; // Less roll
+
+            event.setPitch((float) (event.getPitch() + shakeX));
+            event.setYaw((float) (event.getYaw() + shakeY));
+            event.setRoll((float) (event.getRoll() + shakeZ));
+
+            shakeDuration--;
+        }
+    }
+
+    public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
+        if(packet.active()) {
+            MarionetteOverlayRenderer.currentMarionette.put(
+                    player.getUUID(),
+                    new MarionetteOverlayRenderer.MarionetteInfos(
+                            packet.name(),
+                            packet.health(),
+                            packet.maxHealth(),
+                            packet.hasWorm()
+                    )
+            );
+        }
+        else {
+            MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
+        }
+    }
+
+    public static void handleTransformationPacket(SyncTransformationPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+
+        entity.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformed(packet.isTransformed());
+        entity.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setTransformationIndex(packet.transformationIndex());
+        entity.getData(ModAttachments.TRANSFORMATION_COMPONENT.get()).setAdditionalData(packet.additionalData());
+    }
+
+    public static void changeToThirdPerson(LivingEntity entity) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if(minecraft.player == entity)
+            minecraft.options.setCameraType(CameraType.THIRD_PERSON_BACK);
+    }
+
+    public static void changeToFirstPerson(LivingEntity entity) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if(minecraft.player == entity)
+            minecraft.options.setCameraType(CameraType.FIRST_PERSON);
+    }
+
+    public static void handleShaderPacket(SyncShaderPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+
+        entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderActive(packet.shaderActive());
+        entity.getData(ModAttachments.SHADER_COMPONENT.get()).setShaderIndex(packet.shaderIndex());
+    }
+
+    public static void handleFogPacket(SyncFogPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+
+        entity.getData(ModAttachments.FOG_COMPONENT.get()).setActive(packet.active());
+        entity.getData(ModAttachments.FOG_COMPONENT.get()).setFogIndex(packet.index());
+        entity.getData(ModAttachments.FOG_COMPONENT.get()).setColor(new Vec3f(packet.red(), packet.green(), packet.blue()));
+    }
+
+    public static void addEffect(AddEffectPacket packet) {
+        LivingEntity entity = null;
+        if (packet.entityId() != AddEffectPacket.NO_ENTITY && Minecraft.getInstance().level != null) {
+            var raw = Minecraft.getInstance().level.getEntity(packet.entityId());
+            if (raw instanceof LivingEntity le) entity = le;
+        }
+
+        Integer duration = packet.duration() == AddEffectPacket.NO_DURATION_OVERRIDE ? null : packet.duration();
+        Boolean infinite = packet.infiniteOverridden() ? packet.infinite() : null;
+        EffectParams overrides = new EffectParams(duration, infinite, packet.params());
+
+        VFXRenderer.addActiveEffect(packet.effectId(), packet.index(),
+                packet.x(), packet.y(), packet.z(), entity, packet.followEntity(), overrides);
+    }
+
+    public static void updateEffectPosition(UUID effectId, double x, double y, double z) {
+        VFXRenderer.updateEffectPosition(effectId, x, y, z);
+    }
+
+    public static void cancelEffect(UUID effectId) {
+        VFXRenderer.cancelEffect(effectId);
+    }
+
+    public static void cancelEffectsNear(double x, double y, double z, double radius) {
+        VFXRenderer.cancelEffectsNear(x, y, z, radius);
+    }
+
+    public static void syncDecryptionAbility(SyncDecryptionLookedAtEntitiesAbilityPacket packet, Player player) {
+        if(packet.active()) {
+            DecryptionRenderLayer.activeDecryption.add(player.getUUID());
+            Level level = Minecraft.getInstance().level;
+            if (level == null) return;
+
+            Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
+            LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
+            DecryptionOverlayRenderer.entitiesLookedAtByPlayerWithActiveDecryption.put(player.getUUID(), living);
+        }
+        else {
+            DecryptionRenderLayer.activeDecryption.remove(player.getUUID());
+            DecryptionOverlayRenderer.entitiesLookedAtByPlayerWithActiveDecryption.remove(player.getUUID());
+        }
+    }
+
+    public static void syncDiscernmentAbility(StartStopDiscernmentPacket packet, Player player) {
+        if(packet.active()) {
+           DiscernmentRenderer.activeDiscernment.put(player.getUUID(), packet.range());
+        }
+        else {
+            DiscernmentRenderer.activeDiscernment.remove(player.getUUID());
+        }
+    }
+
+    public static void handleSanityPacket(SyncSanityPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        entity.getData(ModAttachments.SANITY_COMPONENT.get()).setSanity(packet.sanity());
+    }
+
+    public static void handleSkillScalingPacket(SyncSkillScalingPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        var component = entity.getData(ModAttachments.SKILL_SCALING_COMPONENT.get());
+
+        component.setScalingToSkill(packet.scaleToSkill())
+                .setPath(packet.path())
+                .setSeq(packet.seq());
+    }
+
+    public static void handleAllyPacket(SyncAllyDataPacket packet) {
+        if (Minecraft.getInstance().player != null) {
+            AllyComponent newComponent = new AllyComponent(packet.allies(), packet.requests());
+            Minecraft.getInstance().player.setData(ModAttachments.ALLY_COMPONENT.get(), newComponent);
+        }
+    }
+
+    public static void handleDarknessEffectPacket(boolean restore, List<BlockPos> blockPositions, int waveNumber) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (!restore) {
+            // Turn blocks black client-side
+            for (BlockPos pos : blockPositions) {
+                level.setBlock(pos, ModBlocks.SOLID_VOID.get().defaultBlockState(),
+                        Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+            }
+        } else {
+            // Force client to re-sync these blocks from server
+            for (BlockPos pos : blockPositions) {
+                // Remove the fake block and request update from server
+                level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    public static void handleHotGroundEffectPacket(boolean restore, List<BlockPos> blockPositions, int waveNumber) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (!restore) {
+            // Turn blocks black client-side
+            for (BlockPos pos : blockPositions) {
+                level.setBlock(pos, Blocks.MAGMA_BLOCK.defaultBlockState(),
+                        Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+            }
+        } else {
+            // Force client to re-sync these blocks from server
+            for (BlockPos pos : blockPositions) {
+                // Remove the fake block and request update from server
+                level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    public static void hideGUI() {
+        Minecraft.getInstance().options.hideGui = true;
+    }
+
+    public static void showGui() {
+        Minecraft.getInstance().options.hideGui = false;
+    }
+
+    public static void useAbility(UseAbilityPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if(!(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
+        if(ability == null) {
+            return;
+        }
+
+        ability.onAbilityUse(level, living);
+    }
+
+    public static void handleSyncAbilityWheelDataPacket(SyncAbilityWheelDataToIntrospectPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof IntrospectScreen screen) {
+            screen.setAbilityWheelSlots(packet.abilityIds());
+        }
+    }
+
+    public static void handleUpdateAbilityBarPacket(ArrayList<String> abilities) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof IntrospectScreen screen) {
+            screen.setAbilityBarSlots(abilities);
+        }
+    }
+
+    public static void handleFireEffectPacket(boolean restore, List<BlockPos> blockPositions, int waveNumber) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        if (!restore) {
+            // Turn blocks black client-side
+            for (BlockPos pos : blockPositions) {
+                level.setBlock(pos, Blocks.FIRE.defaultBlockState(),
+                        Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+            }
+        } else {
+            // Force client to re-sync these blocks from server
+            for (BlockPos pos : blockPositions) {
+                // Remove the fake block and request update from server
+                level.setBlock(pos, level.getBlockState(pos), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    public static void handleQuestScreenPacket(OpenQuestAcceptanceScreenPacket packet) {
+        Quest quest = QuestRegistry.getQuest(packet.questId());
+        if (quest == null) {
+            return;
+        }
+
+        Component questName = quest.getName();
+        Component questDescription = quest.getDescription();
+
+        Minecraft.getInstance().setScreen(new QuestAcceptanceScreen(
+                packet.questId(),
+                questName,
+                questDescription,
+                packet.rewards(),
+                packet.digestionReward(),
+                packet.questSequence(),
+                packet.npcId()
+        ));
+    }
+
+    public static Player getPlayer() {
+        return Minecraft.getInstance().player;
+    }
+
+    public static void handlePlayerDivinationScreenPacket(OpenPlayerDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new PlayerSelectionGui(packet.players(), packet.types()));
+    }
+
+    public static void openPsychologicalCueExplanation() {
+        Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createPsychologicalCueAbilityMenu(Minecraft.getInstance().screen));
+    }
+
+    public static void openStoryWritingExplanation() {
+        Minecraft.getInstance().setScreen(VisionaryAbilityMenus.createStoryWritingAbilityMenu(Minecraft.getInstance().screen));
+    }
+
+    public static void handleStructureDivinationScreenPacket(OpenStructureDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new StructureSelectionGui(packet.structureIds()));
+    }
+
+    public static void handleBiomeDivinationScreenPacket(OpenBiomeDivinationScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new BiomeSelectionGui(packet.biomeIds()));
+    }
+
+    public static void handleShapeShiftingScreenPacket(OpenShapeShiftingScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new ShapeShiftingSelectionGui(packet.entityTypes()));
+    }
+
+    public static void handleWanderingSelectionScreenPacket(OpenWanderingSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WanderingSelectionGui(packet.dimensionIds()));
+    }
+
+    public static void handleWaypointSelectionScreenPacket(OpenWaypointSelectionScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new WaypointMenuScreen(packet.waypoints(), packet.use()));
+    }
+
+
+    public static void handleDiscernmentScreenPacket(OpenDiscernmentScreenPacket packet) {
+        Minecraft.getInstance().setScreen(new DiscernmentSelectionGui(packet.saved()));
+    }
+
+    public static void handleDisableAbilityUsageForTimePacket(DisableAbilityUsageForTimePacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (!(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        DisabledAbilitiesComponent disabledComponent = living.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        disabledComponent.disableAbilityUsageForTime(packet.cause(), packet.ticks(), living);
+    }
+
+    public static void handleSyncToggleAbility(SyncToggleAbilityPacket packet, IPayloadContext context) {
+        Entity entity = context.player().level().getEntity(packet.entityId());
+        Ability ability = LOTMCraft.abilityHandler.getById(packet.abilityId());
+        if(!(ability instanceof ToggleAbility toggleAbility) || !(entity instanceof LivingEntity living)) {
+            return;
+        }
+
+        if(entity != Minecraft.getInstance().player) return;
+
+        switch (packet.action()) {
+            case 0 -> {
+                ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
+                toggleAbility.start(living.level(), living);
+                toggleAbility.updateClientCache(living, true);
+            }
+            case 1 -> toggleAbility.prepareTick(living.level(), living);
+            case 2 -> {
+                ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
+                toggleAbility.stop(living.level(), living);
+                toggleAbility.updateClientCache(living, true);
+            }
+
+        }
+    }
+
+    public static void handleAddClientSideTagPacket(AddEntityTagPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (entity != null) {
+            entity.getTags().add(packet.tag());
+        }
+    }
+
+    public static void handleSyncWeaknessDetectionPacket(SyncWeaknessDetectionTargetsAbilityPacket packet) {
+        WeaknessDetectionRenderLayer.activeWeaknessDetection.clear();
+        if (packet.active()) {
+            WeaknessDetectionRenderLayer.activeWeaknessDetection.putAll(packet.targets());
+        }
+    }
+
+    public static void handleDiscernmentDataPacket(SyncDiscernmentDataPacket packet) {
+        Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+        if(entity == null) {
+            return;
+        }
+        entity.getData(ModAttachments.DISCERNMENT_DATA.get()).setDiscerning(packet.isDiscerning());
+    }
+
+    public static void syncKillCount(int killCount) {
+        ClientSacrificeCache.setKillCount(killCount);
+        if (Minecraft.getInstance().screen instanceof IntrospectScreen screen) {
+            screen.updateKillCount(killCount);
+        }
+    }
+
+    public static void syncSacrificeDuration(int totalTicks) {
+        ClientSacrificeCache.setTotalTicks(totalTicks);
+        ClientSacrificeCache.setRemainingTicks(totalTicks);
+    }
+
+    public static void syncCullAbility(boolean active, UUID playerUUID) {
+        if (active) {
+            CullOverlay.playersWithCullActivated.add(playerUUID);
+        } else {
+            CullOverlay.playersWithCullActivated.remove(playerUUID);
+        }
+    }
+
+    public static void handleSpiritChannelingPacket(de.jakob.lotm.network.packets.toClient.SyncSpiritChannelingPacket packet) {
+        ClientSpiritCache.setSpiritTypeOrdinal(packet.spiritType());
+    }
+
+    public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof IntrospectScreen screen) {
+            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
+        }
+    }
+
+    public static void syncDangerArrowsOverlay(SyncDangerArrowsOverlayPacket packet) {
+        Level level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        DangerArrowsOverlay.show(packet.direction(), packet.duration());
+    }
+
+    public static void isPlayerModel(String entityType, boolean sequenceRestrict) {
+        boolean isPlayerModel = false;
+
+        Level level = Minecraft.getInstance().level;
+        if (level != null) {
+            String cleanEntityType = entityType;
+            if (entityType.indexOf(':') != entityType.lastIndexOf(':')) {
+                cleanEntityType = entityType.substring(0, entityType.lastIndexOf(':'));
+            }
+            EntityType<?> shapeEntity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(cleanEntityType));
+            Entity dummyEntity = shapeEntity.create(level);
+
+            if (dummyEntity instanceof LivingEntity livingEntity) {
+                var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(livingEntity);
+
+                if (renderer instanceof LivingEntityRenderer livingRenderer) {
+                    isPlayerModel = livingRenderer.getModel() instanceof PlayerModel;
+                }
+            }
+        }
+        PacketHandler.sendToServer(new ShapeShiftingPlayerModelPacket(entityType, isPlayerModel, sequenceRestrict));
+    }
+
+    public static void handleActingCapPacket(SyncActingCapPacket packet) {
+        net.minecraft.client.player.LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return;
+        player.getPersistentData().putFloat(
+                ActingCapHelper.CAP_REDUCTION_KEY, packet.capReduction());
+        player.getPersistentData().put(
+                ActingCapHelper.MISSED_ACTING_KEY, packet.missedActing());
+    }
+
+    public static void handleApotheosisPacket(SyncApotheosisPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.entityId());
+        if (entity instanceof LivingEntity living) {
+            living.getData(ModAttachments.APOTHEOSIS_COMPONENT).setApotheosisTicksLeft(packet.ticks());
+            living.getData(ModAttachments.APOTHEOSIS_COMPONENT).setPathway(packet.pathway());
+        }
+    }
+
+    public static void playAnimation(PlayAnimationPacket packet) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+
+        Entity entity = level.getEntity(packet.playerId());
+        if(!(entity instanceof AbstractClientPlayer player)) {
+            return;
+        }
+
+        AnimationUtil.playAnimation(player, AnimationUtil.getResourceLocationById(packet.animId()));
+    }
+
+    public static void handleAbilitySelectionPacket(SyncAbilitySelectionPacket packet) {
+        if (!(LOTMCraft.abilityHandler.getById(packet.abilityId()) instanceof SelectableAbility selectable)) return;
+        var player = Minecraft.getInstance().player;
+        if (player == null) return;
+        selectable.setSelectedAbilityClient(player.getUUID(), packet.selectedIndex());
+    }
+
+    public static void handleSyncHistoricalVoidSummoningCountPacket(SyncHistoricalVoidSummoningCountPacket packet) {
+        getPlayer().getData(ModAttachments.HISTORICAL_VOID_COMPONENT).summonedCount = packet.amount();
+    }
+
+    public static Entity getById(int entityId) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return null;
+
+        return level.getEntity(entityId);
+    }
+
+    public static void playPhotonBlockEffect(PlayPhotonBlockEffectPacket packet) {
+        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath()));
+        if (fx != null) {
+            BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
+            fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+            fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            if(packet.rot() != null) {
+                fxExecutor.setRotation(packet.rot());
+            }
+            fxExecutor.setCheckState(packet.checkState());
+            fxExecutor.setAllowMulti(packet.allowMulti());
+            fxExecutor.start();
+        }
+
+    }
+
+    public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath());
+        FX fx = FXHelper.getFX(id);
+
+        Entity entity = getById(packet.entityId());
+        if(entity == null) return;
+
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+        executor.setScale(packet.scale(), packet.scale(), packet.scale());
+        executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+        if(packet.rot() != null)  executor.setRotation(packet.rot());
+        executor.setAllowMulti(packet.allowMulti());
+
+        executor.start();
+    }
+
+    public static void handleControllingSync(SyncControllingPacket packet) {
+        Player player = getPlayer();
+        if(player == null) return;
+
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlling(packet.isControlling());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntityPathway(packet.controlledEntityPathway());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
+        player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
+    }
+}

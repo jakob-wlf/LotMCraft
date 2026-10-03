@@ -1,0 +1,95 @@
+package de.jakob.lotm.network.packets.toClient;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.ClientBeyonderCache;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+
+import java.util.UUID;
+
+public record SyncBeyonderDataPacket(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount, String pledgedSefirot, boolean hasPlayerPatron) implements CustomPacketPayload {
+    public static final Type<SyncBeyonderDataPacket> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_beyonder_data"));
+
+    private static final StreamCodec<FriendlyByteBuf, String[]> PATHWAY_HISTORY_CODEC =
+            StreamCodec.of(
+                    (buf, strings) -> {
+                        for (int i = 0; i < 10; i++) {
+                            String s = (strings != null && i < strings.length) ? strings[i] : null;
+                            buf.writeUtf(s != null ? s : "");
+                        }
+                    },
+                    buf -> {
+                        String[] strings = new String[10];
+                        for (int i = 0; i < 10; i++) {
+                            String s = buf.readUtf();
+                            strings[i] = s.isEmpty() ? null : s;
+                        }
+                        return strings;
+                    }
+            );
+
+    private static final StreamCodec<FriendlyByteBuf, int[]> CHAR_STACKS_CODEC =
+            StreamCodec.of(
+                    (buf, stacks) -> { for (int i = 0; i < 10; i++) ByteBufCodecs.VAR_INT.encode(buf, (stacks != null && i < stacks.length) ? stacks[i] : 0); },
+                    buf -> { int[] stacks = new int[10]; for (int i = 0; i < 10; i++) stacks[i] = ByteBufCodecs.VAR_INT.decode(buf); return stacks; }
+            );
+
+    public static final StreamCodec<FriendlyByteBuf, SyncBeyonderDataPacket> STREAM_CODEC =
+            StreamCodec.of(
+                    (buf, packet) -> {
+                        buf.writeUUID(packet.playerUUID());
+                        ByteBufCodecs.STRING_UTF8.encode(buf, packet.pathway() != null ? packet.pathway() : "");
+                        ByteBufCodecs.VAR_INT.encode(buf, packet.sequence());
+                        ByteBufCodecs.FLOAT.encode(buf, packet.spirituality());
+                        ByteBufCodecs.BOOL.encode(buf, packet.griefingEnabled());
+                        ByteBufCodecs.FLOAT.encode(buf, packet.digestionProgress());
+                        PATHWAY_HISTORY_CODEC.encode(buf, packet.pathwayHistory());
+                        CHAR_STACKS_CODEC.encode(buf, packet.charStacks());
+                        ByteBufCodecs.VAR_INT.encode(buf, packet.cowardWormAmount());
+                        ByteBufCodecs.STRING_UTF8.encode(buf, packet.pledgedSefirot() != null ? packet.pledgedSefirot() : "");
+                        ByteBufCodecs.BOOL.encode(buf, packet.hasPlayerPatron());
+                    },
+                    buf -> new SyncBeyonderDataPacket(
+                            buf.readUUID(),
+                            ByteBufCodecs.STRING_UTF8.decode(buf),
+                            ByteBufCodecs.VAR_INT.decode(buf),
+                            ByteBufCodecs.FLOAT.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf),
+                            ByteBufCodecs.FLOAT.decode(buf),
+                            PATHWAY_HISTORY_CODEC.decode(buf),
+                            CHAR_STACKS_CODEC.decode(buf),
+                            ByteBufCodecs.VAR_INT.decode(buf),
+                            ByteBufCodecs.STRING_UTF8.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf)
+                    )
+            );
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static void handle(SyncBeyonderDataPacket packet, IPayloadContext context) {
+        context.enqueueWork(() -> {
+            ClientBeyonderCache.updateData(
+                    packet.playerUUID(),
+                    packet.pathway(),
+                    packet.sequence(),
+                    packet.spirituality(),
+                    packet.griefingEnabled(),
+                    true,
+                    packet.digestionProgress(),
+                    packet.pathwayHistory(),
+                    packet.charStacks(),
+                    packet.cowardWormAmount(),
+                    packet.pledgedSefirot(),
+                    packet.hasPlayerPatron()
+            );
+        });
+    }
+}

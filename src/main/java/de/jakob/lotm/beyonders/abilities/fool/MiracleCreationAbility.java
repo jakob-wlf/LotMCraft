@@ -1,0 +1,77 @@
+package de.jakob.lotm.beyonders.abilities.fool;
+
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.rendering.MiracleWheelOverlay;
+import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+/* IDEAS:
+CATEGORIES:
+- Structure Summoning
+- Calamity Creation
+    - Meteor
+    - Tornado
+    - Earthquake
+- Area Manipulation
+    - Slow Time
+    - Make the ground hot
+    - Darkness
+    - Forbid Godhood
+    - Reverse Gravity
+- Teleportation
+- Target Manipulation
+    - Make Target lost
+- Other
+ */
+public class MiracleCreationAbility extends SelectableAbility {
+    public MiracleCreationAbility(String id) {
+        super(id, 5);
+        canBeShared = false;
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return new HashMap<>(Map.of("fool", 2));
+    }
+
+    @Override
+    protected float getSpiritualityCost() {
+        return 7000;
+    }
+
+    @Override
+    protected String[] getAbilityNames() {
+        return new String[]{"ability.lotmcraft.miracle_creation.summon_structure",
+                "ability.lotmcraft.miracle_creation.calamity_creation",
+                "ability.lotmcraft.miracle_creation.area_manipulation",
+                "ability.lotmcraft.miracle_creation.teleportation"
+                //"ability.lotmcraft.miracle_creation.target_manipulation"
+        };
+    }
+
+    @Override
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        if(!(entity instanceof Player player)) return; // Will be handled later
+        if(!level.isClientSide) return; // Client-side only for opening the wheel
+        switch (abilityIndex) {
+            case 0 -> {
+                if(!BeyonderData.isGriefingEnabled(entity)) {
+                    player.displayClientMessage(Component.translatable("lotm.griefing_required").withColor(0xFF5555), true);
+                    return;
+                }
+                MiracleWheelOverlay.getInstance().open(player, "summon_village", "summon_end_city", "summon_pillager_outpost", "summon_desert_temple", "summon_evernight_church");
+            }
+            case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano", "summon_lightning");
+            case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness");
+            case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");
+        }
+    }
+}

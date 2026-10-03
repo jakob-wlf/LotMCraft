@@ -1,0 +1,91 @@
+package de.jakob.lotm.command;
+
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.suggestion.SuggestionProvider;
+import de.jakob.lotm.beyonders.quest.QuestManager;
+import de.jakob.lotm.beyonders.quest.QuestRegistry;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.QuestComponent;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+
+public class QuestCommand {
+
+    private static final SuggestionProvider<CommandSourceStack> QUEST_ID_SUGGESTIONS =
+            (context, builder) -> SharedSuggestionProvider.suggest(QuestRegistry.getQuests().keySet(), builder);
+
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal("quest")
+                .requires(source -> source.hasPermission(2))
+                .then(Commands.literal("discard")
+                        .executes(context -> discardFor(context.getSource(), context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .executes(context -> discardFor(context.getSource(), EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("finish")
+                        .executes(context -> finishFor(context.getSource(), context.getSource().getPlayerOrException()))
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .executes(context -> finishFor(context.getSource(), EntityArgument.getPlayer(context, "target")))))
+                .then(Commands.literal("give")
+                        .then(Commands.argument("target", EntityArgument.player())
+                                .then(Commands.argument("quest_id", StringArgumentType.word())
+                                        .suggests(QUEST_ID_SUGGESTIONS)
+                                        .executes(context -> {
+                                            CommandSourceStack source = context.getSource();
+                                            ServerPlayer target = EntityArgument.getPlayer(context, "target");
+                                            String questId = StringArgumentType.getString(context, "quest_id");
+
+                                            if (QuestRegistry.getQuest(questId) == null) {
+                                                source.sendFailure(Component.literal("Unknown quest id: " + questId));
+                                                return 0;
+                                            }
+
+                                            boolean accepted = QuestManager.acceptQuestInternal(target, questId);
+                                            if (!accepted) {
+                                                source.sendFailure(Component.literal("Failed to assign quest to player."));
+                                                return 0;
+                                            }
+
+                                            source.sendSuccess(() -> Component.literal("Assigned quest '" + questId + "' to " + target.getName().getString()), true);
+                                            return 1;
+                                        })))));
+
+    }
+
+
+private static int discardFor(CommandSourceStack source, ServerPlayer target) {
+    String activeQuestId = getActiveQuestId(target);
+    if (activeQuestId == null) {
+        source.sendFailure(Component.literal(target.getName().getString() + " has no active quest."));
+        return 0;
+    }
+
+    QuestManager.discardQuest(target, activeQuestId);
+    source.sendSuccess(() -> Component.literal("Discarded active quest for " + target.getName().getString()), true);
+    return 1;
+}
+
+private static int finishFor(CommandSourceStack source, ServerPlayer target) {
+    String activeQuestId = getActiveQuestId(target);
+    if (activeQuestId == null) {
+        source.sendFailure(Component.literal(target.getName().getString() + " has no active quest."));
+        return 0;
+    }
+
+    QuestManager.completeQuest(target, activeQuestId);
+    source.sendSuccess(() -> Component.literal("Finished active quest for " + target.getName().getString()), true);
+    return 1;
+}
+
+private static String getActiveQuestId(ServerPlayer player) {
+    QuestComponent component = player.getData(ModAttachments.QUEST_COMPONENT);
+    if (component.getQuestProgress().isEmpty()) {
+        return null;
+    }
+    return component.getQuestProgress().keySet().iterator().next();
+}
+}

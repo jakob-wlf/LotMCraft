@@ -1,0 +1,32 @@
+{
+  "targets": [
+    "swap",
+    "abyssal_temp"
+  ],
+  "passes": [
+    {
+      "name": "lotmcraft:abyssal_distortion",
+      "intarget": "minecraft:main",
+      "outtarget": "abyssal_temp",
+      "auxtargets": [
+        {
+          "name": "DiffuseSampler",
+          "id": "minecraft:main"
+        }
+      ],
+      "uniforms": [
+        {
+          "name": "Time",
+          "type": "float",
+          "count": 1,
+          "values": [ 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "abyssal_temp",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

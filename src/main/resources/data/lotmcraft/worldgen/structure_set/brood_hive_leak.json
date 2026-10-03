@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:brood_hive_leak",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 43611287,
+    "spacing": 35,
+    "separation": 9,
+    "frequency": 0.6,
+    "frequency_reduction_method": "default"
+  }
+}

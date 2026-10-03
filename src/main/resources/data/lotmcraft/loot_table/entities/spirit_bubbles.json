@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_eater_stomach_pouch"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:powder_of_dazzling_soul"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_blood"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_feather_of_monster_bird"
+        }
+      ]
+    }
+  ]
+}

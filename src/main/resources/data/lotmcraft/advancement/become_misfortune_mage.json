@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_winner",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:misfortune_mage_potion"
+    },
+    "title": "Cursed Touch",
+    "description": "Consume a Potion and advance to Misfortune Mage.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

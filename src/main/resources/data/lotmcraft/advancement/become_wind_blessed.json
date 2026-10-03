@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_seafarer",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:wind_blessed_potion"
+    },
+    "title": "The Wind Answers",
+    "description": "Consume a Potion and advance to Wind Blessed.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

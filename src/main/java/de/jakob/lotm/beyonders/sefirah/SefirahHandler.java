@@ -1,0 +1,468 @@
+package de.jakob.lotm.beyonders.sefirah;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SefirotData;
+import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.network.packets.toServer.RequestSefirotSyncPacket;
+import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.ServerLocation;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.UUID;
+
+public class SefirahHandler {
+
+    public static final String[] implementedSefirah = new String[]{"sefirah_castle", "brood_hive", "empty"};
+    private static HashMap<UUID, String> clientSefirotPlayers = new HashMap<>();
+
+    public static boolean claimSefirot(ServerPlayer player, String sefirot) {
+        return claimSefirot(player, sefirot, false);
+    }
+
+    public static boolean claimSefirot(ServerPlayer player, String sefirot, boolean playClaimEffect) {
+        if(!Arrays.asList(implementedSefirah).contains(sefirot)) {
+            return false;
+        }
+
+        if(sefirot.equals("empty")){
+            unclaimSefirot(player);
+            return false;
+        }
+
+        if (de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility.blocksAccommodation(player)) {
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.proxy.cannot_accommodate").withStyle(ChatFormatting.RED));
+            return false;
+        }
+
+        boolean buff =  SefirotData.get(player.server).claimSefirot(player.getUUID(), sefirot);
+
+        if (buff)
+            BeyonderData.playerMap.setSefirot(player.getUUID(), sefirot);
+
+        return buff;
+    }
+
+    public static void inviteToSefirot(ServerPlayer player, ServerPlayer invitedPlayer) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        String claimedSefirot = sefirotData.getClaimedSefirot(player.getUUID());
+
+        if(!sefirotData.isInSefirot(player, claimedSefirot)) {
+            player.sendSystemMessage(Component.translatable("lotm.sefirot.not_in_sefirot").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        if(sefirotData.isInSefirot(invitedPlayer)) {
+            player.sendSystemMessage(Component.translatable("lotm.sefirot.cannot_reach_player").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        sefirotData.inviteToSefirot(player.getUUID(), invitedPlayer.getUUID(), claimedSefirot);
+
+        Component message = Component.translatable("lotm.sefirot.invited", Component.translatable("lotm.sefirot." + claimedSefirot).getString())
+                .withStyle(style -> style
+                        .withColor(ChatFormatting.GREEN)
+                        .withUnderlined(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/accept_sefirot_invite"))
+                );
+
+        invitedPlayer.sendSystemMessage(message);
+
+        player.sendSystemMessage(Component.translatable("lotm.sefirot.invite_sent", invitedPlayer.getName().getString()).withStyle(ChatFormatting.GREEN));
+    }
+
+    public static boolean isInSefirot(ServerPlayer player, String sefirot) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        return sefirotData.isInSefirot(player, sefirot);
+    }
+
+    public static boolean isInSefirot(ServerPlayer player) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        return sefirotData.isInSefirot(player);
+    }
+
+    public static void kickOutOfSefirot(ServerPlayer player, ServerPlayer kickedPlayer) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        String claimedSefirot = sefirotData.getClaimedSefirot(player.getUUID());
+
+        if(!sefirotData.isInSefirot(player, claimedSefirot)) {
+            player.sendSystemMessage(Component.translatable("lotm.sefirot.not_in_sefirot").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        if(!sefirotData.isInSefirot(kickedPlayer, claimedSefirot)) {
+            player.sendSystemMessage(Component.translatable("lotm.sefirot.target_not_in_sefirot").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        leaveSefirah(kickedPlayer, true);
+    }
+
+    public static void acceptInvite(ServerPlayer player) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        String invitedSefirot = sefirotData.getInvitedSefirot(player.getUUID());
+
+        if(invitedSefirot == null) {
+
+            return;
+        }
+
+        sefirotData.acceptInvite(player.getUUID());
+        teleportToSefirot(player, invitedSefirot, true);
+
+    }
+
+    public static boolean hasSefirot(ServerPlayer player) {
+        return !SefirotData.get(player.server).getClaimedSefirot(player.getUUID()).isEmpty();
+    }
+
+    public static String getSefirot(ServerPlayer player){
+        return SefirotData.get(player.server).getClaimedSefirot(player.getUUID());
+    }
+
+    public static void clearAll(String sefirot, MinecraftServer server){
+        SefirotData.get(server).unclaimAllByString(sefirot);
+    }
+
+    public static void unclaimSefirot(ServerPlayer player){
+        BeyonderData.playerMap.setSefirot(player.getUUID(), "");
+        SefirotData.get(player.server).unclaimSefirot(player.getUUID());
+    }
+
+    public static void teleportToOwnSefirot(ServerPlayer player) {
+        teleportToOwnSefirot(player, false);
+    }
+
+    /**
+     * @param player The player to get the claimed Sefirot for
+     * @return the id of the claimed Sefirot or an empty String if none is claimed
+     */
+    public static String getClaimedSefirot(ServerPlayer player) {
+        return SefirotData.get(player.server).getClaimedSefirot(player.getUUID());
+    }
+
+    private static boolean isSefirotLevel(ServerLevel level) {
+        ResourceKey<Level> sefirotDimension = ResourceKey.create(Registries.DIMENSION,
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+        return level.dimension().equals(sefirotDimension);
+    }
+
+    public static void handleSefirotKey(ServerPlayer player) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+        if(sefirotData.isInSefirot(player))  {
+            leaveSefirah(player, true);
+        }
+        else {
+            if(!hasSefirot(player)) {
+                AbilityUtil.sendActionBar(player, Component.translatable("lotm.sefirot.no_sefirot").withColor(0x942de3));
+                return;
+            }
+
+            if((player.tickCount - player.getCombatTracker().lastDamageTime) < (20 * 10)) {
+                AbilityUtil.sendActionBar(player, Component.translatable("lotm.sefirot.in_combat").withColor(0x942de3));
+                return;
+            }
+
+            teleportToOwnSefirot(player, true);
+        }
+    }
+
+    public static void leaveSefirah(ServerPlayer player, boolean playTeleportEffect) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        // Teleport back to previous location
+        if(sefirotData.isInSefirot(player)) {
+            ServerLocation returnLocation = sefirotData.getReturnLocationForPlayer(player);
+            if(returnLocation == null) {
+                return;
+            }
+
+            if(returnLocation.getLevel().dimension().equals(player.level().dimension())) {
+                if(isSefirotLevel(player.serverLevel())) {
+                    ServerLevel level = player.serverLevel();
+                    Vec3 newPos = level.getServer().overworld().getSharedSpawnPos().getCenter();
+                    ServerLevel returnLevel = level.getServer().overworld();
+                    player.teleportTo(returnLevel, newPos.x, newPos.y, newPos.z, 0, 0);
+
+                    sefirotData.setIsInSefirot(player.getUUID(), false, "none");
+                    sefirotData.setLastReturnLocation(player);
+
+                    if (playTeleportEffect) {
+                        EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, returnLocation.getLevel());
+                    }
+
+                    return;
+                }
+                else {
+                    sefirotData.setIsInSefirot(player.getUUID(), false, "none");
+                    sefirotData.setLastReturnLocation(player);
+                }
+            }
+
+            player.teleportTo(returnLocation.getLevel(), returnLocation.getPosition().x, returnLocation.getPosition().y, returnLocation.getPosition().z, 0, 0);
+
+            sefirotData.setIsInSefirot(player.getUUID(), false, "none");
+
+            boolean isOwner = sefirotData.getClaimedSefirot(player.getUUID()).equals(sefirotData.getClaimedSefirot(player.getUUID()));
+
+            if(playTeleportEffect) {
+                playCorrectEffect(BlockPos.containing(returnLocation.getPosition()), sefirotData.getClaimedSefirot(player.getUUID()), isOwner, returnLocation.getLevel());
+            }
+
+            return;
+        }
+    }
+
+    public static void teleportToSefirot(ServerPlayer player, String sefirot, boolean playTeleportEffect) {
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        // Set return location
+        sefirotData.setLastReturnLocation(player);
+        sefirotData.setIsInSefirot(player.getUUID(), true, sefirot);
+
+        // Teleport to Sefirot
+        switch (sefirot) {
+            case "sefirah_castle" -> {
+                ResourceKey<Level> sefirotDimension = ResourceKey.create(Registries.DIMENSION,
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sefirah_castle"));
+                ServerLevel sefirotLevel = player.serverLevel().getServer().getLevel(sefirotDimension);
+                if (sefirotLevel == null) {
+                    return;
+                }
+
+                boolean isOwner = sefirotData.getClaimedSefirot(player.getUUID()).equals(sefirot);
+
+                float x = isOwner ? 24.5f : 17.5f;
+                int y =  -58;
+                float z = 0.5f;
+                int yaw = isOwner ? 90 : -90;
+
+                player.teleportTo(sefirotLevel,
+                        x,
+                        y,
+                        z,
+                        yaw,
+                        0);
+
+                sefirotLevel.setBlockAndUpdate(BlockPos.containing(21, -58, 0), ModBlocks.SEFIRAH_BLOCK.get().defaultBlockState());
+
+                if(playTeleportEffect) {
+                    playCorrectEffect(BlockPos.containing(x, y, z), sefirot, isOwner, sefirotLevel);
+                }
+            }
+            case "brood_hive" -> {
+                ResourceKey<Level> sefirotDimension = ResourceKey.create(Registries.DIMENSION,
+                        ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "brood_hive"));
+                ServerLevel sefirotLevel = player.serverLevel().getServer().getLevel(sefirotDimension);
+                if (sefirotLevel == null) {
+                    return;
+                }
+
+                boolean isOwner = sefirotData.getClaimedSefirot(player.getUUID()).equals(sefirot);
+
+                float x = 127.5f;
+                int y = isOwner ? 121 : 118;
+                float z = isOwner ? 116.5f : 125.5f;
+                int yaw = isOwner ? 0 : -180;
+
+                player.teleportTo(sefirotLevel,
+                        x,
+                        y,
+                        z,
+                        yaw,
+                        0);
+
+                sefirotLevel.setBlockAndUpdate(BlockPos.containing(127, 122, 119), ModBlocks.SEFIRAH_BLOCK.get().defaultBlockState());
+
+                if(playTeleportEffect) {
+                    playCorrectEffect(BlockPos.containing(x, y, z), sefirot, isOwner, sefirotLevel);
+                }
+            }
+        }
+    }
+
+    public static void teleportToOwnSefirot(ServerPlayer player, boolean playTeleportEffect) {
+        if(!hasSefirot(player)) {
+            return;
+        }
+
+        SefirotData sefirotData = SefirotData.get(player.server);
+
+        String claimedSefirot = sefirotData.getClaimedSefirot(player.getUUID());
+
+        teleportToSefirot(player, claimedSefirot, playTeleportEffect);
+    }
+
+    public static void playCorrectEffect(BlockPos pos, String sefirot, boolean isOwner, ServerLevel sefirotLevel) {
+        switch (sefirot) {
+            case "sefirah_castle" -> {
+                if(isOwner) {
+                    EffectManager.playEffect(EffectIds.SEFIRAH_CASTLE, pos.getX(), pos.getY(), pos.getZ(), sefirotLevel);
+                }
+                else {
+                    PacketHandler.sendToAllPlayersInSameLevel(new PlayPhotonBlockEffectPacket(
+                            "sefirah_player",
+                            pos,
+                            0, 1, 0,
+                            1.5,
+                            null,
+                            -1,
+                            true,
+                            false
+                    ), sefirotLevel);
+
+                }
+            }
+            case "brood_hive" -> {
+                PacketHandler.sendToAllPlayersInSameLevel(new PlayPhotonBlockEffectPacket(
+                        "brood_hive_player",
+                        pos,
+                        0, 1, 0,
+                        1.5,
+                        null,
+                        -1,
+                        true,
+                        false
+                ), sefirotLevel);
+            }
+        }
+    }
+
+    public static void syncPlayerSefirotToClient(Player player, String sefirot) {
+        if(player instanceof ServerPlayer) return;
+        clientSefirotPlayers.put(player.getUUID(), sefirot);
+    }
+
+    public static int getSefirotProgress(Player player) {
+        if(!(player instanceof ServerPlayer)) {
+            PacketHandler.sendToServer(new RequestSefirotSyncPacket());
+        }
+        String sefirot = player instanceof ServerPlayer ? getClaimedSefirot((ServerPlayer) player) : clientSefirotPlayers.get(player.getUUID());
+        if(sefirot == null || sefirot.isEmpty() || !Arrays.asList(implementedSefirah).contains(sefirot.toLowerCase())) {
+            return 0;
+        }
+
+        return switch (BeyonderData.getSequence(player)) {
+            case 4 -> 2;
+            case 3, 2 -> 3;
+            case 1, 0 -> 4;
+            default -> 1;
+        };
+    }
+
+    public static ArrayList<String> getPerksForProgressAndSefirot(int progress, String sefirot) {
+        ArrayList<String> perks = getPerksForProgress(progress);
+        if(sefirot.equals("sefirah_castle")) {
+            if(progress >= 1) {
+            }
+            if(progress >= 2) {
+                perks.add("lotm.sefirot.luck");
+            }
+            if(progress >= 3) {
+            }
+            if(progress >= 4) {
+            }
+        }
+        else if(sefirot.equals("brood_hive")) {
+            if(progress >= 1) {
+            }
+            if(progress >= 2) {
+                perks.add("lotm.sefirot.regeneration");
+            }
+            if(progress >= 3) {
+            }
+            if(progress >= 4) {
+            }
+        }
+
+        return perks;
+    }
+
+    // 0 = normal, 1 = dark, 2 = light
+    public static int[] getColorsForSefirot(String sefirot) {
+        return switch (sefirot) {
+            case "sefirah_castle" -> new int[]{0x9873c9, 0x47217a, 0xd0b9f0};
+            case "brood_hive" -> new int[]{0xbf2434, 0x4f030b, 0xf77e8b};
+            default -> new int[]{0x555555, 0x000000, 0xffffff};
+        };
+    }
+
+    public static ArrayList<String> getPerksForProgress(int progress) {
+        ArrayList<String> perks = new ArrayList<>();
+        if(progress >= 1) {
+            perks.add("lotm.sefirot.anti_divination");
+            perks.add("lotm.sefirot.divination_boost");
+            perks.add("lotm.sefirot.invite_players");
+        }
+        if(progress >= 2) {
+            perks.add("lotm.sefirot.damage_boost");
+        }
+        if(progress >= 3) {
+            perks.add("lotm.sefirot.additional_pathways");
+        }
+        if(progress >= 4) {
+        }
+        return perks;
+    }
+
+    public static String[] getAdditionalPathwaysForPlayer(Player player) {
+        if(getSefirotProgress(player) < 3) {
+            return new String[]{};
+        }
+
+        if(!(player instanceof ServerPlayer serverPlayer)) {
+            PacketHandler.sendToServer(new RequestSefirotSyncPacket());
+            if(clientSefirotPlayers.containsKey(player.getUUID())) {
+                String claimedSefirot = clientSefirotPlayers.get(player.getUUID());
+                return getPathwaysForSefirot(claimedSefirot);
+            }
+            return new String[]{};
+        }
+
+        String claimedSefirot = getClaimedSefirot(serverPlayer);
+        return getPathwaysForSefirot(claimedSefirot);
+    }
+
+    public static String[] getPathwaysForSefirot(String sefirot) {
+        switch (sefirot) {
+            case "sefirah_castle" -> {
+                return new String[]{"fool", "door", "error"};
+            }
+            case "brood_hive" -> {
+                return new String[]{"mother", "moon"};
+            }
+            case "river_of_eternal_darkness" -> {
+                return new String[]{"darkness", "death", "twilight_giant"};
+            }
+            default -> {
+                return new String[]{};
+            }
+        }
+    }
+
+}

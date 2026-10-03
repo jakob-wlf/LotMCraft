@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beyonder's Codex — Abilities</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --parchment-light: #f5e8c8;
+            --parchment-mid:   #e8d5a3;
+            --ink-dark:        #1a1208;
+            --ink-mid:         #2e1f0a;
+            --ink-faded:       #4a3520;
+            --gold:            #b8860b;
+            --gold-light:      #d4a843;
+            --gold-dim:        #8a6520;
+            --mystic-purple:   #3d1a5c;
+        }
+
+        body {
+            background: #1a1208;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 30px 20px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .controls { margin-bottom: 20px; display: flex; gap: 12px; align-items: center; }
+        .btn-download {
+            background: linear-gradient(135deg, #b8860b, #8a6520, #d4a843);
+            color: #1a1208;
+            border: 2px solid #d4a843;
+            padding: 10px 28px;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+        }
+        .btn-download:hover {
+            background: linear-gradient(135deg, #d4a843, #b8860b, #f0c060);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(212,168,67,0.4);
+        }
+        .btn-label { color: #c9a85c; font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px; }
+
+        /* ── BOOK ── */
+        #book {
+            width: 1500px;
+            height: 1000px;
+            position: relative;
+            display: flex;
+            box-shadow: -12px 0 40px rgba(0,0,0,0.8), 12px 0 40px rgba(0,0,0,0.8), 0 20px 60px rgba(0,0,0,0.9);
+        }
+
+        /* ── PAGE ── */
+        .page {
+            width: 750px;
+            height: 1000px;
+            position: relative;
+            overflow: hidden;
+            background: var(--parchment-light);
+        }
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+            repeating-linear-gradient(92deg, transparent, transparent 38px, rgba(180,140,60,0.04) 38px, rgba(180,140,60,0.04) 39px),
+            repeating-linear-gradient(2deg,  transparent, transparent 58px, rgba(160,120,50,0.03) 58px, rgba(160,120,50,0.03) 59px),
+            radial-gradient(ellipse at 20% 20%, rgba(255,240,190,0.6) 0%, transparent 55%),
+            radial-gradient(ellipse at 80% 80%, rgba(210,175,100,0.4) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 50%, var(--parchment-light) 0%, var(--parchment-mid) 100%);
+            pointer-events: none; z-index: 0;
+        }
+        .page-left::after {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+            linear-gradient(to right, rgba(120,80,20,0.28) 0%, transparent 90px),
+            linear-gradient(to bottom, rgba(100,65,15,0.22) 0%, transparent 70px),
+            linear-gradient(to top,    rgba(100,65,15,0.22) 0%, transparent 70px);
+            pointer-events: none; z-index: 1;
+        }
+        .page-right::after {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+            linear-gradient(to left,  rgba(120,80,20,0.28) 0%, transparent 90px),
+            linear-gradient(to bottom, rgba(100,65,15,0.22) 0%, transparent 70px),
+            linear-gradient(to top,    rgba(100,65,15,0.22) 0%, transparent 70px);
+            pointer-events: none; z-index: 1;
+        }
+
+        .page-content {
+            position: relative; z-index: 2;
+            height: 100%;
+            padding: 48px 56px 42px;
+            display: flex; flex-direction: column;
+        }
+
+        .border-outer { position: absolute; inset: 14px; border: 2.5px solid var(--gold-dim); z-index: 3; pointer-events: none; }
+        .border-inner  { position: absolute; inset: 21px;  border: 1px solid rgba(184,134,11,0.35); z-index: 3; pointer-events: none; }
+
+        .corner { position: absolute; width: 36px; height: 36px; z-index: 4; pointer-events: none; }
+        .corner svg { width: 100%; height: 100%; }
+        .c-tl { top: 10px;    left: 10px; }
+        .c-tr { top: 10px;    right: 10px;  transform: scaleX(-1); }
+        .c-bl { bottom: 10px; left: 10px;  transform: scaleY(-1); }
+        .c-br { bottom: 10px; right: 10px; transform: scale(-1,-1); }
+
+        /* ── SPINE ── */
+        .spine {
+            position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+            width: 30px; height: 100%; z-index: 10;
+            background: linear-gradient(to right,
+            rgba(10,6,0,0.55) 0%, rgba(10,6,0,0.2) 30%,
+            rgba(255,230,150,0.08) 50%,
+            rgba(10,6,0,0.2) 70%, rgba(10,6,0,0.55) 100%);
+            pointer-events: none;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .spine-line {
+            width: 1.5px; height: 90%;
+            background: linear-gradient(to bottom,
+            transparent 0%, var(--gold-dim) 8%,
+            var(--gold) 35%, var(--gold) 65%,
+            var(--gold-dim) 92%, transparent 100%);
+            opacity: 0.75;
+        }
+
+        /* ── TYPOGRAPHY ── */
+        .chapter-label {
+            font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 5px;
+            text-transform: uppercase; color: var(--gold-dim); text-align: center; margin-bottom: 6px;
+        }
+        .page-title {
+            font-family: 'Cinzel Decorative', serif; font-size: 32px; font-weight: 700;
+            color: var(--ink-dark); text-align: center; line-height: 1.2; margin-bottom: 6px;
+        }
+        .title-ornament {
+            text-align: center; color: var(--gold); font-size: 20px;
+            letter-spacing: 8px; margin-bottom: 16px; line-height: 1;
+        }
+
+        .divider-fancy { display: flex; align-items: center; gap: 10px; margin: 12px 0; }
+        .divider-fancy .line {
+            flex: 1; height: 1px;
+            background: linear-gradient(to right, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+        }
+        .divider-fancy .gem { width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); flex-shrink: 0; }
+
+        .body-text { font-family: 'EB Garamond', serif; font-size: 22px; line-height: 1.65; color: var(--ink-mid); text-align: justify; }
+        .body-text p { margin-bottom: 10px; }
+
+        .drop-cap-letter {
+            font-family: 'Cinzel Decorative', serif; font-size: 82px; font-weight: 700;
+            float: left; line-height: 0.78; margin-right: 8px; margin-top: 6px; color: var(--ink-dark);
+        }
+
+        .section-header {
+            font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--gold-dim); margin-bottom: 12px;
+        }
+
+        /* Steps list */
+        .sequence-list { list-style: none; }
+        .sequence-list li {
+            display: flex; align-items: flex-start; gap: 14px;
+            font-size: 20px; line-height: 1.5; color: var(--ink-mid);
+            padding: 7px 0; border-bottom: 1px solid rgba(184,134,11,0.18);
+        }
+        .sequence-list li:last-child { border-bottom: none; }
+        .seq-num {
+            font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+            color: var(--gold-dim); letter-spacing: 1px; min-width: 76px;
+            padding-top: 3px; flex-shrink: 0;
+        }
+
+        /* Keybind badge */
+        .key {
+            display: inline-block;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink-dark);
+            background: rgba(184,134,11,0.15);
+            border: 1px solid var(--gold-dim);
+            padding: 1px 8px;
+            letter-spacing: 1px;
+            vertical-align: middle;
+            position: relative;
+            top: -1px;
+        }
+
+        /* Highlight / caution box */
+        .highlight-box {
+            border: 1px solid var(--gold-dim);
+            background: rgba(184,134,11,0.07);
+            padding: 14px 18px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .box-text {
+            font-size: 19px; line-height: 1.55; color: var(--ink-faded);
+            text-align: center; font-style: italic;
+        }
+
+        /* Illustration / screenshot placeholder */
+        .illus-box {
+            border: 1.5px solid var(--gold-dim);
+            background: rgba(30,18,5,0.06);
+            position: relative;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .illus-box::before {
+            content: '';
+            position: absolute; inset: 5px;
+            border: 1px dashed rgba(184,134,11,0.25);
+            pointer-events: none;
+        }
+        .illus-placeholder {
+            font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 2px;
+            color: var(--gold-dim); text-align: center; opacity: 0.65; padding: 10px;
+        }
+        .illus-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.3; }
+        .illus-caption {
+            font-family: 'EB Garamond', serif; font-size: 15px; font-style: italic;
+            color: var(--gold-dim); text-align: center; margin-top: 7px;
+        }
+
+        .page-number {
+            font-family: 'Cinzel', serif; font-size: 13px; color: var(--gold-dim);
+            letter-spacing: 3px; margin-top: auto; padding-top: 10px;
+        }
+        .page-left  .page-number { text-align: left; }
+        .page-right .page-number { text-align: right; }
+
+        .scale-wrapper { transform-origin: top center; }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <span class="btn-label">Renders at 3000 × 2000 px internally</span>
+    <button class="btn-download" onclick="downloadPNG()">Download PNG</button>
+</div>
+
+<div class="scale-wrapper">
+    <div id="book">
+
+        <!-- ═══════════════ LEFT PAGE ═══════════════ -->
+        <div class="page page-left">
+            <div class="border-outer"></div>
+            <div class="border-inner"></div>
+
+            <div class="corner c-tl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+            <div class="corner c-tr"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+            <div class="corner c-bl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+            <div class="corner c-br"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+
+            <div class="page-content">
+                <div class="chapter-label">Chapter II</div>
+                <div class="page-title">Wielding<br>Abilities</div>
+                <div class="title-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+                <div class="body-text" style="margin-bottom: 8px;">
+                    <p><span class="drop-cap-letter">A</span>s a Beyonder grows in power, so too do the gifts of their Pathway manifest — abilities both subtle and terrible, channelled through the will and spirit of their wielder.</p>
+                </div>
+
+                <div class="divider-fancy" style="margin: 6px 0 14px;">
+                    <div class="line"></div><div class="gem"></div><div class="line"></div>
+                </div>
+
+                <div class="section-header">Preparing the Ability Wheel</div>
+
+                <ul class="sequence-list">
+                    <li>
+                        <span class="seq-num">Step I</span>
+                        <span>Press <span class="key">J</span> to open the <strong>Introspect Menu</strong> and navigate to the <strong>Abilities</strong> tab.</span>
+                    </li>
+                    <li>
+                        <span class="seq-num">Step II</span>
+                        <span><strong>Drag</strong> your abilities from the list into the slots of the <strong>Ability Wheel</strong> to assign them.</span>
+                    </li>
+                    <li>
+                        <span class="seq-num">Step III</span>
+                        <span>In-game, hold <span class="key">Alt</span> to toggle the wheel open, or hold <span class="key">Y</span> to show it only while held.</span>
+                    </li>
+                    <li>
+                        <span class="seq-num">Step IV</span>
+                        <span><strong>Hover</strong> over the desired ability on the wheel to select it, then press <span class="key">M</span> to activate it.</span>
+                    </li>
+                </ul>
+
+                <div class="divider-fancy" style="margin: 12px 0 10px;">
+                    <div class="line"></div><div class="gem"></div><div class="line"></div>
+                </div>
+
+                <!-- Ability wheel screenshot -->
+                <div class="illus-box" style="flex: 1; min-height: 0;">
+                    <div>
+                        <div class="illus-icon">⊙</div>
+                        <div class="illus-placeholder">[ SCREENSHOT ]<br>The Ability Wheel in-game</div>
+                    </div>
+                </div>
+
+                <div class="page-number">III</div>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SPINE ═══════════════ -->
+        <div class="spine"><div class="spine-line"></div></div>
+
+        <!-- ═══════════════ RIGHT PAGE ═══════════════ -->
+        <div class="page page-right">
+            <div class="border-outer"></div>
+            <div class="border-inner"></div>
+
+            <div class="corner c-tl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+            <div class="corner c-tr"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+            <div class="corner c-bl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+            <div class="corner c-br"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+
+            <div class="page-content">
+
+                <div class="section-header" style="margin-bottom: 14px;">Spirituality &amp; Cooldowns</div>
+
+                <div class="body-text">
+                    <p>Each ability draws upon your inner reserves of <strong>Spirituality</strong> — the vital essence of every Beyonder. Without sufficient Spirituality, an ability cannot be invoked, no matter the urgency of the moment.</p>
+                    <p>Furthermore, many abilities impose a <strong>cooldown</strong> after use, during which they may not be called upon again. Manage both wisely in the heat of confrontation.</p>
+                </div>
+
+                <div class="divider-fancy" style="margin: 14px 0;">
+                    <div class="line"></div><div class="gem"></div><div class="line"></div>
+                </div>
+
+                <!-- Keybind quick-reference -->
+                <div class="section-header" style="margin-bottom: 10px;">Keybind Reference</div>
+
+                <ul class="sequence-list" style="margin-bottom: 14px;">
+                    <li>
+                        <span class="seq-num"><span class="key">J</span></span>
+                        <span>Open the Introspect Menu &amp; Abilities tab</span>
+                    </li>
+                    <li>
+                        <span class="seq-num"><span class="key">Alt</span></span>
+                        <span>Toggle the Ability Wheel open / closed</span>
+                    </li>
+                    <li>
+                        <span class="seq-num"><span class="key">Y</span></span>
+                        <span>Show the Ability Wheel while held</span>
+                    </li>
+                    <li>
+                        <span class="seq-num"><span class="key">M</span></span>
+                        <span>Activate the currently selected ability</span>
+                    </li>
+                </ul>
+
+                <div class="highlight-box" style="margin-bottom: 14px;">
+                    <div class="box-text" style="color: var(--mystic-purple);">
+                        A Beyonder who exhausts their Spirituality<br>is left defenceless. Know your limits.
+                    </div>
+                </div>
+
+                <div class="page-number">IV</div>
+            </div>
+        </div>
+
+    </div><!-- #book -->
+</div><!-- .scale-wrapper -->
+
+<script>
+    function scaleBook() {
+        const wrapper = document.querySelector('.scale-wrapper');
+        const avail = window.innerWidth - 40;
+        if (avail < 1500) {
+            const s = avail / 1500;
+            wrapper.style.transform = `scale(${s})`;
+            wrapper.style.marginBottom = `${-(1000 * (1 - s))}px`;
+        } else {
+            wrapper.style.transform = '';
+            wrapper.style.marginBottom = '';
+        }
+    }
+    scaleBook();
+    window.addEventListener('resize', scaleBook);
+
+    async function downloadPNG() {
+        const btn = document.querySelector('.btn-download');
+        btn.textContent = 'Rendering…';
+        btn.disabled = true;
+
+        const wrapper = document.querySelector('.scale-wrapper');
+        const prev = wrapper.style.transform;
+        const prevM = wrapper.style.marginBottom;
+        wrapper.style.transform = '';
+        wrapper.style.marginBottom = '';
+        await new Promise(r => setTimeout(r, 100));
+
+        const canvas = await html2canvas(document.getElementById('book'), {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: null,
+            logging: false,
+            width: 1500,
+            height: 1000,
+        });
+
+        wrapper.style.transform = prev;
+        wrapper.style.marginBottom = prevM;
+
+        const a = document.createElement('a');
+        a.download = 'beyonder_guide_p2.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+
+        btn.textContent = 'Download PNG';
+        btn.disabled = false;
+    }
+</script>
+</body>
+</html>

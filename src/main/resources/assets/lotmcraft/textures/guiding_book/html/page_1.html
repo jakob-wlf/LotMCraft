@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beyonder's Codex</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --parchment-light: #f5e8c8;
+      --parchment-mid:   #e8d5a3;
+      --ink-dark:        #1a1208;
+      --ink-mid:         #2e1f0a;
+      --ink-faded:       #4a3520;
+      --gold:            #b8860b;
+      --gold-light:      #d4a843;
+      --gold-dim:        #8a6520;
+      --mystic-purple:   #3d1a5c;
+    }
+
+    body {
+      background: #1a1208;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 30px 20px;
+      font-family: 'EB Garamond', serif;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .btn-download {
+      background: linear-gradient(135deg, #b8860b, #8a6520, #d4a843);
+      color: #1a1208;
+      border: 2px solid #d4a843;
+      padding: 10px 28px;
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .btn-download:hover {
+      background: linear-gradient(135deg, #d4a843, #b8860b, #f0c060);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(212,168,67,0.4);
+    }
+    .btn-label { color: #c9a85c; font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 1px; }
+
+    /* ── BOOK ── */
+    #book {
+      width: 1500px;
+      height: 1000px;
+      position: relative;
+      display: flex;
+      box-shadow: -12px 0 40px rgba(0,0,0,0.8), 12px 0 40px rgba(0,0,0,0.8), 0 20px 60px rgba(0,0,0,0.9);
+    }
+
+    /* ── PAGE ── */
+    .page {
+      width: 750px;
+      height: 1000px;
+      position: relative;
+      overflow: hidden;
+      background: var(--parchment-light);
+    }
+    .page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+      repeating-linear-gradient(92deg, transparent, transparent 38px, rgba(180,140,60,0.04) 38px, rgba(180,140,60,0.04) 39px),
+      repeating-linear-gradient(2deg,  transparent, transparent 58px, rgba(160,120,50,0.03) 58px, rgba(160,120,50,0.03) 59px),
+      radial-gradient(ellipse at 20% 20%, rgba(255,240,190,0.6) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(210,175,100,0.4) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, var(--parchment-light) 0%, var(--parchment-mid) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .page-left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+      linear-gradient(to right, rgba(120,80,20,0.28) 0%, transparent 90px),
+      linear-gradient(to bottom, rgba(100,65,15,0.22) 0%, transparent 70px),
+      linear-gradient(to top,    rgba(100,65,15,0.22) 0%, transparent 70px);
+      pointer-events: none; z-index: 1;
+    }
+    .page-right::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+      linear-gradient(to left,  rgba(120,80,20,0.28) 0%, transparent 90px),
+      linear-gradient(to bottom, rgba(100,65,15,0.22) 0%, transparent 70px),
+      linear-gradient(to top,    rgba(100,65,15,0.22) 0%, transparent 70px);
+      pointer-events: none; z-index: 1;
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      padding: 48px 56px 42px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Borders */
+    .border-outer { position: absolute; inset: 14px; border: 2.5px solid var(--gold-dim); z-index: 3; pointer-events: none; }
+    .border-inner  { position: absolute; inset: 21px;  border: 1px solid rgba(184,134,11,0.35); z-index: 3; pointer-events: none; }
+
+    /* Corners */
+    .corner { position: absolute; width: 36px; height: 36px; z-index: 4; pointer-events: none; }
+    .corner svg { width: 100%; height: 100%; }
+    .c-tl { top: 10px;    left: 10px; }
+    .c-tr { top: 10px;    right: 10px;  transform: scaleX(-1); }
+    .c-bl { bottom: 10px; left: 10px;  transform: scaleY(-1); }
+    .c-br { bottom: 10px; right: 10px; transform: scale(-1,-1); }
+
+    /* ── SPINE ── */
+    .spine {
+      position: absolute;
+      left: 50%; top: 0;
+      transform: translateX(-50%);
+      width: 30px; height: 100%;
+      z-index: 10;
+      background: linear-gradient(to right,
+      rgba(10,6,0,0.55) 0%, rgba(10,6,0,0.2) 30%,
+      rgba(255,230,150,0.08) 50%,
+      rgba(10,6,0,0.2) 70%, rgba(10,6,0,0.55) 100%);
+      pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .spine-line {
+      width: 1.5px; height: 90%;
+      background: linear-gradient(to bottom,
+      transparent 0%, var(--gold-dim) 8%,
+      var(--gold) 35%, var(--gold) 65%,
+      var(--gold-dim) 92%, transparent 100%);
+      opacity: 0.75;
+    }
+
+    /* ── TYPE ── */
+    .chapter-label {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .page-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--ink-dark);
+      text-align: center;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .title-ornament {
+      text-align: center;
+      color: var(--gold);
+      font-size: 20px;
+      letter-spacing: 8px;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+
+    .divider-fancy {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .divider-fancy .line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold-dim), var(--gold), var(--gold-dim), transparent);
+    }
+    .divider-fancy .gem {
+      width: 8px; height: 8px;
+      background: var(--gold);
+      transform: rotate(45deg);
+      flex-shrink: 0;
+    }
+
+    /* Body text — LARGE for Minecraft readability */
+    .body-text {
+      font-family: 'EB Garamond', serif;
+      font-size: 22px;
+      line-height: 1.65;
+      color: var(--ink-mid);
+      text-align: justify;
+    }
+    .body-text p { margin-bottom: 10px; }
+
+    .drop-cap-letter {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 82px;
+      font-weight: 700;
+      float: left;
+      line-height: 0.78;
+      margin-right: 8px;
+      margin-top: 6px;
+      color: var(--ink-dark);
+    }
+
+    /* Caution / highlight box */
+    .highlight-box {
+      border: 1px solid var(--gold-dim);
+      background: rgba(184,134,11,0.07);
+      padding: 16px 20px;
+      margin: 12px 0;
+      position: relative;
+    }
+
+    .box-title {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    .box-text {
+      font-size: 20px;
+      line-height: 1.55;
+      color: var(--ink-faded);
+      text-align: center;
+      font-style: italic;
+    }
+
+    /* Section header */
+    .section-header {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 12px;
+    }
+
+    /* Steps */
+    .sequence-list { list-style: none; }
+    .sequence-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: var(--ink-mid);
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(184,134,11,0.18);
+    }
+    .sequence-list li:last-child { border-bottom: none; }
+    .seq-num {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold-dim);
+      letter-spacing: 1px;
+      min-width: 76px;
+      padding-top: 3px;
+      flex-shrink: 0;
+    }
+
+    /* Illustration placeholder */
+    .illus-box {
+      border: 1.5px solid var(--gold-dim);
+      background: rgba(30,18,5,0.06);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .illus-box::before {
+      content: '';
+      position: absolute;
+      inset: 5px;
+      border: 1px dashed rgba(184,134,11,0.25);
+      pointer-events: none;
+    }
+    .illus-placeholder {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--gold-dim);
+      text-align: center;
+      opacity: 0.65;
+      padding: 14px;
+    }
+    .illus-icon { font-size: 36px; margin-bottom: 8px; opacity: 0.3; }
+    .illus-caption {
+      font-family: 'EB Garamond', serif;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--gold-dim);
+      text-align: center;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .page-number {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      color: var(--gold-dim);
+      letter-spacing: 3px;
+      margin-top: auto;
+      padding-top: 10px;
+    }
+    .page-left  .page-number { text-align: left; }
+    .page-right .page-number { text-align: right; }
+
+    /* Scale wrapper */
+    .scale-wrapper { transform-origin: top center; }
+  </style>
+</head>
+<body>
+
+<div class="controls">
+  <span class="btn-label">Renders at 3000 × 2000 px internally</span>
+  <button class="btn-download" onclick="downloadPNG()">Download PNG</button>
+</div>
+
+<div class="scale-wrapper">
+  <div id="book">
+
+    <!-- ══════════ LEFT PAGE ══════════ -->
+    <div class="page page-left">
+      <div class="border-outer"></div>
+      <div class="border-inner"></div>
+
+      <!-- Corner SVGs -->
+      <div class="corner c-tl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+      <div class="corner c-tr"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+      <div class="corner c-bl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+      <div class="corner c-br"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+
+      <div class="page-content">
+        <div class="chapter-label">Chapter I</div>
+        <div class="page-title">Becoming a<br>Beyonder</div>
+        <div class="title-ornament">✦ &nbsp; ✦ &nbsp; ✦</div>
+
+        <!-- Large illustration -->
+        <div class="illus-box" style="flex: 1; min-height: 0; margin-bottom: 16px;">
+          <div>
+            <div class="illus-icon" style="font-size:46px;">🜃</div>
+            <div class="illus-placeholder">[ ILLUSTRATION ]<br>A Brewing Cauldron<br>wreathed in mystic vapour</div>
+          </div>
+        </div>
+
+        <div class="divider-fancy">
+          <div class="line"></div><div class="gem"></div><div class="line"></div>
+        </div>
+
+        <div class="highlight-box">
+          <div class="box-text" style="color: var(--mystic-purple);">
+            One must never rush the Path.<br>
+            Digest fully before you dare ascend.
+          </div>
+        </div>
+
+        <div class="page-number">I</div>
+      </div>
+    </div>
+
+    <!-- ══════════ SPINE ══════════ -->
+    <div class="spine"><div class="spine-line"></div></div>
+
+    <!-- ══════════ RIGHT PAGE ══════════ -->
+    <div class="page page-right">
+      <div class="border-outer"></div>
+      <div class="border-inner"></div>
+
+      <div class="corner c-tl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+      <div class="corner c-tr"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+      <div class="corner c-bl"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+      <div class="corner c-br"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 34L2 2L34 2" stroke="#8a6520" stroke-width="2" fill="none"/><path d="M2 2L12 12" stroke="#b8860b" stroke-width="1.2" opacity="0.7"/><circle cx="2" cy="2" r="3" fill="#b8860b" opacity="0.85"/><path d="M20 2L2 20" stroke="#b8860b" stroke-width="0.6" opacity="0.28"/></svg></div>
+
+      <div class="page-content">
+
+        <!-- Intro paragraph -->
+        <div class="body-text" style="margin-bottom: 4px;">
+          <p><span class="drop-cap-letter">T</span>o become a Beyonder is to walk a Path of transformation — of body, mind, and soul — through the sacred art of potion-craft.</p>
+        </div>
+
+        <div class="divider-fancy" style="margin: 8px 0;">
+          <div class="line"></div><div class="gem"></div><div class="line"></div>
+        </div>
+
+        <div class="section-header">The Rites of Ascension</div>
+
+        <ul class="sequence-list" style="flex: 1;">
+          <li>
+            <span class="seq-num">Step I</span>
+            <span>Choose a single <strong>Pathway</strong>. All potions must belong to the same lineage — mixing paths leads to ruin.</span>
+          </li>
+          <li>
+            <span class="seq-num">Step II</span>
+            <span>Begin at <strong>Sequence 9</strong>. Brew your potion in a <em>Brewing Cauldron</em> with the required ingredients and recipe.</span>
+          </li>
+          <li>
+            <span class="seq-num">Step III</span>
+            <span>The main ingredient may be swapped for the matching <strong>Beyonder Characteristic</strong> of that sequence.</span>
+          </li>
+          <li>
+            <span class="seq-num">Step IV</span>
+            <span>After drinking, <strong>fully digest</strong> the potion before the next may be safely taken.</span>
+          </li>
+          <li>
+            <span class="seq-num">Step V</span>
+            <span>Once digested, proceed to <strong>Sequence 8</strong>, then 7 — climbing onward, one step at a time.</span>
+          </li>
+        </ul>
+
+        <div class="divider-fancy" style="margin: 10px 0 8px;">
+          <div class="line"></div><div class="gem"></div><div class="line"></div>
+        </div>
+
+        <!-- Screenshot placeholder -->
+        <div class="illus-box" style="height: 180px; flex-shrink: 0;">
+          <div>
+            <div class="illus-icon" style="font-size:28px;">⚗</div>
+            <div class="illus-placeholder">[ SCREENSHOT ]</div>
+          </div>
+        </div>
+
+        <div class="page-number">II</div>
+      </div>
+    </div>
+
+  </div><!-- #book -->
+</div><!-- .scale-wrapper -->
+
+<script>
+  function scaleBook() {
+    const wrapper = document.querySelector('.scale-wrapper');
+    const avail = window.innerWidth - 40;
+    if (avail < 1500) {
+      const s = avail / 1500;
+      wrapper.style.transform = `scale(${s})`;
+      wrapper.style.marginBottom = `${-(1000 * (1 - s))}px`;
+    } else {
+      wrapper.style.transform = '';
+      wrapper.style.marginBottom = '';
+    }
+  }
+  scaleBook();
+  window.addEventListener('resize', scaleBook);
+
+  async function downloadPNG() {
+    const btn = document.querySelector('.btn-download');
+    btn.textContent = 'Rendering…';
+    btn.disabled = true;
+
+    const wrapper = document.querySelector('.scale-wrapper');
+    const prev = wrapper.style.transform;
+    const prevM = wrapper.style.marginBottom;
+    wrapper.style.transform = '';
+    wrapper.style.marginBottom = '';
+    await new Promise(r => setTimeout(r, 100));
+
+    const canvas = await html2canvas(document.getElementById('book'), {
+      scale: 2,          // → 3000 × 2000 px output
+      useCORS: true,
+      backgroundColor: null,
+      logging: false,
+      width: 1500,
+      height: 1000,
+    });
+
+    wrapper.style.transform = prev;
+    wrapper.style.marginBottom = prevM;
+
+    const a = document.createElement('a');
+    a.download = 'beyonder_guide_p1.png';
+    a.href = canvas.toDataURL('image/png');
+    a.click();
+
+    btn.textContent = 'Download PNG';
+    btn.disabled = false;
+  }
+</script>
+</body>
+</html>

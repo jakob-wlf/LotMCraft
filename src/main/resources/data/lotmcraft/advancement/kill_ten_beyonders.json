@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:kill_rogue_beyonder",
+  "display": {
+    "icon": {
+      "id": "minecraft:diamond_sword"
+    },
+    "title": "Beyonder Hunter",
+    "description": "Kill 10 Beyonders.",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "kill_ten_beyonders": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

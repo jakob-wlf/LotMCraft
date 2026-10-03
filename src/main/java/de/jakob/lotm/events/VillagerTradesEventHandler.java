@@ -1,0 +1,172 @@
+package de.jakob.lotm.events;
+
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.item.ModIngredients;
+import de.jakob.lotm.item.PotionIngredient;
+import de.jakob.lotm.beyonders.potions.*;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.villager.ModVillagers;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.trading.ItemCost;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.village.VillagerTradesEvent;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+public class VillagerTradesEventHandler {
+
+    private static final int[] costsPerSequence = new int[]{1000, 300, 250, 180, 160, 70, 64, 40, 29, 29};
+    private static final int[] costsPerSequenceForIngredients = new int[]{1000, 120, 50, 35, 29, 18, 14, 11, 8, 4};
+    private static final int[] costsPerSequenceForRecipes = new int[]{1000, 120, 50, 35, 29, 18, 14, 11, 8, 4};
+
+    @SubscribeEvent
+    public static void addCustomTrades(VillagerTradesEvent event) {
+        if (event.getType() == ModVillagers.BEYONDER_PROFESSION.value()) {
+            Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
+
+            HashMap<Item, Integer> tradeableItems = new HashMap<>();
+            ModIngredients.getAll().forEach(i -> tradeableItems.put(i, costsPerSequenceForIngredients[i.getSequence()]));
+
+            for(Map.Entry<Item, Integer> entry : tradeableItems.entrySet()) {
+                int level = getLevelForItem(entry.getKey());
+                int sequence = getSequenceForItem(entry.getKey());
+
+                if(sequence >= 6) {
+                    trades.get(level).add((entity, randomSource) -> {
+                        Random random = new Random();
+                        int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
+
+                        ItemCost firstItemCost = new ItemCost(Items.DIAMOND, diamondAmount);
+
+                        java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+
+                        return new MerchantOffer(
+                                firstItemCost,
+                                additionalCost,
+                                new ItemStack(entry.getKey(), 1),
+                                random.nextInt(1, 2),
+                                30 * level,
+                                0.005f
+                        );
+                    });
+                }
+            }
+        }
+
+        if (event.getType() == ModVillagers.EVERNIGHT_PROFESSION.value()) {
+            populateVillagerWithPathwayProfession(event.getTrades(), "darkness");
+
+        }
+        if (event.getType() == ModVillagers.BLAZING_SUN_PROFESSION.value()) {
+            populateVillagerWithPathwayProfession(event.getTrades(), "sun");
+        }
+    }
+
+    private static void populateVillagerWithPathwayProfession(Int2ObjectMap<List<VillagerTrades.ItemListing>> trades, String pathway) {
+        HashMap<Item, Integer> tradeableItems = new HashMap<>();
+        ModIngredients.getAllOfPathway(pathway).forEach(i -> tradeableItems.put(i, costsPerSequenceForIngredients[i.getSequence()]));
+        BeyonderCharacteristicItemHandler.selectAllOfPathway(pathway).forEach(r -> tradeableItems.put(r, costsPerSequenceForRecipes[r.getSequence()]));
+
+        for(Map.Entry<Item, Integer> entry : tradeableItems.entrySet()) {
+            int level = getLevelForItem(entry.getKey());
+            int sequence = getSequenceForItem(entry.getKey());
+
+            if(sequence >= 6) {
+                boolean isCharacteristic = entry.getKey() instanceof BeyonderCharacteristicItem;
+
+                trades.get(level).add((entity, randomSource) -> {
+                    Random random = new Random();
+                    int diamondAmount = Math.max(1, random.nextInt(entry.getValue() - 4, entry.getValue() + 5));
+                    ItemCost diamondCost = new ItemCost(Items.DIAMOND, diamondAmount);
+                    java.util.Optional<ItemCost> additionalCost = getAdditionalCostForSequence(sequence, random);
+
+                    return new MerchantOffer(
+                            diamondCost,
+                            additionalCost,
+                            new ItemStack(entry.getKey(), 1),
+                            random.nextInt(1, 2),
+                            30 * level,
+                            isCharacteristic ? 0.0005f : 0.005f
+                    );
+                });
+            }
+        }
+    }
+
+    private static java.util.Optional<ItemCost> getAdditionalCostForSequence(int sequence, Random random) {
+        ItemCost cost = switch(sequence) {
+            case 6 -> new ItemCost(Items.GOLD_BLOCK, 64);
+            default -> null;
+        };
+        return java.util.Optional.ofNullable(cost);
+    }
+
+    private static int getSequenceForItem(Item item) {
+        if(item instanceof PotionIngredient ingredient) {
+            return ingredient.getSequence();
+        } else if(item instanceof BeyonderCharacteristicItem characteristic) {
+            return characteristic.getSequence();
+        }
+        return 9;
+    }
+
+    private static int getLevelForSequence(int sequence) {
+        return switch(sequence) {
+            default -> 1;
+            case 8 -> 2;
+            case 7, 6 -> 3;
+        };
+    }
+
+    private static int getLevelForItem(Item item) {
+        int level = 1;
+        if(item instanceof PotionIngredient ingredient) {
+            level = getLevelForSequence(ingredient.getSequence());
+        } else if(item instanceof BeyonderCharacteristicItem characteristic) {
+            level = getLevelForSequence(characteristic.getSequence());
+        }
+
+        return level;
+    }
+
+    @SubscribeEvent
+    public static void onVillagerInteract(PlayerInteractEvent.EntityInteract event) {
+        if (!(event.getTarget() instanceof Villager villager)) return;
+        if (event.getLevel().isClientSide()) return;
+
+        MerchantOffers offers = villager.getOffers();
+
+        if(offers.isEmpty()) return;
+
+        offers.removeIf(offer -> {
+                    var item = offer.getResult().getItem();
+
+                    if(item instanceof PotionIngredient obj){
+                        for(var path : obj.getPathways()){
+                            return !BeyonderData.playerMap.check(path,obj.getSequence()) || obj.getSequence() < 6;
+                        }
+                    }
+
+                    if(item instanceof BeyonderCharacteristicItem cha){
+                        return !BeyonderData.playerMap.check(cha.getPathway(), cha.getSequence()) || cha.getSequence() < 6;
+                    }
+
+                    return false;
+                }
+        );
+    }
+
+}

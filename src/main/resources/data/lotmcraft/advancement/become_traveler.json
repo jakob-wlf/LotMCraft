@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_scribe",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:traveler_potion"
+    },
+    "title": "Roads Less Traveled",
+    "description": "Consume a Potion and advance to Traveler.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

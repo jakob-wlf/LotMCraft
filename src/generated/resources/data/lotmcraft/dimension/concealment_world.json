@@ -1,0 +1,10 @@
+{
+  "type": "lotmcraft:concealment_world",
+  "generator": {
+    "type": "lotmcraft:concealment_world",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "lotmcraft:concealment_world_biome"
+    }
+  }
+}

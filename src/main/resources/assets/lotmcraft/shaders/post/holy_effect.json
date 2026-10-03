@@ -1,0 +1,32 @@
+{
+  "targets": [
+    "swap",
+    "holy_temp"
+  ],
+  "passes": [
+    {
+      "name": "lotmcraft:holy_effect",
+      "intarget": "minecraft:main",
+      "outtarget": "holy_temp",
+      "auxtargets": [
+        {
+          "name": "DiffuseSampler",
+          "id": "minecraft:main"
+        }
+      ],
+      "uniforms": [
+        {
+          "name": "Time",
+          "type": "float",
+          "count": 1,
+          "values": [ 0.0 ]
+        }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "holy_temp",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

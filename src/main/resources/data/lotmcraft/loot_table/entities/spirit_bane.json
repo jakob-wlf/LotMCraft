@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_giant_core"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_catcher_heart"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:king_of_green_wings_eye"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_phoenix_eyes"
+        }
+      ]
+    }
+  ]
+}

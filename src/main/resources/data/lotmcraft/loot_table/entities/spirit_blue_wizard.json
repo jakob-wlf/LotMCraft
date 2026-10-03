@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:murloc_bladder"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_logbook"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dragon_eyed_condor_eyeball"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:abyss_demonic_fish_blood"
+        }
+      ]
+    }
+  ]
+}

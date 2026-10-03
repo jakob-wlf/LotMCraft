@@ -1,0 +1,16 @@
+{
+  "structures": [
+    {
+      "structure": "lotmcraft:uniqueness_temple",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 43677687,
+    "spacing": 55,
+    "separation": 16,
+    "frequency": 0.2,
+    "frequency_reduction_method": "default"
+  }
+}

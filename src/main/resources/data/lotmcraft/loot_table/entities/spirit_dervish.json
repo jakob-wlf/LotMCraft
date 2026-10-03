@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_wraith_dust"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:illusion_crystal"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_wraith_artifact"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_eyes"
+        }
+      ]
+    }
+  ]
+}

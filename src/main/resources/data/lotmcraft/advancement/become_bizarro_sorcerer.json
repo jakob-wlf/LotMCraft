@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_marionettist",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:bizarro_sorcerer_potion"
+    },
+    "title": "This is quite bizarre",
+    "description": "Consume a Potion and advance to Bizarro Sorcerer.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

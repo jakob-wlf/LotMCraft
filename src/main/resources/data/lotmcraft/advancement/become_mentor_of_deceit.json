@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_parasite",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:mentor_of_deceit_potion"
+    },
+    "title": "Lies are Truth",
+    "description": "Consume a Potion and advance to Mentor of Deceit.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

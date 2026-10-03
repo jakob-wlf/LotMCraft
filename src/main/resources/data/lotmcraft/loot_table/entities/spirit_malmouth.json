@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadow_lizard_scales"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:goat_horned_blackfish_blood"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sleeper_skull"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:source_of_mad_dreams"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_devil",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:desire_apostle_potion"
+    },
+    "title": "Desires Unleashed",
+    "description": "Consume a Potion and advance to Desire Apostle.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

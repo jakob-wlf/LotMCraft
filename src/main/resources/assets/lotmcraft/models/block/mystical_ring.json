@@ -1,0 +1,19 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "lotmcraft:block/mystical_ring",
+    "texture": "lotmcraft:block/mystical_ring"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 0.01, 16],
+      "faces": {
+        "up": {
+          "uv": [0, 0, 16, 16],
+          "texture": "#texture"
+        }
+      }
+    }
+  ]
+}

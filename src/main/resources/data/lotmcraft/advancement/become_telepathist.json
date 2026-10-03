@@ -1,0 +1,19 @@
+{
+  "parent": "lotmcraft:become_spectator",
+  "display": {
+    "icon": {
+      "id": "lotmcraft:telepathist_potion"
+    },
+    "title": "Reading Your Mind",
+    "description": "Consume a Potion and advance to Telepathist.",
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "consume_beyonder_potion": {
+      "trigger": "minecraft:impossible"
+    }
+  }
+}

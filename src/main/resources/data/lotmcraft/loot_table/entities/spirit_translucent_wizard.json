@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_sunflower"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystallized_roots"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood"
+        }
+      ]
+    }
+  ]
+}
