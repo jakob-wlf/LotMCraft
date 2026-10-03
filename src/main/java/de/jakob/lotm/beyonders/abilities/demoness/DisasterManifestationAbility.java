@@ -80,14 +80,14 @@ public class DisasterManifestationAbility extends SelectableAbility {
         PacketDistributor.sendToPlayersNear(
                 serverLevel, null,
                 startPos.x, startPos.y, startPos.z, 2056,
-                new PlayPhotonBlockEffectPacket("ice_age", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false)
+                new PlayPhotonBlockEffectPacket("ice_age", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, true, false, null)
         );
 
         ServerScheduler.scheduleForDuration(0, 2, 110, () -> {
             AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, radius.get(), true, true, false).forEach(b -> {
                 BlockState state = serverLevel.getBlockState(b);
                 BlockState aboveState = serverLevel.getBlockState(b.above());
-                if(!state.is(Blocks.PACKED_ICE) && aboveState.getCollisionShape(serverLevel, b.above()).isEmpty()) {
+                if(!state.is(Blocks.PACKED_ICE) && aboveState.getCollisionShape(serverLevel, b.above()).isEmpty() && random.nextBoolean()) {
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, b.getCenter().add(0, 1, 0), 1, .4);
                 }
                 if(griefing) {

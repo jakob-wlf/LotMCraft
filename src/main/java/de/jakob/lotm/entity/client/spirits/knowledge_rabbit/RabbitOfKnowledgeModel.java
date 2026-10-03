@@ -1,4 +1,4 @@
-package de.jakob.lotm.entity.client.knowledge_rabbit;// Made with Blockbench 5.1.6
+package de.jakob.lotm.entity.client.spirits.knowledge_rabbit;// Made with Blockbench 5.1.6
 // Exported for Minecraft version 1.17 or later with Mojang mappings
 // Paste this class into your mod and generate all required imports
 

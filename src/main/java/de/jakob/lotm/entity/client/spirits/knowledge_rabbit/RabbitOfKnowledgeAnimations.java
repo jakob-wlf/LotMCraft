@@ -1,4 +1,4 @@
-package de.jakob.lotm.entity.client.knowledge_rabbit;// Save this class in your mod and generate all required imports
+package de.jakob.lotm.entity.client.spirits.knowledge_rabbit;// Save this class in your mod and generate all required imports
 
 import net.minecraft.client.animation.AnimationChannel;
 import net.minecraft.client.animation.AnimationDefinition;

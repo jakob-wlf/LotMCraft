@@ -1,0 +1,29 @@
+{
+  "vertex": "spacefrag:sf_model",
+  "fragment": "spacefrag:sf_planet",
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "ColorA", "type": "float", "count": 4, "values": [0.3, 0.2, 0.15, 1] },
+    { "name": "ColorB", "type": "float", "count": 4, "values": [0.6, 0.4, 0.3, 1] },
+    { "name": "ColorC", "type": "float", "count": 4, "values": [0.9, 0.8, 0.6, 1] },
+    { "name": "CrackColor", "type": "float", "count": 4, "values": [3.2, 0.7, 0.25, 1] },
+    { "name": "RimColor", "type": "float", "count": 4, "values": [0.85, 0.32, 0.26, 1] },
+    { "name": "LightColor", "type": "float", "count": 4, "values": [1.25, 1.0, 0.78, 1] },
+    { "name": "LightDir", "type": "float", "count": 3, "values": [-0.62, 0.42, 0.66] },
+    { "name": "Kind", "type": "float", "count": 1, "values": [0] },
+    { "name": "Seed", "type": "float", "count": 1, "values": [1] },
+    { "name": "Scale", "type": "float", "count": 1, "values": [2.2] },
+    { "name": "Crack", "type": "float", "count": 1, "values": [0] },
+    { "name": "Emission", "type": "float", "count": 1, "values": [2.5] },
+    { "name": "Ambient", "type": "float", "count": 1, "values": [0.05] },
+    { "name": "RimPower", "type": "float", "count": 1, "values": [3] },
+    { "name": "RimIntensity", "type": "float", "count": 1, "values": [0.75] },
+    { "name": "BandCount", "type": "float", "count": 1, "values": [6] },
+    { "name": "TimeSpeed", "type": "float", "count": 1, "values": [1] },
+    { "name": "BumpStrength", "type": "float", "count": 1, "values": [2] },
+    { "name": "BakeMode", "type": "float", "count": 1, "values": [0] }
+  ]
+}

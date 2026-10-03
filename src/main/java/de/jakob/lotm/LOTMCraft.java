@@ -34,7 +34,8 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.Coffin
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
-import de.jakob.lotm.entity.client.knowledge_rabbit.RabbitOfKnowledgeRenderer;
+import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideRenderer;
+import de.jakob.lotm.entity.client.spirits.knowledge_rabbit.RabbitOfKnowledgeRenderer;
 import de.jakob.lotm.entity.client.murloc.MurlocRenderer;
 import de.jakob.lotm.entity.client.projectiles.paper_dagger.PaperDaggerProjectileRenderer;
 import de.jakob.lotm.entity.client.projectiles.spear_of_destruction.SpearOfDestructionProjectileRenderer;
@@ -74,15 +75,18 @@ import de.jakob.lotm.entity.client.damage_tracker.DamageTrackerRenderer;
 import de.jakob.lotm.entity.client.ability_entities.door_pathway.book.ApprenticeBookRenderer;
 import de.jakob.lotm.entity.client.fire_raven.FireRavenRenderer;
 import de.jakob.lotm.entity.client.spirits.abscessed_hand.AbscessedHandRenderer;
+import de.jakob.lotm.entity.client.spirits.asmann.AsmannRenderer;
 import de.jakob.lotm.entity.client.spirits.bizarro_bane.SpiritBizarroBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.blue_wizard.SpiritBlueWizardRenderer;
 import de.jakob.lotm.entity.client.spirits.bubbles.SpiritBubblesRenderer;
 import de.jakob.lotm.entity.client.spirits.dervish.SpiritDervishRenderer;
 import de.jakob.lotm.entity.client.spirits.ghost.SpiritGhostRenderer;
 import de.jakob.lotm.entity.client.spirits.grim_reaper.GrimReaperRenderer;
+import de.jakob.lotm.entity.client.spirits.knowledge_demon.KnowledgeDemonRenderer;
 import de.jakob.lotm.entity.client.spirits.malmouth.SpiritMalmouthRenderer;
 import de.jakob.lotm.entity.client.spirits.spirit_bane.SpiritBaneRenderer;
 import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentWizardRenderer;
+import de.jakob.lotm.entity.client.stone_golem.StoneGolemRenderer;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
@@ -341,6 +345,10 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.ABSCESSED_HAND.get(), AbscessedHandRenderer::new);
             EntityRenderers.register(ModEntities.MURLOC.get(), MurlocRenderer::new);
             EntityRenderers.register(ModEntities.GRIM_REAPER.get(), GrimReaperRenderer::new);
+            EntityRenderers.register(ModEntities.ASMANN.get(), AsmannRenderer::new);
+            EntityRenderers.register(ModEntities.KNOWLEDGE_DEMON.get(), KnowledgeDemonRenderer::new);
+            EntityRenderers.register(ModEntities.STONE_GOLEM.get(), StoneGolemRenderer::new);
+            EntityRenderers.register(ModEntities.HEADLESS_BRIDE.get(), HeadlessBrideRenderer::new);
 
 
             GuidingBookRenderer.loadPages(LOTMCraft.MOD_ID);
