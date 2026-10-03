@@ -114,7 +114,7 @@ public class BlackFlameAbility extends SelectableAbility {
             );
         });
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, DamageLookup.lookupDamage(7, .7) *multiplier(entity), targetPos, true, false, true, 0, 20 * 2, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, ModDamageTypes.BLACK_FLAME, baseDamage, targetPos, true, false);
 
         ServerScheduler.scheduleDelayed(51, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, 4, 10));

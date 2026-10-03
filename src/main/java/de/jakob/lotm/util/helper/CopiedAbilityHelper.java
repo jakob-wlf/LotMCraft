@@ -22,7 +22,7 @@ public class CopiedAbilityHelper {
         }
     }
 
-    public static void removeAbilityIndex(ServerPlayer player, int index) {
+    public static void removeAbility(LivingEntity player, int index) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(index);
 

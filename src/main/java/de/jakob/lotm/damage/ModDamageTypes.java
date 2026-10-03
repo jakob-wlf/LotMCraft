@@ -94,6 +94,9 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> HORROR = key("horror");
     public static final ResourceKey<DamageType> DARKNESS = key("darkness");
 
+    /** Used by ticking/AoE Sun abilities — treated as indirect for digestion drain purposes. */
+    public static final ResourceKey<DamageType> PURIFICATION_INDIRECT = key("purification_indirect");
+
     public static final ResourceKey<DamageType> SPIRIT_CALLED = key("spirit_called");
 
 
