@@ -35,6 +35,11 @@ public class FoolingComponent implements INBTSerializable<CompoundTag> {
         if (stunTicksRemaining > 0) stunTicksRemaining--;
     }
 
+    public void clear() {
+        ticksRemaining = 0;
+        stunTicksRemaining = 0;
+    }
+
     @Override
     public @UnknownNullability CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();

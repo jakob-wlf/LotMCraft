@@ -97,7 +97,12 @@ public class BlackHoleEntity extends Entity {
             this.cachedOwner = null;
         }
     }
-    
+
+    @Nullable
+    public UUID getOwnerUUID() {
+        return this.ownerUUID;
+    }
+
     @Nullable
     public LivingEntity getOwner() {
         if (this.cachedOwner != null && !this.cachedOwner.isRemoved()) {

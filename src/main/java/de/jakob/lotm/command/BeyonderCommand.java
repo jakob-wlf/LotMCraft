@@ -5,6 +5,10 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.UniquenessComponent;
+import de.jakob.lotm.beyonders.abilities.death.passives.ReincarnationAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.SetBeyonderAuditLog;
@@ -85,6 +89,10 @@ public class BeyonderCommand {
         if (!BeyonderData.isBeyonder(player)) return 0;
 
         try {
+            // Toggled abilities aren't tied to pathway/sequence checks while active, so a stale
+            // toggle would otherwise keep ticking (and stay re-toggleable) after the reset below.
+            ToggleAbility.cleanUp(player.serverLevel(), player);
+
             ActingCapHelper.skipNextCapApplication = true;
             try {
                 BeyonderData.setBeyonder(player, "none", LOTMCraft.NON_BEYONDER_SEQ, true, false, false, false);
@@ -93,6 +101,21 @@ public class BeyonderCommand {
             }
 
             ActingCapHelper.clearCap(player);
+
+            // setBeyonder/clearBeyonderData only reset the core BeyonderComponent fields;
+            // custom pathway attachments (luck, fooling status, uniqueness) need clearing separately,
+            // same as the explicit resets done on the death-regression path.
+            player.getData(ModAttachments.LUCK_COMPONENT).setLuck(0);
+            player.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT).setTicksAccumulated(0);
+            player.getData(ModAttachments.FOOLING_COMPONENT).clear();
+
+            UniquenessComponent uniquenessComponent = player.getData(ModAttachments.UNIQUENESS_COMPONENT);
+            uniquenessComponent.setHasUniqueness(false);
+            uniquenessComponent.setUniquenessPathway("");
+            uniquenessComponent.resetKillCount();
+
+            player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAllAbilities();
+            ReincarnationAbility.clearCooldown(player);
 
             String playerName = player.getGameProfile().getName();
             SetBeyonderAuditLog.get(source.getLevel()).addEntry(source.getTextName(), playerName,

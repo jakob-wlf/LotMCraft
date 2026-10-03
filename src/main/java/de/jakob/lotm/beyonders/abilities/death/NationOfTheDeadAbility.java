@@ -185,10 +185,11 @@ public class NationOfTheDeadAbility extends Ability {
         level.playSound(null, entity.blockPosition(),
                 SoundEvents.SCULK_SHRIEKER_SHRIEK, SoundSource.PLAYERS, 2.5f, 0.50f);
 
-        EffectManager.playEffect(EffectIds.NATION_OF_THE_DEAD, center.x, center.y, center.z, serverLevel, entity);
+        UUID domainEffectId = EffectManager.playEffect(EffectIds.NATION_OF_THE_DEAD, center.x, center.y, center.z, serverLevel, entity);
 
         List<UUID> subordinateMobs = new ArrayList<>();
         ActiveDomain domain = new ActiveDomain(entity.getUUID(), center, serverLevel, subordinateMobs);
+        domain.effectId = domainEffectId;
         activeDomains.put(entity.getUUID(), domain);
 
         AtomicInteger ticks = new AtomicInteger(0);
@@ -210,6 +211,8 @@ public class NationOfTheDeadAbility extends Ability {
                 SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
                 domain.substitutionSuppressed.clear();
                 ServerScheduler.cancel(taskId.get());
+                if (domain.cleanupTaskId != null) ServerScheduler.cancel(domain.cleanupTaskId);
+                if (domain.effectId != null) EffectManager.cancelEffect(domain.effectId, serverLevel);
                 return;
             }
 
@@ -353,12 +356,31 @@ public class NationOfTheDeadAbility extends Ability {
 
             ticks.getAndIncrement();
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel))));
+        domain.mainTaskId = taskId.get();
 
-        ServerScheduler.scheduleDelayed(DURATION_TICKS, () -> {
+        domain.cleanupTaskId = ServerScheduler.scheduleDelayed(DURATION_TICKS, () -> {
             activeDomains.remove(entity.getUUID());
             SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
             domain.substitutionSuppressed.clear();
+            if (domain.effectId != null) EffectManager.cancelEffect(domain.effectId, serverLevel);
         }, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(center, serverLevel)));
+    }
+
+    /**
+     * Externally cancels a caster's active Nation of the Dead domain, e.g. for an admin command.
+     * Returns true if a domain was found and cancelled.
+     */
+    public static boolean cancelDomain(UUID casterUUID) {
+        ActiveDomain domain = activeDomains.remove(casterUUID);
+        if (domain == null) return false;
+
+        if (domain.mainTaskId != null) ServerScheduler.cancel(domain.mainTaskId);
+        if (domain.cleanupTaskId != null) ServerScheduler.cancel(domain.cleanupTaskId);
+        if (domain.effectId != null) EffectManager.cancelEffect(domain.effectId, domain.level);
+
+        SUBSTITUTION_SUPPRESSED.removeAll(domain.substitutionSuppressed);
+        domain.substitutionSuppressed.clear();
+        return true;
     }
 
     @SubscribeEvent
@@ -442,6 +464,9 @@ public class NationOfTheDeadAbility extends Ability {
         final ServerLevel level;
         final List<UUID> subordinateMobs;
         final Set<UUID> substitutionSuppressed = new HashSet<>();
+        UUID mainTaskId;
+        UUID cleanupTaskId;
+        UUID effectId;
 
         ActiveDomain(UUID casterUUID, Vec3 center, ServerLevel level, List<UUID> subordinateMobs) {
             this.casterUUID = casterUUID;

@@ -33,8 +33,8 @@ import net.minecraft.util.RandomSource;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ReincarnationAbility extends PassiveAbility {
 
-    private static final String NBT_COOLDOWN_TIME = "reincarnation_cooldown_until";
-    private static final String SEAL_CAUSE = "reincarnation_debuff";
+    public static final String NBT_COOLDOWN_TIME = "reincarnation_cooldown_until";
+    public static final String SEAL_CAUSE = "reincarnation_debuff";
 
     /** 5 minutes of invisibility in ticks */
     private static final int CONCEALMENT_TICKS = 20 * 60 * 5;
@@ -53,6 +53,12 @@ public class ReincarnationAbility extends PassiveAbility {
 
     public ReincarnationAbility(String id) {
         super(id);
+    }
+
+    /** Clears the real-time reincarnation cooldown. The post-reincarnation ability seal
+     * is lifted generically wherever all sealed abilities get unsealed (e.g. DisabledAbilitiesComponent.enableAllAbilities()). */
+    public static void clearCooldown(ServerPlayer player) {
+        player.getPersistentData().remove(NBT_COOLDOWN_TIME);
     }
 
     @Override

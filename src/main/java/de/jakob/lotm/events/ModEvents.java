@@ -342,6 +342,7 @@ public class ModEvents {
         AllyCommand.register(event.getDispatcher());
         CopiedAbilitiesCommand.register(event.getDispatcher());
         ResetPlayerShapeCommand.register(event.getDispatcher());
+        CancelActivationCommand.register(event.getDispatcher());
         event.getDispatcher().register(
                 Commands.literal("accept_sefirot_invite")
                             .executes(ctx -> {
