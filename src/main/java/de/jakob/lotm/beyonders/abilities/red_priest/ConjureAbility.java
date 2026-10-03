@@ -4,8 +4,11 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.network.packets.toServer.WhipSlashPayload;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -50,6 +53,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ConjureAbility extends SelectableAbility {
     public ConjureAbility(String id) {
         super(id, 2.0f ,"burning");
+        canBeShared = false;
     }
     private final int[] SWORDS = new int[]{7, 8, 9};
     private final int[] SP_COSTS = new int[]{50, 120, 250};
@@ -76,6 +80,7 @@ public class ConjureAbility extends SelectableAbility {
         if(level.isClientSide()) return;
         if(!(entity1 instanceof Player entity)) return;
         int Seq = BeyonderData.getSequence(entity);
+        if(weapon.equals(ModItems.CONJURED_WHIP) && Seq >= 7) return;
         SP_COST=(Seq <= 2) ? SP_COSTS[2] : (Seq <= 4) ? SP_COSTS[1] : SP_COSTS[0];
         int SWORD = (Seq <= 2) ? SWORDS[2] : (Seq <= 4) ? SWORDS[1] : SWORDS[0];
 
@@ -403,5 +408,54 @@ public class ConjureAbility extends SelectableAbility {
         return 0;
     }
 
+    @Override
+    public void nextAbility(LivingEntity entity){
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        selectedAbility++;
+        if(selectedAbility >= getAbilityNames().length) {
+            selectedAbility = 0;
+        }
+
+        if((entitySeq > 6 && selectedAbility >= 1)){
+            selectedAbility = 0;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
+
+    @Override
+    public void previousAbility(LivingEntity entity){
+        if(getAbilityNames().length == 0)
+            return;
+
+        if(!selectedAbilities.containsKey(entity.getUUID())) {
+            selectedAbilities.put(entity.getUUID(), 0);
+        }
+
+        int selectedAbility = selectedAbilities.get(entity.getUUID());
+        selectedAbility--;
+        if(selectedAbility <= -1) {
+            selectedAbility = getAbilityNames().length - 1;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+
+        if((entitySeq > 6 && selectedAbility >= 1)){
+            selectedAbility = 0;
+        }
+
+        selectedAbilities.put(entity.getUUID(), selectedAbility);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
+    }
 
 }

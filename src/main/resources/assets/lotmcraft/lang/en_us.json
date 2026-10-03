@@ -256,11 +256,15 @@
   "ability.lotmcraft.conjure.sword": "Sword",
   "ability.lotmcraft.conjure.whip": "Whip",
   "ability.lotmcraft.conjure.saber": "Saber",
-  "lotmcraft.conjure_ability": "Weapon Augmentation",
-  "lotmcraft.conjure_ability.description": "With the might of crimson flames, conjure mighty weapons that burns everything they touches and deals increased Area of Effect damage",
+  "ability.lotmcraft.conjure.": "Self",
+  "lotmcraft.conjure_ability": "Fire Augmentation",
+  "lotmcraft.conjure_ability.description": "With the might of crimson flames, conjure mighty creations that burns everything they touches and aid you in your battles",
   "item.lotmcraft.conjured_sword": "Fire Sword",
   "item.lotmcraft.conjured_whip": "Fire Whip",
   "item.lotmcraft.conjured_saber": "Fire Saber",
+
+  "lotmcraft.flame_clones_creation_ability": "Flame Clones Creation",
+  "lotmcraft.flame_clones_creation_ability.description": "Create clones of fire equals to sequence 8 that can be used to deceive your enemies and aid you in battles",
   "lotmcraft.cull_ability": "Cull",
   "lotmcraft.cull_ability.description": "Discover your enemies and their weaknesses, to increase your damage against them",
   "lotmcraft.flame_mastery_ability": "Flame Mastery",
@@ -305,8 +309,7 @@
   "ability.lotmcraft.flame_authority.vortex": "Flaming Vortex",
   "lotmcraft.sacrifice_ability": "Sacrifice",
   "lotmcraft.sacrifice_ability.description": "Sacrifice to the Essence of War for Power.",
-  "lotmcraft.puppet_soldier_creation_ability": "Puppet Soldier Creation",
-  "lotmcraft.puppet_soldier_creation_ability.description": "Create 5 Puppet Soldiers, each equal to Sequence 4 Red Priest Demigod and command them",
+
 
   "lotmcraft.illusory_scales_ability": "Illusory Scales",
   "lotmcraft.illusory_scales_ability.description": "Create illusory scales around you to protect you to increase your resistance",
