@@ -84,9 +84,17 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             return;
         }
 
+        int spiritualityCost;
+        switch (BeyonderData.getSequence(entity)) {
+            case 0 -> spiritualityCost = 40000;
+            case 1 -> spiritualityCost = 20000;
+            case 2 -> spiritualityCost = 10000;
+            default -> spiritualityCost = 5000;
+        }
+
         if(abilityIndex == 0 || abilityIndex == 2 || abilityIndex == 3 || abilityIndex == 4) {
-            if(BeyonderData.getSpirituality(entity) < 3000) return;
-            BeyonderData.reduceSpirituality(entity, 3000);
+            if(BeyonderData.getSpirituality(entity) < spiritualityCost) return;
+            BeyonderData.reduceSpirituality(entity, spiritualityCost);
         }
 
         switch(abilityIndex) {
