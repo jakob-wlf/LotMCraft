@@ -378,7 +378,7 @@ public class PuppeteeringAbility extends SelectableAbility {
 
         for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35)) {
             Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
-            Vec3 end = target.getEyePosition();
+            Vec3 end = target.getEyePosition().add(0, 9, 0);
             EffectManager.playDirectionalEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 2, serverPlayer);
         }
     }

@@ -3,10 +3,13 @@ package de.jakob.lotm.entity.custom.ability_entities;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PerformantExplosion;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -216,7 +219,12 @@ public class MeteorEntity extends Entity {
                 AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage() / 4, position(), true, false);
             }
 
-            EffectManager.playEffect(EffectIds.EXPLOSION, position().x, position().y, position().z, serverLevel);
+            ServerScheduler.scheduleDelayed(2, () -> {
+                PacketHandler.sendToNearbyPlayers(
+                        new PlayPhotonBlockEffectPacket("explosion", BlockPos.containing(position()), 0, 0, 0, Math.max(1, getExplosionSize() * 0.15), null, -1, false, true, null),
+                        serverLevel, position(), 256
+                );
+            });
             PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
 
             if(getCaster() instanceof LivingEntity livingCaster) {

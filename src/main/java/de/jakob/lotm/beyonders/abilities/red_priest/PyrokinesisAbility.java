@@ -6,7 +6,6 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.WindManipulationFlightAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
-import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
@@ -67,7 +66,6 @@ public class PyrokinesisAbility extends SelectableAbility {
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
-                "ability.lotmcraft.pyrokinesis.fireball",
                 "ability.lotmcraft.pyrokinesis.flame_wave",
                 "ability.lotmcraft.pyrokinesis.wall_of_fire",
                 "ability.lotmcraft.pyrokinesis.fire_ravens",
@@ -79,12 +77,11 @@ public class PyrokinesisAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
-            case 0 -> fireball(level, entity);
-            case 1 -> flameWave(level, entity);
-            case 2 -> wallOfFire(level, entity);
-            case 3 -> fireRavens(level, entity);
-            case 4 -> flamingSpear(level, entity);
-            case 5 -> flameTransformation(level, entity);
+            case 0 -> flameWave(level, entity);
+            case 1 -> wallOfFire(level, entity);
+            case 2 -> fireRavens(level, entity);
+            case 3 -> flamingSpear(level, entity);
+            case 4 -> flameTransformation(level, entity);
         }
     }
 
@@ -269,21 +266,6 @@ public class PyrokinesisAbility extends SelectableAbility {
         );
     }
 
-    private void fireball(Level level, LivingEntity entity) {
-        if(level.isClientSide)
-            return;
-
-        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
-
-        level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-
-        FireballEntity fireball = new FireballEntity(level, entity, baseDamage, BeyonderData.isGriefingEnabled(entity));
-        fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
-        fireball.shoot(direction.x, direction.y, direction.z, 3f, 0);
-        level.addFreshEntity(fireball);
-    }
-
     @Override
     public void nextAbility(LivingEntity entity){
         if(getAbilityNames().length == 0)
@@ -301,7 +283,7 @@ public class PyrokinesisAbility extends SelectableAbility {
             selectedAbility = 0;
         }
 
-        if(entitySeq > 6 && selectedAbility >= 5){
+        if(entitySeq > 6 && selectedAbility >= 4){
             selectedAbility = 0;
         }
 
@@ -325,8 +307,8 @@ public class PyrokinesisAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if(entitySeq > 6 && selectedAbility >= 5) {
-            selectedAbility = 4;
+        if(entitySeq > 6 && selectedAbility >= 4) {
+            selectedAbility = 3;
         }
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);

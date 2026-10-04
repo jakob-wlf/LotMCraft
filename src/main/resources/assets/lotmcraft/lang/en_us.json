@@ -272,16 +272,41 @@
   "lotmcraft.trap_ability": "Trap",
   "lotmcraft.trap_ability.description": "Set an explosive Trap",
   "ability.lotmcraft.trap_ability.out_of_traps": "You are out of traps",
+
   "lotmcraft.provoking_ability": "Provoking",
   "lotmcraft.provoking_ability.description": "Provoke and weaken your enemies",
+
   "lotmcraft.pyrokinesis_ability": "Pyrokinesis",
   "lotmcraft.pyrokinesis_ability.description": "Control flames, throwing fireballs, making walls made of fire, summoning fire ravens, condensing spears made of fire and let fire engulf everything in area",
   "ability.lotmcraft.pyrokinesis.fireball": "Fireball",
+  "ability.lotmcraft.pyrokinesis.giant_fireball": "Giant Fireball",
   "ability.lotmcraft.pyrokinesis.wall_of_fire": "Wall of Fire",
   "ability.lotmcraft.pyrokinesis.fire_ravens": "Fire Ravens",
   "ability.lotmcraft.pyrokinesis.flaming_spear": "Flaming Spear",
   "ability.lotmcraft.pyrokinesis.flame_wave": "Flame Wave",
   "ability.lotmcraft.pyrokinesis.flame_transformation": "Flame Transformation",
+
+  "lotmcraft.compression_ability": "Compression",
+  "lotmcraft.compression_ability.description": "Compress the mighty flames into crimson fireballs, compressing three fireballs unlocks a greater fireball",
+  "lotm.charges": "Reserve",
+  "ability.lotmcraft.pyrokinesis.compress": "Compress",
+  "ability.lotmcraft.pyrokinesis.release": "Release",
+
+  "lotmcraft.fire_armor_ability": "Fire Armor",
+  "lotmcraft.fire_armor_ability.description": "Conjure plates of fire that grants you defense against normal attacks, and completely burn through beyonder attacks\nCosts 10% of your spirituality to initialize and 2% everytime is protect you.",
+  "ability.lotmcraft.conjure.sword": "Sword",
+  "ability.lotmcraft.conjure.whip": "Whip",
+  "ability.lotmcraft.conjure.saber": "Saber",
+  "ability.lotmcraft.conjure.": "Self",
+  "lotmcraft.conjure_ability": "Fire Augmentation",
+  "lotmcraft.conjure_ability.description": "With the might of crimson flames, conjure mighty creations that burns everything they touches and aid you in your battles",
+  "item.lotmcraft.conjured_sword": "Fire Sword",
+  "item.lotmcraft.conjured_whip": "Fire Whip",
+  "item.lotmcraft.conjured_saber": "Fire Saber",
+
+  "lotmcraft.flame_clones_creation_ability": "Flame Clones Creation",
+  "lotmcraft.flame_clones_creation_ability.description": "Create clones of fire equals to sequence 8 that can be used to deceive your enemies and aid you in battles",
+
   "lotmcraft.cull_ability": "Cull",
   "lotmcraft.cull_ability.description": "Discover your enemies and their weaknesses, to increase your damage against them",
   "lotmcraft.flame_mastery_ability": "Flame Mastery",
@@ -325,8 +350,7 @@
   "ability.lotmcraft.flame_authority.vortex": "Flaming Vortex",
   "lotmcraft.sacrifice_ability": "Sacrifice",
   "lotmcraft.sacrifice_ability.description": "Sacrifice to the Essence of War for Power.",
-  "lotmcraft.puppet_soldier_creation_ability": "Puppet Soldier Creation",
-  "lotmcraft.puppet_soldier_creation_ability.description": "Create 5 Puppet Soldiers, each equal to Sequence 4 Red Priest Demigod and command them",
+
 
   "lotmcraft.illusory_scales_ability": "Illusory Scales",
   "lotmcraft.illusory_scales_ability.description": "Create illusory scales around you to protect you to increase your resistance",

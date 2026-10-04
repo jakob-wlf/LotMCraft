@@ -70,6 +70,10 @@ public class AbilityHandler {
         abilities.add(new ProvokingAbility("provoking_ability"));
         abilities.add(new PyrokinesisAbility("pyrokinesis_ability"));
         abilities.add(new PyrokinesisFlightAbility("pyrokinesis_flight"));
+        abilities.add(new CompressionAbility("compression_ability"));
+        abilities.add(new FireArmorAbility("fire_armor_ability"));
+        abilities.add(new ConjureAbility("conjure_ability"));
+        abilities.add(new FlameClonesAbility("flame_clones_creation_ability"));
         abilities.add(new CullAbility("cull_ability"));
         abilities.add(new FlameMasteryAbility("flame_mastery_ability"));
         abilities.add(new SteelMasteryAbility("steel_mastery_ability"));
@@ -84,7 +88,6 @@ public class AbilityHandler {
         abilities.add(new WeatherManipulationAbility("weather_manipulation_ability"));
         abilities.add(new ConqueringAbility("conquering_ability"));
         abilities.add(new FlameAuthorityAbility("flame_authority_ability"));
-        abilities.add(new PuppetSoldierCreationAbility("puppet_soldier_creation_ability"));
 
         // TYRANT PATHWAY
         abilities.add(new IllusoryScalesAbility("illusory_scales_ability"));
