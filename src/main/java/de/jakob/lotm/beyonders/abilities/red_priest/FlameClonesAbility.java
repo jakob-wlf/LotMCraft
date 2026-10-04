@@ -6,15 +6,12 @@ import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -68,8 +65,10 @@ public class FlameClonesAbility extends Ability {
             flameClone.setPuppetWarrior(true);
             flameClone.setHealth(flameClone.getHealth() * 20 / 100);
             flameClone.setMaxLifetimeIfPuppet(200);
-            flameClone.getPersistentData().putBoolean("VoidSummoned", true);
-            flameClone.getPersistentData().putUUID("VoidSummonOwner", entity.getUUID());
+            flameClone.setCustomName(Component.literal("Flame Clone"));
+            flameClone.setCustomNameVisible(false);
+            flameClone.getPersistentData().putBoolean("PuppetSummon", true);
+            flameClone.getPersistentData().putUUID("PuppetSummonOwner", entity.getUUID());
             clones.add(flameClone);
 
             serverLevel.addFreshEntity(flameClone);
@@ -80,10 +79,13 @@ public class FlameClonesAbility extends Ability {
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil(serverLevel, () -> {
             clones.removeIf(flameClone -> !flameClone.isAlive());
+            float cost = clones.size()*(BeyonderData.getSpirituality(entity)/100);
             if(clones.isEmpty()) shouldStop.set(true);
-            BeyonderData.reduceSpirituality(entity,
-                    clones.size()*(BeyonderData.getSpirituality(entity)/100)
-                    );
+            if(BeyonderData.getSpirituality(entity) < cost) {
+                shouldStop.set(true);
+                clones.clear();
+            }
+            BeyonderData.reduceSpirituality(entity, cost);
         }, 20, null, shouldStop);
     }
 
