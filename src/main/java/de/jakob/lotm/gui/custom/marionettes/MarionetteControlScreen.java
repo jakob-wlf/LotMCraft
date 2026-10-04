@@ -4,10 +4,12 @@ import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.gui.custom.introspect.IntrospectMenu;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.network.packets.toServer.PlayerDivinationSelectedPacket;
 import de.jakob.lotm.network.packets.toServer.ReleaseMarionettePacket;
 import de.jakob.lotm.network.packets.toServer.RequestMarionetteSyncPacket;
 import de.jakob.lotm.network.packets.toServer.SyncMarionetteToServerPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -26,6 +28,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
+import java.util.UUID;
 
 public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteMenu> {
 
@@ -47,8 +50,14 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
                 listBottom - listTop, listTop, ROW_HEIGHT);
         this.list.setX(PANEL_MARGIN);
 
-        for (LivingEntity entity : menu.getMarionettes()) {
-            this.list.addEntity(entity);
+        if (menu.isServants()) {
+            for (MarionetteMenu.ServantRow row : menu.getServants()) {
+                this.list.addServant(row);
+            }
+        } else {
+            for (LivingEntity entity : menu.getMarionettes()) {
+                this.list.addEntity(entity);
+            }
         }
         this.addRenderableWidget(this.list);
 
@@ -56,7 +65,7 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
                 .bounds(this.width / 2 - 60, this.height - 30, 120, 20)
                 .build());
 
-        PacketHandler.sendToServer(new RequestMarionetteSyncPacket(menu.getEntityIds()));
+        if (!menu.isServants()) PacketHandler.sendToServer(new RequestMarionetteSyncPacket(menu.getEntityIds()));
     }
 
     @Override
@@ -69,9 +78,10 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
 
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, PANEL_MARGIN + 4, 0xFFFFFF);
 
-        if (menu.getMarionettes().isEmpty()) {
+        boolean empty = menu.isServants() ? menu.getServants().isEmpty() : menu.getMarionettes().isEmpty();
+        if (empty) {
             guiGraphics.drawCenteredString(this.font,
-                    Component.translatable("gui.lotm.marionette_control.none"),
+                    Component.translatable(menu.isServants() ? "gui.lotm.servants.none" : "gui.lotm.marionette_control.none"),
                     this.width / 2, this.height / 2, 0xAAAAAA);
         }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -119,6 +129,18 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
             this.addEntry(new Entry(screen, entity));
         }
 
+        public void addServant(MarionetteMenu.ServantRow row) {
+            this.addEntry(new Entry(screen, row));
+        }
+
+        public void removeServant(UUID id) {
+            Entry found = null;
+            for (Entry entry : this.children()) {
+                if (entry.matches(id)) found = entry;
+            }
+            if (found != null) this.removeEntry(found);
+        }
+
         @Override
         public int getRowWidth() {
             return this.width - 12;
@@ -129,6 +151,10 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
             private final MarionetteControlScreen screen;
             private final LivingEntity entity;
             private final int entityId;
+            private final boolean servant;
+            private final UUID servantId;
+            private final String servantName;
+            private final String servantDetail;
 
             private final boolean isBeyonder;
             private final String pathway;
@@ -142,10 +168,35 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
             private Checkbox attackCheckbox;
             private final Button releaseButton;
 
+            Entry(MarionetteControlScreen screen, MarionetteMenu.ServantRow row) {
+                this.screen = screen;
+                this.entity = null;
+                this.entityId = -1;
+                this.servant = true;
+                this.servantId = row.id();
+                this.servantName = row.name();
+                this.servantDetail = row.detail();
+                this.isBeyonder = row.beyonder();
+                this.pathway = row.pathway();
+                this.sequence = row.sequence();
+                this.modeButton = Button.builder(Component.empty(), b -> {}).bounds(0, 0, 0, 0).build();
+                this.attackCheckbox = Checkbox.builder(Component.empty(), ClientHandler.getMinecraftInstance().font).pos(0, 0).build();
+                this.releaseButton = Button.builder(
+                                Component.literal("✖").withStyle(ChatFormatting.RED),
+                                b -> releaseServant())
+                        .bounds(0, 0, 18, 18)
+                        .build();
+                this.suppressUpdates = true;
+            }
+
             Entry(MarionetteControlScreen screen, LivingEntity entity) {
                 this.screen = screen;
                 this.entity = entity;
                 this.entityId = entity.getId();
+                this.servant = false;
+                this.servantId = null;
+                this.servantName = "";
+                this.servantDetail = "";
 
                 this.isBeyonder = BeyonderData.isBeyonder(entity);
                 this.pathway = isBeyonder ? BeyonderData.getPathway(entity) : "";
@@ -184,6 +235,18 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
 
             private void release() {
                 PacketDistributor.sendToServer(new ReleaseMarionettePacket(entityId));
+            }
+
+            private void releaseServant() {
+                PacketDistributor.sendToServer(new PlayerDivinationSelectedPacket(servantId, PlayerSelectionWorkType.SERVANT_MANAGE));
+                screen.minecraft.execute(() -> {
+                    screen.menu.removeServant(servantId);
+                    screen.list.removeServant(servantId);
+                });
+            }
+
+            private boolean matches(UUID id) {
+                return servant && servantId.equals(id);
             }
 
             public void applySync(RequestMarionetteSyncPacket.MarionetteEntry data) {
@@ -236,10 +299,13 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
                 int bg = hovering ? 0x30FFFFFF : (index % 2 == 0 ? 0x1AFFFFFF : 0x10FFFFFF);
                 guiGraphics.fill(left, top, left + width, top + height - 2, bg);
 
-                String displayName = cropName(entity.getName().getString());
+                String displayName = servant ? servantName : cropName(entity.getName().getString());
                 guiGraphics.drawString(font, displayName, left + 6, top + 5, 0xFFFFFF, false);
 
-                if (isBeyonder) {
+                if (servant) {
+                    String line = isBeyonder ? niceName(pathway) + "  \u00B7  Seq " + sequence + "   " + servantDetail : servantDetail;
+                    guiGraphics.drawString(font, line, left + 6, top + 17, 0x9A9AA5, false);
+                } else if (isBeyonder) {
                     String pathwayLine = niceName(pathway) + "  \u00B7  Seq " + sequence;
                     guiGraphics.drawString(font, pathwayLine, left + 6, top + 17, 0x9A9AA5, false);
                 }
@@ -247,26 +313,30 @@ public class MarionetteControlScreen extends AbstractContainerScreen<MarionetteM
                 int controlsX = left + width - (92 + 6 + 20 + 6 + 62) - 6;
                 int controlsY = top + (height - 18) / 2 - 1;
 
-                modeButton.setX(controlsX);
-                modeButton.setY(controlsY);
-                modeButton.render(guiGraphics, mouseX, mouseY, partialTick);
+                if (!servant) {
+                    modeButton.setX(controlsX);
+                    modeButton.setY(controlsY);
+                    modeButton.render(guiGraphics, mouseX, mouseY, partialTick);
 
-                attackCheckbox.setX(controlsX + 92 + 8);
-                attackCheckbox.setY(controlsY + 1);
-                attackCheckbox.render(guiGraphics, mouseX, mouseY, partialTick);
+                    attackCheckbox.setX(controlsX + 92 + 8);
+                    attackCheckbox.setY(controlsY + 1);
+                    attackCheckbox.render(guiGraphics, mouseX, mouseY, partialTick);
+                }
 
-                releaseButton.setX(controlsX + 92 + 8 + 20 + 40);
+                releaseButton.setX(servant ? left + width - 28 : controlsX + 92 + 8 + 20 + 40);
                 releaseButton.setY(controlsY);
                 releaseButton.render(guiGraphics, mouseX, mouseY, partialTick);
             }
 
             @Override
             public List<? extends GuiEventListener> children() {
+                if (servant) return List.of(releaseButton);
                 return List.of(modeButton, attackCheckbox, releaseButton);
             }
 
             @Override
             public List<? extends NarratableEntry> narratables() {
+                if (servant) return List.of(releaseButton);
                 return List.of(modeButton, attackCheckbox, releaseButton);
             }
         }

@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -96,6 +97,7 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());
 
                 serverPlayer.removeAllEffects();
+                TwilightAging.clear(serverPlayer);
 
                 DisabledAbilitiesComponent disabledComponent = serverPlayer.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
                 disabledComponent.disableAbilityUsageForTime("miracle_of_resurrection_" + entity.getUUID(), 10 * 60 * 20, serverPlayer);

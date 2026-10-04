@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 import java.util.UUID;
 
-public record SyncBeyonderDataPacket(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount) implements CustomPacketPayload {
+public record SyncBeyonderDataPacket(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount, String pledgedSefirot, boolean hasPlayerPatron) implements CustomPacketPayload {
     public static final Type<SyncBeyonderDataPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "sync_beyonder_data"));
 
@@ -51,6 +51,8 @@ public record SyncBeyonderDataPacket(UUID playerUUID, String pathway, int sequen
                         PATHWAY_HISTORY_CODEC.encode(buf, packet.pathwayHistory());
                         CHAR_STACKS_CODEC.encode(buf, packet.charStacks());
                         ByteBufCodecs.VAR_INT.encode(buf, packet.cowardWormAmount());
+                        ByteBufCodecs.STRING_UTF8.encode(buf, packet.pledgedSefirot() != null ? packet.pledgedSefirot() : "");
+                        ByteBufCodecs.BOOL.encode(buf, packet.hasPlayerPatron());
                     },
                     buf -> new SyncBeyonderDataPacket(
                             buf.readUUID(),
@@ -61,7 +63,9 @@ public record SyncBeyonderDataPacket(UUID playerUUID, String pathway, int sequen
                             ByteBufCodecs.FLOAT.decode(buf),
                             PATHWAY_HISTORY_CODEC.decode(buf),
                             CHAR_STACKS_CODEC.decode(buf),
-                            ByteBufCodecs.VAR_INT.decode(buf)
+                            ByteBufCodecs.VAR_INT.decode(buf),
+                            ByteBufCodecs.STRING_UTF8.decode(buf),
+                            ByteBufCodecs.BOOL.decode(buf)
                     )
             );
 
@@ -82,7 +86,9 @@ public record SyncBeyonderDataPacket(UUID playerUUID, String pathway, int sequen
                     packet.digestionProgress(),
                     packet.pathwayHistory(),
                     packet.charStacks(),
-                    packet.cowardWormAmount()
+                    packet.cowardWormAmount(),
+                    packet.pledgedSefirot(),
+                    packet.hasPlayerPatron()
             );
         });
     }

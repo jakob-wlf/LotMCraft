@@ -9,6 +9,7 @@ import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
@@ -306,6 +307,14 @@ public abstract class Ability {
             for (String sefirotPathway : sefirotPathways) {
                 if (getRequirements().containsKey(sefirotPathway) && getRequirements().get(sefirotPathway) >= sequence) {
                     return true;
+                }
+            }
+            String pledged = ProxyAbility.pledgedSefirot(player);
+            if ("river_of_eternal_darkness".equals(pledged)) {
+                for (String pledgedPathway : SefirahHandler.getPathwaysForSefirot(pledged)) {
+                    if (getRequirements().containsKey(pledgedPathway) && getRequirements().get(pledgedPathway) >= sequence) {
+                        return true;
+                    }
                 }
             }
         }

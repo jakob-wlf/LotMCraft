@@ -127,6 +127,7 @@ public class DangerPremonitionAbility extends ToggleAbility {
 
     private boolean isThreat(LivingEntity caster, LivingEntity candidate, int casterSeq) {
         if (!AbilityUtil.mayDamage(caster, candidate)) return false;
+        if (de.jakob.lotm.beyonders.abilities.twilight_giant.MindConcealmentAbility.isHiddenFrom(caster, candidate)) return false;
         int targetSeq = de.jakob.lotm.util.BeyonderData.getSequence(candidate);
         boolean seqDangerous = targetSeq <= casterSeq + 1;
         boolean activelyTargeting = candidate instanceof net.minecraft.world.entity.Mob mob

@@ -346,6 +346,14 @@ public class ParasitationAbility extends SelectableAbility {
         return host instanceof LivingEntity living ? living : null;
     }
 
+    public static void expel(ServerLevel serverLevel, ServerPlayer player) {
+        if (isControlling(player.getUUID())) {
+            exitControl(serverLevel, player);
+        } else if (isConcealed(player.getUUID()) && LOTMCraft.abilityHandler.getById("parasitation_ability") instanceof ParasitationAbility ability) {
+            ability.cancelConcealed(serverLevel, player);
+        }
+    }
+
     public static boolean isConcealed(UUID uuid) {
         return concealedMap.containsKey(uuid);
     }

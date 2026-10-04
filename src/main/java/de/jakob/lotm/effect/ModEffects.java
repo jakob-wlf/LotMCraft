@@ -51,6 +51,9 @@ public class ModEffects {
     public static final Holder<MobEffect> DEATH_DECREE_MARK = MOB_EFFECTS.register("death_decree_mark",
             () -> new DeathDecreeMarkEffect(MobEffectCategory.HARMFUL, 0x334f23));
 
+    public static final Holder<MobEffect> COMBAT_MASTERY = MOB_EFFECTS.register("combat_mastery",
+            () -> new CombatMasteryEffect(MobEffectCategory.BENEFICIAL, 0x944b16));
+
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);
     }

@@ -5,7 +5,8 @@
   "mixins": [
     "EntityAccessor",
     "MixinIngredient",
-    "LivingEntitySetHealthMixin"
+    "LivingEntitySetHealthMixin",
+    "MercuryPushMixin"
   ],
   "client": [
     "EntityGlowMixin"

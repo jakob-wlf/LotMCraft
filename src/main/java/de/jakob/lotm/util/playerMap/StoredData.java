@@ -16,7 +16,9 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                          String[] pathwayHistory,
                          String uniqueness, //none if no uniqueness :)
                          LinkedList<Prophecy> prophecies,
-                         String claimedSefirot
+                         String claimedSefirot,
+                         String patron,
+                         String pledgedSefirot
 ) {
 
     public static final String NBT_PATHWAY         = "beyonder_map_pathway";
@@ -29,6 +31,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
     public static final String NBT_PROPHECIES      = "beyonder_map_prophecies";
     public static final String NBT_UNIQUENESS = "beyonder_map_uniqueness";
     public static final String NBT_SEFIROT = "beyonder_map_claimed_sefirot";
+    public static final String NBT_PATRON = "beyonder_map_patron";
+    public static final String NBT_PLEDGED_SEFIROT = "beyonder_map_pledged_sefirot";
 
     public static final String NBT_LAST_POSITION_X = "beyonder_map_last_position_x";
     public static final String NBT_LAST_POSITION_Y = "beyonder_map_last_position_y";
@@ -52,6 +56,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
                 + "\n--- Pathway history: " + getPathwayHistoryInfo()
                 + "\n--- Amount of prophecies: " + prophecies.size()
                 + "\n--- Sefirot: " + (claimedSefirot.isEmpty() ? "none" : claimedSefirot)
+                + "\n--- Patron: " + (patron == null || patron.isEmpty() ? "none" : patron)
+                + "\n--- Pledge: " + (pledgedSefirot == null || pledgedSefirot.isEmpty() ? "none" : pledgedSefirot)
                 + "\n--- Was modified: " + modified
                 ;
     }
@@ -165,6 +171,8 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         tag.put(NBT_PATHWAY_HISTORY, histList);
 
         tag.putString(NBT_SEFIROT, claimedSefirot);
+        tag.putString(NBT_PATRON, patron == null ? "" : patron);
+        tag.putString(NBT_PLEDGED_SEFIROT, pledgedSefirot == null ? "" : pledgedSefirot);
 
         return tag;
     }
@@ -210,8 +218,10 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         }
 
         String sefirot = tag.getString(NBT_SEFIROT);
+        String patron = tag.contains(NBT_PATRON) ? tag.getString(NBT_PATRON) : "";
+        String pledged = tag.contains(NBT_PLEDGED_SEFIROT) ? tag.getString(NBT_PLEDGED_SEFIROT) : "";
 
         return new StoredData(path, seq, name, trueName, modified, lastPos,
-                charStack, history, uniqueness, prophecies, sefirot);
+                charStack, history, uniqueness, prophecies, sefirot, patron, pledged);
     }
 }

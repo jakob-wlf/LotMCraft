@@ -12,6 +12,7 @@ import de.jakob.lotm.beyonders.abilities.death.passives.PhysicalEnhancementsDeat
 import de.jakob.lotm.beyonders.abilities.death.passives.ReincarnationAbility;
 import de.jakob.lotm.beyonders.abilities.death.passives.SolarSensitivityAbility;
 import de.jakob.lotm.beyonders.abilities.death.passives.UndeadIgnoranceAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.passives.*;
 import de.jakob.lotm.beyonders.abilities.demoness.passives.BloodLossAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.passives.FeatherFallAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.passives.MirrorRevivalAbility;
@@ -72,6 +73,7 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new PhysicalEnhancementsJusticiarAbility("physical_enhancements_justiciar_ability"));
         passiveAbilities.add(new PhysicalEnhancementsBlackEmperorAbility("physical_enhancements_black_emperor_ability"));
         passiveAbilities.add(new PhysicalEnhancementsDeathAbility("physical_enhancements_death_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsTwilightGiantAbility("physical_enhancements_twilight_giant_ability"));
 
         // Justiciar
         passiveAbilities.add(new OrderJusticiarAbility("order_justiciar_ability"));
@@ -123,6 +125,14 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new UndeadIgnoranceAbility("undead_ignorance_ability"));
         passiveAbilities.add(new SolarSensitivityAbility("solar_sensitivity_ability"));
         passiveAbilities.add(new ReincarnationAbility("reincarnation_ability"));
+
+
+        //Twilight
+        passiveAbilities.add(new CombatMasteryAbility("combat_mastery_ability"));
+        passiveAbilities.add(new SupernaturalResistanceAbility("supernatural_resistance_ability"));
+        passiveAbilities.add(new WeaponMasteryAbility("weapon_mastery_ability"));
+        passiveAbilities.add(new StrengthOfGiantsAbility("strength_of_giants_ability"));
+        passiveAbilities.add(new IllusionImmunityAbility("illusion_immunity_ability"));
 
         // Visionary
         passiveAbilities.add(new MetaAwarenessAbility("meta_awareness_ability"));

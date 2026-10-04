@@ -18,6 +18,7 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.LastStandAbility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -80,6 +81,7 @@ public class AbilityUtil {
     }
 
     public static boolean isTargetSignificantlyWeaker(LivingEntity source, LivingEntity target) {
+        if (LastStandAbility.tramples(source, target)) return true;
         return isTargetSignificantlyWeaker(BeyonderData.getSequence(source), BeyonderData.getSequence(target));
     }
 

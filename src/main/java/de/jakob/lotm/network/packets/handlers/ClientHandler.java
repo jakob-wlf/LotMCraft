@@ -58,6 +58,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ViewportEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
@@ -71,6 +72,12 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
     public static Boolean isSpectating = false;
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        Player player = Minecraft.getInstance().player;
+        ClientBeyonderCache.setLocalSequence(player == null ? LOTMCraft.NON_BEYONDER_SEQ : ClientBeyonderCache.getSequence(player.getUUID()));
+    }
 
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));

@@ -5,6 +5,7 @@ import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.KnowledgeRecipe;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.block.ModBlockEntities;
@@ -223,6 +224,7 @@ public class LOTMCraft
         ModBlockEntities.register(modEventBus);
         ModStructures.register(modEventBus);
         ModDataComponents.register(modEventBus);
+        KnowledgeRecipe.SERIALIZERS.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
         BeyonderCharacteristicItemHandler.registerCharacteristics(modEventBus);
         ModAttachments.register(modEventBus);

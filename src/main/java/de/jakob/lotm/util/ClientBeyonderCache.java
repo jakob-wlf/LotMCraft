@@ -9,13 +9,39 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientBeyonderCache {
     private static final Map<UUID, BeyonderClientData> dataCache = new ConcurrentHashMap<>();
+    private static int localSequence = LOTMCraft.NON_BEYONDER_SEQ;
+
+    public static void setLocalSequence(int sequence) {
+        localSequence = sequence;
+    }
+
+    public static int localSequence() {
+        return localSequence;
+    }
 
     public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, int cowardWormAmount) {
         updateData(playerUUID, pathway, sequence, spirituality, griefingEnabled, isPlayer, digestionProgress, new String[10], new int[10], cowardWormAmount);
     }
 
     public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount) {
-        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charStacks, cowardWormAmount));
+        BeyonderClientData existing = dataCache.get(playerUUID);
+        updateData(playerUUID, pathway, sequence, spirituality, griefingEnabled, isPlayer, digestionProgress, pathwayHistory, charStacks, cowardWormAmount,
+                existing == null || existing.pledgedSefirot() == null ? "" : existing.pledgedSefirot(),
+                existing != null && existing.hasPlayerPatron());
+    }
+
+    public static void updateData(UUID playerUUID, String pathway, int sequence, float spirituality, boolean griefingEnabled, boolean isPlayer, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount, String pledgedSefirot, boolean hasPlayerPatron) {
+        dataCache.put(playerUUID, new BeyonderClientData(pathway, sequence, spirituality, griefingEnabled, digestionProgress, pathwayHistory, charStacks, cowardWormAmount, pledgedSefirot == null ? "" : pledgedSefirot, hasPlayerPatron));
+    }
+
+    public static String getPledgedSefirot(UUID playerUUID) {
+        BeyonderClientData data = dataCache.get(playerUUID);
+        return data == null || data.pledgedSefirot() == null ? "" : data.pledgedSefirot();
+    }
+
+    public static boolean hasPlayerPatron(UUID playerUUID) {
+        BeyonderClientData data = dataCache.get(playerUUID);
+        return data != null && data.hasPlayerPatron();
     }
 
     public static String getPathway(UUID playerUUID) {
@@ -46,7 +72,7 @@ public class ClientBeyonderCache {
             int[] stacks = java.util.Arrays.copyOf(data.charStacks(), 10);
             int seq = data.sequence();
             if (seq >= 0 && seq < 10) stacks[seq] = charStack;
-            dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), stacks, data.cowardWormAmount));
+            dataCache.put(playerUUID, new BeyonderClientData(data.pathway(), data.sequence(), data.spirituality(), data.griefingEnabled(), data.digestionProgress(), data.pathwayHistory(), stacks, data.cowardWormAmount(), data.pledgedSefirot(), data.hasPlayerPatron()));
         }
     }
 
@@ -96,5 +122,5 @@ public class ClientBeyonderCache {
     }
 
     // Inner record to store client-side beyonder data
-    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount) {}
+    private record BeyonderClientData(String pathway, int sequence, float spirituality, boolean griefingEnabled, float digestionProgress, String[] pathwayHistory, int[] charStacks, int cowardWormAmount, String pledgedSefirot, boolean hasPlayerPatron) {}
 }

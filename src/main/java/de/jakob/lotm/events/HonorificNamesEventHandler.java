@@ -24,7 +24,12 @@ public class HonorificNamesEventHandler {
     public static LinkedList<Pair<UUID, UUID>> answerState = new LinkedList<>();
 
     public static void addPendingPrayer(UUID targetUUID, PendingPrayer prayer) {
+        de.jakob.lotm.beyonders.abilities.twilight_giant.DevastationAuthorityAbility.prayerFor(targetUUID);
         pendingPrayers.computeIfAbsent(targetUUID, k -> new LinkedList<>()).add(prayer);
+    }
+
+    public static void clearPendingPrayers(UUID targetUUID) {
+        pendingPrayers.remove(targetUUID);
     }
 
     /** Pending prayers per target player UUID: target → list of prayers addressed to them. */

@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -81,6 +82,7 @@ public class ReincarnationAbility extends PassiveAbility {
 
         // Never trigger on losing-control deaths
         if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
+        if (LawAbility.SOLACE_KILLED.contains(player.getUUID())) return;
 
         if (!PassiveAbilityHandler.getById("reincarnation_ability").shouldApplyTo(player)) return;
         if (!BeyonderData.isBeyonder(player)) return;

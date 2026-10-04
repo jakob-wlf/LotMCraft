@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.TwilightAuthorityAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
@@ -57,6 +58,8 @@ public class PlagueAbility extends Ability {
 
         ServerScheduler.scheduleForDuration(0, 20, (20 * 20), () -> {
             if (entity.level().isClientSide)
+                return;
+            if (entity.level() instanceof ServerLevel plagueLevel && TwilightAuthorityAbility.dissipates(plagueLevel, entity.position(), entity))
                 return;
 
             // Disease is suppressed by purification, cleansing, life aura, or blooming interactions

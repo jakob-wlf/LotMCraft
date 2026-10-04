@@ -53,7 +53,8 @@ public class DivinationAbility extends SelectableAbility {
                         "demoness", 7,
                         "wheel_of_fortune", 8,
                         "abyss", 4,
-                        "darkness", 4
+                        "darkness", 4,
+                        "twilight_giant", 4
         ));
 
         for(String pathway : BeyonderData.pathways) {

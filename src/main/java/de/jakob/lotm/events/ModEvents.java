@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ServantsAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.command.*;
 import de.jakob.lotm.entity.ModEntities;
@@ -343,6 +345,8 @@ public class ModEvents {
         ResetCapCommand.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
         CopiedAbilitiesCommand.register(event.getDispatcher());
+        ProxyAbility.registerCommands(event.getDispatcher());
+        ServantsAbility.registerCommands(event.getDispatcher());
         ResetPlayerShapeCommand.register(event.getDispatcher());
         CancelActivationCommand.register(event.getDispatcher());
         event.getDispatcher().register(

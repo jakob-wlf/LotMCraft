@@ -17,12 +17,29 @@ import java.util.*;
 
 public class MarionetteMenu extends AbstractContainerMenu {
 
+    private final boolean servants;
     private final List<Integer> entityIds;
+    private final List<ServantRow> servantRows;
     private final List<LivingEntity> marionettes = new ArrayList<>();
     private final Map<Integer, MarionetteEntry> syncedData = new HashMap<>();
 
     public MarionetteMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
-        this(containerId, playerInventory, readEntityIds(buf));
+        super(ModMenuTypes.MARIONETTE_MENU.get(), containerId);
+        this.servants = buf.readBoolean();
+        if (this.servants) {
+            this.entityIds = List.of();
+            this.servantRows = readServants(buf);
+        } else {
+            this.entityIds = readEntityIds(buf);
+            this.servantRows = List.of();
+            if (playerInventory.player.level().isClientSide) {
+                for (int id : entityIds) {
+                    if (playerInventory.player.level().getEntity(id) instanceof LivingEntity living) {
+                        marionettes.add(living);
+                    }
+                }
+            }
+        }
     }
 
     private static List<Integer> readEntityIds(RegistryFriendlyByteBuf buf) {
@@ -36,7 +53,9 @@ public class MarionetteMenu extends AbstractContainerMenu {
 
     public MarionetteMenu(int containerId, Inventory playerInventory, List<Integer> entityIds) {
         super(ModMenuTypes.MARIONETTE_MENU.get(), containerId);
+        this.servants = false;
         this.entityIds = entityIds;
+        this.servantRows = List.of();
 
         if (playerInventory.player.level().isClientSide) {
             for (int id : entityIds) {
@@ -47,6 +66,28 @@ public class MarionetteMenu extends AbstractContainerMenu {
         }
     }
 
+    public static void writeServants(RegistryFriendlyByteBuf buf, List<ServantRow> rows) {
+        buf.writeBoolean(true);
+        buf.writeVarInt(rows.size());
+        for (ServantRow row : rows) {
+            buf.writeUUID(row.id());
+            buf.writeUtf(row.name());
+            buf.writeUtf(row.detail());
+            buf.writeBoolean(row.beyonder());
+            buf.writeUtf(row.pathway());
+            buf.writeVarInt(row.sequence());
+        }
+    }
+
+    private static List<ServantRow> readServants(RegistryFriendlyByteBuf buf) {
+        int size = buf.readVarInt();
+        List<ServantRow> rows = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            rows.add(new ServantRow(buf.readUUID(), buf.readUtf(), buf.readUtf(), buf.readBoolean(), buf.readUtf(), buf.readVarInt()));
+        }
+        return rows;
+    }
+
     @Override
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
@@ -55,6 +96,18 @@ public class MarionetteMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return true;
+    }
+
+    public boolean isServants() {
+        return servants;
+    }
+
+    public List<ServantRow> getServants() {
+        return servantRows;
+    }
+
+    public void removeServant(UUID id) {
+        servantRows.removeIf(row -> row.id().equals(id));
     }
 
     public List<Integer> getEntityIds() {
@@ -78,6 +131,8 @@ public class MarionetteMenu extends AbstractContainerMenu {
             screen.applySync(entries);
         }
     }
+
+    public record ServantRow(UUID id, String name, String detail, boolean beyonder, String pathway, int sequence) {}
 
 
 }
