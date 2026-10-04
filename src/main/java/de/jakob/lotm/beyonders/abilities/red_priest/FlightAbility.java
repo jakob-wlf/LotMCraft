@@ -61,8 +61,6 @@ public class FlightAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-
-        // Disable Flying
         if(entity instanceof Player player) {
             if(!player.isCreative()) {
                 player.getAbilities().mayfly = false;
