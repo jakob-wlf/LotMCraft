@@ -1,5 +1,9 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.PacketHandler;
@@ -14,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -25,6 +30,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -47,6 +54,7 @@ public class MeteorEntity extends Entity {
     private int lifeTicks = 0;
     private int petrifiedTicks = 0;
     private int maxLifeTicks = 20 * 12;
+    private boolean isDiscarded = false;
 
     public MeteorEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -161,6 +169,19 @@ public class MeteorEntity extends Entity {
         return null;
     }
 
+    @Override
+    public void onAddedToLevel() {
+        super.onAddedToLevel();
+
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "meteor_trail");
+        FX fx = FXHelper.getFX(id);
+
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
+        executor.setScale(1.75, 1.75, 1.75);
+
+        executor.start();
+    }
+
     Vec3 direction;
     Vec3 targetPos;
 
@@ -186,6 +207,10 @@ public class MeteorEntity extends Entity {
         }
 
         super.tick();
+
+        if(isDiscarded) {
+            return;
+        }
 
         lifeTicks++;
 
@@ -241,7 +266,8 @@ public class MeteorEntity extends Entity {
                         });
             }
 
-            discard();
+            isDiscarded = true;
+            ServerScheduler.scheduleDelayed(15, this::discard);
         }
     }
     
