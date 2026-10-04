@@ -34,6 +34,7 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
+import java.util.ConcurrentModificationException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -177,9 +178,13 @@ public class MeteorEntity extends Entity {
         FX fx = FXHelper.getFX(id);
 
         EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
-        executor.setScale(1.75, 1.75, 1.75);
+        executor.setScale(2.5, 2.5, 2.5);
 
-        executor.start();
+        try {
+            executor.start();
+        } catch (ConcurrentModificationException ignored) {
+
+        }
     }
 
     Vec3 direction;
