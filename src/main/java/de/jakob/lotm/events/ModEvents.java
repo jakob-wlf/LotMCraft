@@ -56,6 +56,7 @@ import de.jakob.lotm.entity.client.spirits.translucent_wizard.SpiritTranslucentW
 import de.jakob.lotm.entity.client.stone_golem.StoneGolemModel;
 import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
@@ -173,6 +174,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
+        event.put(ModEntities.SILVER_RAPIER.get(), SilverRapierEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
         event.put(ModEntities.AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());

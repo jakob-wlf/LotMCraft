@@ -64,6 +64,7 @@ import de.jakob.lotm.entity.client.ability_entities.grafting.GraftingLocationRen
 import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.ancient_court.AncientCourtEntityRenderer;
 import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordRenderer;
 import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.silver_rapier.SilverRapierRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning.LightningRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning_branch.LightningBranchRenderer;
 import de.jakob.lotm.entity.client.projectiles.fireball.FireballRenderer;
@@ -276,6 +277,7 @@ public class LOTMCraft
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.FLAMING_SPEAR.get(), FlamingSpearProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.SILVER_RAPIER.get(), SilverRapierRenderer::new);
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);

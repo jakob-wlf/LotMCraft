@@ -18,6 +18,7 @@ import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.JudgmentSw
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
@@ -519,6 +520,10 @@ public class ModEntities {
                             .updateInterval(1)
                             .build("uniqueness_entity")
             );
+
+    public static final Supplier<EntityType<SilverRapierEntity>> SILVER_RAPIER =
+            ENTITY_TYPES.register("silver_rapier", () -> EntityType.Builder.of(SilverRapierEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).clientTrackingRange(64).updateInterval(1).noSummon().noSave().build("silver_rapier"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
