@@ -121,7 +121,7 @@ public class ProhibitionAbility extends SelectableAbility {
         final double px = entity.getX(), py = entity.getY(), pz = entity.getZ();
         EffectManager.playEffect(EffectIds.PROHIBITION, px, py, pz, serverLevel);
         ServerScheduler.scheduleForDuration(140, 140, zoneDuration, () -> {
-            if (!newZone.isActive()) return;
+            if (!newZone.isActive() || !ACTIVE_ZONES.contains(newZone)) return;
             EffectManager.playEffect(EffectIds.PROHIBITION, px, py, pz, serverLevel);
         }, null, serverLevel);
 

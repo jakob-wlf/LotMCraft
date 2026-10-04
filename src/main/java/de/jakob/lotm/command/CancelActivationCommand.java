@@ -2,6 +2,7 @@ package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import de.jakob.lotm.beyonders.abilities.death.NationOfTheDeadAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.ProhibitionAbility;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlackHoleEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
@@ -18,7 +19,8 @@ import java.util.UUID;
 
 // Cancels the standing activation (domain/entity) of abilities whose effect
 // persists beyond the initial use: Sun's Divine Kingdom, Words of Misfortune,
-// Nation of the Dead, Death's Divine Kingdom, and Blackhole.
+// Nation of the Dead, Death's Divine Kingdom, and Blackhole. The "all" variant
+// additionally lifts every active Justiciar Prohibition zone.
 public class CancelActivationCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -39,6 +41,10 @@ public class CancelActivationCommand {
                     for (ServerPlayer player : source.getServer().getPlayerList().getPlayers()) {
                         total += cancelActivations(source, player, false);
                     }
+
+                    // Prohibition zones can be owned by non-player casters too, so clear every zone
+                    total += ProhibitionAbility.ACTIVE_ZONES.size();
+                    ProhibitionAbility.ACTIVE_ZONES.clear();
 
                     final int finalTotal = total;
                     source.sendSuccess(() -> Component.literal("Cancelled " + finalTotal + " active ability activation(s) across all players"), true);
