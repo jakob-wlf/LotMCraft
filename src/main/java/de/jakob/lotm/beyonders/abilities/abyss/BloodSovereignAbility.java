@@ -131,7 +131,7 @@ public class BloodSovereignAbility extends SelectableAbility {
         BlockPos blockPos = BlockPos.containing(center);
 
         double offsetX = center.x - (blockPos.getX() + 0.5);
-        double offsetY = center.y - (blockPos.getY() + 0.5) - .75;
+        double offsetY = center.y - (blockPos.getY() + 0.5) - 1.2;
         double offsetZ = center.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(

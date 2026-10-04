@@ -99,7 +99,7 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
         poseStack.pushPose();
 
         poseStack.scale(entity.getSize() * 6.5f, entity.getSize() * 6.5f, entity.getSize() * 6.5f);
-        poseStack.translate(0, -1.2, 0);
+        poseStack.translate(0, -1.05, 0);
 
         var vertexConsumer = buffer.getBuffer(this.model.renderType(this.getTextureLocation(entity)));
         int modelColor = petrified ? 0xFF808080 : 0xFFFFFFFF;
@@ -109,9 +109,9 @@ public class MeteorRenderer extends EntityRenderer<MeteorEntity> {
 
         if (entity.getLifeTicks() > 2) {
             EntityParticleData data = entityParticles.computeIfAbsent(entity.getUUID(), k -> new EntityParticleData());
-            spawnParticles(entity, partialTicks, data);
-            updateParticles(partialTicks, data);
-            renderParticles(entity, poseStack, buffer, packedLight, partialTicks, data, petrified);
+//            spawnParticles(entity, partialTicks, data);
+//            updateParticles(partialTicks, data);
+//            renderParticles(entity, poseStack, buffer, packedLight, partialTicks, data, petrified);
         }
 
         cleanupOldEntities();

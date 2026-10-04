@@ -136,7 +136,7 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
                 double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
                 PacketHandler.sendToNearbyPlayers(
-                        new PlayPhotonBlockEffectPacket("abyss_pillars", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, new Vec3(1.5, 2.5, 1.5)),
+                        new PlayPhotonBlockEffectPacket("abyss_pillars", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, new Vec3(1.75, 2, 1.75)),
                         serverLevel, pos, 128
                 );
             }, serverLevel);
