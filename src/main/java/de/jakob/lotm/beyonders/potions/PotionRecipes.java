@@ -466,7 +466,60 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("demoness", 1)))
         ));
 
-
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WARRIOR_POTION.get(),
+                new ItemStack(Items.IRON_SWORD, 1),
+                new ItemStack(Items.SHIELD, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 9)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PUGILIST_POTION.get(),
+                new ItemStack(Items.LEATHER, 1),
+                new ItemStack(Items.RABBIT_FOOT, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 8)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WEAPON_MASTER_POTION.get(),
+                new ItemStack(Items.CROSSBOW, 1),
+                new ItemStack(Items.IRON_AXE, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 7)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DAWN_PALADIN_POTION.get(),
+                new ItemStack(Items.GOLDEN_HELMET, 1),
+                new ItemStack(Items.LANTERN, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 6)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.GUARDIAN_POTION.get(),
+                new ItemStack(Items.IRON_CHESTPLATE, 1),
+                new ItemStack(Items.SHIELD, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 5)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMON_HUNTER_POTION.get(),
+                new ItemStack(Items.SPECTRAL_ARROW, 1),
+                new ItemStack(Items.SOUL_LANTERN, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 4)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SILVER_KNIGHT_POTION.get(),
+                new ItemStack(Items.IRON_INGOT, 1),
+                new ItemStack(Items.QUARTZ, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 3)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.GLORY_POTION.get(),
+                new ItemStack(Items.GOLDEN_APPLE, 1),
+                new ItemStack(Items.SUNFLOWER, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 2)))
+        ));
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HAND_OF_GOD_POTION.get(),
+                new ItemStack(Items.FEATHER, 1),
+                new ItemStack(Items.GOLD_BLOCK, 1),
+                new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 1)))
+        ));
 
 
 //        RECIPES.add(new PotionRecipe(

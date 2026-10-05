@@ -10,7 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 
 import java.util.Locale;
-
+/*
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class LoginChecker {
     @SubscribeEvent
@@ -53,3 +53,4 @@ public class LoginChecker {
         });
     }
 }
+*/

@@ -1060,7 +1060,6 @@ public class PacketHandler {
                             wormAmount,
                             pledgedSefirot,
                             hasPatron)
-                    )
             );
         });
     }

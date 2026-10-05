@@ -127,6 +127,7 @@ import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.BeyonderMobData;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
@@ -254,6 +255,7 @@ public class LOTMCraft
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, BeyonderMobData.SPEC, "lotmcraft-beyonder-mobs.toml");
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {

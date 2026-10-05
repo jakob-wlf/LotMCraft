@@ -46,7 +46,7 @@ public class PureIdealismUtil {
         component.setPreviousWheel(wheelData.copy());
         component.setPreviousBar(barData.copy());
 
-        component.setHasUniqueness(BeyonderData.hasUniqueness(player));
+        component.setHasUniqueness(player.getData(ModAttachments.UNIQUENESS_COMPONENT).hasUniqueness());
 
         var pair = component.getAbilitiesInBars(path, sequence);
         AbilityWheelComponent savedWheelData = pair.getFirst();

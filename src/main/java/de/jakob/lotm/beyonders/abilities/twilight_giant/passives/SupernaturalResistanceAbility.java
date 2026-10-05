@@ -6,7 +6,6 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -53,9 +52,8 @@ public class SupernaturalResistanceAbility extends PassiveAbility {
     }
 
     public static boolean isSupernatural(DamageSource source) {
-        if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC)) return true;
         return source.typeHolder().unwrapKey()
-                .map(key -> key.location().getNamespace().equals(LOTMCraft.MOD_ID) && !key.equals(ModDamageTypes.LOOSING_CONTROL))
+                .map(key -> key.location().getNamespace().equals(LOTMCraft.MOD_ID) && !key.equals(ModDamageTypes.SPACE_DESTRUCTION))
                 .orElse(false);
     }
 }
