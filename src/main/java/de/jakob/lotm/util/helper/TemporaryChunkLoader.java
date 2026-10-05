@@ -2,6 +2,8 @@ package de.jakob.lotm.util.helper;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
+import net.neoforged.fml.ModList;
+import org.texboobcat.tessellate.api.TessellateApi;
 
 public class TemporaryChunkLoader {
 
@@ -18,12 +20,22 @@ public class TemporaryChunkLoader {
      */
     public static void forceChunksTemporarily(ServerLevel level, double centerX, double centerZ, int radius, int durationTicks) {
         ChunkPos centerChunk = new ChunkPos((int) centerX >> 4, (int) centerZ >> 4);
-
-        // ✅ Force-load the area
-        for (int dx = -radius; dx <= radius; dx++) {
-            for (int dz = -radius; dz <= radius; dz++) {
-                ChunkPos pos = new ChunkPos(centerChunk.x + dx, centerChunk.z + dz);
-                level.setChunkForced(pos.x, pos.z, true);
+        //OTMCraft.LOGGER.debug("TesselateCompat");
+        if (ModList.get().isLoaded("tessellate")){
+            // ✅ Force-load the area
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    ChunkPos pos = new ChunkPos(centerChunk.x + dx, centerChunk.z + dz);
+                    TessellateApi.executeOnMainThread(() -> level.setChunkForced(pos.x, pos.z, true));
+                }
+            }
+        } else {
+            // ✅ Force-load the area
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    ChunkPos pos = new ChunkPos(centerChunk.x + dx, centerChunk.z + dz);
+                    level.setChunkForced(pos.x, pos.z, true);
+                }
             }
         }
     }
