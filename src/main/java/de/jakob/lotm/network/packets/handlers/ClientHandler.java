@@ -739,7 +739,7 @@ public class ClientHandler {
         Entity entity = getById(packet.entityId());
         if(entity == null) return;
 
-        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.LOOK);
         executor.setScale(packet.scale(), packet.scale(), packet.scale());
         executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
         if(packet.rot() != null)  executor.setRotation(packet.rot());

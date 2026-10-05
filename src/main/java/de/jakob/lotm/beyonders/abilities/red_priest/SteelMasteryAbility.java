@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -75,7 +77,9 @@ public class SteelMasteryAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 8*multiplier(entity)), () -> {
+        PacketHandler.sendToNearbyPlayers(new PlayPhotonEntityEffectPacket("steel_chains", target.getId(), 0, -1.25, 0, 1.5, null, false, true), level, entity.position(), 128);
+
+        UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 8), () -> {
             if(entity.isDeadOrDying())
                 return;
 
@@ -90,12 +94,6 @@ public class SteelMasteryAbility extends SelectableAbility {
             target.setDeltaMovement(new Vec3(0, 0, 0));
             target.hurtMarked = true;
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, 20, false, false, false));
-
-            Vec3 entityPos = target.position().add(0, 1.25, 0);
-            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(0, -1.5, 3), .35, 1);
-            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(0, -1.5, -3), .35, 1);
-            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(3, -1.5, 0), .35, 1);
-            ParticleUtil.drawParticleLine(level, dust, entityPos, entityPos.add(-3, -1.5, 0), .35, 1);
 
             loc.setLevel(target.level());
             loc.setPosition(target.position());
