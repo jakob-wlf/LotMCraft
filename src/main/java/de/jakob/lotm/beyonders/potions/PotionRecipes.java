@@ -475,7 +475,7 @@ public class PotionRecipes {
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.PUGILIST_POTION.get(),
                 new ItemStack(Items.LEATHER, 1),
-                new ItemStack(Items.RABBIT_FOOT, 1),
+                new ItemStack(Items.BEEF, 1),
                 new ItemStack(Objects.requireNonNull(BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("twilight_giant", 8)))
         ));
         RECIPES.add(new PotionRecipe(
