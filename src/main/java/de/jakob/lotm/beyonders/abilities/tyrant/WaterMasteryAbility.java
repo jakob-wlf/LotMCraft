@@ -2,8 +2,7 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -25,7 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -37,6 +35,14 @@ public class WaterMasteryAbility extends SelectableAbility {
         super(id, 5f, "water", "water_strong");
         interactionRadius = 30;
         interactionCacheTicks = 20 * 30;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 800f, 500f, 480f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 2, 3, 4));
+
+        baseDamage = 3f;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -112,36 +118,20 @@ public class WaterMasteryAbility extends SelectableAbility {
     }
 
     private void waterWall(ServerLevel level, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (12* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
 
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(entity.getLookAngle()).normalize();
 
         AtomicBoolean isFrozen = new AtomicBoolean(false);
 
         UUID wallId = UUID.randomUUID();
-        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, (int) (30), (int) (-2), (int) (17));
+        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, (int) (30* multiplier(entity)), (int) (-2* multiplier(entity)), (int) (17* multiplier(entity)));
         activeWaterWalls.add(wallData);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        float damage = baseDamage;
 
-        BlockPos pos2 = BlockPos.containing(targetPos);
-
-        double offsetX = targetPos.x - (pos2.getX() + 0.5);
-        double offsetY = targetPos.y - (pos2.getY() + 0.5) + 1.2;
-        double offsetZ = targetPos.z - (pos2.getZ() + 0.5);
-
-        Vec3 lookAngle = new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z).normalize();
-        Quaternionf rotation = new Quaternionf().rotateTo(
-                new Vector3f(0, 0, 1),
-                new Vector3f((float) lookAngle.x, (float) lookAngle.y, (float) lookAngle.z)
-        );
-
-        PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("water_wall", pos2, offsetX, offsetY, offsetZ, 1, rotation, -1, false, true, new Vec3(3.5, 3.5, 3.5)),
-                (ServerLevel) level, targetPos, 128
-        );
-
-        ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30), () -> {
+        ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30* multiplier(entity)), () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
@@ -150,7 +140,7 @@ public class WaterMasteryAbility extends SelectableAbility {
             }
 
             for(int i = -2; i < 17; i++) {
-                for(int j = -36; j < 37; j++) {
+                for(int j = -30; j < 31; j++) {
                     Vec3 pos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
 
                     if(isFrozen.get() && BeyonderData.isGriefingEnabled(entity)) {
@@ -160,7 +150,10 @@ public class WaterMasteryAbility extends SelectableAbility {
                         }
                     }
 
-                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
+                    if(random.nextBoolean())
+                        ParticleUtil.spawnParticles(level, !isFrozen.get() ? dust : ParticleTypes.SNOWFLAKE, pos, 1, 0.5, 0.02);
+
+                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, ModDamageTypes.WATER, damage, pos, true, false, false, 15);
 
                     for(LivingEntity target : AbilityUtil.getNearbyEntities(isFrozen.get() ? null : entity, level, pos, 1f)) {
                         Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(1.4f);

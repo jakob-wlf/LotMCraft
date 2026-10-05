@@ -35,6 +35,12 @@ public class ChainOfCommandAbility extends Ability {
         instance = this;
 
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 4, 4, 5, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 890f, 570f, 624f));
     }
 
     @Override
@@ -51,17 +57,17 @@ public class ChainOfCommandAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
+        if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
             return;
         }
 
-        if(!(entity instanceof Player player)) {
+        if (!(entity instanceof Player player)) {
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 3, 1.5f);
-        if(target == null || target instanceof Player) {
-            if(entity instanceof ServerPlayer serverPlayer) {
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 5, 1.5f);
+        if (target == null || target instanceof Player) {
+            if (entity instanceof ServerPlayer serverPlayer) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.chain_of_command.no_entity_found").withColor(0xFFff124d));
                 serverPlayer.connection.send(packet);
             }
@@ -70,48 +76,55 @@ public class ChainOfCommandAbility extends Ability {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
+        String targetPath = BeyonderData.getPathway(target);
 
-        if(!BeyonderData.isBeyonder(target) || targetSeq > entitySeq) {
+        if (!BeyonderData.isBeyonder(target)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.chain_of_command.no_entity_found").withColor(0xFFff124d));
+            ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
+            return;
+        }
+
+        if(entitySeq < targetSeq){
+            if(targetPath.equals("death") && entitySeq + 2 >= targetSeq){
+                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.chain_of_command.no_entity_found").withColor(0xFFff124d));
+                ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
+                return;
+            }
+
             SubordinateUtils.turnEntityIntoSubordinate(target, player);
             ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
         }
-        else {
-            ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
-            if(entity instanceof ServerPlayer serverPlayer) {
-                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("ability.lotmcraft.chain_of_command.no_entity_found").withColor(0xFFff124d));
-                serverPlayer.connection.send(packet);
-            }
+
         }
-    }
 
     private static ArrayList<LivingEntity> getSubordinatesOfPlayerInAllLevelsOrderedById(LivingEntity entity) {
         Level level = entity.level();
 
-        if(level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
+        if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) {
             return new ArrayList<>();
         }
 
-        if(entity.getServer() == null) {
+        if (entity.getServer() == null) {
             return new ArrayList<>();
         }
 
         final ArrayList<LivingEntity> subordinates = new ArrayList<>(StreamSupport.stream(serverLevel.getAllEntities().spliterator(), false).filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).toList());
 
-        for(ServerLevel l : entity.getServer().getAllLevels()) {
-            if(l == level)
+        for (ServerLevel l : entity.getServer().getAllLevels()) {
+            if (l == level)
                 continue;
             subordinates.addAll(StreamSupport.stream(l.getAllEntities().spliterator(), false).filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).toList());
         }
 
         subordinates.removeIf(e -> {
-            if(e == entity)
+            if (e == entity)
                 return true;
             SubordinateComponent component = e.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
             if (!component.isSubordinate()) {
                 return true;
             }
 
-            if(!component.getControllerUUID().equals(entity.getStringUUID())) {
+            if (!component.getControllerUUID().equals(entity.getStringUUID())) {
                 return true;
             }
 
@@ -126,7 +139,7 @@ public class ChainOfCommandAbility extends Ability {
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
 
-        if(!instance.canUse(entity)) {
+        if (!instance.canUse(entity)) {
             return;
         }
 

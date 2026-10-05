@@ -51,7 +51,7 @@ public class RitualisticTablePartBlock extends BaseEntityBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos,
-                                               Player player, InteractionHand hand, BlockHitResult hit) {
+                                              Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.getBlockEntity(pos) instanceof RitualisticTablePartBlockEntity part) {
             BlockPos mainPos = part.getMainPos();
             if (mainPos != null) {

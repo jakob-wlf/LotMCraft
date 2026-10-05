@@ -56,7 +56,7 @@ public class InvisibilityAbility extends Ability {
             // make invisible
             invisiblePlayers.add(entity.getUUID());
             entity.setInvisible(true);
-            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, (int) (20 * 60*multiplier(entity)), 20, false, false, false));
+            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20 * 60, 20, false, false, false));
 
             //make visible again
             AtomicReference<UUID> taskIdRef = new AtomicReference<>();

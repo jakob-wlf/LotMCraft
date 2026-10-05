@@ -2,8 +2,7 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -33,6 +32,14 @@ public class TorrentialDownpourAbility extends Ability {
         interactionRadius = 25;
         interactionCacheTicks = 20 * 30;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(15, 18, 20, 25));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12500f, 6500f, 3500f, 2500f));
+
+        baseDamage = 1f;
     }
 
     @Override
@@ -68,15 +75,22 @@ public class TorrentialDownpourAbility extends Ability {
             return;
 
         ServerLevel serverLevel = (ServerLevel) level;
+        serverLevel.setWeatherParameters(
+                0,          // clearDuration (0 = start immediately)
+                20 * 30,       // rainDuration (ticks → 2400 = 2 minutes)
+                true,       // raining
+                true        // thundering
+        );
 
         Vec3 startPos = AbilityUtil.getTargetLocation(entity, 25, 2);
-        Vec3 cloudPos = startPos.add(0, 9, 0);
+        Vec3 cloudPos = startPos.add(0, 12, 0);
+        Vec3 rainPos = startPos.add(0, 7, 0);
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, startPos, entity, this, interactionFlags, interactionRadius, interactionCacheTicks));
 
-        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, -2, 0), 36));
+        List<BlockPos> blocks = new ArrayList<>(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, -2, 0), 27* multiplier(entity)));
         for(int i = -12; i < 13; i++) {
-            blocks.addAll(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, i, 0), 36));
+            blocks.addAll(AbilityUtil.getBlocksInCircle((ServerLevel) level, startPos.add(0, i, 0), 27* multiplier(entity)));
         }
 
         List<BlockPos> validBlocks = blocks.stream().filter(b -> !level.getBlockState(b).getCollisionShape(level, b).isEmpty() && level.getBlockState(b.above()).getCollisionShape(level, b).isEmpty() && !level.getBlockState(b).is(Blocks.WATER)).toList();
@@ -86,16 +100,22 @@ public class TorrentialDownpourAbility extends Ability {
         TorrentialDownpourData data = new TorrentialDownpourData(new Location(startPos, level), downpourId, false, BeyonderData.getSequence(entity));
         activeDownpours.add(data);
 
-        PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("torrential_downpour", BlockPos.containing(cloudPos), 0, 0, 0, 1.6, null, -1, false, true, null),
-                (ServerLevel) level, startPos, 128
-        );
-
         // Scheduler for Animations
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 30), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 15* multiplier(entity)), () -> {
             boolean isFrozen = isFrozen(downpourId);
 
-            level.playSound(null, cloudPos.x, cloudPos.y, cloudPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
+            level.playSound(null, rainPos.x, rainPos.y, rainPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
+
+            if(!isFrozen) {
+                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions2, cloudPos, 700, 20, .4, 20, 0);
+                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.RAIN, rainPos, 300, 20, 10, 20, 0);
+                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, rainPos, 100, 20, 10, 20, 0);
+            } else {
+                ParticleUtil.spawnParticles((ServerLevel) level, dustOptions2, cloudPos, 700, 20, .4, 20, 0);
+                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.RAIN, rainPos, 300, 20, 10, 20, 0);
+                ParticleUtil.spawnParticles((ServerLevel) level, iceDust, rainPos, 100, 20, 10, 20, 0);
+                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, rainPos, 500, 20, 10, 20, 0);
+            }
 
             if(griefing) {
                 for (int i = 0; i < 10; i++) {
@@ -110,8 +130,11 @@ public class TorrentialDownpourAbility extends Ability {
         }, () -> activeDownpours.remove(data), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
 
         // Scheduler for Damage
-        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 30), () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, DamageLookup.lookupDps(3, .75, 5, 20) * multiplier(entity), startPos, true, false, true, 0);
+        double multiplier = multiplier(entity);
+        float damage = baseDamage;
+
+        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 15* multiplier(entity)), () -> {
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, ModDamageTypes.WATER, damage, startPos, true, false, true, 0);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
     }
 

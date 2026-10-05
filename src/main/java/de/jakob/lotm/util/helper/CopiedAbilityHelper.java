@@ -2,9 +2,12 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncCopiedAbilitiesPacket;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 
 
@@ -17,15 +20,16 @@ public class CopiedAbilityHelper {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.addAbility(data);
 
-        if(player instanceof ServerPlayer serverPlayer){
+        if(player instanceof ServerPlayer serverPlayer)
             syncToClient(serverPlayer);
-        }
     }
 
-    public static void removeAbilityIndex(ServerPlayer player, int index) {
+    public static void removeAbilityIndex(LivingEntity player, int index) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(index);
-        syncToClient(player);
+
+        if(player instanceof ServerPlayer serverPlayer)
+            syncToClient(serverPlayer);
     }
 
     public static void removeAbilityID(LivingEntity entity, String abilityId) {
@@ -37,22 +41,42 @@ public class CopiedAbilityHelper {
         }
     }
 
-    public static void clearAbilities(ServerPlayer player) {
+    public static void openCopiedAbilityWheel(ServerPlayer player) {
+        syncToClient(player);
+        player.openMenu(new SimpleMenuProvider(
+                (id, inventory, p) -> new CopiedAbilityWheelMenu(id, inventory),
+                Component.translatable("lotm.copied_ability_wheel.title")
+        ));
+    }
+
+    public static void clearAbilities(LivingEntity player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.getAbilities().clear();
-        syncToClient(player);
+
+        if(player instanceof ServerPlayer serverPlayer)
+            syncToClient(serverPlayer);
     }
 
     public static void decrementUses(LivingEntity entity, String abilityId) {
         CopiedAbilityComponent component = entity.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
 
-        int index = component.getAbilities().indexOf(component.getAbilities().stream().filter(data -> data.abilityId().equals(abilityId) && shouldReduceUsesForType(data.copyType())).findFirst().orElse(null));
+        int index = component.getAbilities()
+                .indexOf(component.getAbilities()
+                        .stream()
+                        .filter(data ->
+                                data.abilityId().equals(abilityId)
+                                        && shouldReduceUsesForType(data.copyType()))
+                        .findFirst().orElse(null));
+
         if (index < 0 || index >= component.getAbilities().size()) return;
         CopiedAbilityComponent.CopiedAbilityData data = component.getAbilities().get(index);
+
         if (data.remainingUses() == -1) return;
+
         int newUses = data.remainingUses() - 1;
+
         if (newUses <= 0) {
-            component.getAbilities().remove(index);
+            removeAbilityIndex(entity, index);
         } else {
             component.getAbilities().set(index, data.withRemainingUses(newUses));
         }
@@ -81,8 +105,8 @@ public class CopiedAbilityHelper {
 
     private static boolean shouldReduceUsesForType(String copyType) {
         return switch (copyType) {
-            default -> true;
             case "replicated" -> false;
+            default -> true;
         };
     }
 

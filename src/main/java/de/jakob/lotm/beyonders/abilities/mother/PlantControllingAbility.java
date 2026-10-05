@@ -38,6 +38,14 @@ public class PlantControllingAbility extends SelectableAbility {
 
     public PlantControllingAbility(String id) {
         super(id, 2);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f, 240f, 195f));
+
+        baseDamage = 5;
     }
 
     @Override
@@ -59,7 +67,7 @@ public class PlantControllingAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity == null)
             return;
 
@@ -71,7 +79,7 @@ public class PlantControllingAbility extends SelectableAbility {
             return;
         }
 
-        int duration = 20 * 10*(int)Math.max(multiplier(entity)/2,1);
+        int duration = 20 * 2;
 
         for(int i = 0; i < 12; i++) {
             Vec3 targetLoc = targetEntity.position().add(0, .4, 0);
@@ -156,7 +164,7 @@ public class PlantControllingAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 16, 1.4f);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-4, 4), -entity.getEyeHeight());
 
         float distance = (float) targetLoc.distanceTo(startPos);
@@ -175,7 +183,7 @@ public class PlantControllingAbility extends SelectableAbility {
         if(targetEntity == null)
             return;
 
-        targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(7, .75) * (float) multiplier(entity));
+        targetEntity.hurt(ModDamageTypes.source(level, ModDamageTypes.NATURE_WRATH, entity), baseDamage);
     }
 
     private void animateParticleLine(Location startLoc, Vec3 end, int step, int interval, int duration) {

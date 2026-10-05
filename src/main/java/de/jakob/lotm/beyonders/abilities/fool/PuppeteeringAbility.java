@@ -4,6 +4,10 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.MarionetteOwnerComponent;
+import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.demoness.MirrorSubstituteAbility;
 import de.jakob.lotm.beyonders.abilities.door.DoorSubstitutionAbility;
 import de.jakob.lotm.effect.ModEffects;
@@ -45,8 +49,14 @@ public class PuppeteeringAbility extends SelectableAbility {
 
     public PuppeteeringAbility(String id) {
         super(id, 0.1f);
+        canBeUsedByNPC = false;
 
         onHoldTickInverval = 1;
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(17500f, 7000f, 3800f, 2500f, 2275f, 1660f));
     }
 
     @Override
@@ -328,13 +338,15 @@ public class PuppeteeringAbility extends SelectableAbility {
         if(target instanceof Player) {
             Vec3 pos = target.position();
 
+            boolean pureIdealism = target.getData(ModAttachments.DISCERNMENT_DATA.get()).isDiscerning();
+
             PaperFigurineSubstituteAbility.setFigurineNumber(target.getUUID(), 0);
             MirrorSubstituteAbility.setFigurineNumber(target.getUUID(), 0);
             DoorSubstitutionAbility.setFigurineNumber(target.getUUID(), 0);
 
             // set sanity to 0.04 to prevent mirror revival and darkness revival from triggering
             SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
-            sanity.setSanity(0.04f);
+            sanity.setSanity(0.03f);
 
             MiracleOfResurrectionComponent miracleOfResurrection = target.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             miracleOfResurrection.setResurrectionAttempts(0);
@@ -345,12 +357,27 @@ public class PuppeteeringAbility extends SelectableAbility {
                 int sequence = BeyonderData.getSequence(target);
                 String pathway = BeyonderData.getPathway(target);
                 target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                if (target.isAlive()) {
+                    target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                    if (target.isAlive()) {
+                        target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                    }
+                }
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, pathway, sequence);
             }
             else {
                 target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                if (target.isAlive()) {
+                    target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                    if (target.isAlive()) {
+                        target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
+                    }
+                }
                 target = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), target.level(), false, "none", 10);
             }
+
+            if(pureIdealism)
+                return;
 
             target.setPos(pos);
             target.level().addFreshEntity(target);
@@ -363,7 +390,7 @@ public class PuppeteeringAbility extends SelectableAbility {
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));
         } else {
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
         }
     }
 

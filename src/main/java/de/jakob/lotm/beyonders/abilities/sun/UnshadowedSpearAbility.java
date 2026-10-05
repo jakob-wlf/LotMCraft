@@ -12,12 +12,22 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class UnshadowedSpearAbility extends Ability {
     public UnshadowedSpearAbility(String id) {
         super(id, 1.5f, "purification", "light_source", "light_strong", "light_weak");
         postsUsedAbilityEventManually = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 1000f, 970f));
+
+        baseDamage = 12f;
     }
 
     @Override
@@ -40,7 +50,7 @@ public class UnshadowedSpearAbility extends Ability {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.0f, 1.0f);
 
-        UnshadowedSpearProjectileEntity spear = new UnshadowedSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(4, .8) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), this);
+        UnshadowedSpearProjectileEntity spear = new UnshadowedSpearProjectileEntity(level, entity, baseDamage, BeyonderData.isGriefingEnabled(entity), this);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         spear.shoot(direction.x, direction.y, direction.z, 5, 0);
         level.addFreshEntity(spear);

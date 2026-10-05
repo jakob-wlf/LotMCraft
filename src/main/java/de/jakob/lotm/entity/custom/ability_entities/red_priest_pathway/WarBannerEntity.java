@@ -120,8 +120,9 @@ public class WarBannerEntity extends Entity {
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 7, false, false, false));
                 return;
             }
-
-            BeyonderData.addModifier(e, "war_song", .75f);
+            else {
+                BeyonderData.addModifier(e, "war_song", .90f);
+            }
 
             ServerScheduler.scheduleDelayed(20, () -> {
                 if(e.level() != level() || e.isDeadOrDying() || e.distanceTo(this) > getRadius()) {

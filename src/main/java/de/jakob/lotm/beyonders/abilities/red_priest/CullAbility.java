@@ -21,9 +21,15 @@ import java.util.*;
 public class CullAbility extends ToggleAbility {
     private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
 
+    public final static HashSet<UUID> active = new HashSet<>();  //used to reduce godhood effect
 
     public CullAbility(String id) {
         super(id);
+
+        canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(90f, 40f, 30f, 25f, 20f, 12.5f));
     }
 
     @Override
@@ -40,9 +46,11 @@ public class CullAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-        BeyonderData.addModifier(entity, "cull", 1.3);
+        BeyonderData.addModifier(entity, "cull", 1.25);
         if(entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(true));
+
+        active.add(entity.getUUID());
     }
 
     @Override
@@ -77,6 +85,7 @@ public class CullAbility extends ToggleAbility {
         glowingEntities.remove(entity.getUUID());
 
         PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(false));
+        active.remove(entity.getUUID());
     }
 
     public static void setGlowingForPlayer(Entity entity, ServerPlayer player, boolean glowing) {

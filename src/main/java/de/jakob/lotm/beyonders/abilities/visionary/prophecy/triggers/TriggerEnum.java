@@ -16,7 +16,8 @@ public enum TriggerEnum {
     SEQUENCE,
     PATHWAY,
     LIGHT,
-    ASLEEP
+    ASLEEP,
+    CHAIN
     ;
 
     public static TriggerEnum  fromNBT(CompoundTag tag, String key) {

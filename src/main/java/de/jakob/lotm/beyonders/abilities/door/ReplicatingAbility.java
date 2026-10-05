@@ -23,6 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,6 +38,13 @@ public class ReplicatingAbility extends Ability {
         canBeReplicated = false;
         autoClear = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 6000f, 5000f));
+
     }
 
     @Override

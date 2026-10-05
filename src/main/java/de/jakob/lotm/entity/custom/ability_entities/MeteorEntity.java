@@ -1,24 +1,17 @@
 package de.jakob.lotm.entity.custom.ability_entities;
 
-import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
-import com.lowdragmc.photon.client.fx.FX;
-import com.lowdragmc.photon.client.fx.FXHelper;
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PerformantExplosion;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -30,11 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
-import java.util.ConcurrentModificationException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,7 +45,7 @@ public class MeteorEntity extends Entity {
     private int lifeTicks = 0;
     private int petrifiedTicks = 0;
     private int maxLifeTicks = 20 * 12;
-    private boolean isDiscarded = false;
+    protected boolean isEnvisioned = false;
 
     public MeteorEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -90,7 +80,9 @@ public class MeteorEntity extends Entity {
         builder.define(COLOR_B, 0.0f);
         builder.define(ABYSS_IMPACT, false);
     }
-    
+
+    public void setEnvisioned(boolean value) {isEnvisioned = value;}
+
     public float getSpeed() {
         return this.entityData.get(SPEED);
     }
@@ -170,23 +162,6 @@ public class MeteorEntity extends Entity {
         return null;
     }
 
-    @Override
-    public void onAddedToLevel() {
-        super.onAddedToLevel();
-
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "meteor_trail");
-        FX fx = FXHelper.getFX(id);
-
-        EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
-        executor.setScale(2.5, 2.5, 2.5);
-
-        try {
-            executor.start();
-        } catch (ConcurrentModificationException ignored) {
-
-        }
-    }
-
     Vec3 direction;
     Vec3 targetPos;
 
@@ -213,10 +188,6 @@ public class MeteorEntity extends Entity {
 
         super.tick();
 
-        if(isDiscarded) {
-            return;
-        }
-
         lifeTicks++;
 
         if(!(level() instanceof ServerLevel serverLevel)) {
@@ -235,14 +206,19 @@ public class MeteorEntity extends Entity {
         moveTo(position().add(direction.normalize().scale(getSpeed())));
 
         if(!level().getBlockState(BlockPos.containing(position())).isAir()) {
+            if(!isEnvisioned) {
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMPACT, getDamage() / 2, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage() / 2, position(), true, false);
+            }
+            else{
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMAGINATION, getDamage() / 2, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.IMPACT, getDamage() / 4, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), ModDamageTypes.FIRE, getDamage() / 4, position(), true, false);
+            }
+
             AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
-            ServerScheduler.scheduleDelayed(2, () -> {
-                PacketHandler.sendToNearbyPlayers(
-                        new PlayPhotonBlockEffectPacket("explosion", BlockPos.containing(position()), 0, 0, 0, Math.max(1, getExplosionSize() * 0.15), null, -1, false, true, null),
-                        serverLevel, position(), 256
-                );
-            });
-            PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
+            EffectManager.playEffect(EffectIds.EXPLOSION, position().x, position().y, position().z, serverLevel);
+            //PerformantExplosion.create(serverLevel, getCaster(), position(), getExplosionSize() * 1.5f, isGriefing(), isGriefing() ? Explosion.BlockInteraction.DESTROY_WITH_DECAY : Explosion.BlockInteraction.KEEP);
 
             if(getCaster() instanceof LivingEntity livingCaster) {
                 String[] flags = isAbyssImpact() ? new String[]{"explosion", "corruption"} : new String[]{"explosion", "burning"};
@@ -271,8 +247,7 @@ public class MeteorEntity extends Entity {
                         });
             }
 
-            isDiscarded = true;
-            ServerScheduler.scheduleDelayed(15, this::discard);
+            discard();
         }
     }
     

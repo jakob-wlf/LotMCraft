@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedInventoryComponent;
 import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
@@ -92,7 +93,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override
@@ -513,7 +513,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                 Component.translatable("lotm.worm").append(Component.literal(": ")).append(Component.literal(String.valueOf(hasWorm))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
                         )));
             }
-
             CompoundTag itemData = new CompoundTag();
             itemData.putInt("MarkedIndex", i);
             displayItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemData));
@@ -579,16 +578,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         // Create a spawn egg or representation item
         ItemStack display = new ItemStack(Items.PLAYER_HEAD);
-        display.set(DataComponents.CUSTOM_NAME,
-                Component.literal(customName.isEmpty() ? entityId : customName));
 
-        CompoundTag customTag = new CompoundTag();
-        customTag.put("EntityData", entityData);
-
-        display.set(DataComponents.CUSTOM_DATA,
-                CustomData.of(customTag)
+        display.set(
+                DataComponents.CUSTOM_NAME,
+                Component.literal(customName.isEmpty() ? entityId : customName).withStyle(ChatFormatting.YELLOW)
         );
-
         return display;
     }
 
@@ -608,6 +602,13 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             boolean isPlayer = entityTypeId.equals("minecraft:player");
 
             if(entityData.getBoolean("IsBeyonderNPC") || isPlayer) {
+                if (isPlayer && player != null && player.getServer() != null) {
+                    ServerPlayer targetPlayer = player.getServer().getPlayerList().getPlayerByName(entityData.getString("CustomName"));
+
+                    if (targetPlayer != null) {
+                        MetaAwarenessAbility.sendWithMessage(player, targetPlayer, "Someone summoned your historical projection");
+                    }
+                }
                 CompoundTag entityNBT = entityData.getCompound("EntityNBT");
                 CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
 
@@ -834,7 +835,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private void markEntity(ServerLevel level, ServerPlayer player) {
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true, false);
 
         if(target == null){
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.no_nearby_entities").withStyle(ChatFormatting.RED));

@@ -69,9 +69,9 @@ public record RequestUniquenessApotheosisPacket() implements CustomPacketPayload
 
         int charStack = BeyonderData.getCurrentCharStack(player);
         int requiredStack = player.serverLevel().getGameRules().getInt(ModGameRules.CHARSTACK_REQUIRED_FOR_APOTHEOSIS);
-        int killCount = comp.getKillCount();
+        boolean isRitualCompleted = player.getData(ModAttachments.RITUALS.get()).isCompleted();
 
-        if (charStack < requiredStack || killCount < KILLS_REQUIRED_FOR_APOTHEOSIS) {
+        if (charStack < requiredStack || !isRitualCompleted) {
             player.displayClientMessage(
                     Component.translatable("lotm.uniqueness.fail"),
                     true

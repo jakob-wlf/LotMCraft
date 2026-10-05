@@ -9,6 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class DivineKingdomManifestationAbility extends Ability {
@@ -20,6 +22,14 @@ public class DivineKingdomManifestationAbility extends Ability {
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(100, 360));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(25000f, 10000f));
+
+        baseDamage = 3f;
     }
 
     @Override
@@ -38,7 +48,10 @@ public class DivineKingdomManifestationAbility extends Ability {
             return;
         }
 
-        SunKingdomEntity sunKingdomEntity = new SunKingdomEntity(ModEntities.SUN_KINGDOM.get(), level, 20 * 60 * 2, entity.getUUID(), BeyonderData.isGriefingEnabled(entity));
+        if(serverLevel.isNight())
+            serverLevel.setDayTime(6000);
+
+        SunKingdomEntity sunKingdomEntity = new SunKingdomEntity(ModEntities.SUN_KINGDOM.get(), level, 20 * 50, entity.getUUID(), BeyonderData.isGriefingEnabled(entity), baseDamage);
         sunKingdomEntity.setPos(entity.getX(), entity.getY() + .5, entity.getZ());
         serverLevel.addFreshEntity(sunKingdomEntity);
     }

@@ -15,7 +15,8 @@ public class TeleportationUtil {
 
         double clampedX = Mth.clamp(pos.x, minX + 1, maxX - 1);
         double clampedZ = Mth.clamp(pos.z, minZ + 1, maxZ - 1);
+        double clampedY = Math.max(pos.y, level.getMinBuildHeight() + 10);
 
-        return new Vec3(clampedX, pos.y, clampedZ);
+        return new Vec3(clampedX, clampedY, clampedZ);
     }
 }

@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -18,6 +19,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,6 +28,14 @@ import java.util.concurrent.atomic.AtomicReference;
 public class FlameControllingAbility extends Ability {
     public FlameControllingAbility(String id) {
         super(id, 1.5f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5200f, 2000f, 1400f, 875f, 800f, 475f, 420f, 390f));
+
+        baseDamage = 6;
     }
 
     @Override
@@ -42,7 +53,7 @@ public class FlameControllingAbility extends Ability {
         if(level.isClientSide)
             return;
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (10* multiplier(entity)), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
 
@@ -50,6 +61,7 @@ public class FlameControllingAbility extends Ability {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
+        float damage = baseDamage;
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 20, () -> {
             if(hasHit.get())
@@ -57,7 +69,7 @@ public class FlameControllingAbility extends Ability {
 
             Vec3 pos = currentPos.get();
 
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2f, DamageLookup.lookupDamage(7, .85) * multiplier(entity), pos, true, false, true, 0, 20 * 5)) {
+            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2f, ModDamageTypes.FIRE, damage, pos, true, false)) {
                 hasHit.set(true);
                 return;
             }

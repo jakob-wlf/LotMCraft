@@ -21,6 +21,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,12 +31,36 @@ public class MirrorWorldTraversalAbility extends SelectableAbility {
     public MirrorWorldTraversalAbility(String id) {
         super(id,3);
         canBeUsedWhileControlling = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        canBeUsedInArtifact = false;
+        cannotBeStolen = true;
+        canBeShared = false;
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 3, 5, 7, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8000f, 4000f, 2500f, 1000f, 500f));
+    }
+
+    @Override
+    public Map<String, Integer> getRequirements() {
+        return Map.of("demoness", 4);
+    }
+
+    @Override
+    protected float getSpiritualityCost() {
+        return 500;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.mirror_world_traversal.enter", "ability.lotmcraft.mirror_world_traversal.scan"};
+        return new String[]{
+                "ability.lotmcraft.mirror_world_traversal.enter",
+                "ability.lotmcraft.mirror_world_traversal.scan"
+        };
     }
 
     @Override
@@ -113,15 +139,6 @@ public class MirrorWorldTraversalAbility extends SelectableAbility {
         });
     }
 
-    @Override
-    public Map<String, Integer> getRequirements() {
-        return Map.of("demoness", 4);
-    }
-
-    @Override
-    protected float getSpiritualityCost() {
-        return 500;
-    }
 
     private static BlockPos getNearestGlassBlock(ServerLevel level, Vec3 pos, int searchRadius) {
         return AbilityUtil.getBlocksInSphereRadius(level, pos, searchRadius, true, true, false).stream().filter(b -> {

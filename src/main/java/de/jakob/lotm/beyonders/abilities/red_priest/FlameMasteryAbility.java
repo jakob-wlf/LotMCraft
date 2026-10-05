@@ -1,12 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -15,9 +13,9 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -27,16 +25,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FlameMasteryAbility extends SelectableAbility {
-    private final HashSet<UUID> transformedEntities = new HashSet<>();
+
     public FlameMasteryAbility(String id) {
         super(id, 5f, "burning");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3200f, 1300f, 800f, 600f, 550f));
+
+        baseDamage = 20f;
     }
 
     @Override
@@ -54,7 +57,6 @@ public class FlameMasteryAbility extends SelectableAbility {
         return new String[]{
                 "ability.lotmcraft.flame_mastery.fireball_barrage",
                 "ability.lotmcraft.flame_mastery.eruption",
-                "ability.lotmcraft.flame_mastery.flame_transformation",
         };
     }
 
@@ -69,122 +71,52 @@ public class FlameMasteryAbility extends SelectableAbility {
         switch (abilityIndex) {
             case 0 -> fireballBarrage((ServerLevel) level, entity);
             case 1 -> eruption((ServerLevel) level, entity);
-            case 2 -> flameTransformation((ServerLevel) level, entity);
         }
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1.0f, .95f, .95f), 2.0f);
 
-    private void flameTransformation(ServerLevel level, LivingEntity entity) {
-        level.playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-
-        UUID entityId = entity.getUUID();
-
-        if(transformedEntities.contains(entityId)) {
-            transformedEntities.remove(entityId);
-            return;
-        }
-
-        transformedEntities.add(entityId);
-        AtomicBoolean shouldStop = new AtomicBoolean(false);
-
-        TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-        transformationComponent.setTransformedAndSync(true, entity);
-        transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.FLAME_TRANSFORMATION, entity);
-
-        ServerScheduler.scheduleUntil(level, () -> {
-            BeyonderData.reduceSpirituality(entity, 25);
-
-            if (BeyonderData.getSpirituality(entity) <= 0) {
-                if (entity instanceof ServerPlayer player) {
-                    player.connection.send(new ClientboundSetActionBarTextPacket(
-                            net.minecraft.network.chat.Component.literal("Your spirituality is exhausted.").withColor(0xFF422a2a)
-                    ));
-                }
-                transformedEntities.remove(entityId);
-                shouldStop.set(true);
-                return;
-            }
-
-            TransformationComponent transformationComponent2 = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-            if (!transformationComponent2.isTransformed() || transformationComponent2.getTransformationIndex() != TransformationComponent.TransformationType.FLAME_TRANSFORMATION.getIndex()) {
-                transformedEntities.remove(entityId);
-                shouldStop.set(true);
-                return;
-            }
-
-            if(!transformedEntities.contains(entityId)) {
-                shouldStop.set(true);
-                return;
-            }
-
-            Vec3 pos = entity.position();
-            BlockPos blockPos = BlockPos.containing(pos);
-
-            double offsetX = pos.x - (blockPos.getX() + 0.5);
-            double offsetY = pos.y - (blockPos.getY() + 0.5) + .145;
-            double offsetZ = pos.z - (blockPos.getZ() + 0.5);
-
-            PacketHandler.sendToNearbyPlayers(
-                    new PlayPhotonBlockEffectPacket("flame_transformation", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, false, true, null),
-                    (ServerLevel) level, pos, 128
-            );
-
-            if(!entity.isShiftKeyDown())
-                entity.setDeltaMovement(entity.getLookAngle().normalize().scale(.5));
-            else
-                entity.setDeltaMovement(0, 0, 0);
-
-            entity.hurtMarked = true;
-        }, 1, () -> {
-            TransformationComponent transformationComponent2 = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
-            if(transformationComponent2.isTransformed() && transformationComponent2.getTransformationIndex() == TransformationComponent.TransformationType.FLAME_TRANSFORMATION.getIndex()) {
-                transformationComponent2.setTransformedAndSync(false, entity);
-            }
-        }, shouldStop);
-    }
 
     private void eruption(ServerLevel level, LivingEntity entity) {
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (20* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        level.explode(entity, targetPos.x, targetPos.y, targetPos.z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        level.explode(entity, targetPos.x, targetPos.y + 1, targetPos.z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        level.explode(entity, targetPos.x, targetPos.y + 2, targetPos.z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
         ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, targetPos, 1500, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, ParticleTypes.SMOKE, targetPos, 300, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, targetPos, 90, 2, 6, 2, .02);
         ParticleUtil.spawnParticles(level, dust, targetPos, 400, 2, 6, 2, 0);
 
-        AbilityUtil.damageNearbyEntities(level, entity, 9, DamageLookup.lookupDamage(4, 1) * multiplier(entity), targetPos, true, false);
+        float damage = baseDamage;
+        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.SOUL_FIRE,damage/2, targetPos, true, false, true, 0);
+        AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.FIRE,damage/2, targetPos, true, false, true, 0);
 
-        for(int i = 0; i < 25; i++) {
-            FallingBlockEntity falling = FallingBlockEntity.fall(
-                    level,
-                    BlockPos.containing(targetPos.x, targetPos.y, targetPos.z).offset(random.nextInt(-1, 1), 2, random.nextInt(-1, 1)),
-                    i % 2 == 0 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState()
-            );
-
-            double xVel = random.nextDouble(-3, 3);
-            double yVel = random.nextDouble(3.5, 5);
-            double zVel = random.nextDouble(-3, 3);
-            Vec3 motion = new Vec3(xVel, yVel, zVel).normalize().scale(1.4);
-            falling.setDeltaMovement(motion);
-            ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                falling.hurtMarked = true;
-            });
-            if(!griefing)
-                falling.disableDrop();
-        }
+//        for(int i = 0; i < 25; i++) {
+//            FallingBlockEntity falling = FallingBlockEntity.fall(
+//                    level,
+//                    BlockPos.containing(targetPos.x, targetPos.y, targetPos.z).offset(random.nextInt(-1, 1), 2, random.nextInt(-1, 1)),
+//                    i % 2 == 0 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState()
+//            );
+//
+//            double xVel = random.nextDouble(-3, 3);
+//            double yVel = random.nextDouble(3.5, 5);
+//            double zVel = random.nextDouble(-3, 3);
+//            Vec3 motion = new Vec3(xVel, yVel, zVel).normalize().scale(1.4);
+//            falling.setDeltaMovement(motion);
+//            ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
+//                falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
+//                falling.hurtMarked = true;
+//            });
+//            if(!griefing)
+//                falling.disableDrop();
+//        }
     }
 
     private void fireballBarrage(ServerLevel level, LivingEntity entity) {
         double shots = 15;
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 1.4f);
+        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         Vec3 pos = entity.getEyePosition();
         Vec3 dir = entity.getLookAngle();
         for (int i = 0; i < shots; i++) {
-            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(pos, level)));
+            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
         }
     }
 
@@ -194,8 +126,9 @@ public class FlameMasteryAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(4, 0.4) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 1.75f);
-        //LOTMCraft.LOGGER.info("damage {} multiplier {}",DamageLookup.lookupDamage(4, 0.4),multiplier(entity));
+        float damage = baseDamage/3;
+        FireballEntity fireball = new FireballEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity), 1.75f);
+
         fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position,
         fireball.shoot(direction.x, direction.y, direction.z, 1.85f*multiplier(entity), 0);
         level.addFreshEntity(fireball);

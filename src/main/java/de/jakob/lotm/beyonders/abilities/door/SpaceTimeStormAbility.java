@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -26,12 +27,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class SpaceTimeStormAbility extends SelectableAbility {
     public SpaceTimeStormAbility(String id) {
-        super(id, 50, "explosion", "destruction");
+        super(id, 10, "explosion", "destruction");
         canBeCopied = false;
         interactionRadius = 60;
         interactionCacheTicks = 20 * 12;
         canBeShared = false;
         postsUsedAbilityEventManually = true;
+
+        baseDamage = 1f; //needed to hook into multiplier
     }
 
     @Override
@@ -41,12 +44,15 @@ public class SpaceTimeStormAbility extends SelectableAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 40000;
+        return 50000;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.space_time_storm.area", "ability.lotmcraft.space_time_storm.targeted"};
+        return new String[]{
+                "ability.lotmcraft.space_time_storm.area",
+                "ability.lotmcraft.space_time_storm.targeted"
+        };
     }
 
     @Override
@@ -63,9 +69,10 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         UUID effectId = EffectManager.playEffect(EffectIds.SPACE_TEAR, loc.getX(), loc.getY(), loc.getZ(), level, entity);
 
         AtomicInteger ticks = new AtomicInteger();
+        final float damage = baseDamage * 7f;
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 10, () -> {
-            Vec3 target = AbilityUtil.getTargetLocation(entity, (int) (60*multiplier(entity)), 3);
+            Vec3 target = AbilityUtil.getTargetLocation(entity, 60, 3);
             if(target == null) return;
 
             ticks.addAndGet(1);
@@ -80,7 +87,7 @@ public class SpaceTimeStormAbility extends SelectableAbility {
             level.playSound(null, BlockPos.containing(target), SoundEvents.WITHER_SHOOT, SoundSource.AMBIENT, 1.5f, 0.75f + random.nextFloat() * 0.5f);
 
             if(ticks.get() % 10 == 0) {
-                AbilityUtil.damageNearbyEntities(level, entity, 15* multiplier(entity), DamageLookup.lookupDamage(1, .4) *(int) Math.max(multiplier(entity)/6,1), target, true, false);
+                AbilityUtil.damageNearbyEntities(level, entity, 15, ModDamageTypes.SPACE_DESTRUCTION, damage, target, true, false);
             }
 
             if(griefing) {
@@ -102,13 +109,14 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         serverLevel.playSound(null, BlockPos.containing(center), SoundEvents.WITHER_SPAWN, SoundSource.AMBIENT, 1.5f, 0.75f + random.nextFloat() * 0.5f);
 
         AtomicInteger ticks = new AtomicInteger();
+        final float damage = baseDamage * 3f;
 
         List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 60, true, true, false);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
             ticks.addAndGet(1);
 
             if (ticks.get() % 10 == 0) {
-                AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), DamageLookup.lookupDamage(1, .4) * (int) Math.max(multiplier(entity)/6,1), center, true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, entity, 60, ModDamageTypes.SPACE_DESTRUCTION, damage, center, true, false);
             }
 
             if(griefing) {

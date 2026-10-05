@@ -3,11 +3,14 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ConcealedDomainAbility extends Ability {
@@ -15,6 +18,12 @@ public class ConcealedDomainAbility extends Ability {
     public ConcealedDomainAbility(String id) {
         super(id, 2f);
         this.canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8000f, 6000f, 4000f));
     }
 
     @Override
@@ -47,5 +56,7 @@ public class ConcealedDomainAbility extends Ability {
         domain.setPos(entity.position());
         serverLevel.addFreshEntity(domain);
         ConcealedDomainEntity.registerForOwner(entity.getUUID(), domain);
+
+        ServerScheduler.scheduleDelayed(20 * 60, domain::discard);
     }
 }

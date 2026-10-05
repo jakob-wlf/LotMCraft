@@ -38,12 +38,15 @@ public class DoorAuthorityAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 10000;
+        return 60000;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.door_authority.malfunction", "ability.lotmcraft.door_authority.strengthen"};
+        return new String[]{
+                "ability.lotmcraft.door_authority.malfunction",
+                "ability.lotmcraft.door_authority.strengthen"
+        };
     }
 
     @Override

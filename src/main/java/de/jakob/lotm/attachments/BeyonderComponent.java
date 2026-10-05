@@ -19,6 +19,15 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
     private float digestionProgress = 0;
     private boolean isGriefingEnabled = true;
     private int cowardWormAmount = 0;
+    private int convergenceTimer = 0;
+
+    public int getConvergenceTimer() {
+        return convergenceTimer;
+    }
+
+    public void setConvergenceTimer(int convergenceTimer) {
+        this.convergenceTimer = convergenceTimer;
+    }
 
     public int getSequence() {
         return sequence;

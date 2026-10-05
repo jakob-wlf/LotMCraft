@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -19,10 +20,14 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ConceptualizationAbility extends ToggleAbility {
+    private static HashSet<UUID> active = new HashSet<>();
+
     public ConceptualizationAbility(String id) {
         super(id);
         canBeCopied = false;
@@ -30,6 +35,7 @@ public class ConceptualizationAbility extends ToggleAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         tickRate = 1;
+
     }
 
     @Override
@@ -48,11 +54,7 @@ public class ConceptualizationAbility extends ToggleAbility {
             return;
         }
 
-        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
-        if(disabledFlightComponent.getCooldownTicks() > 0) {
-            cancel((ServerLevel) level, entity);
-            return;
-        }
+        active.add(entity.getUUID());
 
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         transformationComponent.setTransformedAndSync(true, entity);
@@ -64,19 +66,29 @@ public class ConceptualizationAbility extends ToggleAbility {
         if(level.isClientSide) {
             return;
         }
-        /*
-        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
-        if(disabledFlightComponent.getCooldownTicks() > 0) {
+
+        if(!active.contains(entity.getUUID())){
             cancel((ServerLevel) level, entity);
             return;
         }
-        */
-        // Allow Flying
-        if(entity instanceof Player player) {
-            player.getAbilities().mayfly = true;
-            player.getAbilities().flying = true;
-            player.getAbilities().setFlyingSpeed(.35f);
-            player.onUpdateAbilities();
+
+        DisabledFlightComponent disabledFlightComponent = entity.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+
+        if(disabledFlightComponent.getCooldownTicks() > 0) {
+            if (entity instanceof Player player) {
+                player.getAbilities().mayfly = false;
+                player.getAbilities().flying = false;
+                player.getAbilities().setFlyingSpeed(.05f);
+                player.onUpdateAbilities();
+            }
+        }
+        else {
+            if (entity instanceof Player player) {
+                player.getAbilities().mayfly = true;
+                player.getAbilities().flying = true;
+                player.getAbilities().setFlyingSpeed(.35f);
+                player.onUpdateAbilities();
+            }
         }
 
         // Stop when overridden by another transformation
@@ -106,6 +118,8 @@ public class ConceptualizationAbility extends ToggleAbility {
             player.onUpdateAbilities();
         }
 
+        active.remove(entity.getUUID());
+
         TransformationComponent transformationComponent = entity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         if(transformationComponent.isTransformed() && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.CONCEPTUALIZATION.getIndex()) {
             transformationComponent.setTransformedAndSync(false, entity);
@@ -119,10 +133,15 @@ public class ConceptualizationAbility extends ToggleAbility {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingDamage(LivingIncomingDamageEvent event) {
-        if(!((ToggleAbility) LOTMCraft.abilityHandler.getById("conceptualization_ability")).isActiveForEntity(event.getEntity())) {
+        var entity = event.getEntity();
+        if(!active.contains(entity.getUUID())) return;
+
+        var source = event.getSource();
+        if(source.is(ModDamageTypes.INFORMATION_DESTRUCTION)){
+            active.remove(entity.getUUID());
             return;
         }
 
-        event.setAmount(event.getAmount() * .20f);
+        event.setAmount(event.getAmount() * 0.6f);
     }
 }

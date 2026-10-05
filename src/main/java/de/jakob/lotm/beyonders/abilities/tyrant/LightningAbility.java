@@ -12,11 +12,21 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class LightningAbility extends Ability {
     public LightningAbility(String id) {
         super(id, 2f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f));
+
+        baseDamage = 13f;
     }
 
     @Override
@@ -34,14 +44,19 @@ public class LightningAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 25, 2, true);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true);
         for(int i = 0; i < 35; i++) {
             BlockState state = level.getBlockState(BlockPos.containing(targetLoc.subtract(0, 1, 0)));
             if(state.getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty())
                 targetLoc = targetLoc.subtract(0, 1, 0);
         }
 
-        LightningEntity lightning = new LightningEntity(level, entity, targetLoc, 50, 6, DamageLookup.lookupDamage(5, .85)* multiplier(entity), BeyonderData.isGriefingEnabled(entity), 4, 200* multiplier(entity), 0x11A8DD);
+        LightningEntity lightning = new LightningEntity(level,
+                entity, targetLoc,
+                50, 6,
+                baseDamage, BeyonderData.isGriefingEnabled(entity),
+                0, 200* multiplier(entity), 0x11A8DD);
+
         level.addFreshEntity(lightning);
     }
 }

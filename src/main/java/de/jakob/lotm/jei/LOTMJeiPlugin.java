@@ -5,17 +5,21 @@ package de.jakob.lotm.jei;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
-
+import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
 import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.registration.IGuiHandlerRegistration;
+import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Collections;
 import java.util.List;
@@ -55,6 +59,14 @@ public class LOTMJeiPlugin implements IModPlugin {
             }
         });
 
+        registration.addGuiContainerHandler(CopiedAbilityWheelScreen.class, new IGuiContainerHandler<CopiedAbilityWheelScreen>() {
+            @Override
+            public List<Rect2i> getGuiExtraAreas(CopiedAbilityWheelScreen screen) {
+                // Return a rectangle covering the entire screen to hide JEI completely
+                return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
+            }
+        });
+
         registration.addGuiContainerHandler(MarionetteControlScreen.class, new IGuiContainerHandler<MarionetteControlScreen>() {
             @Override
             public List<Rect2i> getGuiExtraAreas(MarionetteControlScreen screen) {
@@ -78,5 +90,18 @@ public class LOTMJeiPlugin implements IModPlugin {
                 return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
             }
         });
+    }
+
+    // to remove recipes from jei menu - prevent players from reading rituals
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        List<ItemStack> recipeItemsToHide = PotionRecipeItemHandler.ITEMS.getEntries().stream()
+                .map(holder -> new ItemStack(holder.get()))
+                .toList();
+
+        jeiRuntime.getIngredientManager().removeIngredientsAtRuntime(
+                VanillaTypes.ITEM_STACK,
+                recipeItemsToHide
+        );
     }
 }

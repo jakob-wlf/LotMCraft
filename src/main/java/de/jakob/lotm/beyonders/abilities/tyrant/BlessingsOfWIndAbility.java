@@ -20,7 +20,7 @@ import java.util.*;
 
 public class BlessingsOfWIndAbility extends SelectableAbility {
     public BlessingsOfWIndAbility(String id) {
-        super(id, 8);
+        super(id, 6);
     }
 
     @Override

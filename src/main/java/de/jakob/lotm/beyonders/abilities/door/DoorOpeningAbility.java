@@ -18,6 +18,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class DoorOpeningAbility extends Ability {
@@ -25,6 +27,9 @@ public class DoorOpeningAbility extends Ability {
         super(id, 1);
 
         canBeUsedByNPC = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4500f, 2000f, 1200f, 750f, 680f, 570f, 400f, 290f, 150f, 150f));
     }
 
     @Override
@@ -42,7 +47,7 @@ public class DoorOpeningAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, 15, false);
+        BlockPos targetLoc = AbilityUtil.getTargetBlock(entity, baseDistance, false);
 
         if(level.getBlockState(targetLoc).isAir()) {
             Vec3 failureParticleLoc = AbilityUtil.getTargetBlock(entity, 4).getCenter();
@@ -103,15 +108,17 @@ public class DoorOpeningAbility extends Ability {
 
     private int getMaxRadius(int sequence) {
         return switch (sequence) {
-            default -> 2;
-            case 8 -> 4;
+            default -> 0;
+            case 9 -> 4;
+            case 8 -> 5;
             case 7 -> 6;
             case 6 -> 7;
-            case 5 -> 10;
-            case 4 -> 50;
-            case 3 -> 70;
-            case 2 -> 200;
-            case 1 -> 500;
+            case 5 -> 8;
+            case 4 -> 10;
+            case 3 -> 11;
+            case 2 -> 15;
+            case 1 -> 16;
+            case 0 -> 25;
         };
     }
 

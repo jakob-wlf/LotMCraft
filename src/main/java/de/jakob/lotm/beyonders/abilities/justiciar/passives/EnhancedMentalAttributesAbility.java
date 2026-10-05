@@ -6,7 +6,6 @@ import de.jakob.lotm.effect.ModEffects;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;

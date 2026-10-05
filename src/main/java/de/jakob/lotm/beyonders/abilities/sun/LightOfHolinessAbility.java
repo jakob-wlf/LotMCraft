@@ -22,10 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class LightOfHolinessAbility extends Ability {
@@ -33,6 +30,14 @@ public class LightOfHolinessAbility extends Ability {
         super(id, 1.85f, "purification", "light_weak");
         postsUsedAbilityEventManually = true;
         interactionRadius = 10;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 1100f, 630f, 550f, 475f));
+
+        baseDamage = 7f;
     }
 
     @Override
@@ -47,8 +52,6 @@ public class LightOfHolinessAbility extends Ability {
         return 150;
     }
 
-    final int radius = 45;
-
     DustParticleOptions dustOptions = new DustParticleOptions(
             new Vector3f(255 / 255f, 180 / 255f, 66 / 255f),
             2.25f
@@ -58,7 +61,7 @@ public class LightOfHolinessAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, radius, 1.5f, true).add(0, 18, 0);
+        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.5f, true).add(0, 18, 0);
 
         List<BlockPos> lights = new ArrayList<>();
 
@@ -69,6 +72,7 @@ public class LightOfHolinessAbility extends Ability {
         EffectManager.playEffect(EffectIds.LIGHT_OF_HOLINESS, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
 
         double multiplier = multiplier(entity);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
             Vec3 pos = currentPos.get();
 
@@ -79,7 +83,13 @@ public class LightOfHolinessAbility extends Ability {
                 lights.add(blockPos);
             }
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, DamageLookup.lookupDamage(5, .8) * multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+            if(entitySeq <= 4){
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.FAITH, baseDamage/2, pos, true, false, false, 5);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.LIGHT, baseDamage/2, pos, true, false, false, 5);
+            }
+            else{
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 8f, ModDamageTypes.LIGHT, baseDamage, pos, true, false, false, 5);
+            }
 
             currentPos.set(pos.subtract(0, 2.5, 0));
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

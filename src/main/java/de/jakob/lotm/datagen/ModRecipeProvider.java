@@ -29,15 +29,15 @@ public class ModRecipeProvider extends RecipeProvider {
             .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
             .save(recipeOutput);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.MYSTICAL_RING.asItem())
-                .pattern("GDG")
-                .pattern("DND")
-                .pattern("GDG")
-                .define('G', Items.GOLD_INGOT)
-                .define('D', Items.DIAMOND)
-                .define('N', Items.NETHERITE_SCRAP)
-                .unlockedBy("has_diamond", has(Items.DIAMOND))
-                .save(recipeOutput);
+//        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.MYSTICAL_RING.asItem())
+//                .pattern("GDG")
+//                .pattern("DND")
+//                .pattern("GDG")
+//                .define('G', Items.GOLD_INGOT)
+//                .define('D', Items.DIAMOND)
+//                .define('N', Items.NETHERITE_SCRAP)
+//                .unlockedBy("has_diamond", has(Items.DIAMOND))
+//                .save(recipeOutput);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.MYSTERIOUS_SILVER_PLATE.get())
                 .pattern("IPI")

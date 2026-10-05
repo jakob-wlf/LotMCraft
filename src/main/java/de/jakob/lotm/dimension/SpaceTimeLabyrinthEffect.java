@@ -24,7 +24,7 @@ public class SpaceTimeLabyrinthEffect {
 
     private static final int DAMAGE_INTERVAL_TICKS = 25;
 
-    private static final float DAMAGE_PER_PULSE = 8f;
+    private static final float DAMAGE_PER_PULSE = 4f;
 
     private static final double NAUSEA_CHANCE = 0.10;
 
@@ -44,7 +44,7 @@ public class SpaceTimeLabyrinthEffect {
 
         if (((VoidImmunityAbility) PassiveAbilityHandler.getById("void_immunity_ability")).shouldApplyTo(entity)) return;
 
-        DamageSource source = ModDamageTypes.source(level, ModDamageTypes.DOOR_SPACE);
+        DamageSource source = ModDamageTypes.source(level, ModDamageTypes.SPACE_DESTRUCTION);
         entity.hurt(source, DAMAGE_PER_PULSE);
 
         if (RANDOM.nextDouble() < NAUSEA_CHANCE) {

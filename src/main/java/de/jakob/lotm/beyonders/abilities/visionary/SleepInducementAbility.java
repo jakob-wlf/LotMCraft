@@ -23,12 +23,19 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class SleepInducementAbility extends SelectableAbility {
     public SleepInducementAbility(String id) {
         super(id, 2);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 2, 2));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1000f, 800f, 600f, 400f, 200f, 100f));
     }
 
     @Override
@@ -73,16 +80,26 @@ public class SleepInducementAbility extends SelectableAbility {
             return;
         }
 
+        int duration = 4;
+
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 10 * (int) Math.max(multiplier(entity)/4,1)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 50).forEach(e -> {
             if(!VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, e, this)){
-               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 6* (int) Math.max(multiplier(entity)/4,1), 1, false, false, false));
+               e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * duration, 1, false, false, false));
             }
         });
     }
 
     private void single(Level level, LivingEntity entity){
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 80, 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
 
         if(!(level instanceof ServerLevel)) {
             if(target != null) {
@@ -102,12 +119,13 @@ public class SleepInducementAbility extends SelectableAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
 
-        target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * 12, 1, false, false, false));
+        int duration = 6;
+
+        target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, 20 * duration, 1, false, false, false));
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(

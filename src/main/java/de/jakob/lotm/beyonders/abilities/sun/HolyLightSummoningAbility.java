@@ -22,10 +22,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class HolyLightSummoningAbility extends Ability {
@@ -33,6 +30,15 @@ public class HolyLightSummoningAbility extends Ability {
         super(id, 1.5f, "purification", "light_source", "light_weak");
         postsUsedAbilityEventManually = true;
         interactionRadius = 8;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f));
+
+
+        baseDamage = 6;
     }
 
     @Override
@@ -47,8 +53,6 @@ public class HolyLightSummoningAbility extends Ability {
         return 64;
     }
 
-    final int radius = 40;
-
     DustParticleOptions dustOptions = new DustParticleOptions(
             new Vector3f(255 / 255f, 180 / 255f, 66 / 255f),
             2.25f
@@ -58,7 +62,7 @@ public class HolyLightSummoningAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, radius, 1.5f, true).add(0, 18, 0);
+        Vec3 initialPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.5f, true).add(0, 18, 0);
 
         List<BlockPos> lights = new ArrayList<>();
 
@@ -68,7 +72,7 @@ public class HolyLightSummoningAbility extends Ability {
 
         EffectManager.playEffect(EffectIds.HOLY_LIGHT_SMALL, initialPos.x, initialPos.y - 18, initialPos.z, (ServerLevel) level, entity);
 
-        double multiplier = multiplier(entity);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         ServerScheduler.scheduleForDuration(0, 1, 22, () -> {
             Vec3 pos = currentPos.get();
@@ -80,7 +84,15 @@ public class HolyLightSummoningAbility extends Ability {
                 lights.add(blockPos);
             }
 
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5f* multiplier(entity), DamageLookup.lookupDamage(7, .8) * multiplier(entity), pos, true, false, false, 10, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
+            if(entitySeq <= 4){
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.PURIFICATION, baseDamage * 0.34, pos, true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.LIGHT, baseDamage * 0.33, pos, true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.FAITH, baseDamage * 0.33, pos, true, false, true, 0);
+
+            }
+            else{
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5* (int) multiplier(entity), ModDamageTypes.LIGHT, baseDamage, pos, true, false, true, 0);
+            }
 
             currentPos.set(pos.subtract(0, 2.5, 0));
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

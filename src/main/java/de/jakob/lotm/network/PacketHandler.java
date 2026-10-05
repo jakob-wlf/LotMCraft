@@ -958,6 +958,12 @@ public class PacketHandler {
                 MassPuppeteeringSelectedEntitiesPacket.STREAM_CODEC,
                 MassPuppeteeringSelectedEntitiesPacket::handle
         );
+
+        registrar.playToServer(
+                UseCopiedAbilityPacket.TYPE,
+                UseCopiedAbilityPacket.STREAM_CODEC,
+                UseCopiedAbilityPacket::handle
+        );
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
@@ -1039,10 +1045,23 @@ public class PacketHandler {
         String pledgedSefirot = BeyonderData.pledgedSefirot(targetPlayer);
         boolean hasPatron = BeyonderData.hasPlayerPatron(targetPlayer);
 
-        SyncBeyonderDataPacket packet = new SyncBeyonderDataPacket(targetPlayer.getUUID(), pathway, sequence, spirituality, griefingEnabled, digestionProgress, new String[10], charStacks, wormAmount, pledgedSefirot, hasPatron);
 
         targetPlayer.getServer().getPlayerList().getPlayers().forEach(player -> {
-            sendToPlayer(player, packet);
+            sendToPlayer(player,
+                    new SyncBeyonderDataPacket(
+                            player.getUUID(),
+                            pathway,
+                            sequence,
+                            spirituality,
+                            griefingEnabled,
+                            digestionProgress,
+                            new String[10],
+                            charStacks,
+                            wormAmount,
+                            pledgedSefirot,
+                            hasPatron)
+                    )
+            );
         });
     }
 

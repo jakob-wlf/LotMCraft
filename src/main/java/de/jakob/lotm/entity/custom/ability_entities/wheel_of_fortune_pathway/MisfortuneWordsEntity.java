@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway;
 
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
@@ -35,6 +36,8 @@ public class MisfortuneWordsEntity extends Entity {
     private static final EntityDataAccessor<Integer> AFFECTED_ENTITIES_COUNT =
             SynchedEntityData.defineId(MisfortuneWordsEntity.class, EntityDataSerializers.INT);
 
+    private float damage = 0.5f;
+
     private final ArrayList<UUID> affectedEntities = new ArrayList<>();
 
     public MisfortuneWordsEntity(EntityType<?> entityType, Level level) {
@@ -49,11 +52,12 @@ public class MisfortuneWordsEntity extends Entity {
         builder.define(AFFECTED_ENTITIES_COUNT, 0);
     }
 
-    public MisfortuneWordsEntity(Level level, Vec3 pos) {
+    public MisfortuneWordsEntity(Level level, Vec3 pos, float damage) {
         this(ModEntities.MISFORTUNE_WORDS.get(), level);
         this.setPos(pos);
         this.setXRot(90);
         this.setYRot(0);
+        this.damage = damage;
     }
 
     @Override
@@ -68,16 +72,23 @@ public class MisfortuneWordsEntity extends Entity {
                 if(getCasterEntity() != null && !AbilityUtil.mayTarget(getCasterEntity(), e))
                     return;
 
-                LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT.get());
-                int luck = luckComponent.getLuck();
+//                LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT.get());
+//                int luck = luckComponent.getLuck();
+//
+//                if(luck < 1000 && luck > -3000) {
+//                    luckComponent.setLuck(-3000);
+//                }
 
-                if(luck < 1000 && luck > -3000) {
-                    luckComponent.setLuck(-3000);
-                }
+                if(!(BeyonderData.getSequence(e) <= 2 && e.getHealth() <= e.getMaxHealth() * 0.5)) {
+                    if (getCasterEntity() != null)
+                        e.hurt(ModDamageTypes.source(level(), ModDamageTypes.UNLUCK, getCasterEntity()), damage);
+                    else
+                        e.hurt(ModDamageTypes.source(level(), ModDamageTypes.UNLUCK), damage);
 
-                if(!affectedEntities.contains(e.getUUID())) {
-                    affectedEntities.add(e.getUUID());
-                    setAffectedEntitiesCount(getAffectedEntitiesCount() + (e instanceof Player ? 10 : 1));
+                    if (!affectedEntities.contains(e.getUUID())) {
+                        affectedEntities.add(e.getUUID());
+                        setAffectedEntitiesCount(getAffectedEntitiesCount() + (e instanceof Player ? 10 : 1));
+                    }
                 }
             });
 

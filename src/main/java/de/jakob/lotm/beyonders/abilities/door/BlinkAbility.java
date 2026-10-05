@@ -37,6 +37,15 @@ public class BlinkAbility extends SelectableAbility {
         super(id, .1f, "blink_escape", "escape");
         interactionRadius = 3;
         interactionCacheTicks = 40;
+
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(0, 0, 0, 0, 1, 2));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1000f, 800f, 650f, 300f, 200f, 150f));
+
+        baseDamage = 3;
     }
 
     @Override
@@ -61,14 +70,17 @@ public class BlinkAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.blink.blink", "ability.lotmcraft.blink.barrage"};
+        return new String[]{
+                "ability.lotmcraft.blink.blink"
+               // "ability.lotmcraft.blink.barrage"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         switch (selectedAbility) {
             case 0 -> performBlink(level, entity);
-            case 1 -> blinkBarrage(level, entity);
+           // case 1 -> blinkBarrage(level, entity);
         }
     }
 
@@ -77,15 +89,11 @@ public class BlinkAbility extends SelectableAbility {
 
         if(performingBlinkBarrage.contains(entity.getUUID())) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 10, 1f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20, 1f);
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("lotmcraft.no_target").withColor(0x00AAFF));
             return;
         }
-
-        if(BeyonderData.getSpirituality(entity) < 950) return;
-
-        BeyonderData.reduceSpirituality(entity, 950);
 
         Vec3 originalPos = entity.position();
 
@@ -94,7 +102,7 @@ public class BlinkAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 2, 20 * 3, () -> {
             Vec3 targetPos = target.position();
             if(!isAtTarget.get()) {
-                target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) DamageLookup.lookupDamage(5, .1f) * multiplier(entity) * .45f);
+                target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, entity), baseDamage);
                 isAtTarget.set(true);
             }
             else {
@@ -123,7 +131,7 @@ public class BlinkAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 8*multiplier(entity), true).getCenter().add(0, 1, 0);
+        Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 14, true).getCenter().add(0, 1, 0);
         Vec3 originalPos = entity.position();
         var targetLoc = TeleportationUtil.clampToBorder((ServerLevel) level, targetLocBuff);
 
@@ -148,7 +156,7 @@ public class BlinkAbility extends SelectableAbility {
 
         BeyonderData.incrementWormAmount(entity, -1);
 
-        BlinkAfterimageEntity blinkAfterimage = new BlinkAfterimageEntity(level, originalPos, entity, getAbilityToUse(entity));
+        BlinkAfterimageEntity blinkAfterimage = new BlinkAfterimageEntity(level, originalPos, entity, null);
         blinkAfterimage.setTarget(getTargetEntity(entity));
         level.addFreshEntity(blinkAfterimage);
         BeyonderData.setBeyonder(blinkAfterimage, BeyonderData.getPathway(entity), BeyonderData.getSequence(entity), true, true, false, true, true, false);

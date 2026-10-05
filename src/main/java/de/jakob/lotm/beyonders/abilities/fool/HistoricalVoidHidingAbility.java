@@ -22,15 +22,23 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class HistoricalVoidHidingAbility extends ToggleAbility {
@@ -45,12 +53,11 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         canBeShared = false;
-        canBeUsedWhileControlling = false;
     }
 
     @Override
     public float getSpiritualityCost() {
-        return 35;
+        return 250;
     }
 
     @Override

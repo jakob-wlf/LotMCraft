@@ -28,7 +28,7 @@ public class TriggerStringContext extends TriggerContextBase {
     public TriggerContextBase fillFromStream(TokenStream stream) {
         stream.next();
 
-        while (!stream.match("then")){
+        while (stream.peek() != null && !stream.match("then")){
             string += stream.peek() + " ";
             stream.next();
         }

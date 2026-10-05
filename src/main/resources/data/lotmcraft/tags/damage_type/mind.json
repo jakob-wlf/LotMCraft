@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "lotmcraft:mind_based",
+    "lotmcraft:loosing_control",
+    "lotmcraft:imagination",
+    "lotmcraft:awe",
+    "lotmcraft:faith",
+    "lotmcraft:provocation",
+    "lotmcraft:trial_of_madness",
+    "lotmcraft:torture",
+    "lotmcraft:horror"
+  ]
+}

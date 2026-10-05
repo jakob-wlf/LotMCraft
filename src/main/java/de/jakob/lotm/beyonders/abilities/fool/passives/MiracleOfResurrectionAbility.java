@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
@@ -60,6 +61,9 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
         if (entity instanceof ServerPlayer serverPlayer) {
 
             if (!(event.getAmount() >= serverPlayer.getHealth())) return;
+
+            EntityControllingComponent controllingDataComponent = serverPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+            if (controllingDataComponent.isControlling()) return;
 
             if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
             MiracleOfResurrectionComponent data = serverPlayer.getData(ModAttachments.MIRACLE_OF_RESURRECTION);

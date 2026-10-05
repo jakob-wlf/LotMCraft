@@ -36,7 +36,7 @@ public class TriggerPlayerContext extends TriggerContextBase {
     public TriggerContextBase fillFromStream(TokenStream stream) {
         stream.next();
 
-        while(!stream.match("then")){
+        while(stream.peek() != null && !stream.match("then")){
             try {
                 range = Integer.parseInt(stream.peek());
             }catch (NumberFormatException e){

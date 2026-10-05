@@ -112,7 +112,7 @@ public class ModEntities {
     public static final Supplier<EntityType<ConcealedDomainEntity>> CONCEALED_DOMAIN =
             ENTITY_TYPES.register("concealed_domain", () -> EntityType.Builder.<ConcealedDomainEntity>of(ConcealedDomainEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F).clientTrackingRange(64).updateInterval(1).noSummon().noSave().fireImmune().build("concealed_domain"));
-    
+
     // Ability Entities - Door Pathway
 
     public static final Supplier<EntityType<ApprenticeDoorEntity>> APPRENTICE_DOOR =
@@ -439,7 +439,6 @@ public class ModEntities {
                     .clientTrackingRange(32)
                     .updateInterval(2)
                     .noSummon()
-                    .noSave()
                     .build("avatar"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<BlinkAfterimageEntity>> BLINK_AFTERIMAGE =

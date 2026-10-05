@@ -5,7 +5,7 @@ import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
 import de.jakob.lotm.network.PacketHandler;
@@ -15,27 +15,23 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Collection;
 import java.util.Set;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -180,7 +176,6 @@ public class ControllingUtils {
         BeyonderDataTickHandler.invalidateCache(player);
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
 
-
         ControlBodyDouble controlBodyDouble = component.getBodyDouble();
         if(controlBodyDouble == null || !controlBodyDouble.isAlive()) {
             component.restoreAttributesTo(player);
@@ -241,6 +236,13 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDimensionChange(EntityTravelToDimensionEvent event) {
         if (!(event.getEntity() instanceof Player player) || !isControlling(player)) return;
+        if (getManipulationDistance(BeyonderData.getSequence(player)) < 0 && BeyonderData.getPathway(player).equals("fool")) {
+            if (event.getDimension().equals(Level.NETHER) ||
+                    event.getDimension().equals(Level.END) ||
+                    event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
+        }
+        if (event.getDimension().equals(Level.OVERWORLD) ||
+                event.getDimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY)) return;
         event.setCanceled(true);
     }
 
@@ -268,12 +270,13 @@ public class ControllingUtils {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if(!isControlling(player)) return;
-        System.out.println("Pathway: " + BeyonderData.getPathway(player) + " - Sequence" + BeyonderData.getSequence(player) + " - Controlled Sequence: " + getControlledSequence(player));
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(BeyonderData.getSequence(player)) * 5) {
+        int maxDistance = getManipulationDistance(BeyonderData.getSequence(player));
+        if (maxDistance < 0) return;
+        if(player.distanceTo(component.bodyDouble) > maxDistance * 5) {
             cancel(player, 0, true, false);
         }
     }
@@ -284,8 +287,7 @@ public class ControllingUtils {
             case 4 -> 75;
             case 3 -> 200;
             case 2 -> 500;
-            case 1 -> 2000;
-            case 0 -> 5000;
+            case 1, 0 -> -1;
         };
     }
 }

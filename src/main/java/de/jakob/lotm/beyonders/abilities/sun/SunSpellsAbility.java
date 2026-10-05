@@ -6,7 +6,6 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -30,6 +29,8 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -46,6 +47,14 @@ public class SunSpellsAbility extends SelectableAbility {
 
         interactionCacheTicks = 20 * 20;
         interactionRadius = 5;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 4, 4, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f, 100f));
+
+        baseDamage = 2f;
     }
 
     @Override
@@ -106,7 +115,7 @@ public class SunSpellsAbility extends SelectableAbility {
     }
 
     private void sunshine(Level level, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 8, 2).add(0, 2, 0);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2).add(0, 2, 0);
 
         if(level.getBlockState(BlockPos.containing(targetLoc)).getCollisionShape(level, BlockPos.containing(targetLoc)).isEmpty()) {
             level.setBlockAndUpdate(BlockPos.containing(targetLoc), Blocks.LIGHT.defaultBlockState());
@@ -118,9 +127,9 @@ public class SunSpellsAbility extends SelectableAbility {
             ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, 1.4f, 50);
 
             AbilityUtil.getNearbyEntities(null, (ServerLevel) level, targetLoc, 10).forEach(e -> {
-                if(!AbilityUtil.isUndead(e)) return;
+                if(!AbilityUtil.isUndeadOrEvil(e)) return;
 
-                e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity),  (float) DamageLookup.lookupDps(8, .9, 5, 30) * multiplier(entity));
+                e.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity),  baseDamage);
             });
         }, () -> {
             if(level.getBlockState(BlockPos.containing(targetLoc)).is(Blocks.LIGHT)) {
@@ -170,13 +179,13 @@ public class SunSpellsAbility extends SelectableAbility {
 
         if(!(source instanceof LivingEntity)) return;
 
-        if(source.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndead(entity)) {
-            event.setAmount(event.getAmount() * 1.5f);
+        if(source.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndeadOrEvil(entity)) {
+            event.setAmount(event.getAmount() * 1.1f);
             ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, entity.getEyePosition(), 10, .3, .3, .3, .075);
         }
 
-        if(entity.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndead((LivingEntity) source)) {
-            event.setAmount(event.getAmount() * 0.75f);
+        if(entity.getTags().contains("light_supplicant_blessing") && AbilityUtil.isUndeadOrEvil((LivingEntity) source)) {
+            event.setAmount(event.getAmount() * 0.9f);
             ParticleUtil.spawnParticles(level, ParticleTypes.END_ROD, entity.getEyePosition(), 10, .3, .3, .3, .075);
         }
     }

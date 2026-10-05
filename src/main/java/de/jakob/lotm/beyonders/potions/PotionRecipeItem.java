@@ -1,8 +1,10 @@
 package de.jakob.lotm.beyonders.potions;
 
+import de.jakob.lotm.addons.rituals.RitualDescriptionHelper;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.OpenRecipeMenuPacket;
 import de.jakob.lotm.util.data.PathwayInfos;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -10,8 +12,11 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class PotionRecipeItem extends Item {
     private PotionRecipe recipe = null;
@@ -39,6 +44,25 @@ public class PotionRecipeItem extends Item {
     @Override
     public @NotNull Component getName(ItemStack stack) {
         return Component.literal(PathwayInfos.getSequenceNameByRegisteredItemName(BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath()) + " ").append(Component.translatable("lotm.potion_recipe")).append(
-                recipe == null ? Component.literal("") : Component.literal(" (").append(Component.translatable("lotm.sequence")).append(Component.literal(" " + recipe.potion().getSequence() + ")")));
+                recipe == null ? Component.literal("")
+                        : Component.literal(" (")
+                        .append(Component.translatable("lotm.sequence"))
+                        .append(Component.literal(" " + recipe.potion().getSequence() + ")"))
+        );
+    }
+
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            Item.TooltipContext context,
+            List<Component> tooltip,
+            TooltipFlag flag
+    ) {
+        super.appendHoverText(stack, context, tooltip, flag);
+
+        String ritual = RitualDescriptionHelper.getRitualDescription(recipe.potion().getPathway(), recipe.potion().getSequence());
+
+        tooltip.add(Component.literal(ritual)
+                .withStyle(ChatFormatting.GRAY));
     }
 }

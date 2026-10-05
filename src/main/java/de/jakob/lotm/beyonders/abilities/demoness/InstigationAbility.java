@@ -20,9 +20,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class InstigationAbility extends Ability {
     private final HashMap<UUID, LivingEntity> targets = new HashMap<>();
@@ -31,6 +29,13 @@ public class InstigationAbility extends Ability {
         super(id, 1);
 
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1600f, 640f, 400f, 200f, 200f, 125f, 100f, 90f, 50f));
+
     }
 
     @Override
@@ -53,7 +58,8 @@ public class InstigationAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 20*(int) Math.max(multiplier(entity)/2,1), 2);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.instigation_ability.not_valid_mob").withColor(0xFF68dff7));
@@ -68,8 +74,10 @@ public class InstigationAbility extends Ability {
         if(!targets.containsKey(entity.getUUID())) {
             targets.put(entity.getUUID(), target);
         } else {
+
             LivingEntity previousTarget = targets.get(entity.getUUID());
             targets.remove(entity.getUUID());
+
             if(previousTarget == target) {
                 if(entity instanceof ServerPlayer player) {
                     ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.instigation_ability.cannot_target_same_mob").withColor(0xFF68dff7));
@@ -77,6 +85,7 @@ public class InstigationAbility extends Ability {
                 }
                 return;
             }
+
             if(!previousTarget.isAlive()) {
                 targets.put(entity.getUUID(), target);
                 return;
@@ -86,6 +95,7 @@ public class InstigationAbility extends Ability {
                 addAttackGoalIfAbsent(mob);
                 mob.setTarget(previousTarget);
             }
+
             if(previousTarget instanceof Mob mob) {
                 addAttackGoalIfAbsent(mob);
                 mob.setTarget(target);

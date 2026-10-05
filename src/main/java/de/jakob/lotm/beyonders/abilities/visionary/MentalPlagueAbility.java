@@ -26,15 +26,19 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MentalPlagueAbility extends SelectableAbility {
     public MentalPlagueAbility(String id) {
         super(id, 10, "plague");
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 10, 10, 10, 10, 10, 10));
     }
 
     @Override
@@ -84,21 +88,27 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void place(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30* multiplier(entity)), 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
-
-        if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, targetSeq)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.target_too_strong").withColor(0xf5ca7f));
-            return;
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
         }
 
         Location targetLoc = new Location(target.position(), level);
@@ -113,7 +123,16 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void activateSight(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30* (int) Math.max(multiplier(entity)/4,1), 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;

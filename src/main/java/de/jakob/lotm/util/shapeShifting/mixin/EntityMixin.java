@@ -1,5 +1,7 @@
 package de.jakob.lotm.util.shapeShifting.mixin;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.rendering.DiscernmentRenderer;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -42,7 +44,9 @@ public abstract class EntityMixin {
         }
         if (type == null) return null;
 
-        return type.create(player.level());
+        var result = type.create(player.level());
+
+        return result;
     }
 
     @Inject(method = "getBbWidth", at = @At("HEAD"), cancellable = true)

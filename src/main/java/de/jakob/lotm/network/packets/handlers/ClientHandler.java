@@ -64,6 +64,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,6 +76,8 @@ public class ClientHandler {
         Player player = Minecraft.getInstance().player;
         ClientBeyonderCache.setLocalSequence(player == null ? LOTMCraft.NON_BEYONDER_SEQ : ClientBeyonderCache.getSequence(player.getUUID()));
     }
+
+    public static Boolean isSpectating = false;
 
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
@@ -128,9 +131,11 @@ public class ClientHandler {
             Entity entity = packet.entityId() == -1 ? null : level.getEntity(packet.entityId());
             LivingEntity living = entity instanceof LivingEntity ? (LivingEntity) entity : null;
             SpectatingOverlayRenderer.entitiesLookedAtByPlayerWithActiveSpectating.put(player.getUUID(), living);
+            isSpectating = true;
         }
         else {
             SpectatingOverlayRenderer.entitiesLookedAtByPlayerWithActiveSpectating.remove(player.getUUID());
+            isSpectating = false;
         }
     }
 

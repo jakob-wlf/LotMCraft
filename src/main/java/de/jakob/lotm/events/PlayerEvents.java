@@ -9,6 +9,8 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
@@ -22,6 +24,7 @@ import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerSefirotPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.AllyComponent;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ExplodingFallingBlockHelper;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -29,23 +32,30 @@ import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -92,6 +102,8 @@ public class PlayerEvents {
             }
 
             PacketHandler.sendToPlayer(player, new ResetClientEffectsPacket());
+
+            AbilityUtil.invul.remove(player.getUUID());
         }
     }
 
@@ -121,13 +133,30 @@ public class PlayerEvents {
 
                 component.setHasReceivedNewPlayerPerks(true);
             }
+
+            AttributeInstance attribute = player.getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
+            if (attribute != null) {
+                if (attribute.getValue() != 0) {
+                    attribute.setBaseValue(0);
+
+                    if (player.getServer() != null) {
+                        player.getServer().getPlayerList().broadcastAll(
+                                new ClientboundPlayerInfoRemovePacket(List.of(player.getUUID()))
+                        );
+                    }
+                }
+            }
+
+            if(!AbilityUtil.invul.containsKey(player.getUUID())){
+                AbilityUtil.invul.put(player.getUUID(), 20 * 10);
+            }
         }
     }
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.despawnSoulsOnDeath(player);
+           InternalUnderworldAbility.despawnSoulsOnDeath(player);
         }
         if(!(event.getEntity().level() instanceof ServerLevel level)) {
             return;
@@ -162,10 +191,14 @@ public class PlayerEvents {
 
         if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
             Entity damager = event.getSource().getEntity();
+
             if(damager != null &&
                     (!(damager instanceof LivingEntity damagerLiving) ||
                             BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) >= -2
             )) {
+
+                if(!event.getSource().is(ModDamageTypes.PHYSICAL))
+                    return;
 
                 event.setCanceled(true);
                 if (event.getEntity() instanceof ServerPlayer player) {
@@ -190,6 +223,12 @@ public class PlayerEvents {
         }
     }
 
+//    @SubscribeEvent
+//    public static void onServerTick(ServerTickEvent.Post event) {
+//        for (ServerLevel level : event.getServer().getAllLevels()) {
+//            ExplodingFallingBlockHelper.tickExplodingBlocks(level);
+//        }
+//    }
     @SubscribeEvent
     public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         if(event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -204,15 +243,26 @@ public class PlayerEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            ExplodingFallingBlockHelper.tickExplodingBlocks(level);
-        }
-    }
 
     private static void sendActionBar(ServerPlayer player, Component message) {
         ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);
         player.connection.send(packet);
+    }
+
+    @SubscribeEvent
+    private static void playerInvulTick(PlayerTickEvent.Post event){
+        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+
+        if(AbilityUtil.invul.containsKey(player.getUUID())){
+            var value = AbilityUtil.invul.get(player.getUUID());
+            value -= 1;
+
+            if(value <= 0){
+                AbilityUtil.invul.remove(player.getUUID());
+            }
+            else{
+                AbilityUtil.invul.put(player.getUUID(), value);
+            }
+        }
     }
 }

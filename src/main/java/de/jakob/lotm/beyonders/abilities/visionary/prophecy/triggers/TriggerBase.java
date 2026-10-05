@@ -82,6 +82,7 @@ public abstract class  TriggerBase {
             case PATHWAY -> PathTrigger.load(tag, actionType, contextType, provider);
             case LIGHT -> LightTrigger.load(tag, actionType, contextType, provider);
             case ASLEEP -> AsleepTrigger.load(tag, actionType, contextType, provider);
+            case CHAIN -> ChainTrigger.load(tag, actionType, contextType, provider);
             };
     }
 
@@ -101,6 +102,7 @@ public abstract class  TriggerBase {
             case PATHWAY -> new PathTrigger(action, context);
             case LIGHT -> new LightTrigger(action, context);
             case ASLEEP -> new AsleepTrigger(action, context);
+            case CHAIN -> new ChainTrigger(action, context);
         };
     }
 }

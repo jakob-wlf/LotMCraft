@@ -7,7 +7,9 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.playerMap.StoredData;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -37,6 +39,34 @@ public class VisionaryHandler {
         return requiresAsleep(entity) && !(target.hasEffect(ModEffects.ASLEEP) || target.isSleeping());
     }
 
+    public static void shouldTrigger(int seq, LivingEntity caster, LivingEntity target, @Nullable Ability skill){
+        int seqTarget = BeyonderData.getSequence(target);
+        String pathTarget = BeyonderData.getPathway(target);
+
+        if(caster.equals(target)) return;
+
+        if(target instanceof ServerPlayer targetPlayer) {
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
+        }
+
+        if(!pathTarget.equals("visionary")) return;
+
+        if(target instanceof ServerPlayer targetPlayer && caster instanceof ServerPlayer entityPlayer){
+            if(!(BeyonderData.getPathway(entityPlayer).equals("visionary") && seq < seqTarget)) {
+                if (skill != null)
+                    MetaAwarenessAbility.sendWithMessage(entityPlayer, targetPlayer, "Tried to use: " + skill.getId());
+                else
+                    MetaAwarenessAbility.onDivined(entityPlayer, targetPlayer);
+            }
+        }
+
+    }
+
     public static boolean shouldFailAndTrigger(int seq, LivingEntity caster, LivingEntity target, @Nullable Ability skill){
         return shouldFailAndTrigger(seq, caster, target, skill, false);
     }
@@ -48,9 +78,12 @@ public class VisionaryHandler {
         if(caster.equals(target)) return false;
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return false;
@@ -94,9 +127,12 @@ public class VisionaryHandler {
         String pathTarget = BeyonderData.getPathway(target);
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return false;
@@ -110,12 +146,29 @@ public class VisionaryHandler {
 
 
     public static boolean isInvisible(LivingEntity target){
+        if(!target.level().isClientSide)
+            return PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(target.getUUID());
+
         return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID());
     }
 
     public static boolean shouldStayInvisible(int seq, LivingEntity target){
         if(isInvisible(target)){
-            return seq >= PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            if(target.level().isClientSide)
+                return (seq+1) > PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            else
+                return (seq+1) > PsychologicalInvisibilityAbility.invisiblePlayers.get(target.getUUID());
+        }
+
+        return false;
+    }
+
+    public static boolean shouldStayInvisibleVisOnly(int seq, LivingEntity target){
+        if(isInvisible(target)){
+            if(target.level().isClientSide)
+                return seq > PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            else
+                return seq > PsychologicalInvisibilityAbility.invisiblePlayers.get(target.getUUID());
         }
 
         return false;

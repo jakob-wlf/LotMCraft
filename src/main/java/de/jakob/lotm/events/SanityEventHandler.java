@@ -36,19 +36,6 @@ public class SanityEventHandler {
         SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
 
         boolean isBeyonder = BeyonderData.isBeyonder(entity);
-        boolean isHighSequence = isBeyonder && BeyonderData.getSequence(entity) <= 2;
-        boolean hasSwitched = BeyonderData.hasSwitchedPathway(entity);
-        boolean hasUndigestedStack = isBeyonder
-                && entity instanceof Player digestionPlayer
-                && BeyonderData.getCurrentCharStack(entity) > 0
-                && BeyonderData.getDigestionProgress(digestionPlayer) < 1.0f;
-
-        boolean shouldDrain = isHighSequence || sanityComp.getSanity() < .2f || hasUndigestedStack || hasSwitched;
-        float sanityIncrease = shouldDrain ? 0 : 0.0025f;
-        if (isHighSequence || sanityComp.getSanity() < .2f) sanityIncrease -= 0.00025f;
-        if (hasUndigestedStack) sanityIncrease -= 0.00025f;
-        if (hasSwitched) sanityIncrease -= 0.00025f;
-        sanityComp.increaseSanityAndSync(sanityIncrease, entity);
 
         applySpiritualityExhaustionDrain(entity, sanityComp);
         applyInjuryDrain(entity, sanityComp);
@@ -60,39 +47,10 @@ public class SanityEventHandler {
             return;
         }
 
-
-        if (BeyonderData.isBeyonder(entity)) {
-            Random random = new Random();
+        if (isBeyonder) {
             double sanityMultiplier = getSanityMultiplier(entity, sanity, sanityValue);
 
             BeyonderData.addModifier(entity, "sanity_loss", sanityMultiplier);
-
-            if (!entity.level().isClientSide) {
-
-                int disableChance;
-                int disableDuration = 20;
-
-                if (sanityValue >= 64) {
-                    disableChance = -1;
-                } else if (sanityValue >= 50) {
-                    disableChance = 120;
-                    disableDuration = 1500;
-                } else if (sanityValue >= 35) {
-                    disableChance = 80;
-                    disableDuration = 2500;
-                } else if (sanityValue >= 20) {
-                    disableChance = 40;
-                    disableDuration = 3500;
-                } else {
-                    disableChance = 15;
-                    disableDuration = 5000;
-                }
-
-                if (disableChance > 0 && random.nextInt(disableChance) == 0) {
-                    DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("sanity_instability", disableDuration, entity);
-                }
-            }
         }
 
 
@@ -152,8 +110,6 @@ public class SanityEventHandler {
             entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 2, false, true));
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 100, 0, false, false));
 
-            entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 2, 0, false, true));
-
             if(random.nextInt(10) == 0) {
                 entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), 3.0f);
             }
@@ -194,7 +150,10 @@ public class SanityEventHandler {
             }
 
             if(entity instanceof Player player && random.nextInt(10) == 0) {
-                ClientHandler.applyCameraShakeToPlayer(1, 20, player);
+                if(player.level().isClientSide) {
+                    ClientHandler.applyCameraShakeToPlayer(1, 20, player);
+                    return;
+                }
             }
 
             if(random.nextInt(100) >= 80) {

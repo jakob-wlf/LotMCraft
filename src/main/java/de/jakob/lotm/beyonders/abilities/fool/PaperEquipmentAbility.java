@@ -23,6 +23,12 @@ public class PaperEquipmentAbility extends SelectableAbility {
 
         canBeUsedByNPC = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5200f, 2000f, 1400f, 875f, 800f, 475f, 420f, 390f));
     }
 
     @Override
@@ -37,7 +43,12 @@ public class PaperEquipmentAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.paper_equipment.sword", "ability.lotmcraft.paper_equipment.pickaxe", "ability.lotmcraft.paper_equipment.shovel", "ability.lotmcraft.paper_equipment.axe"};
+        return new String[]{
+                "ability.lotmcraft.paper_equipment.sword",
+                "ability.lotmcraft.paper_equipment.pickaxe",
+                "ability.lotmcraft.paper_equipment.shovel",
+                "ability.lotmcraft.paper_equipment.axe"
+        };
     }
 
     @Override

@@ -19,6 +19,10 @@
         {
           "type": "minecraft:item",
           "name": "lotmcraft:black_feather_of_monster_bird"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:true_root_of_mist_treant"
         }
       ]
     }

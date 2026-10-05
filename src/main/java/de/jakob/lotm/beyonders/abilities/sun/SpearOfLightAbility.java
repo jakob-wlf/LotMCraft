@@ -12,6 +12,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class SpearOfLightAbility extends Ability {
@@ -19,6 +21,14 @@ public class SpearOfLightAbility extends Ability {
         super(id, 2.5f, "purification", "light_source", "light_strong", "light_weak");
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6000f, 3000f, 2000f));
+
+        baseDamage = 32f;
     }
 
     @Override
@@ -41,7 +51,7 @@ public class SpearOfLightAbility extends Ability {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1.0f, 1.0f);
 
-        SpearOfLightProjectileEntity spear = new SpearOfLightProjectileEntity(level, entity, DamageLookup.lookupDamage(2, .75) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), this);
+        SpearOfLightProjectileEntity spear = new SpearOfLightProjectileEntity(level, entity, baseDamage, BeyonderData.isGriefingEnabled(entity), this);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         spear.shoot(direction.x, direction.y, direction.z, 5, 0);
         level.addFreshEntity(spear);

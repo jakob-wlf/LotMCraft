@@ -267,23 +267,16 @@ public class LightningEntity extends Entity {
         hasHit = true;
         // Handle entity hit - damage, effects, etc.
         if (!level().isClientSide && source != null) {
-            explode(pos);
+            //explode(pos);
 
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower, 10));
 
             // Check for water interaction - lightning deals more damage in water
             boolean inWater = isNearWater(pos);
-            float waterMultiplier = inWater ? 2.0f : 1.0f;
+            float waterMultiplier = inWater ? 1.5f : 1.0f;
 
-            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING, source), (float) damage * waterMultiplier);
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LIGHTNING, source), (float) damage * waterMultiplier);
 
-            // If in water, deal AoE damage to entities in water
-            if(inWater) {
-                dealWaterConductionDamage(pos);
-            }
-
-            // Check for water wall interaction
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(12, this::discardEntityAndBranches);
         }
@@ -302,17 +295,9 @@ public class LightningEntity extends Entity {
         if (!level().isClientSide) {
             Vec3 pos = hit.getLocation();
             if(source != null) {
-                explode(pos);
+                //explode(pos);
                 NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level(), pos, source, null, new String[]{"lightning", "explosion"}, explosionPower, 10));
             }
-
-            // Check for water interaction
-            if(isNearWater(pos)) {
-                dealWaterConductionDamage(pos);
-            }
-
-            // Check for water wall interaction
-            dealWaterWallDamage(pos);
 
             ServerScheduler.scheduleDelayed(12, this::discardEntityAndBranches);
         }
@@ -346,7 +331,7 @@ public class LightningEntity extends Entity {
         // Deal extra damage to entities in/near water within a large radius
         AbilityUtil.getNearbyEntities(source, serverLevel, pos, 15).forEach(e -> {
             if(e.isInWater() || isNearWater(e.position())) {
-                e.hurt(source.damageSources().mobAttack(source), (float) (damage * 1.5));
+                e.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING), (float) (damage * 1.5));
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, e.position(), 15, .5, 0);
             }
         });
@@ -370,7 +355,7 @@ public class LightningEntity extends Entity {
                 // Lightning hit the water wall - damage all entities around the wall
                 for(int j = -wall.halfWidth(); j <= wall.halfWidth(); j += 3) {
                     Vec3 wallPoint = wallPos.add(perp.scale(j));
-                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, (float) (damage * 1.5), wallPoint, true, false, true, 0);
+                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, ModDamageTypes.LIGHTNING ,(float) (damage * 1.5), wallPoint, true, false);
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, wallPoint, 10, 1, 0);
                 }
                 break;

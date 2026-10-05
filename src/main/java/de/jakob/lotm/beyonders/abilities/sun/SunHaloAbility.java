@@ -13,6 +13,8 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class SunHaloAbility extends ToggleAbility {
@@ -20,6 +22,9 @@ public class SunHaloAbility extends ToggleAbility {
         super(id, "morale_boost");
         canBeCopied = false;
         canBeReplicated = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f));
     }
 
     @Override
@@ -55,13 +60,11 @@ public class SunHaloAbility extends ToggleAbility {
         ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions2, entity.getEyePosition().add(0, .4, 0), .75,  20);
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 1, false, false, false));
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 0, false, false, false));
 
         AbilityUtil.getNearbyEntities(null, (ServerLevel) level, entity.getEyePosition(), 20).forEach(e -> {
             if(AllyUtil.areAllies(entity, e) && entity != e) {
                 e.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false, false));
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 1, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 0, false, false, false));
                 ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, e.getEyePosition().subtract(0, .5, 0), 10, 1);
             }
         });

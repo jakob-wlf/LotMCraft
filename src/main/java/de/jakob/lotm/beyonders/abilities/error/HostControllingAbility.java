@@ -34,7 +34,10 @@ public class HostControllingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.host_controlling.drain_health", "ability.lotmcraft.host_controlling.kill"};
+        return new String[]{
+                "ability.lotmcraft.host_controlling.drain_health",
+                "ability.lotmcraft.host_controlling.kill"
+        };
     }
 
     @Override
@@ -57,8 +60,7 @@ public class HostControllingAbility extends SelectableAbility {
                 entity.heal(healthToDrain);
             }
             case 1 -> {
-                host.setHealth(0.5f);
-                host.hurt(entity.damageSources().magic(), 1000);
+                host.kill();
             }
         }
     }

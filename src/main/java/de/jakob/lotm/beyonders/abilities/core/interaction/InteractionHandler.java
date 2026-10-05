@@ -15,6 +15,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Interaction Flags that exist so far:
@@ -27,7 +29,7 @@ import java.util.HashSet;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class InteractionHandler {
 
-    private static final HashSet<Interaction> recentInteractions = new HashSet<>();
+    private static final Set<Interaction> recentInteractions = ConcurrentHashMap.newKeySet();
 
     @SubscribeEvent
     public static void onAbilityUsed(AbilityUsedEvent event) {

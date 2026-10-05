@@ -2,8 +2,15 @@ package de.jakob.lotm.attachments;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class MarionetteComponent {
     private boolean isMarionette = false;
@@ -30,7 +37,7 @@ public class MarionetteComponent {
     public void setShouldAttack(boolean shouldAttack) { this.shouldAttack = shouldAttack; }
     public boolean hasWorm() { return hasWorm; }
     public void setHasWorm(boolean hasWorm) { this.hasWorm = hasWorm; }
-    
+
     public static final IAttachmentSerializer<CompoundTag, MarionetteComponent> SERIALIZER =
             new IAttachmentSerializer<>() {
                 @Override

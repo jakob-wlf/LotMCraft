@@ -25,7 +25,7 @@ public class SunItem extends Item {
         player.getCooldowns().addCooldown(this, 20 * 35);
 
         setTimeToNoon(serverLevel);
-        BigSunEntity sunEntity = new BigSunEntity(serverLevel, (float) DamageLookup.lookupDps(2, .7f, 2, 20) * (float) BeyonderData.getMultiplierForSequence(2), BeyonderData.isGriefingEnabled(player), player.getUUID(), 20 * 30);
+        BigSunEntity sunEntity = new BigSunEntity(serverLevel, 4, BeyonderData.isGriefingEnabled(player), player.getUUID(), 20 * 15);
         sunEntity.setPos(player.getX(), player.getY() + 25, player.getZ());
         serverLevel.addFreshEntity(sunEntity);
 
