@@ -141,6 +141,10 @@ public class AuthorityResistanceManager {
         death.put(ModDamageTypes.LIFE_DEPRIVATION, List.of(2.0f, 1.75f, 1.6f, 1.5f, 1.25f));
         death.put(ModDamageTypes.HOLY_BASED, List.of(2.5f, 2.25f, 2.25f, 2f, 2.0f, 2.0f, 1.5f, 1.25f, 1.1f));
         resistances.put("death", death);
+
+        Map<ResourceKey<DamageType>, List<Float>> twilight = new HashMap<>();
+        death.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f, 0.7f, 0.9f));
+        resistances.put("twilight_giant", twilight);
     }
 
     public static float getResistance(DamageSource source, String path, int seq){
