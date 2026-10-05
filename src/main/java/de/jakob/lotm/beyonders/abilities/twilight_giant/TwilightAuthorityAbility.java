@@ -15,8 +15,10 @@ import de.jakob.lotm.beyonders.abilities.error.TimeManipulationAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.EnvisionPositionAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
+import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
 import de.jakob.lotm.entity.custom.ability_entities.VolcanoEntity;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightDomeEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.ElectromagneticTornadoEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -57,8 +59,8 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class TwilightAuthorityAbility extends SelectableAbility {
 
-    private static final double AURA_RADIUS = 16.0D;
-    private static final double DOMAIN_RADIUS = 40.0D;
+    private static final double AURA_RADIUS = 160.0D;
+    private static final double DOMAIN_RADIUS = 150.0D;
     private static final double PULSE_RADIUS = 16.0D;
     private static final int PULSE_LIFE = 80;
     private static final int DOOR_DELAY = 80;
@@ -133,12 +135,15 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     }
 
     private static void toggleDomain(ServerPlayer player) {
-        if (domains.remove(player.getUUID()) != null) {
+        if (domains.containsKey(player.getUUID())) {
+            dropDomain(player);
             bar(player, "ability.lotmcraft.twilight_authority.domain_stopped");
             player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, player.getSoundSource(), 1.2f, 0.4f);
             return;
         }
-        domains.put(player.getUUID(), new Domain(player.level().dimension(), player.position()));
+        Domain domain = new Domain(player.level().dimension(), player.position());
+        domains.put(player.getUUID(), domain);
+        spawnDome(player, domain);
         bar(player, "ability.lotmcraft.twilight_authority.domain_started");
         player.level().playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, player.getSoundSource(), 1.6f, 0.4f);
     }
@@ -187,7 +192,7 @@ public class TwilightAuthorityAbility extends SelectableAbility {
         UUID id = player.getUUID();
         if (!player.isAlive()) {
             auras.remove(id);
-            domains.remove(id);
+            dropDomain(player);
             return;
         }
         ServerLevel level = player.serverLevel();
@@ -200,7 +205,8 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         UUID id = event.getEntity().getUUID();
         auras.remove(id);
-        domains.remove(id);
+        if (event.getEntity() instanceof ServerPlayer player) dropDomain(player);
+        else domains.remove(id);
     }
 
     @SubscribeEvent
@@ -291,10 +297,9 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     }
 
     private static void tickDomain(ServerLevel level, ServerPlayer player, Domain domain) {
-        if (player.tickCount % 10 == 0 && player.level().dimension().equals(domain.dimension)) drawRing(level, domain.center, DOMAIN_RADIUS);
         if (player.tickCount % 20 != 0) return;
         if (!pay(player, DOMAIN_UPKEEP)) {
-            domains.remove(player.getUUID());
+            dropDomain(player);
             bar(player, "ability.lotmcraft.twilight_authority.domain_stopped");
             return;
         }
@@ -320,13 +325,23 @@ public class TwilightAuthorityAbility extends SelectableAbility {
         }
     }
 
-    private static void drawRing(ServerLevel level, Vec3 center, double radius) {
-        int points = 64;
-        for (int i = 0; i < points; i++) {
-            double angle = i * Math.PI * 2 / points;
-            Vec3 point = center.add(Math.cos(angle) * radius, 1.2, Math.sin(angle) * radius);
-            level.sendParticles(TwilightAging.TWILIGHT_DUST, point.x, point.y, point.z, 1, 0.1, 0.4, 0.1, 0);
-        }
+    private static void spawnDome(ServerPlayer player, Domain domain) {
+        if (!(player.level() instanceof ServerLevel level)) return;
+        TwilightDomeEntity dome = ModEntities.TWILIGHT_DOME.get().create(level);
+        if (dome == null) return;
+        dome.setRadius((float) DOMAIN_RADIUS);
+        dome.moveTo(domain.center.x, domain.center.y, domain.center.z, player.getYRot(), 0.0F);
+        level.addFreshEntity(dome);
+        domain.visual = dome.getUUID();
+    }
+
+    private static void dropDomain(ServerPlayer player) {
+        Domain domain = domains.remove(player.getUUID());
+        if (domain == null || domain.visual == null) return;
+        ServerLevel level = player.server.getLevel(domain.dimension);
+        if (level == null) return;
+        Entity entity = level.getEntity(domain.visual);
+        if (entity != null) entity.discard();
     }
 
     private static void fadeAoe(ServerLevel level, ServerPlayer player) {
@@ -508,7 +523,8 @@ public class TwilightAuthorityAbility extends SelectableAbility {
 
     private static final class Domain {
         private final ResourceKey<Level> dimension;
-        private Vec3 center;
+        private final Vec3 center;
+        private UUID visual;
         private boolean land;
 
         private Domain(ResourceKey<Level> dimension, Vec3 center) {

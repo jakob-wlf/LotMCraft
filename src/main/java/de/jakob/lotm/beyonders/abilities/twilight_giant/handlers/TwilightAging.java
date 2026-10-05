@@ -5,13 +5,18 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightDomeEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.player.Player;
@@ -25,7 +30,9 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,9 +59,12 @@ public final class TwilightAging {
     private static final float MIN_RESISTANCE = 0.1f;
     private static final int MAX_WEAKER_DIFFERENCE = 4;
     private static final int FADE_TICKS = 40;
+    private static final int BLACK_FADE_TICKS = 20;
 
     private static final Set<UUID> fading = new HashSet<>();
     private static final Set<UUID> aged = new HashSet<>();
+    private static final Map<UUID, UUID> domes = new HashMap<>();
+    private static final Map<UUID, SunsetDeath> deaths = new HashMap<>();
 
     private TwilightAging() {
     }
@@ -118,6 +128,27 @@ public final class TwilightAging {
     }
 
     public static void dieOfOldAge(ServerLevel level, LivingEntity target, LivingEntity source) {
+        if (target.isRemoved() || target.deathTime > 0) return;
+        if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
+        if (deaths.containsKey(target.getUUID())) return;
+        if (target instanceof Player && beginSunset(level, target, source)) return;
+        finishDeath(level, target, source);
+    }
+
+    private static boolean beginSunset(ServerLevel level, LivingEntity target, LivingEntity source) {
+        if (!(target instanceof Player player)) return false;
+        boolean fresh = !domes.containsKey(player.getUUID());
+        TwilightDomeEntity dome = ensureDome(level, player, 0.0F);
+        if (dome == null) return false;
+        float start = fresh ? 0.0F : dome.sun();
+        dome.setSun(start);
+        int setTicks = Math.max(20, Math.round((1.0F - start) * TwilightDomeEntity.SUNSET_TICKS));
+        long now = level.getServer().getTickCount();
+        deaths.put(player.getUUID(), new SunsetDeath(source == null ? null : source.getUUID(), start, now, setTicks, now + setTicks, now + setTicks + TwilightDomeEntity.BLACK_TICKS));
+        return true;
+    }
+
+    private static void finishDeath(ServerLevel level, LivingEntity target, LivingEntity source) {
         if (target.isRemoved() || target.deathTime > 0) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         UUID id = target.getUUID();
@@ -230,6 +261,7 @@ public final class TwilightAging {
     }
 
     private static void finish(LivingEntity target) {
+        if (!target.level().isClientSide() && target.level().getServer() != null) cancelSunset(target.getUUID(), target.level().getServer());
         target.getPersistentData().remove(YEARS);
         target.getPersistentData().remove(RECOVER_AT);
         target.getPersistentData().remove(CLEAR_AT);
@@ -257,6 +289,7 @@ public final class TwilightAging {
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
+        tickSunsets(event.getServer());
         if (aged.isEmpty() || event.getServer().getTickCount() % 20 != 0) return;
         for (UUID id : new ArrayList<>(aged)) {
             LivingEntity living = null;
@@ -281,5 +314,117 @@ public final class TwilightAging {
         if (living.getPersistentData().getFloat(YEARS) <= 0f) return;
         process(living);
         if (living.getPersistentData().getFloat(YEARS) > 0f) aged.add(living.getUUID());
+    }
+
+    private static void tickSunsets(MinecraftServer server) {
+        long now = server.getTickCount();
+        for (UUID id : new ArrayList<>(aged)) {
+            if (deaths.containsKey(id)) continue;
+            LivingEntity living = findLiving(server, id);
+            if (!(living instanceof Player player) || !player.isAlive() || !(player.level() instanceof ServerLevel level) || player.getPersistentData().getFloat(YEARS) <= 0.0F) {
+                dropDome(server, id);
+                continue;
+            }
+            float target = sunFor(player);
+            TwilightDomeEntity dome = ensureDome(level, player, target);
+            if (dome == null) continue;
+            float step = TwilightDomeEntity.SUN_HORIZON / 20.0F;
+            float next = dome.sun() + Mth.clamp(target - dome.sun(), -step, step);
+            if (Math.abs(dome.sun() - next) > 0.0001F) dome.setSun(next);
+            if (dome.black() != 0.0F) dome.setBlack(0.0F);
+        }
+        if (deaths.isEmpty()) return;
+        for (UUID id : new ArrayList<>(deaths.keySet())) {
+            SunsetDeath death = deaths.get(id);
+            if (death == null) continue;
+            LivingEntity living = findLiving(server, id);
+            if (!(living instanceof Player player) || !player.isAlive() || !(player.level() instanceof ServerLevel level)) {
+                deaths.remove(id);
+                dropDome(server, id);
+                continue;
+            }
+            float setT = death.setTicks <= 0 ? 1.0F : (now - death.started) / (float) death.setTicks;
+            float sun = setT < 1.0F ? Mth.lerp(Mth.clamp(setT, 0.0F, 1.0F), death.start, 1.0F) : 1.0F;
+            float black = setT < 1.0F ? 0.0F : Mth.clamp((now - death.blackAt) / (float) BLACK_FADE_TICKS, 0.0F, 1.0F);
+            TwilightDomeEntity dome = ensureDome(level, player, sun);
+            if (dome != null) {
+                dome.setSun(sun);
+                dome.setBlack(black);
+            }
+            if (now < death.dieAt) continue;
+            deaths.remove(id);
+            dropDome(server, id);
+            finishDeath(level, player, findLiving(server, death.source));
+        }
+    }
+
+    private static float sunFor(LivingEntity target) {
+        float limit = yearLimit(target);
+        if (limit <= 0.0F) return 0.0F;
+        return TwilightDomeEntity.SUN_HORIZON * Mth.clamp(target.getPersistentData().getFloat(YEARS) / limit, 0.0F, 1.0F);
+    }
+
+    private static TwilightDomeEntity ensureDome(ServerLevel level, Player player, float initialSun) {
+        UUID id = player.getUUID();
+        UUID domeId = domes.get(id);
+        if (domeId != null && level.getEntity(domeId) instanceof TwilightDomeEntity existing) return existing;
+        dropDome(level.getServer(), id);
+        TwilightDomeEntity dome = ModEntities.TWILIGHT_DOME.get().create(level);
+        if (dome == null) return null;
+        dome.setRadius(TwilightDomeEntity.LOCAL_RADIUS);
+        dome.setSunset(true);
+        dome.setSubject(id);
+        dome.setSun(initialSun);
+        dome.setBlack(0.0F);
+        dome.moveTo(player.getX(), player.getY(), player.getZ(), player.getYRot(), 0.0F);
+        level.addFreshEntity(dome);
+        domes.put(id, dome.getUUID());
+        return dome;
+    }
+
+    private static void dropDome(MinecraftServer server, UUID playerId) {
+        discardDome(server, domes.remove(playerId));
+    }
+
+    private static void cancelSunset(UUID id, MinecraftServer server) {
+        deaths.remove(id);
+        dropDome(server, id);
+    }
+
+    private static LivingEntity findLiving(MinecraftServer server, UUID id) {
+        if (id == null) return null;
+        for (ServerLevel level : server.getAllLevels()) {
+            if (level.getEntity(id) instanceof LivingEntity living) return living;
+        }
+        return null;
+    }
+
+    private static void discardDome(MinecraftServer server, UUID domeId) {
+        if (domeId == null) return;
+        for (ServerLevel level : server.getAllLevels()) {
+            Entity entity = level.getEntity(domeId);
+            if (entity != null) {
+                entity.discard();
+                return;
+            }
+        }
+    }
+
+    private static final class SunsetDeath {
+        private final UUID source;
+        private final float start;
+        private final long started;
+        private final int setTicks;
+        private final long blackAt;
+        private final long dieAt;
+
+        private SunsetDeath(UUID source, float start, long started, int setTicks, long blackAt, long dieAt) {
+            this.source = source;
+            this.start = start;
+            this.started = started;
+            this.setTicks = setTicks;
+            this.blackAt = blackAt;
+            this.dieAt = dieAt;
+        }
     }
 }

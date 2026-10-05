@@ -11,14 +11,15 @@ import de.jakob.lotm.beyonders.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.beyonders.abilities.door.TeleportationAuthorityAbility;
 import de.jakob.lotm.beyonders.abilities.door.TravelersDoorAbility;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.FightingArenaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.ProtectiveCageEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -33,7 +34,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import org.joml.Vector3f;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -57,7 +57,6 @@ public class CombatAuthorityAbility extends SelectableAbility {
     private static final double UPGRADED_RADIUS = 100.0D;
     private static final long UPGRADED_LIFE = 20L * 60 * 5;
     private static final long REPAIR_TICKS = 20L * 60 * 2;
-    private static final DustParticleOptions RADIANCE_DUST = new DustParticleOptions(new Vector3f(1f, 0.42f, 0.1f), 1.8f);
     private static final double TARGET_SEAL_RADIUS = 4.0D;
     private static final double ACTIVE_DISTANCE = 10.0D;
     private static final double OUTSIDE_MARGIN = 2.0D;
@@ -68,9 +67,6 @@ public class CombatAuthorityAbility extends SelectableAbility {
     private static final double CAGE_SPAWN_OFFSET = 4.0D;
     private static final double CAGE_PUSH = 1.5D;
     private static final int CAGE_BREAK_SECONDS = 5;
-    private static final int BORDER_INTERVAL = 10;
-    private static final int MAX_BORDER_POINTS = 600;
-    private static final double BORDER_POINTS_PER_AREA = 2.0D;
     private static final double SEAL_INSET = 0.75D;
     private static final int INSTINCT_TICKS = 20 * 8;
 
@@ -151,6 +147,8 @@ public class CombatAuthorityAbility extends SelectableAbility {
     }
 
     private static Seal createSeal(ServerLevel level, ServerPlayer player, boolean pushOut) {
+        Seal previous = seals.remove(player.getUUID());
+        if (previous != null) previous.discardVisual();
         LivingEntity target = AbilityUtil.getTargetEntity(player, TARGET_RANGE, 1.5f);
         boolean upgraded = target == null && BeyonderData.getSequence(player) <= 1;
         Seal seal = target != null
@@ -158,7 +156,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
                 : new Seal(player, level, AbilityUtil.getTargetLocation(player, TARGET_RANGE, 1.5f), upgraded ? UPGRADED_RADIUS : AREA_RADIUS, false, upgraded, upgraded ? level.getGameTime() + UPGRADED_LIFE : 0L);
         seals.put(player.getUUID(), seal);
         level.playSound(null, BlockPos.containing(seal.center), SoundEvents.BEACON_ACTIVATE, player.getSoundSource(), 3f, 0.6f);
-        seal.drawBorder(level);
+        seal.spawnVisual();
         if (pushOut && seal.aroundTarget && seal.contains(player)) {
             Vec3 away = horizontal(player.position().subtract(seal.center));
             Vec3 direction = away.lengthSqr() < 1.0E-4 ? horizontal(player.getLookAngle()).scale(-1) : away.normalize();
@@ -203,13 +201,14 @@ public class CombatAuthorityAbility extends SelectableAbility {
         moveTo(target, center.add(forward.scale(CAGE_SPAWN_OFFSET)));
         moveTo(player, center.subtract(forward.scale(CAGE_SPAWN_OFFSET)));
         level.playSound(null, BlockPos.containing(center), SoundEvents.IRON_DOOR_CLOSE, player.getSoundSource(), 3f, 0.5f);
-        cage.drawBorder(level);
+        cage.spawnVisual();
         bar(player, "ability.lotmcraft.combat_authority.cage_formed");
     }
 
     private static void removeSeal(LivingEntity owner, String key) {
         Seal seal = seals.remove(owner.getUUID());
         if (seal == null) return;
+        seal.discardVisual();
         seal.level.playSound(null, BlockPos.containing(seal.center), SoundEvents.BEACON_DEACTIVATE, owner.getSoundSource(), 2f, 0.6f);
         bar(owner, key);
     }
@@ -217,6 +216,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
     private static void removeCage(LivingEntity owner, String key) {
         Cage cage = cages.remove(owner.getUUID());
         if (cage == null) return;
+        cage.discardVisual();
         cage.level.playSound(null, BlockPos.containing(cage.center), SoundEvents.GLASS_BREAK, owner.getSoundSource(), 2f, 0.6f);
         bar(owner, key);
     }
@@ -398,20 +398,6 @@ public class CombatAuthorityAbility extends SelectableAbility {
         entity.fallDistance = 0;
     }
 
-    private static void drawRing(ServerLevel level, Vec3 center, double radius, double height) {
-        drawRing(level, center, radius, height, TwilightAging.TWILIGHT_DUST);
-    }
-
-    private static void drawRing(ServerLevel level, Vec3 center, double radius, double height, ParticleOptions particle) {
-        int points = (int) Math.min(MAX_BORDER_POINTS, Math.PI * 2 * radius * height * BORDER_POINTS_PER_AREA);
-        double golden = Math.PI * (3 - Math.sqrt(5));
-        for (int i = 0; i < points; i++) {
-            double y = (i + 0.5) / points;
-            double angle = i * golden;
-            level.sendParticles(particle, center.x + Math.cos(angle) * radius, center.y + y * height, center.z + Math.sin(angle) * radius, 1, 0, 0, 0, 0);
-        }
-    }
-
     private static void bar(LivingEntity entity, String key) {
         AbilityUtil.sendActionBar(entity, Component.translatable(key).withColor(TwilightAging.TWILIGHT_TEXT));
     }
@@ -427,6 +413,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
         private final Set<UUID> guarded = new HashSet<>();
         private final Set<LivingEntity> held = new HashSet<>();
         private final Set<LivingEntity> stronger = new HashSet<>();
+        private UUID visual;
 
         private Seal(LivingEntity owner, ServerLevel level, Vec3 center, double radius, boolean aroundTarget, boolean upgraded, long expiresAt) {
             this.owner = owner;
@@ -472,7 +459,6 @@ public class CombatAuthorityAbility extends SelectableAbility {
                 return;
             }
             if (holdInside()) return;
-            if (level.getGameTime() % BORDER_INTERVAL == 0) drawBorder(level);
             if (level.getGameTime() % EFFECT_INTERVAL != 0) return;
             AABB box = new AABB(center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius);
             for (LivingEntity inside : level.getEntitiesOfClass(LivingEntity.class, box)) {
@@ -482,9 +468,23 @@ public class CombatAuthorityAbility extends SelectableAbility {
             if (HolinessAuthorityAbility.hasHolyCage(owner)) HolinessAuthorityAbility.purifyEvil(level, owner, center, radius);
         }
 
-        private void drawBorder(ServerLevel level) {
-            drawRing(level, center.subtract(0, aroundTarget ? 0 : 1, 0), radius, aroundTarget ? 3 : 6);
-            if (upgraded) drawRing(level, center.subtract(0, 1, 0), radius + 8, 10, RADIANCE_DUST);
+        private void spawnVisual() {
+            ProtectiveCageEntity cage = ModEntities.PROTECTIVE_CAGE.get().create(level);
+            if (cage == null) return;
+            cage.setRadius((float) radius);
+            if (aroundTarget) {
+                cage.moveTo(center.x, center.y - radius, center.z, 0.0F, 0.0F);
+            } else {
+                cage.moveTo(center.x, AbilityUtil.getTargetBlock(owner, TARGET_RANGE).getY() - 25.0D, center.z, 0.0F, 0.0F);
+            }
+            level.addFreshEntity(cage);
+            visual = cage.getUUID();
+        }
+
+        private void discardVisual() {
+            if (visual == null) return;
+            Entity entity = level.getEntity(visual);
+            if (entity != null) entity.discard();
         }
 
         private boolean breaks(Entity entity) {
@@ -526,6 +526,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
         private void shatter() {
             if (seals.get(owner.getUUID()) != this) return;
             seals.remove(owner.getUUID());
+            discardVisual();
             level.playSound(null, BlockPos.containing(center), SoundEvents.GLASS_BREAK, owner.getSoundSource(), 2f, 0.6f);
             level.sendParticles(ParticleTypes.END_ROD, center.x, center.y + 1, center.z, 80, Math.min(radius / 3, 8), 2, Math.min(radius / 3, 8), 0.1);
             bar(owner, "ability.lotmcraft.combat_authority.seal_shattered");
@@ -555,6 +556,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
         private final ServerLevel level;
         private final Vec3 center;
         private int struggle;
+        private UUID visual;
 
         private Cage(LivingEntity owner, LivingEntity target, ServerLevel level, Vec3 center) {
             this.owner = owner;
@@ -570,7 +572,6 @@ public class CombatAuthorityAbility extends SelectableAbility {
             }
             contain(owner);
             contain(target);
-            if (level.getGameTime() % BORDER_INTERVAL == 0) drawBorder(level);
             if (level.getGameTime() % EFFECT_INTERVAL != 0) return;
             if (HolinessAuthorityAbility.hasHolyCage(owner)) HolinessAuthorityAbility.purifyEvil(level, owner, center, CAGE_RADIUS);
             if (BeyonderData.getSequence(target) >= BeyonderData.getSequence(owner)) return;
@@ -586,8 +587,19 @@ public class CombatAuthorityAbility extends SelectableAbility {
             moveTo(member, center.add(direction.scale(CAGE_RADIUS - CAGE_PUSH)).with(Direction.Axis.Y, member.getY()));
         }
 
-        private void drawBorder(ServerLevel level) {
-            drawRing(level, center, CAGE_RADIUS, 4);
+        private void spawnVisual() {
+            FightingArenaEntity arena = ModEntities.FIGHTING_ARENA.get().create(level);
+            if (arena == null) return;
+            arena.setRadius((float) CAGE_RADIUS);
+            arena.moveTo(center.x, center.y, center.z, owner.getYRot(), 0.0F);
+            level.addFreshEntity(arena);
+            visual = arena.getUUID();
+        }
+
+        private void discardVisual() {
+            if (visual == null) return;
+            Entity entity = level.getEntity(visual);
+            if (entity != null) entity.discard();
         }
     }
 }
