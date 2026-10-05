@@ -30,8 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.ConcurrentModificationException;
@@ -62,7 +60,7 @@ public class MeteorEntity extends Entity {
     }
 
     public MeteorEntity(Level level, float speed, float damage, float size, @Nullable Entity caster, boolean griefing, float explosionSize, float radius) {
-        super(ModEntities.Meteor.get(), level);
+        super(ModEntities.METEOR.get(), level);
         this.setSpeed(speed * 1.75f);
         this.setDamage(damage);
         this.setSize(size);

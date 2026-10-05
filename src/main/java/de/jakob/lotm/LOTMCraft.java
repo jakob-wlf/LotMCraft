@@ -34,6 +34,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.Coffin
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
+import de.jakob.lotm.entity.client.projectiles.water_bolt.WaterBoltRenderer;
 import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideRenderer;
 import de.jakob.lotm.entity.client.spirits.knowledge_rabbit.RabbitOfKnowledgeRenderer;
 import de.jakob.lotm.entity.client.murloc.MurlocRenderer;
@@ -277,6 +278,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);
+            EntityRenderers.register(ModEntities.WATER_BOLT.get(), WaterBoltRenderer::new);
             EntityRenderers.register(ModEntities.PAPER_DAGGER.get(), PaperDaggerProjectileRenderer::new);
             EntityRenderers.register(ModEntities.FIRE_RAVEN.get(), FireRavenRenderer::new);
             EntityRenderers.register(ModEntities.APPRENTICE_DOOR.get(), ApprenticeDoorRenderer::new);
@@ -295,7 +297,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
             EntityRenderers.register(ModEntities.WAR_BANNER.get(), WarBannerRenderer::new);
             EntityRenderers.register(ModEntities.MYSTICAL_DOOR.get(), MysticalDoorRenderer::new);
-            EntityRenderers.register(ModEntities.Meteor.get(), MeteorRenderer::new);
+            EntityRenderers.register(ModEntities.METEOR.get(), MeteorRenderer::new);
             EntityRenderers.register(ModEntities.JUDGMENT_SWORD.get(), JudgmentSwordRenderer::new);
             EntityRenderers.register(ModEntities.ANCIENT_COURT.get(), AncientCourtEntityRenderer::new);
             EntityRenderers.register(ModEntities.JUSTICE_SWORD.get(), JusticeSwordRenderer::new);
