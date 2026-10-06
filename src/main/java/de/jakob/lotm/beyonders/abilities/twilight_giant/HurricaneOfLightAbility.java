@@ -4,41 +4,38 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.HurricaneOfLightEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.Holder;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class HurricaneOfLightAbility extends ToggleAbility {
 
     private static final int RADIUS = 20;
     private static final double DAMAGE_SCALE = 0.5D;
     private static final float EVIL_MULTIPLIER = 2f;
-    private static final int RINGS = 5;
-    private static final int BLADES_PER_RING = 12;
     private static final int TWILIGHT_RADIUS = 45;
     private static final float TWILIGHT_YEARS = 2f;
     private static final ResourceLocation ROOT_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "hurricane_of_light_root");
-    private static final DustParticleOptions DAWN_DUST = new DustParticleOptions(new Vector3f(1f, 0.97f, 0.9f), 1.8f);
+    private final Map<UUID, Integer> visuals = new HashMap<>();
 
     public HurricaneOfLightAbility(String id) {
         super(id, "purification");
@@ -68,6 +65,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         setRooted(entity, true);
         level.playSound(null, entity.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_3.value(), entity.getSoundSource(), 2f, 1.2f);
+        if (level instanceof ServerLevel serverLevel) ensureVisual(serverLevel, entity, radius(entity));
     }
 
     @Override
@@ -82,7 +80,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
         entity.hurtMarked = true;
         boolean twilight = BeyonderData.getSequence(entity) <= 2;
         double radius = twilight ? TWILIGHT_RADIUS : RADIUS;
-        spawnBlades(serverLevel, entity, radius, twilight ? TwilightAging.TWILIGHT_DUST : DAWN_DUST);
+        ensureVisual(serverLevel, entity, (float) radius);
 
         float damage = (float) (DamageLookup.lookupDamage(6, DAMAGE_SCALE) * multiplier(entity) * 10 / 20f);
         DamageSource source = ModDamageTypes.source(serverLevel, ModDamageTypes.PURIFICATION, entity);
@@ -106,21 +104,32 @@ public class HurricaneOfLightAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         setRooted(entity, false);
         level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, entity.getSoundSource(), 1.5f, 1.4f);
+        Integer id = visuals.remove(entity.getUUID());
+        if (level instanceof ServerLevel serverLevel && id != null && serverLevel.getEntity(id) instanceof HurricaneOfLightEntity hurricane) {
+            hurricane.release();
+        }
     }
 
-    private void spawnBlades(ServerLevel level, LivingEntity entity, double maxRadius, DustParticleOptions dust) {
-        double phase = entity.tickCount * 0.35;
-        Vec3 center = entity.position().add(0, 1, 0);
-        for (int ring = 1; ring <= RINGS; ring++) {
-            double radius = maxRadius * ring / (double) RINGS;
-            for (int blade = 0; blade < BLADES_PER_RING; blade++) {
-                double angle = phase * (RINGS + 1 - ring) / RINGS + blade * Math.PI * 2 / BLADES_PER_RING;
-                Vec3 pos = center.add(Math.cos(angle) * radius, (ring % 2) * 0.8, Math.sin(angle) * radius);
-                level.sendParticles(ParticleTypes.SWEEP_ATTACK, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
-                level.sendParticles(dust, pos.x, pos.y, pos.z, 2, 0.3, 0.3, 0.3, 0);
-            }
+    private void ensureVisual(ServerLevel level, LivingEntity entity, float radius) {
+        Integer id = visuals.get(entity.getUUID());
+        Entity existing = id == null ? null : level.getEntity(id);
+        boolean twilight = BeyonderData.getSequence(entity) <= 2;
+        if (existing instanceof HurricaneOfLightEntity hurricane && !hurricane.isRemoved() && !hurricane.releasing()) {
+            hurricane.setRadius(radius);
+            hurricane.setTwilight(twilight);
+            return;
         }
-        ParticleUtil.spawnParticles(level, dust == DAWN_DUST ? ParticleTypes.END_ROD : ParticleTypes.FLAME, center, 20, maxRadius / 2.0, 1.5, maxRadius / 2.0, 0.05);
+        HurricaneOfLightEntity hurricane = new HurricaneOfLightEntity(ModEntities.HURRICANE_OF_LIGHT.get(), level);
+        hurricane.setPos(entity.getX(), entity.getY(), entity.getZ());
+        hurricane.setOwner(entity);
+        hurricane.setRadius(radius);
+        hurricane.setTwilight(twilight);
+        level.addFreshEntity(hurricane);
+        visuals.put(entity.getUUID(), hurricane.getId());
+    }
+
+    private static float radius(LivingEntity entity) {
+        return BeyonderData.getSequence(entity) <= 2 ? TWILIGHT_RADIUS : RADIUS;
     }
 
     private static boolean holdsSword(LivingEntity entity) {

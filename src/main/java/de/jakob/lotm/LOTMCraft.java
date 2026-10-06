@@ -67,8 +67,10 @@ import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_s
 import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.silver_rapier.SilverRapierRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.FightingArenaRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.HurricaneOfLightRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.ProtectiveCageRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.TwilightDomeRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.TwilightSlashRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning.LightningRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning_branch.LightningBranchRenderer;
 import de.jakob.lotm.entity.client.projectiles.fireball.FireballRenderer;
@@ -285,6 +287,8 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.TWILIGHT_DOME.get(), TwilightDomeRenderer::new);
             EntityRenderers.register(ModEntities.FIGHTING_ARENA.get(), FightingArenaRenderer::new);
             EntityRenderers.register(ModEntities.PROTECTIVE_CAGE.get(), ProtectiveCageRenderer::new);
+            EntityRenderers.register(ModEntities.HURRICANE_OF_LIGHT.get(), HurricaneOfLightRenderer::new);
+            EntityRenderers.register(ModEntities.TWILIGHT_SLASH.get(), TwilightSlashRenderer::new);
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);

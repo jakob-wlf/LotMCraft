@@ -19,9 +19,11 @@ import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEnti
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.FightingArenaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.HurricaneOfLightEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.ProtectiveCageEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightDomeEntity;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightSlashEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.CycleOfFateEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
@@ -538,6 +540,14 @@ public class ModEntities {
     public static final Supplier<EntityType<ProtectiveCageEntity>> PROTECTIVE_CAGE =
             ENTITY_TYPES.register("protective_cage", () -> EntityType.Builder.of(ProtectiveCageEntity::new, MobCategory.MISC)
                     .sized(0.1F, 0.1F).clientTrackingRange(24).updateInterval(10).fireImmune().noSummon().noSave().build("protective_cage"));
+
+    public static final Supplier<EntityType<HurricaneOfLightEntity>> HURRICANE_OF_LIGHT =
+            ENTITY_TYPES.register("hurricane_of_light", () -> EntityType.Builder.of(HurricaneOfLightEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(24).updateInterval(1).fireImmune().noSummon().noSave().build("hurricane_of_light"));
+
+    public static final Supplier<EntityType<TwilightSlashEntity>> TWILIGHT_SLASH =
+            ENTITY_TYPES.register("twilight_slash", () -> EntityType.Builder.of(TwilightSlashEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(24).updateInterval(1).fireImmune().noSummon().noSave().build("twilight_slash"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

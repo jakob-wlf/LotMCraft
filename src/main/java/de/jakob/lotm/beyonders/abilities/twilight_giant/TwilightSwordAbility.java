@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightSlashEntity;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -58,7 +60,6 @@ public class TwilightSwordAbility extends Ability {
     private static final double STRIKE_LENGTH = 30.0D;
     private static final double STRIKE_WIDTH = 8.0D;
     private static final double STRIKE_HIT_RADIUS = 2.5D;
-    private static final double STRIKE_STEP = 0.5D;
     private static final int STRIKE_TICKS = 12;
     private static final double STRIKE_DAMAGE_SCALE = 1.2D;
 
@@ -179,22 +180,21 @@ public class TwilightSwordAbility extends Ability {
     private static void chargedStrike(ServerLevel level, ServerPlayer player) {
         Vec3 start = player.getEyePosition().add(0, -0.3, 0);
         Vec3 forward = player.getLookAngle().normalize();
-        Vec3 flat = new Vec3(-forward.z, 0, forward.x);
-        Vec3 side = flat.lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : flat.normalize();
         float damage = (float) (DamageLookup.lookupDamage(2, STRIKE_DAMAGE_SCALE) * BeyonderData.getMultiplier(player));
         Set<UUID> struck = new HashSet<>();
         int[] step = {0};
+        Vec3 travel = new Vec3(forward.x, 0, forward.z);
+        travel = travel.lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : travel.normalize();
+        Vec3 end = player.position().add(travel.scale(STRIKE_LENGTH));
+        TwilightSlashEntity slash = new TwilightSlashEntity(ModEntities.TWILIGHT_SLASH.get(), level);
+        slash.setPos(end.x, player.getY(), end.z);
+        slash.setOwner(player);
+        level.addFreshEntity(slash);
         level.playSound(null, player.blockPosition(), SoundEvents.BLAZE_SHOOT, player.getSoundSource(), 3f, 0.4f);
         level.playSound(null, player.blockPosition(), SoundEvents.WITHER_SHOOT, player.getSoundSource(), 2f, 0.6f);
         ServerScheduler.scheduleForDuration(0, 1, STRIKE_TICKS, () -> {
             double distance = STRIKE_LENGTH * (++step[0]) / STRIKE_TICKS;
             Vec3 middle = start.add(forward.scale(distance));
-            for (double offset = -STRIKE_WIDTH / 2; offset <= STRIKE_WIDTH / 2; offset += STRIKE_STEP) {
-                double bend = (offset * offset) / STRIKE_WIDTH;
-                Vec3 point = middle.add(side.scale(offset)).subtract(forward.scale(bend));
-                level.sendParticles(TwilightAging.TWILIGHT_DUST, point.x, point.y, point.z, 1, 0.05, 0.05, 0.05, 0);
-                if (Math.abs(offset) < STRIKE_WIDTH / 4) level.sendParticles(ParticleTypes.FLAME, point.x, point.y, point.z, 1, 0.05, 0.05, 0.05, 0.01);
-            }
             for (LivingEntity target : AbilityUtil.getNearbyEntities(player, level, middle, STRIKE_WIDTH / 2 + STRIKE_HIT_RADIUS)) {
                 if (!struck.add(target.getUUID()) || !AbilityUtil.mayDamage(player, target)) continue;
                 pierce(level, player, target, damage);
