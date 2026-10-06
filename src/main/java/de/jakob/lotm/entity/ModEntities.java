@@ -31,7 +31,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {
@@ -81,6 +80,10 @@ public class ModEntities {
     public static final Supplier<EntityType<FireballEntity>> FIREBALL =
             ENTITY_TYPES.register("fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
                     .sized(.55f, .55f).noSave().build("fireball"));
+
+    public static final Supplier<EntityType<WaterBoltEntity>> WATER_BOLT =
+            ENTITY_TYPES.register("water_bolt", () -> EntityType.Builder.<WaterBoltEntity>of(WaterBoltEntity::new, MobCategory.MISC)
+                    .sized(.55f, .55f).noSave().build("water_bolt"));
 
     public static final Supplier<EntityType<FireballEntity>> GIANT_FIREBALL =
             ENTITY_TYPES.register("giant_fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
@@ -231,7 +234,7 @@ public class ModEntities {
                     .fireImmune()
                     .build("electromagnetic_tornado"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> Meteor =
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> METEOR =
             ENTITY_TYPES.register("meteor", () -> EntityType.Builder.of(
                             (EntityType<MeteorEntity> type, net.minecraft.world.level.Level level) ->
                                     new MeteorEntity(type, level),

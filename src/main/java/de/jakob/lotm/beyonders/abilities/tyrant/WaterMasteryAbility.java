@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -23,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -116,12 +119,29 @@ public class WaterMasteryAbility extends SelectableAbility {
         AtomicBoolean isFrozen = new AtomicBoolean(false);
 
         UUID wallId = UUID.randomUUID();
-        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, (int) (30* multiplier(entity)), (int) (-2* multiplier(entity)), (int) (17* multiplier(entity)));
+        ActiveWaterWall wallData = new ActiveWaterWall(targetPos, perpendicular, wallId, (int) (30), (int) (-2), (int) (17));
         activeWaterWalls.add(wallData);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30* multiplier(entity)), () -> {
+        BlockPos pos2 = BlockPos.containing(targetPos);
+
+        double offsetX = targetPos.x - (pos2.getX() + 0.5);
+        double offsetY = targetPos.y - (pos2.getY() + 0.5) + 1.2;
+        double offsetZ = targetPos.z - (pos2.getZ() + 0.5);
+
+        Vec3 lookAngle = new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z).normalize();
+        Quaternionf rotation = new Quaternionf().rotateTo(
+                new Vector3f(0, 0, 1),
+                new Vector3f((float) lookAngle.x, (float) lookAngle.y, (float) lookAngle.z)
+        );
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("water_wall", pos2, offsetX, offsetY, offsetZ, 1, rotation, -1, false, true, new Vec3(3.5, 3.5, 3.5)),
+                (ServerLevel) level, targetPos, 128
+        );
+
+        ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30), () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
@@ -130,7 +150,7 @@ public class WaterMasteryAbility extends SelectableAbility {
             }
 
             for(int i = -2; i < 17; i++) {
-                for(int j = -30; j < 31; j++) {
+                for(int j = -36; j < 37; j++) {
                     Vec3 pos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
 
                     if(isFrozen.get() && BeyonderData.isGriefingEnabled(entity)) {
@@ -139,9 +159,6 @@ public class WaterMasteryAbility extends SelectableAbility {
                             level.setBlockAndUpdate(blockPos, Blocks.ICE.defaultBlockState());
                         }
                     }
-
-                    if(random.nextBoolean())
-                        ParticleUtil.spawnParticles(level, !isFrozen.get() ? dust : ParticleTypes.SNOWFLAKE, pos, 1, 0.5, 0.02);
 
                     AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
 
