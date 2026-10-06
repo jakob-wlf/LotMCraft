@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -97,18 +99,21 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         Vec3 center = AbilityUtil.getTargetLocation(entity, (int) (60*multiplier(entity)), 3);
 
-        EffectManager.playEffect(EffectIds.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel, entity);
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("space_time_storm", BlockPos.containing(center), 0, 0, 0, 1, null, -1, false, true, null),
+                serverLevel, center, 256
+        );
 
         serverLevel.playSound(null, BlockPos.containing(center), SoundEvents.WITHER_SPAWN, SoundSource.AMBIENT, 1.5f, 0.75f + random.nextFloat() * 0.5f);
 
         AtomicInteger ticks = new AtomicInteger();
 
-        List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 60, true, true, false);
+        List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 65, true, true, false);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
             ticks.addAndGet(1);
 
             if (ticks.get() % 10 == 0) {
-                AbilityUtil.damageNearbyEntities(serverLevel, entity, 60* multiplier(entity), DamageLookup.lookupDamage(1, .4) * (int) Math.max(multiplier(entity)/6,1), center, true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, entity, 65, DamageLookup.lookupDamage(1, .4) * (int) Math.max(multiplier(entity)/6,1), center, true, false);
             }
 
             if(griefing) {
