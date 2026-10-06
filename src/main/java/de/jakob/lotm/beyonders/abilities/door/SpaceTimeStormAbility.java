@@ -2,13 +2,14 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.block.ModBlocks;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -104,14 +105,17 @@ public class SpaceTimeStormAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
         Vec3 center = AbilityUtil.getTargetLocation(entity, (int) (60*multiplier(entity)), 3);
 
-        EffectManager.playEffect(EffectIds.SPACE_FRAGMENTATION, center.x, center.y, center.z, serverLevel, entity);
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("space_time_storm", BlockPos.containing(center), 0, 0, 0, 1, null, -1, false, true, null),
+                serverLevel, center, 256
+        );
 
         serverLevel.playSound(null, BlockPos.containing(center), SoundEvents.WITHER_SPAWN, SoundSource.AMBIENT, 1.5f, 0.75f + random.nextFloat() * 0.5f);
 
         AtomicInteger ticks = new AtomicInteger();
         final float damage = baseDamage * 3f;
 
-        List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 60, true, true, false);
+        List<BlockPos> blocks = AbilityUtil.getBlocksInSphereRadius(serverLevel, center, 65, true, true, false);
         ServerScheduler.scheduleForDuration(0, 2, 20 * 25, () -> {
             ticks.addAndGet(1);
 

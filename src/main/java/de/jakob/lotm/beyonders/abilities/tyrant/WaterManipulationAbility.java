@@ -2,8 +2,12 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
+import de.jakob.lotm.entity.custom.projectiles.WaterBoltEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -226,14 +230,21 @@ public class WaterManipulationAbility extends SelectableAbility {
         castingCorrosiveRain.add(entity.getUUID());
 
         Vec3 startPos = AbilityUtil.getTargetLocation(entity, 15, 2);
-        Vec3 cloudPos = startPos.add(0, 8, 0);
         Vec3 rainPos = startPos.add(0, 3, 0);
+
+        BlockPos blockPos = BlockPos.containing(startPos);
+
+        double offsetX = startPos.x - (blockPos.getX() + 0.5);
+        double offsetY = startPos.y - (blockPos.getY() + 0.5);
+        double offsetZ = startPos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("corrosive_rain", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, false, true, null),
+                (ServerLevel) level, startPos, 128
+        );
+
         ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
             level.playSound(null, rainPos.x, rainPos.y, rainPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
-            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, cloudPos, 120, 5, .4, 5, 0);
-            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.RAIN, rainPos, 180, 4, 4, 4, 0);
-            ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, rainPos, 35, 4, 4, 4, 0);
-            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNEEZE, rainPos, 45, 4, 4, 4, 0);
         }, () -> castingCorrosiveRain.remove(entity.getUUID()), (ServerLevel) level);
 
         float damage = baseDamage/3;
@@ -246,53 +257,15 @@ public class WaterManipulationAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(-.65, .65), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, 10, 1.4f).subtract(startPos).normalize();
-
-        AtomicReference<Vec3> currentPos = new AtomicReference<>(startPos);
+        Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (50 * multiplier(entity)), 1.4f).subtract(startPos).normalize();
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
-        AtomicBoolean hasHit = new AtomicBoolean(false);
-        AtomicBoolean frozen = new AtomicBoolean(false);
-
-        float damage = baseDamage;
-
-        ServerScheduler.scheduleForDuration(0, 1, 20 * 5, () -> {
-            if (hasHit.get()) {
-                return;
-            }
-
-            if(InteractionHandler.isInteractionPossible(new Location(currentPos.get(), level), "freezing")) {
-                frozen.set(true);
-            }
-
-            Vec3 pos = currentPos.get();
-
-            if(frozen.get()) {
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, pos, 12, 0.24, 0.02);
-                return;
-            }
-
-            if(AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5f, ModDamageTypes.WATER,damage, pos, true, false, true, 0)) {
-                hasHit.set(true);
-                return;
-            }
-
-            if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
-                if(BeyonderData.isGriefingEnabled(entity)) {
-                    pos = pos.subtract(direction);
-                    level.setBlockAndUpdate(BlockPos.containing(pos.x, pos.y, pos.z), Blocks.WATER.defaultBlockState());
-                }
-                hasHit.set(true);
-                return;
-            }
-
-            ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, pos, 23, 0.24, 0.02);
-            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.BUBBLE, pos, 12, 0.24, 0.02);
-
-            currentPos.set(pos.add(direction));
-        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+        WaterBoltEntity waterBolt = new WaterBoltEntity(level, entity, DamageLookup.lookupDamage(7, .825) * multiplier(entity) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        waterBolt.setPos(startPos.x, startPos.y, startPos.z);
+        waterBolt.shoot(direction.x, direction.y, direction.z, 2.2f * multiplier(entity), 0);
+        level.addFreshEntity(waterBolt);
     }
 
     final Vec3 eastFacing = new Vec3(1, 0, 0);

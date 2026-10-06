@@ -52,7 +52,7 @@ public class MeteorEntity extends Entity {
     }
 
     public MeteorEntity(Level level, float speed, float damage, float size, @Nullable Entity caster, boolean griefing, float explosionSize, float radius) {
-        super(ModEntities.Meteor.get(), level);
+        super(ModEntities.METEOR.get(), level);
         this.setSpeed(speed * 1.75f);
         this.setDamage(damage);
         this.setSize(size);
