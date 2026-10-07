@@ -30,6 +30,7 @@ import org.joml.Vector3f;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class MidnightPoemAbility extends SelectableAbility {
 
@@ -175,7 +176,12 @@ public class MidnightPoemAbility extends SelectableAbility {
             target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, actualDuration, 1, false, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, actualDuration, 5, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, actualDuration, 4, false, false, false));
-            ServerScheduler.scheduleForDuration(0, 3, actualDuration, () -> {
+            UUID[] schedulerID = new UUID[1];
+            schedulerID[0] = ServerScheduler.scheduleForDuration(0, 3, actualDuration, () -> {
+                if(target.isDeadOrDying() || !target.isAlive()) {
+                    ServerScheduler.cancel(schedulerID[0]);
+                    return;
+                }
                 target.setOnGround(true);
                 var pos = target.position();
                 target.setDeltaMovement(new Vec3(0, 0, 0));

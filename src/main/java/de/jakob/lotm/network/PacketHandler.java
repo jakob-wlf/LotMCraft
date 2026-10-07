@@ -414,12 +414,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                OpenCoordinateScreenForTeleportationPacket.TYPE,
-                OpenCoordinateScreenForTeleportationPacket.STREAM_CODEC,
-                OpenCoordinateScreenForTeleportationPacket::handle
-        );
-
-        registrar.playToClient(
                 HotGroundEffectPacket.TYPE,
                 HotGroundEffectPacket.STREAM_CODEC,
                 HotGroundEffectPacket::handle
@@ -577,12 +571,6 @@ public class PacketHandler {
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
-        registrar.playToServer(
-                BecomeBeyonderPacket.TYPE,
-                BecomeBeyonderPacket.STREAM_CODEC,
-                BecomeBeyonderPacket::handle
-        );
-
         registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
                 RequestSefirotSyncPacket.STREAM_CODEC,
@@ -831,9 +819,15 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                TeleportPlayerToLocationPacket.TYPE,
-                TeleportPlayerToLocationPacket.STREAM_CODEC,
-                TeleportPlayerToLocationPacket::handle
+                FlamingJumpTeleportPacket.TYPE,
+                FlamingJumpTeleportPacket.STREAM_CODEC,
+                FlamingJumpTeleportPacket::handle
+        );
+
+        registrar.playToServer(
+                TeleportToCoordinatesPacket.TYPE,
+                TeleportToCoordinatesPacket.STREAM_CODEC,
+                TeleportToCoordinatesPacket::handle
         );
 
         registrar.playToServer(

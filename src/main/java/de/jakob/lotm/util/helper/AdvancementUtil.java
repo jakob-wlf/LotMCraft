@@ -254,6 +254,7 @@ public class AdvancementUtil {
 
             ServerScheduler.scheduleDelayed(damageTime, () -> {
                 if (entity.isDeadOrDying()) return;
+                if (entity.getHealth() < 3) return;
 
                 float baseDamage = 2.0f + (9 - sequence) * 0.5f;
                 float damage = baseDamage + (float) (Math.random() * 2.0f);
@@ -291,6 +292,7 @@ public class AdvancementUtil {
         ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
             if (entity.isDeadOrDying()) return;
             entity.teleportTo(position.x, position.y, position.z);
+            entity.resetFallDistance();
         }, serverLevel);
     }
 

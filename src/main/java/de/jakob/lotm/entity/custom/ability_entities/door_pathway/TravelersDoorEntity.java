@@ -29,6 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.Set;
+import java.util.UUID;
 
 public class TravelersDoorEntity extends Entity {
     private double destX;
@@ -122,6 +123,9 @@ public class TravelersDoorEntity extends Entity {
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
                     Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position(), spiritWorldLevel);
+                    if(coords.y < 10) {
+                        coords = new Vec3(coords.x, 10, coords.z);
+                    }
                     BlockPos pos = BlockPos.containing(coords);
 
                     // elevate until not inside a block
@@ -144,6 +148,9 @@ public class TravelersDoorEntity extends Entity {
                     if (overworldLevel == null) return;
 
                     Vec3 coords = SpiritWorldHandler.getCoordinatesInOverworld(entity.position(), overworldLevel);
+                    if (coords.y < -50) {
+                        coords = new Vec3(coords.x, -50, coords.z);
+                    }
                     BlockPos pos = BlockPos.containing(coords);
 
                     while (!overworldLevel.getBlockState(pos).isAir()) {
@@ -191,7 +198,7 @@ public class TravelersDoorEntity extends Entity {
         Vec3 dir = spiritWorldTargetPos.subtract(spiritWorldPos).normalize();
 
         for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
-            if(!(entity instanceof LivingEntity) || casterSeq <= 2) {
+            if(!(entity instanceof LivingEntity living) || casterSeq <= 2) {
                 entity.teleportTo(level, destX, destY, destZ, Set.of(), entity.getYRot(), entity.getXRot());
                 continue;
             }
@@ -199,8 +206,13 @@ public class TravelersDoorEntity extends Entity {
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
 
-            ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
+            UUID[] taskId = new UUID[1];
+            taskId[0] = ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
+                if(!entity.isAlive() || ((LivingEntity) entity).isDeadOrDying() || !entity.level().equals(spiritWorldLevel)) {
+                    ServerScheduler.cancel(taskId[0]);
+                    return;
+                }
+                living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;

@@ -2,9 +2,12 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
+import de.jakob.lotm.network.packets.handlers.TeleportUse;
 import de.jakob.lotm.rendering.MiracleWheelOverlay;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -35,6 +38,9 @@ public class MiracleCreationAbility extends SelectableAbility {
     public MiracleCreationAbility(String id) {
         super(id, 5);
         canBeShared = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override
@@ -71,7 +77,10 @@ public class MiracleCreationAbility extends SelectableAbility {
             }
             case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano", "summon_lightning");
             case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness");
-            case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");
+            case 3 -> {
+                PendingTeleportRequests.arm((ServerPlayer) player, TeleportUse.TELEPORTATION, Double.POSITIVE_INFINITY, 20 * 30);
+                ClientHandler.openCoordinateScreen(player, "teleportation");
+            }
         }
     }
 }

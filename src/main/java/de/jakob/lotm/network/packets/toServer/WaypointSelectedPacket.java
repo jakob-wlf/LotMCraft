@@ -53,6 +53,11 @@ public record WaypointSelectedPacket(WaypointComponent.ClientWaypoint waypoint, 
     public static void handle(WaypointSelectedPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
+
+            if(!LOTMCraft.abilityHandler.getById("waypoint_ability").hasAbility(player, false)) {
+                return;
+            }
+
             ServerLevel serverLevel = player.serverLevel();
             MinecraftServer server = player.getServer();
 

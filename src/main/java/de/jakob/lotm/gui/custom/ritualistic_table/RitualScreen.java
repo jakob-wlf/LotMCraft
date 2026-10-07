@@ -110,14 +110,16 @@ public class RitualScreen extends AbstractContainerScreen<RitualMenu> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        // Always let Escape close the screen, regardless of what's focused
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
-        if (field1.isFocused() && field1.isVisible()) return true;
-        if (field2.isFocused() && field2.isVisible()) return true;
-        if (field3.isFocused() && field3.isVisible()) return true;
+        for (EditBox field : new EditBox[]{field1, field2, field3}) {
+            if (field.isFocused() && field.isVisible()) {
+                field.keyPressed(keyCode, scanCode, modifiers);
+                return true;
+            }
+        }
 
         return super.keyPressed(keyCode, scanCode, modifiers);
     }

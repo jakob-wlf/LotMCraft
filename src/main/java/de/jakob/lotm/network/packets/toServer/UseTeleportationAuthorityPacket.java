@@ -36,6 +36,8 @@ public record UseTeleportationAuthorityPacket(String use, double x, double y, do
                 if(context.player().getId() != packet.id) {
                     return;
                 }
+                if(!LOTMCraft.abilityHandler.getById("teleportation_authority_ability").hasAbility(context.player(), false))
+                    return;
                 switch (packet.use) {
                     case "teleportation_authority_self" -> TeleportationAuthorityAbility.teleportSelf((ServerPlayer) context.player(), new Vec3(packet.x, packet.y, packet.z));
                     case "teleportation_authority_self_and_nearby" -> TeleportationAuthorityAbility.teleportSelfAndOthers((ServerPlayer) context.player(), new Vec3(packet.x, packet.y, packet.z));
