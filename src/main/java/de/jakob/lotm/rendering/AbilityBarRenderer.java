@@ -35,8 +35,8 @@ public class AbilityBarRenderer {
     private static final float LABEL_SCALE = 0.65f;
 
     
-    private static final int JAR_W = 26;
-    private static final int JAR_H = 32;
+    private static final int JAR_W = 23;
+    private static final int JAR_H = 29;
     private static final int WORM_SIZE = 14;
     private static final int SURVIVAL_JAR_OFFSET = 17;
 

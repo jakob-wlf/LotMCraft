@@ -98,7 +98,7 @@ public class WaterBoltEntity extends AbstractArrow {
 
         executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
         executor.setForcedDeath(true);
-        executor.setScale(0.8, 0.8, 0.8);
+        executor.setScale(1.2, 1.2, 1.2);
 
         try {
             executor.start();
