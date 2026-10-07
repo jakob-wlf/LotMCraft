@@ -35,6 +35,8 @@ public record SyncDreamDivinationCoordinatesPacket(int x, int y, int z, int id) 
                     return;
                 }
 
+                if(!LOTMCraft.abilityHandler.getById("dream_divination_ability").canUse(context.player()))
+                    return;
                 DivinationAbility.performDreamDivination(context.player().level(), context.player(), new BlockPos(packet.x, packet.y, packet.z));
             }
         });

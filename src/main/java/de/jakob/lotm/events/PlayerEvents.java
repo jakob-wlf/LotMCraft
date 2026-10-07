@@ -15,6 +15,7 @@ import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDo
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
 import de.jakob.lotm.network.packets.toClient.ResetClientEffectsPacket;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
@@ -74,6 +75,8 @@ public class PlayerEvents {
 
             if(BeyonderData.isBeyonder(player))
                 BeyonderData.playerMap.addLastPosition(player);
+
+            PendingTeleportRequests.clear(player.getUUID());
 
             de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility.recallSoulsOnLogout(player);
 

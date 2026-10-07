@@ -141,33 +141,24 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
     private static final int MAIN_ISLAND_RADIUS = 100;
     private static final int ISLAND_BASE_HEIGHT = 64;
 
-    /** ARCHIPELAGO: Y level of the ambient "wool sea" surface plane. */
     private static final int WOOL_SEA_LEVEL = 48;
-    /** ARCHIPELAGO: thickness of the wool sea surface layer. */
     private static final int WOOL_SEA_DEPTH = 4;
 
-    /** SPIRE: how many blocks apart each crystal shelf ring is on the shaft. */
     private static final int SPIRE_SHELF_INTERVAL = 18;
-    /** SPIRE: how many blocks a shelf ring protrudes beyond the shaft radius. */
     private static final int SPIRE_SHELF_WIDTH = 4;
-    /** SPIRE: thickness of each shelf ring in the Y axis. */
     private static final int SPIRE_SHELF_THICKNESS = 3;
 
-    /**
-     * SPIRE: Y height of the crystal cave floor.  Spires grow up from this level;
-     * stalactite/stalagmite formations fill the space between floor and spire base.
-     */
     private static final int SPIRE_FLOOR_Y = 30;
-    /** SPIRE: thickness of the solid bedrock-like base layer beneath the floor. */
     private static final int SPIRE_FLOOR_BASE_THICKNESS = 6;
 
-    /** CONTINENTAL: shelf / cliff zone fractions. */
     private static final double CONTINENTAL_SHELF_FRAC = 0.30;
     private static final double CONTINENTAL_CLIFF_FRAC = 0.20;
 
     private static final double PLATEAU_EROSION_STRENGTH = 0.55;
 
     private static final int EMBER_LAVA_LEVEL = 48;
+
+    private static final int SOLID_GROUND_DROP = 14;
 
     private static final int   CHAOS_ORB_GRID        = 40;
     private static final int   CHAOS_ORB_MIN_RADIUS   = 3;
@@ -224,7 +215,7 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                 int wz = chunkZ + z;
 
                 SpiritWorldBiome.BiomeWeight[] blend = SpiritWorldBiome.getBlendedBiomesAt(wx, wz);
-                SpiritWorldBiome               biome = blend[0].biome();   // dominant biome drives mode-specific logic
+                SpiritWorldBiome               biome = blend[0].biome();
                 IslandData                    island = getBlendedIslandData(wx, wz, rng, blend);
 
                 if (biome.mode == SpiritWorldBiome.GenerationMode.ARCHIPELAGO) {
@@ -318,16 +309,16 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
 
         double n1 = improvedNoise(wx * 0.07,       wz * 0.07);
         double n2 = improvedNoise(wx * 0.18 + 300, wz * 0.18 + 300);
-        double combined = (n1 * 0.65 + n2 * 0.35 + 1.0) * 0.5; // normalise to [0,1]
+        double combined = (n1 * 0.65 + n2 * 0.35 + 1.0) * 0.5;
 
         if (combined > 0.52) {
-            int stalagHeight = (int)(combined * 18); // up to 18 blocks tall
+            int stalagHeight = (int)(combined * 18);
             int stalagTop    = baseTop + stalagHeight;
 
             for (int y = baseTop + 1; y <= stalagTop; y++) {
-                double progress = (double)(y - baseTop) / stalagHeight; // 0=base,1=tip
+                double progress = (double)(y - baseTop) / stalagHeight;
                 double taperNoise = improvedNoise(wx * 0.25 + 600, wz * 0.25 + 600) * 0.3;
-                if (Math.random() < progress * 0.55 + taperNoise) break; // probabilistic taper
+                if (Math.random() < progress * 0.55 + taperNoise) break;
 
                 BlockState spire = spireFloorBlock(y, combined);
                 chunk.setBlockState(new BlockPos(lx, y, lz), spire, false);
@@ -341,13 +332,12 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             double stalCombined = (n3 * 0.60 + n4 * 0.40 + 1.0) * 0.5;
 
             if (stalCombined > 0.50) {
-                int stalHeight = (int)(stalCombined * 14); // up to 14 blocks
+                int stalHeight = (int)(stalCombined * 14);
                 int stalBottom = Math.max(baseTop + 1, islandBottom - stalHeight);
                 for (int y = islandBottom - 1; y >= stalBottom; y--) {
                     double progress = (double)(islandBottom - y) / stalHeight;
                     if (Math.random() < progress * 0.60) break;
                     BlockState spire = spireFloorBlock(y, stalCombined);
-                    // Don't overwrite existing island blocks
                     if (chunk.getBlockState(new BlockPos(lx, y, lz)).isAir()) {
                         chunk.setBlockState(new BlockPos(lx, y, lz), spire, false);
                     }
@@ -390,7 +380,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
 
     private void fillEmberLava(int lx, int lz, int wx, int wz,
                                ChunkAccess chunk, IslandData island) {
-        // Determine if this column is open (no island) or shallow (island top below lava level)
         boolean columnOpen = island.density <= 0;
         boolean columnShallow = island.density > 0 && island.top < EMBER_LAVA_LEVEL;
 
@@ -445,7 +434,7 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                 best    = raw;
                 bestTop = p.baseHeight() + yo + (int)(heightFrac * p.heightVariation());
                 bestBot = bestTop - (int)(heightFrac * p.heightVariation() * p.depthMultiplier())
-                        - (int)(cr.nextDouble() * 10); // ragged, uneven undersides
+                        - (int)(cr.nextDouble() * 10);
             }
         }
         return best > 0 ? new IslandData(best, bestTop, bestBot, 0, 0, 0, 0, 0) : IslandData.EMPTY;
@@ -479,7 +468,7 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                     double dy = y - iy;
                     double distSq = dx * dx + dz * dz + dy * dy;
                     if (distSq > (double) radius * radius) continue;
-                    if (hollow && distSq < (double) (radius - 2) * (radius - 2)) continue; // hollow shell
+                    if (hollow && distSq < (double) (radius - 2) * (radius - 2)) continue;
 
                     BlockState orbBlock = chaosOrbBlock(cr, distSq, radius);
                     chunk.setBlockState(new BlockPos(lx, y, lz), orbBlock, false);
@@ -513,7 +502,7 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         double wallNoise   = improvedNoise(wx * 0.060 + 700, wz * 0.060 + 700) * 0.25;
 
         double combined = canyonNoise + wallNoise;
-        double threshold = 0.12 - depth * 0.006;
+        double threshold = 0.10 + Math.min(depth, 40) * 0.004;
         return combined > threshold;
     }
 
@@ -578,9 +567,33 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             case CHAOS       -> floatingChaos(x, z, biome);
         };
 
-        if (floating.density > main.density) return floating;
-        if (main.density > 0)               return main;
-        return IslandData.EMPTY;
+        IslandData result;
+        if (floating.density > main.density) result = floating;
+        else if (main.density > 0)           result = main;
+        else                                 result = IslandData.EMPTY;
+
+        if (biome.isSolid()) {
+            result = mergeWithGround(result, solidGround(x, z, biome));
+        }
+        return result;
+    }
+
+    private IslandData solidGround(int x, int z, SpiritWorldBiome b) {
+        double n = improvedNoise(x * 0.012 + 250, z * 0.012 + 250) * 0.60
+                +  improvedNoise(x * 0.035 + 750, z * 0.035 + 750) * 0.30;
+        int top = b.terrain.baseHeight() - SOLID_GROUND_DROP + (int)(n * 10);
+        return new IslandData(0.5, top, 0, 0, 0, 0, 0, 0.6);
+    }
+
+    private IslandData mergeWithGround(IslandData feature, IslandData ground) {
+        if (feature.density <= 0) return ground;
+        return new IslandData(
+                Math.max(feature.density, ground.density),
+                Math.max(feature.top, ground.top),
+                0,
+                feature.centerX, feature.centerZ,
+                feature.shaftTop, feature.shaftRadius,
+                feature.flowAngle);
     }
 
 
@@ -651,14 +664,14 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             if (density <= 0) continue;
 
             int totalHeight = (int)(density * p.heightVariation());
-            int bottom      = SPIRE_FLOOR_Y + 1 + yo / 4; // anchor near floor
+            int bottom      = SPIRE_FLOOR_Y + 1 + yo / 4;
             int shaftTop    = bottom + (int)(totalHeight * 0.40);
             int top         = bottom + totalHeight;
             double shaftRad = radius * 0.70;
 
             if (density > best) {
                 best = density;
-                bestData = new IslandData(density, top, bottom, (int) ix, (int) iz, shaftTop, shaftRad, 0);
+                bestData = new IslandData(density, top, bottom, ix, iz, shaftTop, shaftRad, 0);
             }
         }
         return bestData;
