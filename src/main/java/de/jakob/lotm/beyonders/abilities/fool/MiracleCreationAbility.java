@@ -66,7 +66,12 @@ public class MiracleCreationAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player player)) return; // Will be handled later
-        if(!level.isClientSide) return; // Client-side only for opening the wheel
+        if(!level.isClientSide) {
+            if(abilityIndex == 3) {
+                PendingTeleportRequests.arm((ServerPlayer) player, TeleportUse.TELEPORTATION, Double.POSITIVE_INFINITY, 20 * 30);
+            }
+            return; // Client-side only for opening the wheel
+        }
         switch (abilityIndex) {
             case 0 -> {
                 if(!BeyonderData.isGriefingEnabled(entity)) {
@@ -77,10 +82,7 @@ public class MiracleCreationAbility extends SelectableAbility {
             }
             case 1 -> MiracleWheelOverlay.getInstance().open(player, "summon_meteor", "summon_tornados", "summon_volcano", "summon_lightning");
             case 2 -> MiracleWheelOverlay.getInstance().open(player, "reverse_gravity", "slow_time", "make_ground_hot", "darkness");
-            case 3 -> {
-                PendingTeleportRequests.arm((ServerPlayer) player, TeleportUse.TELEPORTATION, Double.POSITIVE_INFINITY, 20 * 30);
-                ClientHandler.openCoordinateScreen(player, "teleportation");
-            }
+            case 3 -> ClientHandler.openCoordinateScreen(player, "teleportation");
         }
     }
 }

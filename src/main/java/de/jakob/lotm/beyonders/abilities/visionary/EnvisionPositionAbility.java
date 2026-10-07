@@ -77,7 +77,7 @@ public class EnvisionPositionAbility extends SelectableAbility {
         if(!(level instanceof ServerLevel serverLevel)) return;
         if(!(entity instanceof ServerPlayer player)) return;
 
-        PendingTeleportRequests.arm(player, TeleportUse.TELEPORTATION, Double.POSITIVE_INFINITY, 20 * 30);
+        PendingTeleportRequests.arm(player, TeleportUse.ENVISION_LOCATION, Double.POSITIVE_INFINITY, 20 * 30);
         PacketHandler.sendToPlayer(player, new OpenEnvisionLocationScreenPacket());
     }
 

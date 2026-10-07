@@ -36,7 +36,6 @@ public class SpiritWorldDimensionEffects {
                 LOTMCraft.MOD_ID, "textures/environment/spirit_ether.png");
 
         private static final Vec3 WHITE = new Vec3(1, 1, 1);
-        private static final float RADIUS = 220f;
 
         public SpiritWorldEffects() {
             super(Float.NaN, true, SkyType.NONE, false, false);
@@ -73,11 +72,11 @@ public class SpiritWorldDimensionEffects {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
-            drawLayer(modelViewMatrix, 40f, 150f,  0.0025f,  0.0012f,  0.0006f, WHITE.lerp(tint, 0.5),
+            drawLayer(modelViewMatrix, 100f, 4, 2,  0.0006f,  0.0003f,  0.0006f, Mth.HALF_PI, 0f, WHITE.lerp(tint, 0.5),
                     0.85f + 0.15f * Mth.sin(time * 0.030f), time);
-            drawLayer(modelViewMatrix, 70f, 220f, -0.0018f,  0.0022f, -0.0004f, WHITE.lerp(tint, 0.8),
+            drawLayer(modelViewMatrix, 105f, 3, 2, -0.0004f,  0.0005f, -0.0004f, 0f, Mth.HALF_PI, WHITE.lerp(tint, 0.8),
                     0.65f + 0.20f * Mth.sin(time * 0.021f + 2.0f), time);
-            drawLayer(modelViewMatrix, 100f, 320f, 0.0010f, -0.0008f,  0.0002f, new Vec3(0.75, 0.9, 1.0),
+            drawLayer(modelViewMatrix, 110f, 6, 3,  0.0003f, -0.0002f,  0.0002f, Mth.HALF_PI, Mth.HALF_PI, new Vec3(0.75, 0.9, 1.0),
                     0.50f + 0.15f * Mth.sin(time * 0.015f + 4.0f), time);
 
             RenderSystem.defaultBlendFunc();
@@ -102,45 +101,75 @@ public class SpiritWorldDimensionEffects {
 
         private void drawDome(Matrix4f mat, Vec3 top, Vec3 horizon) {
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.TRIANGLE_FAN, DefaultVertexFormat.POSITION_COLOR);
-            b.addVertex(mat, 0, 120, 0).setColor((float) top.x, (float) top.y, (float) top.z, 1f);
-            int seg = 24;
-            for (int i = 0; i <= seg; i++) {
-                float a = (float) (i * Math.PI * 2 / seg);
-                b.addVertex(mat, Mth.cos(a) * 150, -20, Mth.sin(a) * 150)
-                        .setColor((float) horizon.x, (float) horizon.y, (float) horizon.z, 1f);
-            }
-            BufferUploader.drawWithShader(b.buildOrThrow());
-        }
-
-        private void drawLayer(Matrix4f base, float height, float texScale, float scrollU, float scrollV,
-                               float rotSpeed, Vec3 color, float intensity, float time) {
-            RenderSystem.setShaderTexture(0, ETHER);
-            Matrix4f mat = new Matrix4f(base).rotateY(time * rotSpeed);
-            float su = time * scrollU, sv = time * scrollV;
-
-            int n = 20;
-            float step = RADIUS * 2 / n;
-            BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    float x0 = -RADIUS + i * step, x1 = x0 + step;
-                    float z0 = -RADIUS + j * step, z1 = z0 + step;
-                    vert(b, mat, x0, z0, height, texScale, su, sv, color, intensity);
-                    vert(b, mat, x0, z1, height, texScale, su, sv, color, intensity);
-                    vert(b, mat, x1, z1, height, texScale, su, sv, color, intensity);
-                    vert(b, mat, x1, z0, height, texScale, su, sv, color, intensity);
+            BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            int stacks = 24, slices = 32;
+            for (int i = 0; i < stacks; i++) {
+                for (int j = 0; j < slices; j++) {
+                    domeVert(b, mat, i,     j,     stacks, slices, top, horizon);
+                    domeVert(b, mat, i + 1, j,     stacks, slices, top, horizon);
+                    domeVert(b, mat, i + 1, j + 1, stacks, slices, top, horizon);
+                    domeVert(b, mat, i,     j + 1, stacks, slices, top, horizon);
                 }
             }
             BufferUploader.drawWithShader(b.buildOrThrow());
         }
 
-        private void vert(BufferBuilder b, Matrix4f m, float x, float z, float y, float scale,
-                          float su, float sv, Vec3 c, float intensity) {
-            float dist = Mth.clamp(Mth.sqrt(x * x + z * z) / RADIUS, 0f, 1f);
-            float k = intensity * (1f - dist * dist);
-            b.addVertex(m, x, y, z)
-                    .setUv(x / scale + su, z / scale + sv)
+        private void domeVert(BufferBuilder b, Matrix4f mat, int stack, int slice, int stacks, int slices,
+                              Vec3 top, Vec3 horizon) {
+            float phi = (float) Math.PI * stack / stacks;
+            float theta = (float) (2 * Math.PI) * slice / slices;
+            float dx = Mth.sin(phi) * Mth.cos(theta);
+            float dy = Mth.cos(phi);
+            float dz = Mth.sin(phi) * Mth.sin(theta);
+
+            float f = (float) Math.pow(Math.abs(dy), 0.6);
+            float r = (float) (horizon.x + (top.x - horizon.x) * f);
+            float g = (float) (horizon.y + (top.y - horizon.y) * f);
+            float bl = (float) (horizon.z + (top.z - horizon.z) * f);
+
+            b.addVertex(mat, dx * 150f, dy * 150f, dz * 150f).setColor(r, g, bl, 1f);
+        }
+
+        private static final int STACKS = 24, SLICES = 48;
+
+        private void drawLayer(Matrix4f base, float radius, int repU, int repV, float scrollU, float scrollV,
+                               float spinSpeed, float tiltX, float tiltZ, Vec3 color, float intensity, float time) {
+            RenderSystem.setShaderTexture(0, ETHER);
+
+            Matrix4f rot = new Matrix4f().rotateY(time * spinSpeed).rotateX(tiltX).rotateZ(tiltZ);
+            Matrix4f mat = new Matrix4f(base).mul(rot);
+            float su = time * scrollU, sv = time * scrollV;
+
+            BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            for (int i = 0; i < STACKS; i++) {
+                for (int j = 0; j < SLICES; j++) {
+                    sphereVert(b, mat, i,     j,     radius, repU, repV, su, sv, color, intensity);
+                    sphereVert(b, mat, i + 1, j,     radius, repU, repV, su, sv, color, intensity);
+                    sphereVert(b, mat, i + 1, j + 1, radius, repU, repV, su, sv, color, intensity);
+                    sphereVert(b, mat, i,     j + 1, radius, repU, repV, su, sv, color, intensity);
+                }
+            }
+            BufferUploader.drawWithShader(b.buildOrThrow());
+        }
+
+        private void sphereVert(BufferBuilder b, Matrix4f mat, int stack, int slice, float radius,
+                                int repU, int repV, float su, float sv, Vec3 c, float intensity) {
+            float phi   = (float) Math.PI * stack / STACKS;
+            float theta = (float) (2 * Math.PI) * slice / SLICES;
+
+            float dx = Mth.sin(phi) * Mth.cos(theta);
+            float dy = Mth.cos(phi);
+            float dz = Mth.sin(phi) * Mth.sin(theta);
+
+            float u = (float) slice / SLICES * repU + su;
+            float v = (float) stack / STACKS * repV + sv;
+
+            float a = Math.abs(dy);
+            float t = Mth.clamp((0.97f - a) / 0.17f, 0f, 1f);
+            float k = intensity * t * t * (3f - 2f * t);
+
+            b.addVertex(mat, dx * radius, dy * radius, dz * radius)
+                    .setUv(u, v)
                     .setColor((float) c.x * k, (float) c.y * k, (float) c.z * k, 1f);
         }
     }

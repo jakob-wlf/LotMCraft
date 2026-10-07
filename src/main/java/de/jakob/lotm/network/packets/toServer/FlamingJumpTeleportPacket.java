@@ -43,10 +43,6 @@ public record FlamingJumpTeleportPacket(int fireIndex) implements CustomPacketPa
             BlockPos fire = fires.get(index);
             ServerLevel level = player.serverLevel();
 
-            if (!level.hasChunkAt(fire)) {
-                player.closeContainer();
-                return;
-            }
             if (!(level.getBlockState(fire).getBlock() instanceof BaseFireBlock)) {
                 player.closeContainer();
                 return;
