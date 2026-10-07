@@ -32,14 +32,14 @@ public class SpiritWorldEntityEffects {
             return;
         }
 
-        // Check cooldown
+
         UUID entityId = entity.getUUID();
         long currentTime = entity.level().getGameTime();
         
         if (effectCooldowns.containsKey(entityId)) {
             long cooldownEnd = effectCooldowns.get(entityId);
             if (currentTime < cooldownEnd) {
-                return; // Still on cooldown
+                return;
             }
         }
 
@@ -68,7 +68,7 @@ public class SpiritWorldEntityEffects {
             
         } else {
             int duration = 120;
-            int amplifier = 1 + entity.getRandom().nextInt(3); // 1-3 amplifier
+            int amplifier = 1 + entity.getRandom().nextInt(3);
             
             entity.addEffect(new MobEffectInstance(
                 MobEffects.JUMP,

@@ -1,67 +1,69 @@
 package de.jakob.lotm.dimension;
 
+import java.util.ArrayList;
+import java.util.List;
 
 public enum SpiritWorldBiome {
 
     WOOL_MEADOWS(
             GenerationMode.ARCHIPELAGO,
             new TerrainParams(64, 24, 0.55f, 0.85f, 24, 64, 72, -8, 14, 1.0f,
-                    300)
+                    340)
     ),
     CRYSTALLINE_PEAKS(
             GenerationMode.SPIRE,
             new TerrainParams(55, 90, 0.10f, 0.80f, 3, 12, 55, -5, 70, 3.5f,
-                    250)
+                    340)
     ),
     VOID_GARDENS(
             GenerationMode.SCATTERED,
             new TerrainParams(96, 12, 0.45f, 0.45f, 6, 24, 65, -86, 94, 1.4f,
-                    250)
+                    340)
     ),
     EMBER_WASTES(
             GenerationMode.CONTINENTAL,
             new TerrainParams(60, 8, 0.90f, 0.42f, 80, 200, 220, -6, 10, 0.55f,
-                    250)
+                    340)
     ),
     QUARTZ_FLATS(
             GenerationMode.PLATEAU,
             new TerrainParams(62, 4, 0.15f, 0.30f, 90, 280, 300, -4, 16, 0.45f,
-                    250)
+                    340)
     ),
     TERRACOTTA_CANYON(
             GenerationMode.CANYON,
             new TerrainParams(58, 38, 0.85f, 0.38f, 50, 130, 180, -10, 26, 0.7f,
-                    250)
+                    340)
     ),
     FUNGAL_DEPTHS(
             GenerationMode.SCATTERED,
             new TerrainParams(70, 16, 0.55f, 0.55f, 8, 32, 60, -60, 80, 1.6f,
-                    250)
+                    340)
     ),
     GILDED_RUINS(
             GenerationMode.PLATEAU,
-            new TerrainParams(60, 6, 0.20f, 0.35f, 80, 260, 280, -4, 14, 0.45f, 250)
+            new TerrainParams(60, 6, 0.20f, 0.35f, 80, 260, 280, -4, 14, 0.45f, 340)
     ),
     GLACIAL_SHELF(
             GenerationMode.CONTINENTAL,
             new TerrainParams(58, 10, 0.80f, 0.38f, 70, 180, 200, -4, 8, 0.60f,
-                    250)
+                    340)
     ),
 
     SPIRIT_WORLD_WASTES(
             GenerationMode.CHAOS,
             new TerrainParams(64, 50, 0.65f, 0.55f, 20, 70, 85, -30, 50, 1.6f,
-                    300)
+                    340)
     ),
     MIRE_HOLLOW(
             GenerationMode.SCATTERED,
             new TerrainParams(58, 14, 0.50f, 0.50f, 10, 30, 62, -40, 50, 1.3f,
-                    250)
+                    340)
     ),
     BONE_STEPPES(
             GenerationMode.PLATEAU,
             new TerrainParams(60, 5, 0.30f, 0.18f, 85, 270, 290, -4, 15, 0.5f,
-                    250)
+                    340)
     );
 
 
@@ -83,6 +85,21 @@ public enum SpiritWorldBiome {
         PLATEAU,
         CANYON,
         CHAOS
+    }
+
+    public boolean isSolid() {
+        return switch (this) {
+            case EMBER_WASTES, QUARTZ_FLATS, GILDED_RUINS, BONE_STEPPES, GLACIAL_SHELF, TERRACOTTA_CANYON -> true;
+            default -> false;
+        };
+    }
+
+    public int poolWeight() {
+        return switch (this) {
+            case WOOL_MEADOWS -> 1;
+            case SPIRIT_WORLD_WASTES -> 3;
+            default -> 2;
+        };
     }
 
 
@@ -192,24 +209,27 @@ public enum SpiritWorldBiome {
     }
 
 
-    private static final double BLEND_RADIUS  = 220.0;
+    private static final double BLEND_RADIUS = 260.0;
 
     private static final SpiritWorldBiome[] WEIGHTED_POOL = buildWeightedPool();
 
     private static SpiritWorldBiome[] buildWeightedPool() {
-        return values();
+        List<SpiritWorldBiome> pool = new ArrayList<>();
+        for (SpiritWorldBiome b : values()) {
+            for (int i = 0; i < b.poolWeight(); i++) pool.add(b);
+        }
+        return pool.toArray(new SpiritWorldBiome[0]);
     }
 
     public static BiomeWeight[] getBlendedBiomesAt(int x, int z) {
-        SpiritWorldBiome[] values = values();
         double d1sq = Double.MAX_VALUE, d2sq = Double.MAX_VALUE;
         SpiritWorldBiome b1 = SPIRIT_WORLD_WASTES, b2 = SPIRIT_WORLD_WASTES;
 
-        int searchStride = 0;
-        for (SpiritWorldBiome b : values()) searchStride = Math.max(searchStride, b.terrain.cellSize());
+        int cs = 0;
+        for (SpiritWorldBiome b : values()) cs = Math.max(cs, b.terrain.cellSize());
 
-        int gridX = Math.floorDiv(x, searchStride);
-        int gridZ = Math.floorDiv(z, searchStride);
+        int gridX = Math.floorDiv(x, cs);
+        int gridZ = Math.floorDiv(z, cs);
 
         for (int ox = -2; ox <= 2; ox++) {
             for (int oz = -2; oz <= 2; oz++) {
@@ -217,11 +237,10 @@ public enum SpiritWorldBiome {
                 long seed = jenkinsHash((long) cx * 1_234_567_891L + (long) cz * 987_654_321L);
 
                 int poolIdx = Math.min(
-                        Math.abs((int)(pseudoRand(seed ^ 0xCAFE_BABEL) * WEIGHTED_POOL.length)),
+                        (int)(pseudoRand(seed ^ 0xCAFE_BABEL) * WEIGHTED_POOL.length),
                         WEIGHTED_POOL.length - 1);
                 SpiritWorldBiome b = WEIGHTED_POOL[poolIdx];
 
-                int cs = b.terrain.cellSize();
                 int px = cx * cs + (int)(pseudoRand(seed)                * (cs - 1));
                 int pz = cz * cs + (int)(pseudoRand(seed ^ 0xDEAD_BEEFL) * (cs - 1));
 
@@ -233,8 +252,8 @@ public enum SpiritWorldBiome {
 
         double gap = Math.sqrt(d2sq) - Math.sqrt(d1sq);
         double t   = biomeSmooth(Math.min(gap / BLEND_RADIUS, 1.0));
-        double w1  = 0.5 + t * 0.5;   // [0.5 … 1.0]
-        double w2  = 1.0 - w1;         // [0.5 … 0.0]
+        double w1  = 0.5 + t * 0.5;
+        double w2  = 1.0 - w1;
 
         return w2 > 0.01
                 ? new BiomeWeight[]{ new BiomeWeight(b1, w1), new BiomeWeight(b2, w2) }
@@ -271,9 +290,9 @@ public enum SpiritWorldBiome {
 
     private static double pseudoRand(long seed) {
         seed ^= seed << 21;
-        seed ^= seed >> 35;
+        seed ^= seed >>> 35;
         seed ^= seed << 4;
-        return (double)(seed >>> 1) / (double)(1L << 62);
+        return (double)(seed >>> 11) / (double)(1L << 53);
     }
 
     private static long jenkinsHash(long x) {

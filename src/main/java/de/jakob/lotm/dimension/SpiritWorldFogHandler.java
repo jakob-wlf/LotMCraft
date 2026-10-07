@@ -15,8 +15,8 @@ import net.neoforged.neoforge.client.event.ViewportEvent;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class SpiritWorldFogHandler {
 
-    private static final float FOG_NEAR = 40.0f;   // tune these
-    private static final float FOG_FAR  = 120.0f;
+    private static final float FOG_NEAR = 80.0f;   // tune these
+    private static final float FOG_FAR  = 170.0f;
 
     private static boolean inSpiritWorld(Camera camera) {
         return camera.getEntity().level() instanceof ClientLevel level

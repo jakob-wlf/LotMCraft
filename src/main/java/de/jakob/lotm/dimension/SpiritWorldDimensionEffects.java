@@ -62,7 +62,7 @@ public class SpiritWorldDimensionEffects {
             SpiritWorldSky.update(pos.getX(), pos.getZ());
             Vec3 tint = SpiritWorldSky.tint();
 
-            RenderSystem.disableCull();      // <- the bug: quads were being back-face culled
+            RenderSystem.disableCull();
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
             RenderSystem.enableBlend();
@@ -73,7 +73,6 @@ public class SpiritWorldDimensionEffects {
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 
-            //         height, texScale, scrollU,  scrollV,  rotSpeed, color,                 intensity
             drawLayer(modelViewMatrix, 40f, 150f,  0.0025f,  0.0012f,  0.0006f, WHITE.lerp(tint, 0.5),
                     0.85f + 0.15f * Mth.sin(time * 0.030f), time);
             drawLayer(modelViewMatrix, 70f, 220f, -0.0018f,  0.0022f, -0.0004f, WHITE.lerp(tint, 0.8),
@@ -139,7 +138,7 @@ public class SpiritWorldDimensionEffects {
         private void vert(BufferBuilder b, Matrix4f m, float x, float z, float y, float scale,
                           float su, float sv, Vec3 c, float intensity) {
             float dist = Mth.clamp(Mth.sqrt(x * x + z * z) / RADIUS, 0f, 1f);
-            float k = intensity * (1f - dist * dist); // stays bright longer, fades near the horizon
+            float k = intensity * (1f - dist * dist);
             b.addVertex(m, x, y, z)
                     .setUv(x / scale + su, z / scale + sv)
                     .setColor((float) c.x * k, (float) c.y * k, (float) c.z * k, 1f);
