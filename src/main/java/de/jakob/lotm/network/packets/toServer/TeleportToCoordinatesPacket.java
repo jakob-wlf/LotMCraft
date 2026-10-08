@@ -62,19 +62,9 @@ public record TeleportToCoordinatesPacket(TeleportUse use, int x, int y, int z) 
                 return;
             }
 
-            if (!level.hasChunkAt(target)) {
-                reject(player, packet, "chunk not loaded");
-                return;
-            }
-
             double tx = packet.x() + 0.5;
             double ty = packet.y();
             double tz = packet.z() + 0.5;
-            var movedBox = player.getBoundingBox().move(tx - player.getX(), ty - player.getY(), tz - player.getZ());
-            if (!level.noCollision(player, movedBox)) {
-                reject(player, packet, "destination obstructed");
-                return;
-            }
 
             player.teleportTo(level, tx, ty, tz, player.getYRot(), player.getXRot());
             player.resetFallDistance();

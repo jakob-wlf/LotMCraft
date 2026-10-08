@@ -69,7 +69,7 @@ public class FxWarmup {
 
     public static class WarmupScreen extends Screen {
         private static final int PER_TICK = 3;
-        private static final int SETTLE_TICKS = 15;
+        private static final int SETTLE_TICKS = 10;
         private int settle = 0;
         private boolean closed = false;
 

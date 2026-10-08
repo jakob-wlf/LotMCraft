@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SacrificeAbility extends Ability {
 
-    private static final int KILLS_PER_SECOND = 500;
+    private static final int KILLS_PER_SECOND = 120;
     private static final int MAX_DURATION_SECONDS = 60;
 
     public SacrificeAbility(String id) {

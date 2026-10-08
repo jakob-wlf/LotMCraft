@@ -4,8 +4,9 @@ import net.minecraft.world.phys.Vec3;
 
 public final class SpiritWorldSky {
 
-    private static final Vec3 BASE_TOP     = new Vec3(0.06, 0.05, 0.18);
-    private static final Vec3 BASE_HORIZON = new Vec3(0.38, 0.62, 0.78);
+    private static final Vec3 BASE_TOP     = new Vec3(0.18, 0.22, 0.42);
+    private static final Vec3 BASE_HORIZON = new Vec3(0.56, 0.75, 0.88);
+    private static final Vec3 WHITE        = new Vec3(1, 1, 1);
 
     private static final float[] tint = {1f, 1f, 1f};
     private static long lastMs = -1;
@@ -32,10 +33,10 @@ public final class SpiritWorldSky {
     }
 
     public static Vec3 horizon() {
-        return BASE_HORIZON.lerp(BASE_HORIZON.multiply(tint()), 0.75);
+        return BASE_HORIZON.lerp(BASE_HORIZON.multiply(tint()), 0.68).lerp(WHITE, 0.05);
     }
 
     public static Vec3 top() {
-        return BASE_TOP.lerp(BASE_TOP.multiply(tint()), 0.75);
+        return BASE_TOP.lerp(BASE_TOP.multiply(tint()), 0.68).lerp(WHITE, 0.04);
     }
 }

@@ -13,6 +13,7 @@ import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.gui.custom.pathway_selection.PathwaySelectionMenu;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
@@ -111,16 +112,7 @@ public class PlayerEvents {
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
-                player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
-
-                String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
-                Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
-                Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
-
-                if(characteristic != null && recipe != null) {
-                    player.addItem(new ItemStack(characteristic));
-                    player.addItem(new ItemStack(recipe));
-                }
+                PathwaySelectionMenu.openWithAllPathways(player);
 
                 component.setHasReceivedNewPlayerPerks(true);
             }

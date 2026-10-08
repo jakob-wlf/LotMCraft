@@ -48,7 +48,7 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
 
     protected final ContainerData data;
     private int progress = 0;
-    private int maxProgress = 72;
+    private int maxProgress = 144;
 
     public BrewingCauldronBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.BREWING_BLOCK_BE.get(), pos, blockState);
