@@ -27,6 +27,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +50,10 @@ public class ServantsAbility extends SelectableAbility {
         canBeUsedByNPC = false;
         cannotBeStolen = true;
         canBeReplicated = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(8000f, 4000f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 20));
     }
 
     @Override

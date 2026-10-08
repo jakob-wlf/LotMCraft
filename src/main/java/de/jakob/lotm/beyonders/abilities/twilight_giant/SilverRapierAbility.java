@@ -9,7 +9,6 @@ import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierE
 import de.jakob.lotm.events.AncientCourtHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -30,6 +29,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +48,7 @@ public class SilverRapierAbility extends SelectableAbility {
     private static final double BLINK_RADIUS = 2.5D;
     private static final double FLY_SPEED = 0.8D;
     private static final double ORBIT_RADIUS = 1.6D;
-    private static final double DAMAGE_SCALE = 0.25D;
+    private static final int DAMAGE = 15;
     private static final float DODGE_CHANCE = 0.4f;
 
     private static final Map<UUID, Swarm> swarms = new HashMap<>();
@@ -56,6 +56,11 @@ public class SilverRapierAbility extends SelectableAbility {
     public SilverRapierAbility(String id) {
         super(id, 12);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 2600f, 1800f, 1400f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 6, 9, 12));
+        baseDamage = DAMAGE;
     }
 
     @Override
@@ -237,7 +242,7 @@ public class SilverRapierAbility extends SelectableAbility {
         }
         if (!isValidTarget(owner, target)) return;
         target.invulnerableTime = 0;
-        target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), (float) DamageLookup.lookupDamage(4, DAMAGE_SCALE));
+        target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), DAMAGE);
         level.sendParticles(ParticleTypes.SWEEP_ATTACK, target.getX(), target.getY(0.6), target.getZ(), 1, 0, 0, 0, 0);
         level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, owner.getSoundSource(), 0.6f, 1.6f);
     }

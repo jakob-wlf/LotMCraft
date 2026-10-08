@@ -21,6 +21,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,10 @@ public class LastStandAbility extends SelectableAbility {
         canBeUsedByNPC = false;
         cannotBeStolen = true;
         canBeReplicated = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(28000f, 14000f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(80, 150));
     }
 
     @Override
@@ -117,7 +122,8 @@ public class LastStandAbility extends SelectableAbility {
         for (LivingEntity living : victims) {
             if (endures(living)) continue;
             living.invulnerableTime = 0;
-            living.hurt(living.damageSources().genericKill(), Float.MAX_VALUE);
+            living.setHealth(0f);
+            living.die(living.damageSources().genericKill());
         }
     }
 

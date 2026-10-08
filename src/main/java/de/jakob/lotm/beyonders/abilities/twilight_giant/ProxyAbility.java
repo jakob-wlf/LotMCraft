@@ -45,6 +45,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,10 @@ public class ProxyAbility extends Ability {
         canBeUsedByNPC = false;
         cannotBeStolen = true;
         canBeReplicated = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 6000f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(30, 60));
     }
 
     @Override

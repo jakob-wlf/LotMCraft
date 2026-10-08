@@ -27,6 +27,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.ArrayDeque;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +61,8 @@ public class EyeOfDemonHuntingAbility extends ToggleAbility {
 
     public EyeOfDemonHuntingAbility(String id) {
         super(id);
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(60f, 45f, 30f, 20f, 15f));
     }
 
     @Override

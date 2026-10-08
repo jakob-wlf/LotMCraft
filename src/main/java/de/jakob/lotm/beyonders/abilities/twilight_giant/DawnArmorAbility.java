@@ -21,6 +21,8 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class DawnArmorAbility extends Ability {
@@ -30,6 +32,10 @@ public class DawnArmorAbility extends Ability {
     public DawnArmorAbility(String id) {
         super(id, 10);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(320f, 240f, 180f, 140f, 110f, 90f, 80f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 5, 6, 8, 9, 10));
     }
 
     @Override

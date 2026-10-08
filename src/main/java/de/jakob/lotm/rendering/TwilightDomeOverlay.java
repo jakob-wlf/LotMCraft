@@ -37,7 +37,7 @@ public final class TwilightDomeOverlay {
     private static Hit find(Minecraft mc) {
         if (mc.player == null || mc.level == null) return null;
         Vec3 eye = mc.player.getEyePosition();
-        List<TwilightDomeEntity> domes = mc.level.getEntitiesOfClass(TwilightDomeEntity.class, mc.player.getBoundingBox().inflate(80.0));
+        List<TwilightDomeEntity> domes = mc.level.getEntitiesOfClass(TwilightDomeEntity.class, mc.player.getBoundingBox().inflate(256.0));
         Hit best = null;
         for (TwilightDomeEntity dome : domes) {
             if (dome.subject() != null) {

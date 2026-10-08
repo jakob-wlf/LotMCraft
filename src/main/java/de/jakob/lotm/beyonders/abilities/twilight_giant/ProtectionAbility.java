@@ -36,6 +36,7 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,8 @@ public class ProtectionAbility extends ToggleAbility {
     public ProtectionAbility(String id) {
         super(id, "purification", "light_source");
         instance = this;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(32f, 24f, 18f, 14f, 10f, 8f));
     }
 
     @Override

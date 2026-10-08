@@ -11,7 +11,6 @@ import de.jakob.lotm.network.packets.toClient.SyncDawnSpearThrowPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.component.DataComponents;
@@ -64,6 +63,8 @@ import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -76,8 +77,8 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     private static final int FULL_DRAW_TICKS = 20;
     private static final int DAWN_DRAW_TICKS = 4;
     private static final double BOW_RANGE = 48.0D;
-    private static final double BOW_DAMAGE_SCALE = 0.6D;
-    private static final float BOW_EVIL_MULTIPLIER = 2f;
+    private static final int BOW_DAMAGE = 22;
+    private static final int BOW_EVIL_MULTIPLIER = 2;
 
     public static final String HELMET = "helmet";
     public static final String CHESTPLATE = "chestplate";
@@ -109,6 +110,9 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     public ArsenalOfDawnAbility(String id) {
         super(id, 0);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(200f, 150f, 120f, 100f, 80f, 60f, 50f));
+        baseDamage = BOW_DAMAGE;
     }
 
     @Override
@@ -402,7 +406,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         if (hit == null) return;
         Entity entity = hit.getEntity();
         if (!(entity instanceof LivingEntity target)) return;
-        float damage = (float) DamageLookup.lookupDamage(3, BOW_DAMAGE_SCALE) * power;
+        int damage = Math.round(BOW_DAMAGE * power);
         if (isEvil(target)) damage *= BOW_EVIL_MULTIPLIER;
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, player), damage);
     }

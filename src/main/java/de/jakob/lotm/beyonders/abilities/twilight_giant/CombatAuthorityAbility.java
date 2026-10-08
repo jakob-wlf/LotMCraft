@@ -42,6 +42,7 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -77,6 +78,10 @@ public class CombatAuthorityAbility extends SelectableAbility {
     public CombatAuthorityAbility(String id) {
         super(id, 40);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 7000f, 4500f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(15, 25, 40));
     }
 
     @Override

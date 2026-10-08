@@ -32,6 +32,8 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +62,10 @@ public class BasicTwilightAuthorityAbility extends SelectableAbility {
     public BasicTwilightAuthorityAbility(String id) {
         super(id, 60);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 8000f, 5000f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(20, 40, 60));
     }
 
     @Override

@@ -8,7 +8,6 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.HurricaneOfLightEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -24,14 +23,15 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public class HurricaneOfLightAbility extends ToggleAbility {
 
     private static final int RADIUS = 20;
-    private static final double DAMAGE_SCALE = 0.5D;
-    private static final float EVIL_MULTIPLIER = 2f;
+    private static final int EVIL_MULTIPLIER = 2;
     private static final int TWILIGHT_RADIUS = 45;
     private static final float TWILIGHT_YEARS = 2f;
     private static final ResourceLocation ROOT_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "hurricane_of_light_root");
@@ -40,6 +40,9 @@ public class HurricaneOfLightAbility extends ToggleAbility {
     public HurricaneOfLightAbility(String id) {
         super(id, "purification");
         interactionRadius = RADIUS;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(80f, 60f, 50f, 40f, 30f, 25f, 20f));
+        baseDamage = 6;
     }
 
     @Override
@@ -82,7 +85,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
         double radius = twilight ? TWILIGHT_RADIUS : RADIUS;
         ensureVisual(serverLevel, entity, (float) radius);
 
-        float damage = (float) (DamageLookup.lookupDamage(6, DAMAGE_SCALE) * multiplier(entity) * 10 / 20f);
+        float damage = baseDamage;
         DamageSource source = ModDamageTypes.source(serverLevel, ModDamageTypes.PURIFICATION, entity);
         for (LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), radius)) {
             if (!AbilityUtil.mayDamage(entity, target)) continue;

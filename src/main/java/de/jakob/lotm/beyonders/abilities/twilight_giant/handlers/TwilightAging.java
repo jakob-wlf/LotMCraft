@@ -163,7 +163,7 @@ public final class TwilightAging {
         } else {
             float strike = before + target.getAbsorptionAmount() + 1f;
             target.hurt(damage, Float.isFinite(strike) ? strike : before + 1f);
-            if (target.isAlive() && target.deathTime <= 0) {
+            if (target.deathTime <= 0 && !target.isRemoved() && (!Float.isFinite(target.getHealth()) || target.isAlive())) {
                 target.invulnerableTime = 0;
                 if (!(fool && Float.isFinite(target.getHealth()) && target.getHealth() >= before)) {
                     target.setHealth(0f);

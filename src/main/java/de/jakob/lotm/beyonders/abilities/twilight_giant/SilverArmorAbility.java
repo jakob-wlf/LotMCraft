@@ -24,6 +24,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,6 +44,8 @@ public class SilverArmorAbility extends ToggleAbility {
     public SilverArmorAbility(String id) {
         super(id);
         tickRate = 20;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(400f, 250f, 160f, 100f));
     }
 
     @Override

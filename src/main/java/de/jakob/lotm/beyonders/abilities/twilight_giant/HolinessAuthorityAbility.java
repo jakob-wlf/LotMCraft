@@ -10,7 +10,6 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -31,6 +30,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -42,19 +43,20 @@ public class HolinessAuthorityAbility extends SelectableAbility {
     private static final int RADIANCE_TICKS = 20 * 30;
     private static final int RADIANCE_INTERVAL = 10;
     private static final double RADIANCE_RADIUS = 30.0D;
-    private static final double RADIANCE_DAMAGE_SCALE = 0.6D;
+    private static final int RADIANCE_DAMAGE = 44;
     private static final int RADIANCE_RINGS = 3;
     private static final int RADIANCE_RING_POINTS = 36;
     private static final int BEAM_RANGE = 50;
     private static final int BEAM_DURATION = 20 * 4;
     private static final int BEAM_AGE_INTERVAL = 5;
     private static final float BEAM_YEARS = 2f;
-    private static final double BEAM_DAMAGE_SCALE = 1.0D;
+    private static final int BEAM_DAMAGE = 3;
     private static final float BEAM_R = ((TwilightAging.TWILIGHT_TEXT >> 16) & 0xFF) / 255f;
     private static final float BEAM_G = ((TwilightAging.TWILIGHT_TEXT >> 8) & 0xFF) / 255f;
     private static final float BEAM_B = (TwilightAging.TWILIGHT_TEXT & 0xFF) / 255f;
-    private static final float EVIL_MULTIPLIER = 2f;
-    private static final double PURIFY_DAMAGE_SCALE = 0.5D;
+    private static final int EVIL_MULTIPLIER = 2;
+    private static final int PURIFY_DAMAGE = 41;
+    private static final int[] SPIRITUALITY = {6000, 4000, 2500};
 
     private static final Map<UUID, Integer> radiant = new HashMap<>();
     private static final Set<UUID> holyCages = new HashSet<>();
@@ -62,6 +64,11 @@ public class HolinessAuthorityAbility extends SelectableAbility {
     public HolinessAuthorityAbility(String id) {
         super(id, 18, "purification", "light_source");
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6000f, 4000f, 2500f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(6, 12, 18));
+        baseDamage = RADIANCE_DAMAGE;
     }
 
     @Override
@@ -98,7 +105,7 @@ public class HolinessAuthorityAbility extends SelectableAbility {
     }
 
     public static void purifyEvil(ServerLevel level, LivingEntity owner, Vec3 center, double radius) {
-        float damage = (float) DamageLookup.lookupDamage(2, PURIFY_DAMAGE_SCALE);
+        int damage = PURIFY_DAMAGE;
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, owner);
         for (LivingEntity target : AbilityUtil.getNearbyEntities(owner, level, center, radius, false, true)) {
             if (!ArsenalOfDawnAbility.isEvil(target)) continue;
@@ -110,7 +117,7 @@ public class HolinessAuthorityAbility extends SelectableAbility {
 
     private static void radiate(ServerLevel level, ServerPlayer player) {
         if (radiant.remove(player.getUUID()) != null) {
-            BeyonderData.incrementSpirituality(player, 2500);
+            BeyonderData.incrementSpirituality(player, costOf(player));
             player.removeEffect(MobEffects.GLOWING);
             level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, player.getSoundSource(), 3f, 0.8f);
             bar(player, "ability.lotmcraft.holiness_authority.radiance_ended");
@@ -122,7 +129,7 @@ public class HolinessAuthorityAbility extends SelectableAbility {
     }
 
     private void beam(ServerLevel level, ServerPlayer player) {
-        float damage = (float) (DamageLookup.lookupDps(2, BEAM_DAMAGE_SCALE, 1, 20) * multiplier(player));
+        int damage = BEAM_DAMAGE;
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, player);
         level.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, player.getSoundSource(), 3f, 0.7f);
         ServerScheduler.scheduleForDuration(0, 1, BEAM_DURATION, () -> {
@@ -143,7 +150,7 @@ public class HolinessAuthorityAbility extends SelectableAbility {
 
     private static void toggleHolyCage(ServerPlayer player) {
         if (holyCages.remove(player.getUUID())) {
-            BeyonderData.incrementSpirituality(player, 2500);
+            BeyonderData.incrementSpirituality(player, costOf(player));
             bar(player, "ability.lotmcraft.holiness_authority.holy_cage_off");
             return;
         }
@@ -175,12 +182,18 @@ public class HolinessAuthorityAbility extends SelectableAbility {
             }
         }
         level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY(0.6), player.getZ(), 20, 0.6, 1.0, 0.6, 0.08);
-        float damage = (float) (DamageLookup.lookupDamage(2, RADIANCE_DAMAGE_SCALE) * BeyonderData.getMultiplier(player));
+        int damage = RADIANCE_DAMAGE;
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, player);
         for (LivingEntity target : AbilityUtil.getNearbyEntities(player, level, player.position(), RADIANCE_RADIUS, false, true)) {
             if (ArsenalOfDawnAbility.isEvil(target)) target.hurt(source, damage);
         }
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(level, player.position(), player, null, PURIFICATION_FLAGS, RADIANCE_RADIUS, RADIANCE_INTERVAL * 2));
+    }
+
+    private static float costOf(LivingEntity entity) {
+        int sequence = BeyonderData.getSequence(entity);
+        if (sequence < 0 || sequence >= SPIRITUALITY.length) return SPIRITUALITY[SPIRITUALITY.length - 1];
+        return SPIRITUALITY[sequence];
     }
 
     private static void bar(Player player, String key) {

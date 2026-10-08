@@ -9,7 +9,6 @@ import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightSlash
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
@@ -19,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -36,6 +36,8 @@ import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +63,7 @@ public class TwilightSwordAbility extends Ability {
     private static final double STRIKE_WIDTH = 8.0D;
     private static final double STRIKE_HIT_RADIUS = 2.5D;
     private static final int STRIKE_TICKS = 12;
-    private static final double STRIKE_DAMAGE_SCALE = 1.2D;
+    private static final int STRIKE_DAMAGE = 58;
 
     private static final Map<UUID, Charge> charges = new HashMap<>();
     private static final Map<UUID, Long> lastBlink = new HashMap<>();
@@ -69,6 +71,11 @@ public class TwilightSwordAbility extends Ability {
     public TwilightSwordAbility(String id) {
         super(id, 15);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1200f, 800f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 10, 15));
+        baseDamage = STRIKE_DAMAGE;
     }
 
     @Override
@@ -180,7 +187,7 @@ public class TwilightSwordAbility extends Ability {
     private static void chargedStrike(ServerLevel level, ServerPlayer player) {
         Vec3 start = player.getEyePosition().add(0, -0.3, 0);
         Vec3 forward = player.getLookAngle().normalize();
-        float damage = (float) (DamageLookup.lookupDamage(2, STRIKE_DAMAGE_SCALE) * BeyonderData.getMultiplier(player));
+        int damage = STRIKE_DAMAGE;
         Set<UUID> struck = new HashSet<>();
         int[] step = {0};
         Vec3 travel = new Vec3(forward.x, 0, forward.z);
@@ -208,13 +215,20 @@ public class TwilightSwordAbility extends Ability {
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         float before = target.getHealth();
         target.invulnerableTime = 0;
-        target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, attacker), damage);
+        DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, attacker);
+        target.hurt(source, damage);
+        if (!Float.isFinite(target.getHealth())) {
+            target.setHealth(0f);
+            target.die(source);
+            return;
+        }
         if (!target.isAlive() || target.getHealth() < before) return;
         float health = before - damage;
         if (health > 0) {
             target.setHealth(health);
         } else {
-            target.kill();
+            target.setHealth(0f);
+            target.die(source);
         }
     }
 

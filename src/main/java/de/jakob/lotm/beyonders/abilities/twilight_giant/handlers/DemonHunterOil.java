@@ -218,7 +218,9 @@ public final class DemonHunterOil {
 
         level.playSound(null, target.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, target.getSoundSource(), 1f, 0.6f);
         if (BeyonderData.getSequence(possessor) > BeyonderData.getSequence(attacker)) {
-            possessor.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker), Float.MAX_VALUE);
+            possessor.invulnerableTime = 0;
+            possessor.setHealth(0f);
+            possessor.die(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker));
             return;
         }
         Vec3 away = possessor.position().subtract(attacker.position()).multiply(1, 0, 1);
