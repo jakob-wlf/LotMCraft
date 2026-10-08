@@ -188,11 +188,6 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (!Float.isFinite(player.getHealth()) && !player.isCreative() && !player.isSpectator() && player.deathTime <= 0) {
-            player.invulnerableTime = 0;
-            player.setHealth(0f);
-            player.die(player.damageSources().genericKill());
-        }
         applyPlayerHold(player);
         UUID id = player.getUUID();
         if (!player.isAlive()) {
@@ -217,11 +212,6 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onEntityTick(EntityTickEvent.Pre event) {
         if (event.getEntity().level().isClientSide() || !(event.getEntity() instanceof LivingEntity living) || living instanceof Player) return;
-        if (!Float.isFinite(living.getHealth())) {
-            living.invulnerableTime = 0;
-            living.setHealth(0f);
-            if (living.deathTime <= 0 && !living.isRemoved()) living.die(living.damageSources().genericKill());
-        }
         if (living.isDeadOrDying() || living.deathTime > 0) return;
         if (stopped(living)) {
             Vec3 anchor = anchorOf(living);

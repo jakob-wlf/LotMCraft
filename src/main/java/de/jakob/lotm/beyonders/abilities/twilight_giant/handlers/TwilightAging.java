@@ -157,18 +157,13 @@ public final class TwilightAging {
         target.invulnerableTime = 0;
         float before = target.getHealth();
         DamageSource damage = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, source);
-        if (!Float.isFinite(before)) {
-            target.setHealth(0f);
-            target.die(damage);
-        } else {
-            float strike = before + target.getAbsorptionAmount() + 1f;
-            target.hurt(damage, Float.isFinite(strike) ? strike : before + 1f);
-            if (target.deathTime <= 0 && !target.isRemoved() && (!Float.isFinite(target.getHealth()) || target.isAlive())) {
-                target.invulnerableTime = 0;
-                if (!(fool && Float.isFinite(target.getHealth()) && target.getHealth() >= before)) {
-                    target.setHealth(0f);
-                    target.die(damage);
-                }
+        float strike = before + target.getAbsorptionAmount() + 1f;
+        target.hurt(damage, strike);
+        if (target.deathTime <= 0 && !target.isRemoved() && target.isAlive()) {
+            target.invulnerableTime = 0;
+            if (!(fool && target.getHealth() >= before)) {
+                target.setHealth(0f);
+                target.die(damage);
             }
         }
         if (!fool) ServerScheduler.scheduleDelayed(2, () -> LawAbility.SOLACE_KILLED.remove(id), level);

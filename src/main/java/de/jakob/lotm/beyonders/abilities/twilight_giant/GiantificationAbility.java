@@ -128,7 +128,6 @@ public class GiantificationAbility extends ToggleAbility {
         level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 2f, 0.4f);
         PacketHandler.sendToNearbyPlayers(new UseAbilityPacket(getId(), entity.getId()), level, feet, SHAKE_RADIUS);
 
-        float damage = Float.isFinite(baseDamage) && baseDamage > 0f ? baseDamage : 20f;
         for (LivingEntity target : AbilityUtil.getNearbyEntities(entity, level, feet, STOMP_RADIUS)) {
             if (!target.onGround() || target.getY() > feet.y + STOMP_HEIGHT || !AbilityUtil.mayDamage(entity, target)) continue;
             DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity);
@@ -137,8 +136,8 @@ public class GiantificationAbility extends ToggleAbility {
                 continue;
             }
             target.invulnerableTime = 0;
-            target.hurt(source, damage);
-            if (!Float.isFinite(target.getHealth()) || (target.getHealth() <= 0f && target.deathTime <= 0)) crush(target, source);
+            target.hurt(source, baseDamage);
+            if (target.getHealth() <= 0f && target.deathTime <= 0) crush(target, source);
         }
     }
 

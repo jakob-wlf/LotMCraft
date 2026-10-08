@@ -217,11 +217,6 @@ public class TwilightSwordAbility extends Ability {
         target.invulnerableTime = 0;
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, attacker);
         target.hurt(source, damage);
-        if (!Float.isFinite(target.getHealth())) {
-            target.setHealth(0f);
-            target.die(source);
-            return;
-        }
         if (!target.isAlive() || target.getHealth() < before) return;
         float health = before - damage;
         if (health > 0) {
