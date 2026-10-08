@@ -26,7 +26,6 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
     public BrewingCauldronMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
         super(ModMenuTypes.BREWING_CAULDRON_MENU.get(), pContainerId);
 
-        // Handle null entity gracefully (can happen on client side or in spectator mode)
         if (entity instanceof BrewingCauldronBlockEntity brewingCauldronBlockEntity) {
             this.blockEntity = brewingCauldronBlockEntity;
             this.level = inv.player.level();
@@ -51,7 +50,6 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             addPlayerInventory(inv);
             addPlayerHotbar(inv);
 
-            // Add dummy slots (they won't work but prevent crashes)
             this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 0, 48, 37));
             this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 1, 112, 37));
             this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 2, 80, 72));
@@ -65,14 +63,6 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
 
     public boolean isCrafting() {
         return data.get(0) > 0;
-    }
-
-    public int getScaledArrowProgress() {
-        int progress = this.data.get(0);
-        int maxProgress = this.data.get(1);
-        int arrowPixelSize = 32;
-
-        return maxProgress != 0 && progress != 0 ? progress * arrowPixelSize / maxProgress : 0;
     }
 
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
@@ -143,5 +133,8 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 216));
         }
     }
+
+    public int getProgress()    { return data.get(0); }
+    public int getMaxProgress() { return data.get(1); }
 }
 
