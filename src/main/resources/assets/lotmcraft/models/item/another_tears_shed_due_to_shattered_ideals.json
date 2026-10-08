@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "lotmcraft:item/another_tears_shed_due_to_shattered_ideals"
-  }
-}

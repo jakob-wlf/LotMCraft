@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "lotmcraft:item/weeping_infant_flower"
-  }
-}

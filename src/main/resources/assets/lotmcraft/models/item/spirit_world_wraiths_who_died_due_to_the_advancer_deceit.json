@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "lotmcraft:item/spirit_world_wraiths_who_died_due_to_the_advancer_deceit"
-  }
-}

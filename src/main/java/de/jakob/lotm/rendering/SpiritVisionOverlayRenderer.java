@@ -47,18 +47,8 @@ public class SpiritVisionOverlayRenderer {
         if (mc.player == null || mc.level == null) return;
 
         int screenWidth = mc.getWindow().getGuiScaledWidth();
-        int screenHeight = mc.getWindow().getGuiScaledHeight();
 
         if (!entitiesLookedAt.containsKey(mc.player.getUUID())) return;
-
-        ResourceLocation backgroundTexture = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/spirit_vision_overlay.png");
-        guiGraphics.pose().pushPose();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 44, 256, 44, 256);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.disableBlend();
-        guiGraphics.pose().popPose();
 
         LivingEntity entity = entitiesLookedAt.get(mc.player.getUUID());
         if (entity == null) return;

@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "lotmcraft:item/sun_divine_bird_blood"
-  }
-}
