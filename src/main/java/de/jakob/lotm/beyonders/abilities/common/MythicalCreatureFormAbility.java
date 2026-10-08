@@ -52,7 +52,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
         int seq = BeyonderData.getSequence(entity);
         if(seq > 2){
             var sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get());
-            sanity.decreaseSanityAndSync(seq == 4 ? 0.01f : 0.005f, entity);
+            sanity.setSanityAndSync(Math.max(0.0f, sanity.getSanity() - (seq == 4 ? 0.03f : 0.01f)), entity);
         }
 
         int range = 100;
@@ -137,13 +137,13 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             transformationComponent.setTransformedAndSync(false, entity);
         }
 
-        if(BeyonderData.getPathway(entity).equals("visionary")){
-            if(entity instanceof Player player) {
+        if(entity instanceof Player player) {
+            if(!player.isCreative() && !player.isSpectator()) {
                 player.getAbilities().mayfly = false;
                 player.getAbilities().flying = false;
-                player.getAbilities().setFlyingSpeed(.05f);
-                player.onUpdateAbilities();
             }
+            player.getAbilities().setFlyingSpeed(.05f);
+            player.onUpdateAbilities();
         }
     }
 

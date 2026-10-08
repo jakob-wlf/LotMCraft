@@ -233,9 +233,9 @@ public class ClientHandler {
 
     public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
         if(packet.active()) {
-            MarionetteOverlayRenderer.currentMarionette.put(
+            MarionettePanelRenderer.currentMarionette.put(
                     player.getUUID(),
-                    new MarionetteOverlayRenderer.MarionetteInfos(
+                    new MarionettePanelRenderer.MarionetteInfos(
                             packet.name(),
                             packet.health(),
                             packet.maxHealth(),
@@ -244,7 +244,7 @@ public class ClientHandler {
             );
         }
         else {
-            MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
+            MarionettePanelRenderer.currentMarionette.remove(player.getUUID());
         }
     }
 
@@ -567,13 +567,13 @@ public class ClientHandler {
 
         switch (packet.action()) {
             case 0 -> {
-                ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
+                StatusPanelRenderer.activeToggleAbilities.add(packet.abilityId());
                 toggleAbility.start(living.level(), living);
                 toggleAbility.updateClientCache(living, true);
             }
             case 1 -> toggleAbility.prepareTick(living.level(), living);
             case 2 -> {
-                ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
+                StatusPanelRenderer.activeToggleAbilities.remove(packet.abilityId());
                 toggleAbility.stop(living.level(), living);
                 toggleAbility.updateClientCache(living, true);
             }

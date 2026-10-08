@@ -79,6 +79,19 @@ public class MarionetteUtils {
             return;
         }
         if (!isMarionette(entity)) {
+            if(entity instanceof Player player) {
+                String playerUUID = player.getStringUUID();
+                for (ServerLevel level : player.getServer().getAllLevels()) {
+                    for (Entity e : level.getAllEntities()) {
+                        if (e instanceof LivingEntity livingEntity && isMarionette(livingEntity)) {
+                            String ownerUUID = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
+                            if (ownerUUID.equals(playerUUID)) {
+                                livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+                            }
+                        }
+                    }
+                }
+            }
             return;
         }
 

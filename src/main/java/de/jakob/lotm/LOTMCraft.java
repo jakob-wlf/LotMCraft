@@ -107,6 +107,7 @@ import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
 import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringScreen;
+import de.jakob.lotm.gui.custom.pathway_selection.PathwaySelectionScreen;
 import de.jakob.lotm.gui.custom.recipe.RecipeScreen;
 //import de.jakob.lotm.gui.custom.ritualistic_table.RitualScreen;
 //import de.jakob.lotm.gui.custom.sefirah.SefirahScreen;
@@ -424,6 +425,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
             event.register(ModMenuTypes.FLAMING_JUMP_MENU.get(), FlamingJumpScreen::new);
             event.register(ModMenuTypes.MASS_PUPPETEERING_MENU.get(), MassPuppeteeringScreen::new);
+            event.register(ModMenuTypes.PATHWAY_SELECTION.get(), PathwaySelectionScreen::new);
         }
 
         @SubscribeEvent

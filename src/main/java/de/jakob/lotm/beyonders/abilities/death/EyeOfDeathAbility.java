@@ -37,7 +37,6 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class EyeOfDeathAbility extends ToggleAbility {
 
-    /** Players with Eye of Death currently active (server-side). */
     public static final HashSet<UUID> activePlayers = new HashSet<>();
 
 

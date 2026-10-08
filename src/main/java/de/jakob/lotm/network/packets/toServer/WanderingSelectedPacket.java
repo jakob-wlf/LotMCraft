@@ -47,6 +47,10 @@ public record WanderingSelectedPacket(String dimensionId) implements CustomPacke
             MinecraftServer server = player.getServer();
             if (server == null) return;
 
+            if(!LOTMCraft.abilityHandler.getById("wandering_ability").hasAbility(player, false)) {
+                return;
+            }
+
             ResourceKey<Level> targetKey = ResourceKey.create(
                     net.minecraft.core.registries.Registries.DIMENSION,
                     ResourceLocation.parse(packet.dimensionId())

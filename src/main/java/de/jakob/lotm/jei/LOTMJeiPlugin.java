@@ -90,6 +90,7 @@ public class LOTMJeiPlugin implements IModPlugin {
                 return Collections.singletonList(new Rect2i(0, 0, screen.width, screen.height));
             }
         });
+
     }
 
     // to remove recipes from jei menu - prevent players from reading rituals

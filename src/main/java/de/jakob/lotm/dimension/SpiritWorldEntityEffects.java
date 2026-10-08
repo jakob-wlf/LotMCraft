@@ -16,41 +16,30 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SpiritWorldEntityEffects {
     
-    // Track cooldowns for each entity
     private static final Map<UUID, Long> effectCooldowns = new HashMap<>();
     
-    // Effect chances and durations
-    private static final float EFFECT_CHECK_CHANCE = 0.02f; // 2% chance per tick (~once per 2.5 seconds)
-    private static final int MIN_COOLDOWN = 100; // 5 seconds minimum between effects
-    private static final int MAX_COOLDOWN = 400; // 20 seconds maximum between effects
+    private static final float EFFECT_CHECK_CHANCE = 0.02f;
+    private static final int MIN_COOLDOWN = 100;
+    private static final int MAX_COOLDOWN = 400;
     
-    // Effect durations (in ticks)
-    private static final int LEVITATION_MIN_DURATION = 40; // 2 seconds
-    private static final int LEVITATION_MAX_DURATION = 100; // 5 seconds
-    private static final int SLOW_FALLING_MIN_DURATION = 60; // 3 seconds
-    private static final int SLOW_FALLING_MAX_DURATION = 200; // 10 seconds
-    private static final int JUMP_BOOST_MIN_DURATION = 60; // 3 seconds
-    private static final int JUMP_BOOST_MAX_DURATION = 140; // 7 seconds
-
     @SubscribeEvent
     public static void onLivingUpdate(EntityTickEvent.Pre event) {
         if(!(event.getEntity() instanceof LivingEntity entity)) {
             return;
         }
 
-        // Only apply in Spirit World dimension
         if (!entity.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             return;
         }
 
-        // Check cooldown
+
         UUID entityId = entity.getUUID();
         long currentTime = entity.level().getGameTime();
         
         if (effectCooldowns.containsKey(entityId)) {
             long cooldownEnd = effectCooldowns.get(entityId);
             if (currentTime < cooldownEnd) {
-                return; // Still on cooldown
+                return;
             }
         }
 
@@ -68,7 +57,7 @@ public class SpiritWorldEntityEffects {
             entity.addEffect(new MobEffectInstance(
                 MobEffects.SLOW_FALLING,
                 duration,
-                0,     // no amplifier needed
+                0,
                 false,
                 true,
                 true
@@ -79,7 +68,7 @@ public class SpiritWorldEntityEffects {
             
         } else {
             int duration = 120;
-            int amplifier = 1 + entity.getRandom().nextInt(3); // 1-3 amplifier
+            int amplifier = 1 + entity.getRandom().nextInt(3);
             
             entity.addEffect(new MobEffectInstance(
                 MobEffects.JUMP,

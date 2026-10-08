@@ -276,6 +276,7 @@ public class PlayerMap extends SavedData {
     }
 
     public @Nullable UUID getKeyByName(String name){
+        if(name == null) return null;
         for(var obj : map.entrySet()){
             if(name.equals(obj.getValue().trueName())) return obj.getKey();
         }

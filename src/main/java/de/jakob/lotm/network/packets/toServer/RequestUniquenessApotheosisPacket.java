@@ -19,13 +19,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-/**
- * Sent by the client when the player clicks the "Begin Apotheosis" button in the Apotheosis tab.
- * Server validates conditions and initiates apotheosis.
- */
+
 public record RequestUniquenessApotheosisPacket() implements CustomPacketPayload {
 
-    /** Kills required for apotheosis - must match client-side check in IntrospectScreen. */
     public static final int KILLS_REQUIRED_FOR_APOTHEOSIS = 500;
 
     public static final Type<RequestUniquenessApotheosisPacket> TYPE =

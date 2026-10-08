@@ -264,7 +264,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         WaterBoltEntity waterBolt = new WaterBoltEntity(level, entity, DamageLookup.lookupDamage(7, .825) * multiplier(entity) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         waterBolt.setPos(startPos.x, startPos.y, startPos.z);
-        waterBolt.shoot(direction.x, direction.y, direction.z, 2.2f * multiplier(entity), 0);
+        waterBolt.shoot(direction.x, direction.y, direction.z, 2.7f, 0);
         level.addFreshEntity(waterBolt);
     }
 

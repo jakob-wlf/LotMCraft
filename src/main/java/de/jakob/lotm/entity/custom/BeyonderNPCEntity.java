@@ -327,7 +327,8 @@ public class BeyonderNPCEntity extends PathfinderMob {
                 this.hasEffect(ModEffects.MUTATED) ||
                 isPuppetWarrior() ||
                 isHostile() ||
-                getCurrentTarget() != null;
+                getCurrentTarget() != null ||
+                this.getPersistentData().getBoolean("VoidSummoned");
     }
 
     @Override
