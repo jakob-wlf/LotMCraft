@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/dark_patterned_black_panther_spinal_fluid"
+  }
+}
