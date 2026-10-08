@@ -81,7 +81,7 @@ public class LesserConcealmentAbility extends SelectableAbility {
                 SoundSource.BLOCKS,
                 10.0f,
                 1.0f);
-            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2);
+            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 16, 2, false, true);
             if(targetEntity == null){
                 return;
             }

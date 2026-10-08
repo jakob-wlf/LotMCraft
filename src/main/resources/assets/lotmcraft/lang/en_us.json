@@ -2303,6 +2303,8 @@
   "lotm.acting.condition.while_low_health": " while at Low Health",
   "lotm.acting.condition.while_hurt": " while Hurt",
   "lotm.acting.condition.at_night": " at Night",
+  "lotm.acting.kill_while_low_health": "Kill while at Low Health",
+  "lotm.acting.interact_with_villager": "Interact with Villager",
 
   "lotm.griefing": "Griefing Enabled",
   "lotm.griefing_required": "Griefing must be enabled",

@@ -104,17 +104,4 @@ public class BroodHiveEventHandler {
         }
     }
 
-    @SubscribeEvent
-    public static void onPlayerBreakBlock(BlockEvent.BreakEvent event) {
-        if(!(event.getPlayer().level() instanceof ServerLevel serverLevel)) {
-            return;
-        }
-
-        if (!serverLevel.dimension().equals(ModDimensions.BROOD_HIVE_DIMENSION_KEY)) {
-            return;
-        }
-
-        event.setCanceled(true);
-    }
-
 }

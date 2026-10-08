@@ -60,7 +60,6 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
         }
     }
 
-    // ── Spell 1: Abyssal Meteor Rain ──────────────────────────────────────────
 
     private void meteorRain(Level level, LivingEntity entity) {
         if (level.isClientSide) return;

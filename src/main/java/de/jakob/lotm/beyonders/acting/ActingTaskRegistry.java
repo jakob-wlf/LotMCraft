@@ -163,7 +163,6 @@ public class ActingTaskRegistry {
         register("door", 2, new EventActingTask("craft_ender_eye", 0.1f, 20 * 20));
 
         register("door", 1, new EventActingTask("use_door_authority_ability", 0.3f, 20 * 20));
-        register("door", 1, new EventActingTask("use_sealing_authority_ability", 0.3f, 20 * 20));
         register("door", 1, new EventActingTask("stay_awake_through_night", 0.1f, 20 * 30));
         register("door", 1, new EventActingTask("trade_with_villager", 0.1f, 20 * 20));
         register("door", 1, new EventActingTask("stand_at_high_altitude", 0.05f, 20 * 30));
@@ -557,7 +556,6 @@ public class ActingTaskRegistry {
 
         register("sun", 1, new EventActingTask("kill_burning_mob", 0.15f, 20 * 5));
         register("sun", 1, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
-        register("sun", 1, new EventActingTask("use_divine_kingdom_manifestation_ability", 0.3f, 20 * 20));
         register("sun", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
         register("sun", 1, new EventActingTask("stand_at_high_altitude", 0.04f, 20 * 20));
         register("sun", 1, new EventActingTask("kill_undead", 0.08f, 20 * 5));
@@ -597,7 +595,6 @@ public class ActingTaskRegistry {
 
         register("visionary", 4, new EventActingTask("sneak_kill", 0.1f, 20 * 2));
         register("visionary", 4, new EventActingTask("use_lead", 0.05f, 20 * 10));
-        register("visionary", 4, new EventActingTask("use_manipulation_ability", 0.2f, 20 * 20));
         register("visionary", 4, new EventActingTask("kill_untargeted_mob", 0.06f, 20 * 5));
         register("visionary", 4, new EventActingTask("interact_with_villager", 0.06f, 20 * 10));
 
@@ -690,7 +687,6 @@ public class ActingTaskRegistry {
 
         register("abyss", 8, new EventActingTask("use_note_block", 0.1f, 20 * 10));
         register("abyss", 8, new EventActingTask("trade_with_villager", 0.1f, 20 * 15));
-        register("abyss", 8, new EventActingTask("use_language_of_foulness_ability", 0.2f, 20 * 15));
         register("abyss", 8, new EventActingTask("eat_rotten_flesh", 0.05f, 20 * 5));
         register("abyss", 8, new EventActingTask("stand_at_high_altitude", 0.03f, 20 * 20));
 
@@ -705,6 +701,7 @@ public class ActingTaskRegistry {
         register("abyss", 6, new EventActingTask("eat_cake", 0.06f, 20 * 10));
         register("abyss", 6, new EventActingTask("eat_golden_apple", 0.06f, 20 * 10));
         register("abyss", 6, new EventActingTask("pickup_gold", 0.05f, 20 * 5));
+        register("abyss", 6, new EventActingTask("use_language_of_foulness_ability", 0.2f, 20 * 15));
 
         register("abyss", 5, new EventActingTask("kill_strong_mobs", 0.1f, 20 * 5));
         register("abyss", 5, new EventActingTask("kill_while_full_health", 0.1f, 20 * 2));
@@ -726,13 +723,12 @@ public class ActingTaskRegistry {
 
         register("abyss", 2, new EventActingTask("set_fire", 0.1f, 20 * 5));
         register("abyss", 2, new EventActingTask("kill_burning_mob", 0.1f, 20 * 5));
-        register("abyss", 2, new EventActingTask("use_flames_of_the_abyss_ability", 0.3f, 20 * 20));
         register("abyss", 2, new EventActingTask("enter_nether", 0.08f, 20 * 30));
         register("abyss", 2, new EventActingTask("kill_boss", 0.15f, 20 * 60));
 
         register("abyss", 1, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 5));
         register("abyss", 1, new EventActingTask("place_tnt", 0.1f, 20 * 10));
-        register("abyss", 1, new EventActingTask("use_corrupting_voice_ability", 0.3f, 20 * 20));
+        register("abyss", 2, new EventActingTask("use_flames_of_the_abyss_ability", 0.3f, 20 * 20));
         register("abyss", 1, new EventActingTask("stand_in_complete_darkness", 0.04f, 20 * 20));
         register("abyss", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
 
