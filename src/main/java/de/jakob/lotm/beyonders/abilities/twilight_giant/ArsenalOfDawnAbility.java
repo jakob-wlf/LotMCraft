@@ -13,6 +13,7 @@ import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -26,9 +27,14 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.CombatRules;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Inventory;
@@ -55,6 +61,7 @@ import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -347,6 +354,35 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         upkeep(player, ARMOR, UPKEEP_COST);
         upkeep(player, WEAPONS, UPKEEP_COST);
         upkeep(player, TWILIGHT, TWILIGHT_UPKEEP_COST);
+    }
+
+    private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
+
+    @SubscribeEvent
+    public static void onBypassingDamage(LivingDamageEvent.Pre event) {
+        DamageSource source = event.getSource();
+        if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) return;
+        LivingEntity entity = event.getEntity();
+        float armor = 0;
+        float toughness = 0;
+        for (EquipmentSlot slot : ARMOR_SLOTS) {
+            ItemStack stack = entity.getItemBySlot(slot);
+            if (!is(stack, ARMOR) && !is(stack, SILVER_ARMOR)) continue;
+            armor += attribute(stack, Attributes.ARMOR);
+            toughness += attribute(stack, Attributes.ARMOR_TOUGHNESS);
+        }
+        if (armor <= 0) return;
+        event.setNewDamage(CombatRules.getDamageAfterAbsorb(entity, event.getNewDamage(), source, armor, toughness));
+    }
+
+    private static float attribute(ItemStack stack, Holder<Attribute> attribute) {
+        float total = 0;
+        for (ItemAttributeModifiers.Entry entry : stack.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).modifiers()) {
+            if (entry.attribute().value() == attribute.value() && entry.modifier().operation() == AttributeModifier.Operation.ADD_VALUE) {
+                total += (float) entry.modifier().amount();
+            }
+        }
+        return total;
     }
 
     @SubscribeEvent

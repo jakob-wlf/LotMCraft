@@ -68,6 +68,7 @@ import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_s
 import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.silver_rapier.SilverRapierRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.FightingArenaRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.ProtectionBarrierRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.HurricaneOfLightRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.ProtectiveCageRenderer;
 import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.TwilightDomeRenderer;
@@ -287,6 +288,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.FLAMING_SPEAR.get(), FlamingSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.SILVER_RAPIER.get(), SilverRapierRenderer::new);
             EntityRenderers.register(ModEntities.TWILIGHT_DOME.get(), TwilightDomeRenderer::new);
+            EntityRenderers.register(ModEntities.PROTECTION_BARRIER.get(), ProtectionBarrierRenderer::new);
             EntityRenderers.register(ModEntities.FIGHTING_ARENA.get(), FightingArenaRenderer::new);
             EntityRenderers.register(ModEntities.PROTECTIVE_CAGE.get(), ProtectiveCageRenderer::new);
             EntityRenderers.register(ModEntities.HURRICANE_OF_LIGHT.get(), HurricaneOfLightRenderer::new);

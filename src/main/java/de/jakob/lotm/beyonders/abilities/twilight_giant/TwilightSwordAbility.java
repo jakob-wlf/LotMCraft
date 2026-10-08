@@ -52,7 +52,7 @@ public class TwilightSwordAbility extends Ability {
     private static final double SWORD_REACH_BONUS = 4.0D;
     private static final double SWORD_DAMAGE = 14.0D;
     private static final double SWORD_SPEED = -2.8D;
-    private static final int BLINK_RANGE = 40;
+    private static final int BLINK_RANGE = 40^2;
     private static final double BLINK_OFFSET = 1.5D;
     private static final int BLINK_COOLDOWN = 20 * 8;
     private static final float BLINK_COST = 600f;
@@ -63,7 +63,7 @@ public class TwilightSwordAbility extends Ability {
     private static final double STRIKE_WIDTH = 8.0D;
     private static final double STRIKE_HIT_RADIUS = 2.5D;
     private static final int STRIKE_TICKS = 12;
-    private static final int STRIKE_DAMAGE = 58;
+    private static final int STRIKE_DAMAGE = 30;
 
     private static final Map<UUID, Charge> charges = new HashMap<>();
     private static final Map<UUID, Long> lastBlink = new HashMap<>();

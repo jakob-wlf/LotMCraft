@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -100,7 +102,7 @@ public class CombatMasteryAbility extends PassiveAbility {
         setStacks(entity, 0, 0);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onAttack(AttackEntityEvent event) {
         Player player = event.getEntity();
         if (!(player.level() instanceof ServerLevel serverLevel) || !applies(player)) return;
@@ -120,7 +122,7 @@ public class CombatMasteryAbility extends PassiveAbility {
         DamageSource source = event.getSource();
         if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return;
         if (attacker.level().isClientSide() || event.getNewDamage() <= 0) return;
-        if (!source.is(DamageTypes.PLAYER_ATTACK) && !source.is(DamageTypes.MOB_ATTACK)) return;
+        if (!source.is(DamageTypes.PLAYER_ATTACK) && !source.is(DamageTypes.MOB_ATTACK) && !source.is(ModDamageTypes.IMPACT)) return;
         if (!applies(attacker)) return;
         boolean awaited = awaitingHit.remove(attacker.getUUID());
         if (!awaited) return;

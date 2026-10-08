@@ -19,6 +19,7 @@ import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEnti
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.FightingArenaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.ProtectionBarrierEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.HurricaneOfLightEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.ProtectiveCageEntity;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierEntity;
@@ -531,6 +532,10 @@ public class ModEntities {
     public static final Supplier<EntityType<SilverRapierEntity>> SILVER_RAPIER =
             ENTITY_TYPES.register("silver_rapier", () -> EntityType.Builder.of(SilverRapierEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F).clientTrackingRange(64).updateInterval(1).noSummon().noSave().build("silver_rapier"));
+
+    public static final Supplier<EntityType<ProtectionBarrierEntity>> PROTECTION_BARRIER =
+            ENTITY_TYPES.register("protection_barrier", () -> EntityType.Builder.of(ProtectionBarrierEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(24).updateInterval(1).fireImmune().noSummon().noSave().build("protection_barrier"));
 
     public static final Supplier<EntityType<TwilightDomeEntity>> TWILIGHT_DOME =
             ENTITY_TYPES.register("twilight_dome", () -> EntityType.Builder.of(TwilightDomeEntity::new, MobCategory.MISC)

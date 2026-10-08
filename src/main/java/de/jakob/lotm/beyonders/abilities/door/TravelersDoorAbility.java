@@ -92,8 +92,7 @@ public class TravelersDoorAbility extends SelectableAbility {
         TravelersDoorEntity door = new TravelersDoorEntity(ModEntities.TRAVELERS_DOOR.get(),
                 serverLevel, player.getLookAngle().normalize().scale(-1),
                 targetLoc, 2,
-                AbilityUtil.getSeqWithArt(player, this),
-                player);
+                AbilityUtil.getSeqWithArt(player, this));
 
         serverLevel.addFreshEntity(door);
         serverLevel.playSound(null, BlockPos.containing(targetLoc), SoundEvents.ENDER_CHEST_OPEN, SoundSource.BLOCKS, 1, 1);

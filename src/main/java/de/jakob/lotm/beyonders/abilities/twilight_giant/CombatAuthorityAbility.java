@@ -467,7 +467,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
             if (level.getGameTime() % EFFECT_INTERVAL != 0) return;
             AABB box = new AABB(center.x - radius, center.y - radius, center.z - radius, center.x + radius, center.y + radius, center.z + radius);
             for (LivingEntity inside : level.getEntitiesOfClass(LivingEntity.class, box)) {
-                if (!inside.isAlive() || !contains(inside) || guarded.contains(inside.getUUID())) continue;
+                if (!inside.isAlive() || inside == owner || !contains(inside) || guarded.contains(inside.getUUID())) continue;
                 TwilightAging.age(level, inside, owner, SEAL_YEARS);
             }
             if (HolinessAuthorityAbility.hasHolyCage(owner)) HolinessAuthorityAbility.purifyEvil(level, owner, center, radius);

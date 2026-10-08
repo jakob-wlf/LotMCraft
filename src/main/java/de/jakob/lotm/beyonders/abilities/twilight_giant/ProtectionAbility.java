@@ -11,6 +11,8 @@ import de.jakob.lotm.beyonders.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.beyonders.abilities.door.TeleportationAuthorityAbility;
 import de.jakob.lotm.beyonders.abilities.door.TravelersDoorAbility;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.ProtectionBarrierEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -59,11 +61,10 @@ public class ProtectionAbility extends ToggleAbility {
     private static final double DOME_MAX_RADIUS = 25.0D;
     private static final double DOME_SCAN_MARGIN = 10.0D;
     private static final double DOME_PUSH = 1.0D;
+    private static final double VISUAL_SINK = 5.0D;
     private static final float STRONGER_CURSE_BLOCK_CHANCE = 0.5f;
     private static final double CURSE_TARGET_RANGE = 30.0D;
-    private static final int BORDER_INTERVAL = 20;
     private static final int NEW_ENTITY_TICKS = 20;
-    private static final double BORDER_POINTS_PER_BLOCK = 2.0D;
     private static final int DAWN_TEXT = 0xFFFFF3D6;
     private static final DustParticleOptions DAWN_DUST = new DustParticleOptions(new Vector3f(1f, 0.95f, 0.75f), 1.5f);
 
@@ -106,6 +107,7 @@ public class ProtectionAbility extends ToggleAbility {
             Dome created = new Dome(entity, forward, entity.position(), radius);
             guards.put(entity.getUUID(), created);
             if (level instanceof ServerLevel serverLevel && created.breakIfOverlapping(serverLevel)) return;
+            if (level instanceof ServerLevel serverLevel) created.attachVisual(serverLevel);
         } else {
             guards.put(entity.getUUID(), new Wall(entity, forward, new Vec3(-forward.z, 0, forward.x)));
         }
@@ -123,14 +125,12 @@ public class ProtectionAbility extends ToggleAbility {
             return;
         }
         guard.tick(serverLevel, entity);
-        if (guard instanceof Dome dome && guards.get(entity.getUUID()) == guard && entity instanceof ServerPlayer player && player.tickCount % BORDER_INTERVAL < tickRate) {
-            dome.showBorder(serverLevel, player);
-        }
     }
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        guards.remove(entity.getUUID());
+        Guard guard = guards.remove(entity.getUUID());
+        if (guard instanceof Dome dome && level instanceof ServerLevel serverLevel) dome.discardVisual(serverLevel);
         level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, entity.getSoundSource(), 1.5f, 1.3f);
         bar(entity, "ability.lotmcraft.protection.ended");
     }
@@ -330,6 +330,7 @@ public class ProtectionAbility extends ToggleAbility {
         private final Vec3 center;
         private final double radius;
         private final Map<UUID, Stay> stays = new HashMap<>();
+        private ProtectionBarrierEntity visual;
         private boolean initialized;
 
         private Dome(LivingEntity entity, Vec3 forward, Vec3 center, double radius) {
@@ -380,13 +381,20 @@ public class ProtectionAbility extends ToggleAbility {
             return null;
         }
 
-        private void showBorder(ServerLevel level, ServerPlayer viewer) {
-            int points = (int) (radius * BORDER_POINTS_PER_BLOCK);
-            for (int i = 0; i < points; i++) {
-                double angle = i * Math.PI * 2 / points;
-                Vec3 pos = center.add(Math.cos(angle) * radius, 0.2, Math.sin(angle) * radius);
-                level.sendParticles(viewer, DAWN_DUST, true, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
-            }
+        private void attachVisual(ServerLevel level) {
+            ProtectionBarrierEntity barrier = ModEntities.PROTECTION_BARRIER.get().create(level);
+            if (barrier == null) return;
+            barrier.setRadius((float) radius + 1.0F);
+            barrier.moveTo(center.x, center.y - VISUAL_SINK, center.z, 0.0F, 0.0F);
+            level.addFreshEntity(barrier);
+            visual = barrier;
+        }
+
+        private void discardVisual(ServerLevel level) {
+            if (visual != null) visual.close();
+            visual = null;
+            AABB box = new AABB(center.x, center.y - VISUAL_SINK, center.z, center.x, center.y - VISUAL_SINK, center.z).inflate(1.0D);
+            for (ProtectionBarrierEntity barrier : level.getEntitiesOfClass(ProtectionBarrierEntity.class, box)) barrier.close();
         }
 
         private boolean holds(Entity entity) {
