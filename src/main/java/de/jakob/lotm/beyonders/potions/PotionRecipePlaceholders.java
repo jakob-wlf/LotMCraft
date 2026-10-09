@@ -13,7 +13,6 @@ public class PotionRecipePlaceholders {
     public static boolean initialized = false;
 
     public static void initPotionRecipes() {
-        if (initialized) return;
         initialized = true;
         RECIPES.add(new PotionRecipePlaceholder(
                 (BeyonderPotion) PotionItemHandler.SEER_POTION.get(),
