@@ -47,7 +47,6 @@ public class SpiritTranslucentWizardEntity extends Animal {
     private static final float AOE_DAMAGE_FRACTION = 0.5f;
     private static final double JUMP_SLAM_DISTANCE = 3.0;
 
-    // Translucent wizard uses purple/pink colors
     private static final DustParticleOptions TRANSLUCENT_DUST = new DustParticleOptions(new Vector3f(0.7f, 0.2f, 0.9f), 2.5f);
     private static final DustParticleOptions TRANSLUCENT_DUST_SMALL = new DustParticleOptions(new Vector3f(0.8f, 0.4f, 1.0f), 1.7f);
 
@@ -78,7 +77,7 @@ public class SpiritTranslucentWizardEntity extends Animal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 280.0)
+                .add(Attributes.MAX_HEALTH, 170.0)
                 .add(Attributes.MOVEMENT_SPEED, 1)
                 .add(Attributes.FLYING_SPEED, 1.5)
                 .add(Attributes.SCALE, 1.35)

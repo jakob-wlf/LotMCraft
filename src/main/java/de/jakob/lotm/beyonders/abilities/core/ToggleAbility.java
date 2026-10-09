@@ -27,7 +27,6 @@ public abstract class ToggleAbility extends Ability {
     protected ToggleAbility(String id, String... interactionFlags) {
         super(id, 0, interactionFlags);
 
-        canBeUsedByNPC = false;
         doesNotIncreaseDigestion = true;
     }
 

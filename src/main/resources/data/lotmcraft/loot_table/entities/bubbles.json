@@ -1,0 +1,92 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blood_speckled_black_mosquito",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:red_chestnut_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_grained_walnut",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:poplar_tree_leaf_powder",
+          "weight": 45
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blood_speckled_black_mosquito",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:red_chestnut_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_grained_walnut",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:poplar_tree_leaf_powder",
+          "weight": 45
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blood_speckled_black_mosquito",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:red_chestnut_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_grained_walnut",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:poplar_tree_leaf_powder",
+          "weight": 45
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_blood",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_eye",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_main_eye",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:thousand_faced_hunter_blood",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mutated_pituitary_gland_of_a_thousand_faced_hunter",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_skined_shadow_characteristic",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fingernail_sized_self_made_rubber_mask",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:interdimensional_hunter_brain",
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_blood",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_eye",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_main_eye",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:thousand_faced_hunter_blood",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mutated_pituitary_gland_of_a_thousand_faced_hunter",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_skined_shadow_characteristic",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fingernail_sized_self_made_rubber_mask",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:interdimensional_hunter_brain",
+          "weight": 3
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_blood",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_eye",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:bizarro_bane_main_eye",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:thousand_faced_hunter_blood",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mutated_pituitary_gland_of_a_thousand_faced_hunter",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_skined_shadow_characteristic",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fingernail_sized_self_made_rubber_mask",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:interdimensional_hunter_brain",
+          "weight": 3
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

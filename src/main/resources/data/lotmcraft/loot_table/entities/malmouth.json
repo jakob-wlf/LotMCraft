@@ -1,0 +1,197 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siskun_demon_worm",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siskun_demon_worm_nest",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:terror_demon_worm_eyes",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:gem_devouring_worm",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_threadworm",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_eater_stomach_pouch",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_hunting_giant_lizard_spinal_fluid",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_hunting_spider_composite_eyes",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_patterned_black_panther_spinal_fluid",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flash_patterned_black_snake_horn",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hornacis_gray_mountain_goat_horn",
+          "weight": 36
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siskun_demon_worm",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siskun_demon_worm_nest",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:terror_demon_worm_eyes",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:gem_devouring_worm",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_threadworm",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_eater_stomach_pouch",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_hunting_giant_lizard_spinal_fluid",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_hunting_spider_composite_eyes",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_patterned_black_panther_spinal_fluid",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flash_patterned_black_snake_horn",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hornacis_gray_mountain_goat_horn",
+          "weight": 36
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siskun_demon_worm",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siskun_demon_worm_nest",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:terror_demon_worm_eyes",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:gem_devouring_worm",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_threadworm",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_eater_stomach_pouch",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_hunting_giant_lizard_spinal_fluid",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_hunting_spider_composite_eyes",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_patterned_black_panther_spinal_fluid",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flash_patterned_black_snake_horn",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hornacis_gray_mountain_goat_horn",
+          "weight": 36
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

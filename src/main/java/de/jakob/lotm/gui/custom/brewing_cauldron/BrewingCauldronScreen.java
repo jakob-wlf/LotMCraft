@@ -32,7 +32,7 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
     private static final int BG_TEX_SIZE = 256;
 
     private static final int SLOT_FIRST = 36;
-    private static final int[][] SLOT_POS = {{48, 37}, {112, 37}, {80, 72}, {80, 122}, {152, 122}};
+    private static final int[][] SLOT_POS = {{48, 37}, {112, 37}, {80, 72}, {80, 122}, {152, 122}, {14, 37}, {146, 37}};
     private static final int S_OUTPUT = 3;
     private static final int S_RECIPE = 4;
 
@@ -41,8 +41,11 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
 
     private static final int STREAM_X = 85, STREAM_Y = 89, STREAM_W = 6, STREAM_H = 31, STREAM_FRAMES = 4;
 
-    private static final int[][] DIAG_LINES = {{65, 54, 79, 70, 1, 0}, {110, 54, 96, 70, -1, 1}};
-    private static final int[][] H_LINES = {{65, 87, 44, 0}, {110, 88, 44, 1}};
+    private static final int[][] DIAG_LINES = {{65, 54, 79, 70, 1, 0, 5}, {110, 54, 96, 70, -1, 1, 6}};
+    private static final int[][] H_LINES = {
+            {65, 87, 44, 0}, {110, 88, 44, 1},
+            {31, 46, 44, 5}, {144, 129, 44, 6}
+    };
 
     private static final int THREAD_Y = 130, THREAD_X_CAULDRON = 121, THREAD_X_SLOT = 149;
 
@@ -53,8 +56,8 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
     private float brew, brewO;
     private float liquidPhase, liquidPhaseO;
     private float progress, progressO;
-    private final float[] glow = new float[5];
-    private final float[] glowO = new float[5];
+    private final float[] glow = new float[SLOT_POS.length];
+    private final float[] glowO = new float[SLOT_POS.length];
     private boolean wasCrafting;
     private int flashWait;
     private int flashTicks;
@@ -79,7 +82,7 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
 
         liquidPhaseO = liquidPhase;
         liquidPhase += Mth.lerp(brew, 0.10f, 0.55f);
-        if (liquidPhase > 4096f) {          // keep floats precise on very long sessions
+        if (liquidPhase > 4096f) {
             liquidPhase -= 4096f;
             liquidPhaseO -= 4096f;
         }
@@ -88,14 +91,13 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
         int max = menu.getMaxProgress();
         if (crafting && max > 0) {
             float target = Mth.clamp(menu.getProgress() / (float) max, 0f, 1f);
-            if (target < progress - 0.2f) progressO = target;   // a new brew started: don't sweep backwards
+            if (target < progress - 0.2f) progressO = target;
             progress = target;
         } else if (brew < 0.03f) {
             progress = 0f;
             progressO = 0f;
         }
 
-        // slot glows
         for (int i = 0; i < glow.length; i++) {
             glowO[i] = glow[i];
             glow[i] += ((hasItem(i) ? 1f : 0f) - glow[i]) * 0.25f;
@@ -182,7 +184,7 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
         final int pulseRgb = 0xEBD2FF;
 
         for (int[] l : DIAG_LINES) {
-            float gl = glowOf(l[5], pt);
+            float gl = Math.max(glowOf(l[5], pt), glowOf(l[6], pt));
             float a = lineAlpha(gl, brewV, anim, l[5]);
             drawDiag(g, x, y, l[0], l[1], l[2], l[3], l[4], argb(a, lineRgb), argb(a * 0.40f, lineRgb));
             if (brewV > 0.05f && gl > 0.5f) {
@@ -256,14 +258,14 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
             if (gl < 0.01f) continue;
 
             float a, r, gr, b;
-            if (i < 3) {                                   // ingredients
+            if (isIngredientSlot(i)) {
                 a = gl * (0.32f + 0.32f * brewV * (0.5f + 0.5f * Mth.sin(anim * 0.30f + i * 2f)));
                 r = 0.80f; gr = 0.65f; b = 1.0f;
-            } else if (i == S_OUTPUT) {                    // finished potion
+            } else if (i == S_OUTPUT) {
                 float pulse = 0.5f + 0.5f * Mth.sin(anim * 0.18f);
                 a = gl * (0.40f + 0.45f * pulse);
                 r = 0.88f; gr = 0.72f; b = 1.0f;
-            } else {                                       // recipe
+            } else {
                 a = gl * (0.28f + 0.22f * brewV);
                 r = 1.0f; gr = 0.85f; b = 0.50f;
             }
@@ -301,7 +303,7 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
         if (full > 0) {
             draw(g, STREAM, x + STREAM_X, y + STREAM_Y, u, 0, STREAM_W, full, texW, STREAM_H, 1f, 1f, 1f, a, false);
         }
-        if (full < STREAM_H && frac > 0.05f) {
+        if (full < STREAM_H && frac > 0.05f) {      // sub-pixel leading edge
             draw(g, STREAM, x + STREAM_X, y + STREAM_Y + full, u, full, STREAM_W, 1, texW, STREAM_H,
                     1f, 1f, 1f, a * frac, false);
         }
@@ -389,7 +391,6 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
         if (this.hoveredSlot != null || !menu.isCrafting()) return;
         int max = menu.getMaxProgress();
         if (max <= 0) return;
-        // cauldron body area
         if (!isHovering(31, 60, 115, 76, mouseX, mouseY)) return;
 
         int progressTicks = Mth.clamp(menu.getProgress(), 0, max);
@@ -401,6 +402,10 @@ public class BrewingCauldronScreen extends AbstractContainerScreen<BrewingCauldr
                 Component.literal(String.format(Locale.ROOT, "%.1fs remaining", secondsLeft)).withStyle(ChatFormatting.GRAY)
         );
         g.renderComponentTooltip(this.font, lines, mouseX, mouseY);
+    }
+
+    private static boolean isIngredientSlot(int logicalSlot) {
+        return logicalSlot != S_OUTPUT && logicalSlot != S_RECIPE;
     }
 
     private float glowOf(int slot, float pt) {

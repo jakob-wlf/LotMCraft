@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/royal_jellyfish_venom_crystal"
+  }
+}

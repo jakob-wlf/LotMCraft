@@ -4,6 +4,7 @@ import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.BrewingCauldronBlockEntity;
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -13,6 +14,21 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 public class BrewingCauldronMenu extends AbstractContainerMenu {
+    public static final int SLOT_MAIN_INGREDIENT = 2;
+    public static final int SLOT_OUTPUT = 3;
+    public static final int SLOT_RECIPE = 4;
+    public static final int[] SLOTS_SUPPLEMENTARY = {0, 1, 5, 6};
+
+    private static final int[][] CAULDRON_SLOT_POS = {
+            {48, 37},   // 0 supplementary (inner left)
+            {112, 37},  // 1 supplementary (inner right)
+            {80, 72},   // 2 main ingredient
+            {80, 122},  // 3 output
+            {152, 122}, // 4 recipe
+            {14, 37},   // 5 supplementary (outer left)
+            {146, 37}   // 6 supplementary (outer right)
+    };
+
     public final BrewingCauldronBlockEntity blockEntity;
     private final Level level;
     private final ContainerData data;
@@ -34,15 +50,13 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             addPlayerInventory(inv);
             addPlayerHotbar(inv);
 
-            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 0, 48, 37));
-            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 112, 37));
-            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 2, 80, 72));
-            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 3, 80, 122));
-            this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 4, 152, 122));
+            for (int i = 0; i < CAULDRON_SLOT_POS.length; i++) {
+                this.addSlot(new SlotItemHandler(blockEntity.itemHandler, i,
+                        CAULDRON_SLOT_POS[i][0], CAULDRON_SLOT_POS[i][1]));
+            }
 
             addDataSlots(data);
         } else {
-            // Client-side fallback when block entity isn't available
             this.blockEntity = null;
             this.level = inv.player.level();
             this.data = data;
@@ -50,12 +64,10 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             addPlayerInventory(inv);
             addPlayerHotbar(inv);
 
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 0, 48, 37));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 1, 112, 37));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 2, 80, 72));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 3, 80, 122));
-            this.addSlot(new Slot(new net.minecraft.world.SimpleContainer(5), 4, 152, 122));
-
+            SimpleContainer dummy = new SimpleContainer(CAULDRON_SLOT_POS.length);
+            for (int i = 0; i < CAULDRON_SLOT_POS.length; i++) {
+                this.addSlot(new Slot(dummy, i, CAULDRON_SLOT_POS[i][0], CAULDRON_SLOT_POS[i][1]));
+            }
 
             addDataSlots(data);
         }
@@ -65,13 +77,16 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
         return data.get(0) > 0;
     }
 
+    public int getProgress()    { return data.get(0); }
+    public int getMaxProgress() { return data.get(1); }
+
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
     // must assign a slot number to each of the slots used by the GUI.
     // For this container, we can see both the tile inventory's slots as well as the player inventory slots and the hotbar.
     // Each time we add a Slot to the container, it automatically increases the slotIndex, which means
-    //  0 - 8 = hotbar slots (which will map to the InventoryPlayer slot numbers 0 - 8)
-    //  9 - 35 = player inventory slots (which map to the InventoryPlayer slot numbers 9 - 35)
-    //  36 - 44 = TileInventory slots, which map to our TileEntity slot numbers 0 - 8)
+    //  0 - 26  = player inventory slots (which map to the InventoryPlayer slot numbers 9 - 35)
+    //  27 - 35 = hotbar slots (which map to the InventoryPlayer slot numbers 0 - 8)
+    //  36 - 42 = cauldron slots, which map to our block entity slot numbers 0 - 6
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
     private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
@@ -80,8 +95,7 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
-    // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 5;  // must be the number of slots you have!
+    private static final int TE_INVENTORY_SLOT_COUNT = CAULDRON_SLOT_POS.length;  // 7 slots now
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
@@ -89,22 +103,18 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
 
-        // Check if the slot clicked is one of the vanilla container slots
         if (pIndex < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
-            // This is a vanilla container slot so merge the stack into the tile inventory
             if (!moveItemStackTo(sourceStack, TE_INVENTORY_FIRST_SLOT_INDEX, TE_INVENTORY_FIRST_SLOT_INDEX
                     + TE_INVENTORY_SLOT_COUNT, false)) {
                 return ItemStack.EMPTY;  // EMPTY_ITEM
             }
         } else if (pIndex < TE_INVENTORY_FIRST_SLOT_INDEX + TE_INVENTORY_SLOT_COUNT) {
-            // This is a TE slot so merge the stack into the players inventory
             if (!moveItemStackTo(sourceStack, VANILLA_FIRST_SLOT_INDEX, VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT, false)) {
                 return ItemStack.EMPTY;
             }
         } else {
             return ItemStack.EMPTY;
         }
-        // If stack size == 0 (the entire stack was moved) set slot contents to null
         if (sourceStack.getCount() == 0) {
             sourceSlot.set(ItemStack.EMPTY);
         } else {
@@ -116,6 +126,7 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player pPlayer) {
+        if (blockEntity == null) return false;
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 pPlayer, ModBlocks.BREWING_CAULDRON.get());
     }
@@ -133,8 +144,4 @@ public class BrewingCauldronMenu extends AbstractContainerMenu {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 216));
         }
     }
-
-    public int getProgress()    { return data.get(0); }
-    public int getMaxProgress() { return data.get(1); }
 }
-

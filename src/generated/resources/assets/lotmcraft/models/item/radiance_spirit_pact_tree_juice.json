@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/radiance_spirit_pact_tree_juice"
+  }
+}

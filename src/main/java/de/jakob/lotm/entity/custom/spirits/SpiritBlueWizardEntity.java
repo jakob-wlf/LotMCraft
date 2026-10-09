@@ -66,7 +66,7 @@ public class SpiritBlueWizardEntity extends Animal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 280.0)
+                .add(Attributes.MAX_HEALTH, 140.0)
                 .add(Attributes.MOVEMENT_SPEED, 1)
                 .add(Attributes.FLYING_SPEED, 1.5)
                 .add(Attributes.SCALE, 1.35)

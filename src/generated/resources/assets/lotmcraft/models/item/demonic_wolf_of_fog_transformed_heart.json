@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/demonic_wolf_of_fog_transformed_heart"
+  }
+}

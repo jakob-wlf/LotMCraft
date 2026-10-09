@@ -1,0 +1,362 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:active_void",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_clock",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:beacons_extracted_from_the_river_of_fate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:compass_linked_to_the_astral_world",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:wandering_asteroid_core",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_time_ingredient",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_star",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_spirit",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:king_of_green_wings_eye",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood_of_the_sun_god",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_divine_bird_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_specialties",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:segment_of_concealed_fate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_water_from_the_ritual_site",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_star_extract",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:holy_brilliance_rock_liquid",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_heart_powder",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_plunderer_true_soul",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_river_water",
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:active_void",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_clock",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:beacons_extracted_from_the_river_of_fate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:compass_linked_to_the_astral_world",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:wandering_asteroid_core",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_time_ingredient",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_star",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_spirit",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:king_of_green_wings_eye",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood_of_the_sun_god",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_divine_bird_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_specialties",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:segment_of_concealed_fate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_water_from_the_ritual_site",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_star_extract",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:holy_brilliance_rock_liquid",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_heart_powder",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_plunderer_true_soul",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_river_water",
+          "weight": 3
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:active_void",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_clock",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:beacons_extracted_from_the_river_of_fate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:compass_linked_to_the_astral_world",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:wandering_asteroid_core",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_time_ingredient",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_star",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:worm_of_spirit",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:king_of_green_wings_eye",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:golden_blood_of_the_sun_god",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_orb",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_divine_bird_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_specialties",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:segment_of_concealed_fate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_water_from_the_ritual_site",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sun_star_extract",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:holy_brilliance_rock_liquid",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_heart_powder",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_plunderer_true_soul",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:ancient_river_water",
+          "weight": 3
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}
