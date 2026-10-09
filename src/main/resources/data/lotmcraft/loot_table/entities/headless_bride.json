@@ -1,0 +1,302 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mummy_ashes",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadow_lizard_scales",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:daffodil_juice",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:wild_rose",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_eyes",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_hair_complete_remnants",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_widow_spider_silk_gland",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:agate_peacock_egg",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_feather_of_monster_bird",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:feynapotter_fly_powder",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blasphemous_priest_core",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blasphemous_priest_fungal_shroud",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:midnight_beauty_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_snaring_bell_flower",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sleeper_skull",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_faced_rose_complete_stalk",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_faced_pitcher_plant",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:weeping_infant_flower",
+          "weight": 28
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mummy_ashes",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadow_lizard_scales",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:daffodil_juice",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:wild_rose",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_eyes",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_hair_complete_remnants",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_widow_spider_silk_gland",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:agate_peacock_egg",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_feather_of_monster_bird",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:feynapotter_fly_powder",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blasphemous_priest_core",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blasphemous_priest_fungal_shroud",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:midnight_beauty_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_snaring_bell_flower",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sleeper_skull",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_faced_rose_complete_stalk",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_faced_pitcher_plant",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:weeping_infant_flower",
+          "weight": 28
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mummy_ashes",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadow_lizard_scales",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:daffodil_juice",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:wild_rose",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_eyes",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:succubus_hair_complete_remnants",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_widow_spider_silk_gland",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:agate_peacock_egg",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_feather_of_monster_bird",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:feynapotter_fly_powder",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blasphemous_priest_core",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blasphemous_priest_fungal_shroud",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:midnight_beauty_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_snaring_bell_flower",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sleeper_skull",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_faced_rose_complete_stalk",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:human_faced_pitcher_plant",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:weeping_infant_flower",
+          "weight": 28
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

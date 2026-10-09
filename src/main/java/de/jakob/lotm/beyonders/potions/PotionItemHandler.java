@@ -443,7 +443,7 @@ public class PotionItemHandler {
                     new BeyonderPotion(properties, 8, "error"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
-    public static DeferredItem<Item> CRYPTOLOGITS_POTION = ITEMS.registerItem("cryptologist_potion", properties ->
+    public static DeferredItem<Item> CRYPTOLOGIST_POTION = ITEMS.registerItem("cryptologist_potion", properties ->
                     new BeyonderPotion(properties, 7, "error"),
             new Item.Properties().stacksTo(1).rarity(Rarity.EPIC));
 
