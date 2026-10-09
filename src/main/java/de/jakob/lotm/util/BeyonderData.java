@@ -777,9 +777,15 @@ public class BeyonderData {
         }
     }
 
+    /** Returns a detached Worm of Time even when this puts the reserve above its normal capacity. */
+    public static void returnWormAmount(LivingEntity entity, int amount) {
+        if (amount <= 0) return;
+        setWormAmount(entity, getCowardWormAmount(entity) + amount);
+    }
+
     public static void incrementWormAmount(LivingEntity entity, int amount) {
         int currentAmount = getCowardWormAmount(entity);
-        if((currentAmount + amount) < 0 || (currentAmount + amount) > getMaxWormAmount(getSequence(entity)))
+        if((currentAmount + amount) < 0 || (currentAmount + amount) > getMaxWormAmount(getSequence(entity, false, true)))
             return;
 
         setWormAmount(entity, currentAmount + amount);

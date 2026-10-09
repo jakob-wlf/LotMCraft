@@ -138,10 +138,13 @@ public class ActingCapHelper {
     }
 
     public static boolean tryCompleteMissedActing(Player player, String taskId) {
+        return tryCompleteMissedActing(player, taskId, BeyonderData.getPathway(player));
+    }
+
+    public static boolean tryCompleteMissedActing(Player player, String taskId, String playerPathway) {
         CompoundTag missed = getMissedActing(player);
         if (missed.isEmpty()) return false;
 
-        String playerPathway = BeyonderData.getPathway(player);
         boolean found = false;
         float totalRestore = 0f;
 

@@ -13,6 +13,10 @@ public class ActingHandler {
     public static void onActingEvent(Player player, String taskId) {
         String pathway = BeyonderData.getPathway(player);
         int sequence = BeyonderData.getSequence(player);
+        onActingEvent(player, taskId, pathway, sequence);
+    }
+
+    public static void onActingEvent(Player player, String taskId, String pathway, int sequence) {
 
         List<ActingTask> tasks = ActingTaskRegistry.getTasksFor(pathway, sequence);
 
@@ -35,7 +39,7 @@ public class ActingHandler {
                 });
 
         if (!player.level().isClientSide) {
-            ActingCapHelper.tryCompleteMissedActing(player, taskId);
+            ActingCapHelper.tryCompleteMissedActing(player, taskId, pathway);
         }
     }
 }

@@ -4,13 +4,15 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.beyonders.acting.ActingEventHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.attachments.TimeWormReturnData;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
+import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,6 +26,9 @@ import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.*;
 
@@ -32,8 +37,10 @@ public class ParasitationAbility extends SelectableAbility {
 
     private static final HashMap<UUID, UUID> concealedMap = new HashMap<>();
     private static final HashMap<UUID, UUID> controllingMap = new HashMap<>();
+    private static final HashMap<UUID, LivingEntity> controlledHostRefs = new HashMap<>();
     private static final HashMap<UUID, Integer> controllingTimer = new HashMap<>();
     private static final HashMap<UUID, Boolean> controllingLowerSeq = new HashMap<>();
+    private static final Set<UUID> releaseHostNormally = new HashSet<>();
 
     public ParasitationAbility(String id) {
         super(id, 5f);
@@ -124,6 +131,7 @@ public class ParasitationAbility extends SelectableAbility {
 
     private void startControl(ServerLevel serverLevel, ServerPlayer player, LivingEntity target, boolean lowerSeq) {
         controllingMap.put(player.getUUID(), target.getUUID());
+        controlledHostRefs.put(player.getUUID(), target);
         controllingLowerSeq.put(player.getUUID(), lowerSeq);
 
         if (!lowerSeq) {
@@ -134,34 +142,183 @@ public class ParasitationAbility extends SelectableAbility {
         pc.setParasited(true);
         pc.setParasiteUUID(player.getUUID());
 
-        ControllingUtils.startControlling(player, target, true, false);
+        if (!ControllingUtils.startControlling(player, target, true, false)) {
+            clearControlState(player.getUUID());
+            pc.setParasited(false);
+            pc.setParasiteUUID(null);
+            return;
+        }
+
+        // The wheel switches to the host's abilities while controlling it. Keep
+        // the parasite's host commands available until control ends.
+        AbilityWheelHelper.addAbility(player, "host_controlling_ability:-1");
+        ActingEventHandler.recordParasitationAction(player);
     }
 
     public static void exitControl(ServerLevel serverLevel, ServerPlayer player) {
+        exitControl(serverLevel, player, true);
+    }
+
+    private static void exitControl(ServerLevel serverLevel, ServerPlayer player, boolean returnHost) {
         if (!controllingMap.containsKey(player.getUUID())) return;
         boolean lowerSeq = controllingLowerSeq.getOrDefault(player.getUUID(), false);
+        boolean releasedTimeWormHost = releaseHostNormally.remove(player.getUUID());
         UUID hostUUID = controllingMap.get(player.getUUID());
+        LivingEntity controlledHost = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).getControlledEntity();
+        if (controlledHost == null) controlledHost = controlledHostRefs.get(player.getUUID());
+        ArrayList<String> hostWheelAbilities = controlledHost == null ? null
+                : new ArrayList<>(controlledHost.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
+        int hostSelectedAbility = controlledHost == null ? 0
+                : controlledHost.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getSelectedAbility();
+        if (controlledHost != null) {
+            ParasitationComponent hostParasitation = controlledHost.getData(ModAttachments.PARASITE_COMPONENT);
+            if (hostParasitation.hasTimeWorm()) {
+                for (String abilityId : hostParasitation.getTimeWormAddedAbilityIds()) {
+                    if (!hostWheelAbilities.contains(abilityId)) {
+                        hostWheelAbilities.add(abilityId);
+                    }
+                }
+            }
+        }
 
-        controllingMap.remove(player.getUUID());
-        controllingTimer.remove(player.getUUID());
-        controllingLowerSeq.remove(player.getUUID());
+        clearControlState(player.getUUID());
 
-        ControllingUtils.cancel(player, 0, true, false);
+        // This command exists only in the temporary host-control wheel. Remove
+        // it before cancel() copies the active wheel back onto the host.
+        AbilityWheelHelper.removeAbility(player, "host_controlling_ability:-1");
+        ControllingUtils.cancel(player, 0, returnHost, false);
 
-        Entity hostEntity = serverLevel.getEntity(hostUUID);
+        if (controlledHost != null && hostWheelAbilities != null) {
+            var hostWheel = controlledHost.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+            hostWheel.setAbilities(hostWheelAbilities);
+            hostWheel.setSelectedAbility(hostWheelAbilities.isEmpty() ? 0
+                    : Math.clamp(hostSelectedAbility, 0, hostWheelAbilities.size() - 1));
+        }
+
+        Entity hostEntity = controlledHost != null ? controlledHost : serverLevel.getEntity(hostUUID);
         if (hostEntity instanceof LivingEntity host) {
+            if (returnHost && host.isRemoved() && host.isAlive()) {
+                host.unsetRemoved();
+            }
             ParasitationComponent pc = host.getData(ModAttachments.PARASITE_COMPONENT);
             pc.setParasited(false);
             pc.setParasiteUUID(null);
 
-            if (!lowerSeq) {
-                boolean killedBySteal = performExitSteal(serverLevel, player, host);
-                if (killedBySteal) MarionetteUtils.turnEntityIntoMarionette(host, player);
+            if (pc.hasTimeWorm()) {
+                AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.host_controlling.time_worm_host_released").withColor(0x3240bf));
+                return;
+            }
+
+            if (!lowerSeq && !releasedTimeWormHost && host.isAlive()) {
+                performExitSteal(serverLevel, player, host);
             }
         }
     }
 
-    private static boolean performExitSteal(ServerLevel serverLevel, ServerPlayer player, LivingEntity host) {
+    public static void toggleTimeWorm(ServerLevel serverLevel, LivingEntity parasite, LivingEntity host) {
+        if (!(parasite instanceof ServerPlayer player) || !isControlling(player.getUUID())) {
+            AbilityUtil.sendActionBar(parasite, Component.translatable("ability.lotmcraft.host_controlling.no_host").withColor(0x3240bf));
+            return;
+        }
+
+        if (host instanceof Player) {
+            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.host_controlling.time_worm_player_host").withColor(0xbf3232));
+            return;
+        }
+        ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+        if (component.hasTimeWorm()) {
+            if (!player.getUUID().equals(component.getTimeWormOwnerUUID())) {
+                AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.host_controlling.time_worm_owned_by_other").withColor(0xbf3232));
+                return;
+            }
+            int current = BeyonderData.getCowardWormAmount(player);
+            int parasiteSequence = BeyonderData.getSequence(player, false, true);
+            boolean reserveFull = current >= BeyonderData.getMaxWormAmount(parasiteSequence);
+            var wheel = host.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+            ArrayList<String> retainedAbilities = new ArrayList<>(wheel.getAbilities());
+            retainedAbilities.removeAll(component.getTimeWormAddedAbilityIds());
+            AbilityWheelHelper.setAbilitiesForEntity(player, host, retainedAbilities);
+            component.clearTimeWormData();
+            BeyonderData.returnWormAmount(player, 1);
+            releaseHostNormally.add(player.getUUID());
+            String messageKey = reserveFull
+                    ? "ability.lotmcraft.host_controlling.time_worm_removed_reserve_full"
+                    : "ability.lotmcraft.host_controlling.time_worm_removed";
+            AbilityUtil.sendActionBar(player, Component.translatable(messageKey).withColor(0x3240bf));
+            return;
+        }
+
+        if (BeyonderData.getCowardWormAmount(player) <= 0) {
+            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.host_controlling.no_time_worm").withColor(0xbf3232));
+            return;
+        }
+
+        // Control makes the player's effective pathway/sequence match the
+        // possessed host. The Worm must grant abilities for the parasite's
+        // own Error sequence instead.
+        int sequence = BeyonderData.getSequence(player, false, true);
+        var wheel = host.getData(ModAttachments.ABILITY_WHEEL_COMPONENT);
+        LinkedHashSet<String> wheelAbilities = new LinkedHashSet<>(wheel.getAbilities());
+        ArrayList<String> addedAbilities = new ArrayList<>();
+        LOTMCraft.abilityHandler.getByPathwayAndSequence("error", sequence).stream()
+                .sorted(Comparator.comparing(Ability::getId))
+                .map(ability -> ability.getId() + ":-1")
+                .forEach(id -> { if (wheelAbilities.add(id)) addedAbilities.add(id); });
+        AbilityWheelHelper.setAbilitiesForEntity(player, host, new ArrayList<>(wheelAbilities));
+        component.setTimeWormOwner(player.getUUID(), sequence);
+        component.setTimeWormAddedAbilityIds(addedAbilities);
+        component.setHasTimeWorm(true);
+        BeyonderData.incrementWormAmount(player, -1);
+        AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.host_controlling.time_worm_added").withColor(0x3240bf));
+    }
+
+    public static void drainControlledHost(ServerLevel level, ServerPlayer parasite, LivingEntity host, float amount) {
+        float hostHealth = host.getHealth();
+        float drained = Math.min(Math.max(0, amount), hostHealth);
+        if (drained <= 0) return;
+
+        LivingEntity bodyDouble = parasite.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).getBodyDouble();
+        if (bodyDouble != null && bodyDouble.isAlive()) {
+            bodyDouble.heal(drained);
+        } else {
+            // The body double holds the parasite's original body while the
+            // player is using the host's body. Fall back to the player only if
+            // that saved body is unavailable; draining must never hurt them.
+            parasite.heal(drained);
+        }
+
+        if (drained >= hostHealth) {
+            killControlledHost(level, parasite, host);
+            return;
+        }
+
+        // The host is discarded while possessed, so hurt() is ignored. Keep
+        // its saved health in sync directly. The owner's health is restored
+        // through the body double above when control ends.
+        host.setHealth(hostHealth - drained);
+    }
+
+    public static void killControlledHost(ServerLevel level, ServerPlayer parasite, LivingEntity host) {
+        if (host.isRemoved()) {
+            host.unsetRemoved();
+            host.setPos(parasite.position());
+            if (!level.addFreshEntity(host)) return;
+        }
+
+        host.hurt(level.damageSources().genericKill(), Float.MAX_VALUE);
+        if (host.isAlive()) {
+            // Some NPC implementations reject damage even from a kill source.
+            // Clear the parasitism state ourselves if that fallback is needed.
+            host.kill();
+            ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+            if (component.hasTimeWorm()) returnTimeWormToParasite(level, component);
+            component.setParasited(false);
+            component.setParasiteUUID(null);
+            exitControl(level, parasite, false);
+        }
+    }
+
+    private static void performExitSteal(ServerLevel serverLevel, ServerPlayer player, LivingEntity host) {
         Random random = new Random();
         float roll = random.nextFloat();
 
@@ -174,15 +331,13 @@ public class ParasitationAbility extends SelectableAbility {
         } else if (roll < 0.90f) {
             TheftHandler.performAbilityTheft(serverLevel, player, host, random, true, instance);
         } else {
-            // Health drain — check if it kills
+            // Health drain — the host dies normally if the stolen life is fatal.
             float drain = host.getMaxHealth() * 0.2f;
             host.setHealth(host.getHealth() - drain);
             if (host.getHealth() <= 0) {
                 host.kill();
-                return true;
             }
         }
-        return false;
     }
 
     private static void stealArmor(ServerPlayer player, LivingEntity host) {
@@ -199,6 +354,135 @@ public class ParasitationAbility extends SelectableAbility {
             }
         }
         TheftHandler.stealItemsFromEntity(host, player, instance);
+    }
+
+    @SubscribeEvent
+    public static void onHostDeath(LivingDeathEvent event) {
+        if (!(event.getEntity().level() instanceof ServerLevel level)) return;
+        LivingEntity host = event.getEntity();
+        ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+        UUID parasiteUUID = component.getParasiteUUID();
+        if (component.hasTimeWorm()) returnTimeWormToParasite(level, component);
+        component.setParasited(false);
+        component.setParasiteUUID(null);
+
+        if (parasiteUUID != null && host.getUUID().equals(controllingMap.get(parasiteUUID))) {
+            level.getServer().execute(() -> {
+                ServerPlayer parasite = level.getServer().getPlayerList().getPlayer(parasiteUUID);
+                if (parasite != null && isControlling(parasiteUUID)) {
+                    exitControl(level, parasite, false);
+                }
+            });
+        }
+    }
+
+    @SubscribeEvent
+    public static void onHostRemoved(EntityLeaveLevelEvent event) {
+        if (!(event.getLevel() instanceof ServerLevel level)
+                || !(event.getEntity() instanceof LivingEntity host)) return;
+        Entity.RemovalReason reason = host.getRemovalReason();
+        if (reason != Entity.RemovalReason.DISCARDED && reason != Entity.RemovalReason.KILLED) return;
+
+        ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+        if (!component.hasTimeWorm()) return;
+        UUID activeParasite = component.getParasiteUUID();
+        if (activeParasite != null && host.getUUID().equals(controllingMap.get(activeParasite))) {
+            // startControlling deliberately discards the host while retaining
+            // it in the controller component. Death returns the Worm through
+            // onHostDeath; external cancellation checks whether this host was
+            // successfully restored before clearing the control state.
+            return;
+        }
+        returnTimeWormToParasite(level, component);
+        component.setParasited(false);
+        component.setParasiteUUID(null);
+    }
+
+    /**
+     * Called when another system ends control without going through exitControl.
+     * If the detached host was not restored to its level, return its Time Worm
+     * immediately instead of relying on a later player tick to find the host.
+     */
+    public static void onExternalControlCancelled(ServerPlayer parasite, LivingEntity host) {
+        UUID hostUUID = controllingMap.get(parasite.getUUID());
+        if (hostUUID == null) return;
+        if (host == null || !hostUUID.equals(host.getUUID())) {
+            host = controlledHostRefs.get(parasite.getUUID());
+        }
+        if (host == null || !hostUUID.equals(host.getUUID())) {
+            Entity restoredHost = parasite.serverLevel().getEntity(hostUUID);
+            if (restoredHost instanceof LivingEntity living) host = living;
+        }
+
+        ServerLevel level = parasite.serverLevel();
+        if (host != null) {
+            boolean hostRestored = level.getEntity(hostUUID) == host;
+            ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+            if (!hostRestored && component.hasTimeWorm()) {
+                returnTimeWormToParasite(level, component);
+            }
+            component.setParasited(false);
+            component.setParasiteUUID(null);
+        }
+        clearControlState(parasite.getUUID());
+    }
+
+    /** Cleans the Error parasitism state when the generic controller recovers a player on rejoin. */
+    public static void onControlRejoined(ServerPlayer parasite, LivingEntity host) {
+        UUID hostUUID = controllingMap.get(parasite.getUUID());
+        if (hostUUID == null) return;
+
+        if (host == null || !hostUUID.equals(host.getUUID())) {
+            host = controlledHostRefs.get(parasite.getUUID());
+        }
+        if (host == null || !hostUUID.equals(host.getUUID())) {
+            Entity restoredHost = parasite.serverLevel().getEntity(hostUUID);
+            if (restoredHost instanceof LivingEntity living) host = living;
+        }
+
+        ServerLevel level = parasite.serverLevel();
+        if (host != null) {
+            ParasitationComponent component = host.getData(ModAttachments.PARASITE_COMPONENT);
+            // A host missing from the level after rejoin was not restored by
+            // the generic controller, so treat it as removed and return its Worm.
+            if (level.getEntity(hostUUID) != host && component.hasTimeWorm()) {
+                returnTimeWormToParasite(level, component);
+            }
+            component.setParasited(false);
+            component.setParasiteUUID(null);
+        }
+
+        clearControlState(parasite.getUUID());
+    }
+
+    private static void clearControlState(UUID parasiteUUID) {
+        controllingMap.remove(parasiteUUID);
+        controlledHostRefs.remove(parasiteUUID);
+        controllingTimer.remove(parasiteUUID);
+        controllingLowerSeq.remove(parasiteUUID);
+        releaseHostNormally.remove(parasiteUUID);
+    }
+
+    @SubscribeEvent
+    public static void onParasiteLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        int pendingReturns = TimeWormReturnData.get(player.server).claim(player.getUUID());
+        if (pendingReturns > 0) {
+            BeyonderData.returnWormAmount(player, pendingReturns);
+        }
+    }
+
+    private static void returnTimeWormToParasite(ServerLevel level, ParasitationComponent component) {
+        UUID ownerUUID = component.getTimeWormOwnerUUID();
+        component.clearTimeWormData();
+        if (ownerUUID == null) return;
+
+        ServerPlayer owner = level.getServer().getPlayerList().getPlayer(ownerUUID);
+        if (owner != null) {
+            BeyonderData.returnWormAmount(owner, 1);
+        } else {
+            TimeWormReturnData.get(level.getServer()).add(ownerUUID, 1);
+        }
     }
 
 
@@ -228,8 +512,8 @@ public class ParasitationAbility extends SelectableAbility {
 
         // If currently controlling, switch to concealed
         if (controllingMap.containsKey(entity.getUUID())) {
+            LivingEntity currentHost = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).getControlledEntity();
             exitControl(serverLevel, player);
-            LivingEntity currentHost = resolveHost(serverLevel, controllingMap.get(player.getUUID()));
             LivingEntity newHost = ((currentHost == null || !target.getUUID().equals(currentHost.getUUID()))) ? target : currentHost;
 
             if (isValidConcealedTarget(player, newHost)) {
@@ -257,6 +541,7 @@ public class ParasitationAbility extends SelectableAbility {
 
         serverPlayer.setGameMode(GameType.SPECTATOR);
         serverPlayer.setCamera(host);
+        ActingEventHandler.recordParasitationAction(serverPlayer);
     }
 
     private void cancelConcealed(ServerLevel serverLevel, ServerPlayer serverPlayer) {
@@ -308,10 +593,13 @@ public class ParasitationAbility extends SelectableAbility {
         if (!(serverPlayer.level() instanceof ServerLevel serverLevel)) return;
 
         if (!ControllingUtils.isControlling(serverPlayer)) {
-            // Ended externally — clean up without calling reset again
-            controllingMap.remove(serverPlayer.getUUID());
-            controllingTimer.remove(serverPlayer.getUUID());
-            controllingLowerSeq.remove(serverPlayer.getUUID());
+            // Finish the parasitism lifecycle if another system ended host control.
+            if (controllingMap.containsKey(serverPlayer.getUUID())) {
+                exitControl(serverLevel, serverPlayer);
+            } else {
+                controllingTimer.remove(serverPlayer.getUUID());
+                controllingLowerSeq.remove(serverPlayer.getUUID());
+            }
             return;
         }
 
@@ -327,14 +615,12 @@ public class ParasitationAbility extends SelectableAbility {
         }
     }
 
-    private static LivingEntity resolveHost(ServerLevel serverLevel, UUID uuid) {
-        if (uuid == null) return null;
-        Entity entity = serverLevel.getEntity(uuid);
-        return entity instanceof LivingEntity living ? living : null;
-    }
-
     public static LivingEntity getHostForEntity(ServerLevel serverLevel, LivingEntity parasite) {
         UUID hostUUID = controllingMap.get(parasite.getUUID());
+        if (hostUUID != null && parasite instanceof ServerPlayer player) {
+            LivingEntity controlledHost = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).getControlledEntity();
+            if (controlledHost != null) return controlledHost;
+        }
         if (hostUUID == null) hostUUID = concealedMap.get(parasite.getUUID());
         if (hostUUID == null) return null;
         Entity host = serverLevel.getEntity(hostUUID);

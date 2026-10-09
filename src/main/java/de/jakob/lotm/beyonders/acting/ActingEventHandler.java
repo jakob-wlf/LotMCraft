@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.acting;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -71,6 +72,12 @@ public class ActingEventHandler {
 
         if (player.level().isNight())
             ActingHandler.onActingEvent(player, id + "_at_night");
+    }
+
+    public static void recordParasitationAction(Player player) {
+        if (player == null || player.level().isClientSide()) return;
+        ActingHandler.onActingEvent(player, "use_parasitation_ability",
+                BeyonderData.getPathway(player, true), BeyonderData.getSequence(player, false, true));
     }
 
     private static final int DARK_LIGHT_LEVEL = 4;
@@ -233,6 +240,10 @@ public class ActingEventHandler {
 
         String id = String.valueOf(event.getAbility().getId()).toLowerCase();
         if (id.startsWith("use_")) id = id.substring(4);
+
+        // Parasitation has two selectable modes; record it only after Control
+        // or Conceal actually succeeds, rather than when the shared ability is pressed.
+        if (id.equals("parasitation_ability")) return;
 
         fire(player, "use_" + id);
         if (!id.endsWith("_ability"))

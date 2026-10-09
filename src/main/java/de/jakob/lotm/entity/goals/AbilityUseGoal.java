@@ -5,6 +5,8 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ParasitationComponent;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -197,6 +199,13 @@ public class AbilityUseGoal extends Goal {
                 .filter(a -> a.canBeUsedByNPC)
                 .forEach(usableAbilities::add);
 
+        if (entity instanceof AvatarEntity avatar && avatar.hasSecondaryPathway()) {
+            LOTMCraft.abilityHandler.getByPathwayAndSequence(
+                            avatar.getSecondaryPathway(), avatar.getSecondarySequence()).stream()
+                    .filter(a -> a.canBeUsedByNPC)
+                    .forEach(usableAbilities::add);
+        }
+
         MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT.get());
         if (component.isMarionette() && component.hasWorm()) {
             Player controller = getController(entity);
@@ -207,6 +216,13 @@ public class AbilityUseGoal extends Goal {
                         .filter(a -> a.canBeUsedByNPC)
                         .forEach(usableAbilities::add);
             }
+        }
+
+        ParasitationComponent parasiteComponent = entity.getData(ModAttachments.PARASITE_COMPONENT);
+        if (parasiteComponent.hasTimeWorm() && parasiteComponent.getTimeWormSequence() < LOTMCraft.NON_BEYONDER_SEQ) {
+            LOTMCraft.abilityHandler.getByPathwayAndSequence("error", parasiteComponent.getTimeWormSequence()).stream()
+                    .filter(a -> a.canBeUsedByNPC)
+                    .forEach(usableAbilities::add);
         }
         return usableAbilities;
     }
