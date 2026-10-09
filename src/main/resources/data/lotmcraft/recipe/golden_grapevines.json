@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "NNN",
+    "NVN",
+    "NNN"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "V": {
+      "item": "minecraft:vine"
+    }
+  },
+  "result": {
+    "id": "lotmcraft:golden_grapevines",
+    "count": 1
+  }
+}

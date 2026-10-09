@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:honey_bottle"
+    },
+    {
+      "item": "lotmcraft:chestnut_spore"
+    },
+    {
+      "item": "lotmcraft:chestnut_spore"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:white_chestnut_balm",
+    "count": 1
+  }
+}

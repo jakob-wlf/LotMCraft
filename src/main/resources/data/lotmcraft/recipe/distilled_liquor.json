@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "ingredient": {
+    "item": "lotmcraft:liquor"
+  },
+  "result": {
+    "id": "lotmcraft:distilled_liquor"
+  },
+  "experience": 0.1,
+  "cookingtime": 400
+}

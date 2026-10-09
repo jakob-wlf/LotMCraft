@@ -282,6 +282,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncPreLoadGamerulePacket.TYPE,
+                SyncPreLoadGamerulePacket.STREAM_CODEC,
+                SyncPreLoadGamerulePacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncCullAbilityPacket.TYPE,
                 SyncCullAbilityPacket.STREAM_CODEC,
                 SyncCullAbilityPacket::handle

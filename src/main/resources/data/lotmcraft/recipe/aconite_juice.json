@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:cornflower"
+    },
+    {
+      "item": "minecraft:blue_orchid"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:aconite_juice",
+    "count": 1
+  }
+}

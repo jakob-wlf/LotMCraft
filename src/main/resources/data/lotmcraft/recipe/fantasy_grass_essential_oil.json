@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "lotmcraft:midsummer_grass"
+    },
+    {
+      "item": "lotmcraft:midsummer_grass"
+    },
+    {
+      "item": "minecraft:glass_bottle"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:fantasy_grass_essential_oil",
+    "count": 1
+  }
+}

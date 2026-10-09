@@ -80,5 +80,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .define('W', Ingredient.of(ItemTags.PLANKS))
                 .unlockedBy("has_planks", has(ItemTags.PLANKS))
                 .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.INGREDIENT_ENCYCLOPEDIA.get())
+                .pattern(" L ")
+                .pattern("PBS")
+                .pattern(" A ")
+                .define('B', Items.BOOK)
+                .define('A', Items.AZURE_BLUET)
+                .define('L', Items.LILAC)
+                .define('S', Items.SUGAR_CANE)
+                .define('P', Items.POPPY)
+                .unlockedBy("has_book", has(Items.BOOK))
+                .save(recipeOutput);
     }
 }

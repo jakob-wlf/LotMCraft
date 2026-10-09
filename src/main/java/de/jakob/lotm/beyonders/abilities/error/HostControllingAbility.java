@@ -44,7 +44,7 @@ public class HostControllingAbility extends SelectableAbility {
         }
 
         LivingEntity host = ParasitationAbility.getHostForEntity(serverLevel, entity);
-        if(host == null) {
+        if(host == null || !AbilityUtil.mayTarget(entity, host)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.host_controlling.no_host").withColor(0x3240bf));
             return;
         }

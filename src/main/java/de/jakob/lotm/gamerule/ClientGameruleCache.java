@@ -7,5 +7,6 @@ import net.neoforged.api.distmarker.OnlyIn;
 public class ClientGameruleCache {
 
     public static boolean isGlobalGriefingEnabled = true;
+    public static boolean isPreLoadEffectsEnabled = true;
 
 }
