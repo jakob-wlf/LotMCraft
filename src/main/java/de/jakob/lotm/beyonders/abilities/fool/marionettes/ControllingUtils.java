@@ -21,21 +21,18 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Collection;
 import java.util.Set;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -153,6 +150,8 @@ public class ControllingUtils {
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
 
         if(!component.isControlling()) {
+            de.jakob.lotm.beyonders.abilities.error.ParasitationAbility
+                    .onExternalControlCancelled(player, component.getControlledEntity());
             return;
         }
 
@@ -208,6 +207,12 @@ public class ControllingUtils {
 
         component.getActiveToggles().forEach(toggle -> toggle.useAbility(level, player));
 
+        // Parasitation owns additional state for a controlled NPC. If another
+        // system cancels control and the NPC could not be restored, release its
+        // Time Worm now rather than leaving it stranded until a player tick.
+        de.jakob.lotm.beyonders.abilities.error.ParasitationAbility
+                .onExternalControlCancelled(player, component.getControlledEntity());
+
         component.reset();
     }
 
@@ -232,8 +237,26 @@ public class ControllingUtils {
         EntityControllingComponent controllingComponent = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(!controllingComponent.isControlling()) return;
 
+        ServerLevel level = player.serverLevel();
+        PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
+        BeyonderDataTickHandler.invalidateCache(player);
         controllingComponent.restoreAttributesTo(player);
-        controllingComponent.setControlling(false);
+        de.jakob.lotm.beyonders.abilities.error.ParasitationAbility
+                .onControlRejoined(player, controllingComponent.getControlledEntity());
+
+        ShapeShiftingUtil.resetShape(player);
+        AbilityBarHelper.setAbilities(player, controllingComponent.getAbilityBarAbilities());
+        AbilityWheelHelper.setAbilities(player, controllingComponent.getAbilityWheelAbilities());
+        AbilityWheelHelper.setSelectedAbility(player, controllingComponent.getSelectedAbilityInWheel());
+        controllingComponent.getActiveToggles().forEach(toggle -> toggle.useAbility(level, player));
+
+        ControlBodyDouble bodyDouble = controllingComponent.getBodyDouble();
+        if (bodyDouble != null) {
+            AllyUtil.removeAllies(player, bodyDouble, false);
+            if (bodyDouble.isAlive()) bodyDouble.discard();
+        }
+
+        controllingComponent.reset();
     }
 
     public record PathwayData(@NonNull String pathway, int sequence) {}
