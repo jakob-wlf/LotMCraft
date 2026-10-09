@@ -209,6 +209,7 @@ public class ActingTaskRegistry {
         register("error", 5, new EventActingTask("pickup_item", 0.04f, 20 * 5));
 
         register("error", 4, new EventActingTask("tame_animal", 0.1f, 20 * 10));
+        register("error", 4, new EventActingTask("use_parasitation_ability", 0.2f, 20 * 15));
         register("error", 4, new EventActingTask("sneak_kill", 0.1f, 20 * 2));
         register("error", 4, new EventActingTask("kill_untargeted_mob", 0.05f, 20 * 5));
         register("error", 4, new EventActingTask("feed_animal", 0.04f, 20 * 10));

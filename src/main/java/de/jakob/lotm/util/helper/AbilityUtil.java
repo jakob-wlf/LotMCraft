@@ -288,16 +288,35 @@ public class AbilityUtil {
 
     private static boolean mayDamageParasitation(LivingEntity source, LivingEntity target) {
         ParasitationComponent targetParasitation = target.getData(ModAttachments.PARASITE_COMPONENT.get());
-        if (targetParasitation.isParasited() && targetParasitation.getParasiteUUID().equals(source.getUUID())) {
+        if (targetParasitation.isParasited() && source.getUUID().equals(targetParasitation.getParasiteUUID())) {
             return false;
         }
 
         ParasitationComponent sourceParasitation = source.getData(ModAttachments.PARASITE_COMPONENT.get());
-        if (sourceParasitation.isParasited() && sourceParasitation.getParasiteUUID().equals(target.getUUID())) {
+        if (sourceParasitation.isParasited() && target.getUUID().equals(sourceParasitation.getParasiteUUID())) {
+            return false;
+        }
+
+        // A Time Worm makes its host an Error-pathway avatar. Treat the owner
+        // and hosts belonging to the same owner as protected allies so area
+        // abilities using mayDamage() cannot hit them either.
+        if (sourceParasitation.hasTimeWorm()
+                && (target.getUUID().equals(sourceParasitation.getTimeWormOwnerUUID())
+                || hasTimeWormOwner(target, sourceParasitation.getTimeWormOwnerUUID()))) {
+            return false;
+        }
+        if (targetParasitation.hasTimeWorm()
+                && (source.getUUID().equals(targetParasitation.getTimeWormOwnerUUID())
+                || hasTimeWormOwner(source, targetParasitation.getTimeWormOwnerUUID()))) {
             return false;
         }
 
         return true;
+    }
+
+    private static boolean hasTimeWormOwner(LivingEntity entity, UUID ownerUUID) {
+        return ownerUUID != null && ownerUUID.equals(
+                entity.getData(ModAttachments.PARASITE_COMPONENT.get()).getTimeWormOwnerUUID());
     }
 
     private static boolean mayDamageMarionette(LivingEntity source, LivingEntity target) {

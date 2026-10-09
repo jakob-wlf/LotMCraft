@@ -127,7 +127,8 @@ public class BeyonderDataTickHandler {
                 invalidateCache(livingEntity);
             }
 
-            if(entity.tickCount % getWormRecoverTime(livingEntity) == 0) {
+            int wormRecoverTime = getWormRecoverTime(livingEntity);
+            if(wormRecoverTime > 0 && entity.tickCount % wormRecoverTime == 0) {
                 BeyonderData.incrementWormAmount(livingEntity, 1);
             }
 
@@ -166,8 +167,9 @@ public class BeyonderDataTickHandler {
     }
 
     private static int getWormRecoverTime(LivingEntity entity) {
-        return switch (BeyonderData.getPathway(entity)) {
+        return switch (BeyonderData.getPathway(entity, true)) {
             case "fool" -> 20 * 60 * 5;
+            case "error" -> 0;
             default -> 20 * 30;
         };
     }

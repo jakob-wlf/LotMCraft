@@ -6,6 +6,7 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
@@ -28,13 +29,25 @@ public class HostControllingAbility extends SelectableAbility {
     }
 
     @Override
+    public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
+        if (entity instanceof Player player && ParasitationAbility.isControlling(player.getUUID())) {
+            return true;
+        }
+        return super.hasAbility(entity, ignoreCreativeMode);
+    }
+
+    @Override
     protected float getSpiritualityCost() {
         return 0;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.host_controlling.drain_health", "ability.lotmcraft.host_controlling.kill"};
+        return new String[]{
+                "ability.lotmcraft.host_controlling.drain_health",
+                "ability.lotmcraft.host_controlling.kill",
+                "ability.lotmcraft.host_controlling.add_remove_time_worm"
+        };
     }
 
     @Override
@@ -49,17 +62,21 @@ public class HostControllingAbility extends SelectableAbility {
             return;
         }
 
+        if (ParasitationAbility.isControlling(entity.getUUID()) && abilityIndex != 2) {
+            AbilityUtil.sendActionBar(entity, Component.translatable(
+                    "ability.lotmcraft.host_controlling.control_mode_restricted").withColor(0x3240bf));
+            return;
+        }
+
         switch (abilityIndex) {
             case 0 -> {
                 float healthToDrain = (float) (DamageLookup.lookupDamage(4, .75f) * multiplier(entity));
-
-                host.hurt(entity.damageSources().magic(), healthToDrain);
-                entity.heal(healthToDrain);
+                ParasitationAbility.drainControlledHost(serverLevel, (net.minecraft.server.level.ServerPlayer) entity, host, healthToDrain);
             }
             case 1 -> {
-                host.setHealth(0.5f);
-                host.hurt(entity.damageSources().magic(), 1000);
+                ParasitationAbility.killControlledHost(serverLevel, (net.minecraft.server.level.ServerPlayer) entity, host);
             }
+            case 2 -> ParasitationAbility.toggleTimeWorm(serverLevel, entity, host);
         }
     }
 }

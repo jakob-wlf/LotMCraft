@@ -15,6 +15,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -264,6 +265,13 @@ public abstract class Ability {
         String pathway = BeyonderData.getPathway(entity, true);
         int sequence = BeyonderData.getSequence(entity, false, true);
 
+        if (entity instanceof AvatarEntity avatar && avatar.hasSecondaryPathway()) {
+            Integer secondaryRequirement = getRequirements().get(avatar.getSecondaryPathway());
+            if (secondaryRequirement != null && secondaryRequirement >= avatar.getSecondarySequence()) {
+                return true;
+            }
+        }
+
         if(entity instanceof Player player && player.isCreative() && player.hasPermissions(2) && !ignoreCreativeMode) {
             return getRequirements().values().stream().anyMatch(reqSeq -> reqSeq >= sequence);
         }
@@ -273,6 +281,11 @@ public abstract class Ability {
             boolean canUseOwnAbilities = ControllingUtils.canUseOwnAbilitiesWhileControlling(player);
 
             boolean hasTargetAbility = getRequirements().containsKey(pathwayData.pathway()) && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
+            LivingEntity controlledEntity = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).getControlledEntity();
+            if (controlledEntity instanceof AvatarEntity avatar && avatar.hasSecondaryPathway()) {
+                Integer secondaryRequirement = getRequirements().get(avatar.getSecondaryPathway());
+                hasTargetAbility |= secondaryRequirement != null && secondaryRequirement >= avatar.getSecondarySequence();
+            }
 
             if (!canUseOwnAbilities) {
                 return hasTargetAbility;

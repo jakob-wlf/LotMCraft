@@ -166,7 +166,7 @@ public class ControllingUtils {
                 controlled.unsetRemoved();
                 controlled.setPos(player.position());
                 level.addFreshEntity(controlled);
-                controlled.setHealth(Math.clamp(player.getHealth(), 1, controlled.getHealth()));
+                controlled.setHealth(Math.min(player.getHealth(), controlled.getHealth()));
                 if(killPreviousEntity) {
                     controlled.hurt(controlled.damageSources().generic(), Float.MAX_VALUE);
                 }
@@ -273,7 +273,10 @@ public class ControllingUtils {
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(BeyonderData.getSequence(player)) * 5) {
+        int controllerSequence = de.jakob.lotm.beyonders.abilities.error.ParasitationAbility.isControlling(player.getUUID())
+                ? BeyonderData.getSequence(player, false, true)
+                : BeyonderData.getSequence(player);
+        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(controllerSequence) * 5) {
             cancel(player, 0, true, false);
         }
     }
