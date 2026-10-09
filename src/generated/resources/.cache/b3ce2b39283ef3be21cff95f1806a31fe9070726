@@ -1,4 +1,4 @@
-// 1.21.1	2026-10-08T20:28:04.7239892	Item Models: lotmcraft
+// 1.21.1	2026-10-09T21:16:16.1699034	Item Models: lotmcraft
 f73b18465ecc4c7209da8e28508db3e3a9a348de assets/lotmcraft/models/item/abyss_demonic_fish_blood.json
 d79ff3aedef37faf54603234b4a98f66afb8991f assets/lotmcraft/models/item/abyss_uniqueness.json
 13ab3bdbdd84c3422e8f32b240a0fc73e54fc57e assets/lotmcraft/models/item/aconite_juice.json
@@ -217,7 +217,6 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/druid.json
 af488cbb4c2198140358170b1b080435d9216a59 assets/lotmcraft/models/item/dust_of_ancient_wraiths.json
 5a0d482b3028ad26f82a3302c2194b83d268bb5d assets/lotmcraft/models/item/dust_of_a_lake_spirit.json
 3e1bdb2d604025b7884a2c8ed7922759df5e2107 assets/lotmcraft/models/item/elf_dark_leaf.json
-09e78f366b0f851e5206416bddf6331ce0300c9a assets/lotmcraft/models/item/elf_dark_leaf_2.json
 2a10e3189cec8a05c32d61ece33674733b14dc25 assets/lotmcraft/models/item/elf_flower_petals.json
 b48664f6747f681c6ac1705854a61ddfaa968b02 assets/lotmcraft/models/item/empty_bottle.json
 bd7b5c36de36e3331d67a1dde6d2eb90f6b06706 assets/lotmcraft/models/item/error_uniqueness.json
@@ -265,7 +264,6 @@ e22eab966147b12ce9e42f6ec970e864762b2cb8 assets/lotmcraft/models/item/golden_blo
 7597bb1db7ee6a3e02dc370bde95b836c7527298 assets/lotmcraft/models/item/golden_cloak_grass_powder.json
 5564550e6d2205e2e96bc6368874b7b5f6fe9724 assets/lotmcraft/models/item/golden_grapevines.json
 778117e65d552f06495949c3a8178db26220a344 assets/lotmcraft/models/item/golden_jimsonweed_juice.json
-aa35ae5c4ee68a10724d5a8649f6c133dbef9516 assets/lotmcraft/models/item/golden_phoenix_eye.json
 f07135695348ab8e47f302514f4c413be2656cb1 assets/lotmcraft/models/item/golden_phoenix_eyes.json
 379dc2e234db5335d2e3692e4e9e08c71798bc1b assets/lotmcraft/models/item/gold_mint_leaves.json
 4b8939be7afdedbb1be147b73d9e65285068afa2 assets/lotmcraft/models/item/grapevine_powder.json
@@ -273,7 +271,6 @@ f07135695348ab8e47f302514f4c413be2656cb1 assets/lotmcraft/models/item/golden_pho
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/gravedigger.json
 dab2270f47c0c68446705aae4fc6feb5349de7de assets/lotmcraft/models/item/gravedigger_characteristic.json
 693c42f2c69cb17c0a13f75591bef896d99dd51b assets/lotmcraft/models/item/gravedigger_potion.json
-5307b73696bd92644711f550a4787e494e96ab41 assets/lotmcraft/models/item/guiding_book.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/hand_of_order.json
 e1396d2298b4fd0656171a2e981e1eabd2f16fa2 assets/lotmcraft/models/item/hand_of_order_characteristic.json
 0252bb1f5c3fe7ef7d41d90be1d35f8874fda626 assets/lotmcraft/models/item/hand_of_order_potion.json
@@ -307,6 +304,7 @@ a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/imperative
 e1396d2298b4fd0656171a2e981e1eabd2f16fa2 assets/lotmcraft/models/item/imperative_mage_characteristic.json
 2c3a6f882693e164bd8f623ed0e5ae14aa7659d6 assets/lotmcraft/models/item/imperative_mage_potion.json
 60cd0ca8ab07140887f0b4bb0cb3906368db98ca assets/lotmcraft/models/item/imprisoned_soul.json
+a6bfa0660da156be6b322cbc598dc33ab179f112 assets/lotmcraft/models/item/ingredient_encyclopedia.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/instigator.json
 d63ff674de475a8539701ac2d673c32c41c9bca1 assets/lotmcraft/models/item/instigator_characteristic.json
 2928d920d5ef4cb3c42238bcb3c8d45baf7618f2 assets/lotmcraft/models/item/instigator_potion.json
@@ -569,7 +567,6 @@ f74d4a7abdd11f6c6c7aefcefe7b2af27a0e0566 assets/lotmcraft/models/item/spectator_
 051ec67f777c6a1854888e32e2a0a180288cd691 assets/lotmcraft/models/item/spectator_potion.json
 50909428484ad4eee9429c3921a749930a5c55a9 assets/lotmcraft/models/item/sphinx_blood.json
 1be794dc8885311d83ea77cefad5504a22e61211 assets/lotmcraft/models/item/sphinx_brain.json
-bb8fc804b8f663029ddd395ba6cf92fa2d60e8a6 assets/lotmcraft/models/item/sphinx_brain_2.json
 be194b4d94b3206d981c5aec2704d91d923d3e8f assets/lotmcraft/models/item/spirit_eater_stomach_pouch.json
 a5851523c9f6e597c054270b142883e9a1c91a94 assets/lotmcraft/models/item/spirit_guide.json
 dab2270f47c0c68446705aae4fc6feb5349de7de assets/lotmcraft/models/item/spirit_guide_characteristic.json

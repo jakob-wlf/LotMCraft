@@ -2,6 +2,7 @@ package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaMenu;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpMenu;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
@@ -42,6 +43,11 @@ public class ModMenuTypes {
                 return new BeyonderTradeMenu(windowId, inv, npcEntityId);
             })
     );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<IngredientEncyclopediaMenu>> INGREDIENT_ENCYCLOPEDIA =
+            MENU_TYPES.register("ingredient_encyclopedia",
+                    () -> IMenuTypeExtension.create((containerId, inventory, buf) ->
+                            new IngredientEncyclopediaMenu(containerId, inventory, buf)));
 
     public static final DeferredHolder<MenuType<?>, MenuType<RitualMenu>> RITUAL_MENU =
             MENU_TYPES.register("ritual_menu", () ->

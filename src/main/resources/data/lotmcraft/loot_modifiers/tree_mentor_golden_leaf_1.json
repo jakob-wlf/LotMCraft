@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:flowering_azalea_leaves"
+    lotmcraft,
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.01
+    lotmcraft
+  ],
+  "table": "yourmod:ingredients/tree_mentor_golden_leaf"
+lotmcraft

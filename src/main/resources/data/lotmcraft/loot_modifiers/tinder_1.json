@@ -1,0 +1,23 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:dead_bush"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:dried_kelp_block"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.3
+    }
+  ],
+  "table": "lotmcraft:ingredients/tinder"
+}

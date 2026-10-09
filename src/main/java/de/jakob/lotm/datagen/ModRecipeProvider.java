@@ -51,12 +51,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GUIDING_BOOK.get())
-                .requires(Items.BOOK)
-                .requires(Items.AMETHYST_SHARD)
-                .unlockedBy("has_leather", has(Items.LEATHER))
-                .save(recipeOutput);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CRYSTAL_BALL.asItem())
                 .pattern("GGG")
                 .pattern("GAG")

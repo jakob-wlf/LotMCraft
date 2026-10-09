@@ -1,0 +1,29 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:pink_tulip"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:peony"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:match_tool",
+      "predicate": {
+        "items": "minecraft:shears"
+      }
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.25
+    }
+  ],
+  "table": "lotmcraft:ingredients/verbena_powder"
+}
