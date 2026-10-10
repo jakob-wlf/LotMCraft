@@ -28,6 +28,18 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MarionetteUtils {
 
+    public static void killControlledMarionettes(Player player) {
+        if (!(player.level() instanceof ServerLevel) || player.getServer() == null) return;
+        String playerUUID = player.getStringUUID();
+        for (ServerLevel level : player.getServer().getAllLevels()) {
+            for (Entity e : level.getAllEntities()) {
+                if (!(e instanceof LivingEntity livingEntity) || !isMarionette(livingEntity)) continue;
+                String ownerUUID = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
+                if (playerUUID.equals(ownerUUID)) livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+            }
+        }
+    }
+
     public static boolean isMarionette(LivingEntity entity) {
         MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
         return component.isMarionette();
@@ -79,19 +91,7 @@ public class MarionetteUtils {
             return;
         }
         if (!isMarionette(entity)) {
-            if(entity instanceof Player player) {
-                String playerUUID = player.getStringUUID();
-                for (ServerLevel level : player.getServer().getAllLevels()) {
-                    for (Entity e : level.getAllEntities()) {
-                        if (e instanceof LivingEntity livingEntity && isMarionette(livingEntity)) {
-                            String ownerUUID = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
-                            if (ownerUUID.equals(playerUUID)) {
-                                livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
-                            }
-                        }
-                    }
-                }
-            }
+            if (entity instanceof Player player) killControlledMarionettes(player);
             return;
         }
 

@@ -130,7 +130,7 @@ public class LastStandAbility extends SelectableAbility {
     private static boolean endures(LivingEntity living) {
         if (!BeyonderData.isBeyonder(living) || BeyonderData.getSequence(living) != 0) return false;
         String pathway = BeyonderData.getPathway(living);
-        return "mother".equals(pathway) || "darkness".equals(pathway);
+        return "mother".equals(pathway) || "darkness".equals(pathway) || "error".equals(pathway);
     }
 
     private static boolean onlyLastFight(LivingEntity entity) {

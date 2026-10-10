@@ -2,8 +2,11 @@ package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
@@ -25,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ConceptualTheftAbility extends SelectableAbility {
+    private static final int AGE = 5;
+
     public ConceptualTheftAbility(String id) {
         super(id, 10);
 
@@ -54,9 +59,31 @@ public class ConceptualTheftAbility extends SelectableAbility {
                 "ability.lotmcraft.conceptual_theft.area",
                 "ability.lotmcraft.conceptual_theft.digestion",
                 "ability.lotmcraft.conceptual_theft.spirituality",
-                "ability.lotmcraft.conceptual_theft.sanity"
+                "ability.lotmcraft.conceptual_theft.sanity",
+                "ability.lotmcraft.conceptual_theft.age"
                 //"ability.lotmcraft.conceptual_theft.luck"
         };
+    }
+
+    @Override
+    public void nextAbility(LivingEntity entity) {
+        select(entity, 1);
+    }
+
+    @Override
+    public void previousAbility(LivingEntity entity) {
+        select(entity, -1);
+    }
+
+    private void select(LivingEntity entity, int direction) {
+        if (getAbilityNames().length == 0) return;
+        int selected = selectedAbilities.getOrDefault(entity.getUUID(), 0) + direction;
+        int count = getAbilityNames().length;
+        if (selected >= count) selected = 0;
+        if (selected < 0) selected = count - 1;
+        if (BeyonderData.getSequence(entity) > 0 && selected == AGE) selected = direction > 0 ? 0 : AGE - 1;
+        selectedAbilities.put(entity.getUUID(), selected);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selected));
     }
 
     @Override
@@ -71,7 +98,9 @@ public class ConceptualTheftAbility extends SelectableAbility {
             default -> spiritualityCost = 7500;
         }
 
-        if(abilityIndex == 0 || abilityIndex == 1 || abilityIndex == 2 || abilityIndex == 4) {
+        if (abilityIndex == AGE && BeyonderData.getSequence(entity) > 0) return;
+
+        if(abilityIndex == 0 || abilityIndex == 1 || abilityIndex == 2 || abilityIndex == 4 || abilityIndex == AGE) {
             if(BeyonderData.getSpirituality(entity) < spiritualityCost) return;
             BeyonderData.reduceSpirituality(entity, spiritualityCost);
         }
@@ -82,7 +111,21 @@ public class ConceptualTheftAbility extends SelectableAbility {
             case 2 -> stealDigestion(level, entity);
             case 3 -> stealSpirituality(level, entity);
             case 4 -> stealSanity(level, entity);
+            case 5 -> stealAge(level, entity);
         }
+    }
+
+    private void stealAge(Level level, LivingEntity entity) {
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15 * (multiplier(entity) * multiplier(entity))), 1.5f);
+        if (target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.conceptual_theft.no_target").withColor(0x4742c9));
+            return;
+        }
+        if (!TwilightAging.setYears(target, TwilightAging.years(target) + 10f)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.conceptual_theft.failed.age").withColor(0x4742c9));
+            return;
+        }
+        TwilightAging.setYears(entity, TwilightAging.years(entity) - 10f);
     }
 
     private  void stealLuck(Level level, LivingEntity entity){

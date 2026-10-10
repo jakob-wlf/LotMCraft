@@ -1,7 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.server.level.ServerLevel;
@@ -65,6 +67,7 @@ public class HealingAbility extends SelectableAbility {
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
             e.setHealth(Math.min(e.getMaxHealth(), e.getHealth() + restoredHealth));
+            if (BeyonderData.getSequence(entity) <= 0) TwilightAging.setYears(e, TwilightAging.years(e) - 50f);
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), e.getEyePosition().subtract(0, .3, 0), 35, .9);
         }
     }
@@ -79,6 +82,7 @@ public class HealingAbility extends SelectableAbility {
         float restoredHealth = getAmount(entitySeq);
 
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + restoredHealth));
+        if (BeyonderData.getSequence(entity) <= 0) TwilightAging.setYears(entity, TwilightAging.years(entity) - 50f);
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), entity.getEyePosition().subtract(0, .3, 0), 35, .9);
     }

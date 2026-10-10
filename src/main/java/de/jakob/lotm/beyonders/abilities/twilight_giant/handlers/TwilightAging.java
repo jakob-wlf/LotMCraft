@@ -100,6 +100,36 @@ public final class TwilightAging {
         return entity.getPersistentData().getFloat(YEARS) > 0f;
     }
 
+    public static float years(LivingEntity entity) {
+        return entity.getPersistentData().getFloat(YEARS);
+    }
+
+    public static boolean setYears(LivingEntity entity, float years) {
+        if (years < 0f && "error".equals(BeyonderData.getPathway(entity)) && entity.isAlive() && entity.level() instanceof ServerLevel) {
+            entity.getPersistentData().putFloat(YEARS, years);
+            entity.getPersistentData().remove(RECOVER_AT);
+            entity.getPersistentData().remove(CLEAR_AT);
+            aged.add(entity.getUUID());
+            syncAgingModifier(entity, 0f);
+            if (!fading.contains(entity.getUUID())) {
+                entity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+                entity.removeEffect(MobEffects.DIG_SLOWDOWN);
+            }
+            return true;
+        }
+        if (years <= 0f) {
+            finish(entity);
+            return true;
+        }
+        if (unaging(entity) || !entity.isAlive() || !(entity.level() instanceof ServerLevel level)) return false;
+        entity.getPersistentData().putFloat(YEARS, years);
+        aged.add(entity.getUUID());
+        scheduleRecovery(entity, level.getGameTime());
+        applyDebuffs(entity, years);
+        syncAgingModifier(entity, years);
+        return true;
+    }
+
     public static void clear(LivingEntity entity) {
         finish(entity);
     }
@@ -226,6 +256,7 @@ public final class TwilightAging {
         }
         if (!(target.level() instanceof ServerLevel level) || !target.isAlive()) return;
         float years = target.getPersistentData().getFloat(YEARS);
+        if (years < 0f && "error".equals(BeyonderData.getPathway(target))) return;
         if (years <= 0f) {
             finish(target);
             return;

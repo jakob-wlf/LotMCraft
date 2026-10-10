@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
@@ -33,6 +34,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import java.util.*;
 
 public class GiftAbility extends SelectableAbility {
+    private static final int AGE = 5;
+
     public GiftAbility(String id) {
         super(id, 1f);
         canBeUsedByNPC = false;
@@ -62,7 +65,8 @@ public class GiftAbility extends SelectableAbility {
                 "ability.lotmcraft.gift_ability.distance",
                 "ability.lotmcraft.gift_ability.health",
                 "ability.lotmcraft.gift_ability.digestion",
-                "ability.lotmcraft.gift_ability.luck"
+                "ability.lotmcraft.gift_ability.luck",
+                "ability.lotmcraft.gift_ability.age"
         };
     }
 
@@ -87,6 +91,7 @@ public class GiftAbility extends SelectableAbility {
                 || (entitySeq > 1 && selectedAbility >= 3)){
             selectedAbility = 0;
         }
+        if (BeyonderData.getSequence(entity) > 0 && selectedAbility == AGE) selectedAbility = 0;
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
@@ -112,6 +117,7 @@ public class GiftAbility extends SelectableAbility {
                 || (entitySeq > 1 && selectedAbility >= 3)){
             selectedAbility = 0;
         }
+        if (BeyonderData.getSequence(entity) > 0 && selectedAbility == AGE) selectedAbility = AGE - 1;
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
@@ -125,7 +131,25 @@ public class GiftAbility extends SelectableAbility {
             case 2 -> giftHealth(level, entity);
             case 3 -> giftDigestion(level, entity);
             case 4 -> giftLuck(level, entity);
+            case 5 -> giftAge(level, entity);
         }
+    }
+
+    private void giftAge(Level level, LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        if (BeyonderData.getSequence(entity) > 0) return;
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
+        if (target == null) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.no_target").withColor(0x6d32a8));
+            return;
+        }
+        float targetYears = TwilightAging.years(target);
+        if (targetYears < 10f || !TwilightAging.setYears(entity, TwilightAging.years(entity) + 10f)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.gift.failed").withColor(0x6d32a8));
+            return;
+        }
+        TwilightAging.setYears(target, targetYears - 10f);
+        EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
     }
 
     private void giftLuck(Level level, LivingEntity entity){

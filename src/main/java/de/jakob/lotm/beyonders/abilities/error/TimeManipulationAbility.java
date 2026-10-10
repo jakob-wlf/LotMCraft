@@ -15,8 +15,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class TimeManipulationAbility extends SelectableAbility {
+    private static final int DURATION = 20 * 10;
+    private static final Map<UUID, Long> accelerateUntil = new HashMap<>();
     public TimeManipulationAbility(String id) {
         super(id, 17);
 
@@ -59,8 +62,19 @@ public class TimeManipulationAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.getEyePosition(), 100, 10, 2, 10, 0.05);
 
         float timeMultiplier = selectedAbility == 0 ? 0.001f : (selectedAbility == 1 ? 4f : 0.2f);
-        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 10, entity.getUUID(), 50, timeMultiplier);
+        if (selectedAbility == 1) accelerateUntil.put(entity.getUUID(), level.getGameTime() + DURATION);
+        TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, DURATION, entity.getUUID(), 50, timeMultiplier);
         timeChangeEntity.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(timeChangeEntity);
+    }
+
+    public static boolean accelerates(LivingEntity entity) {
+        Long until = accelerateUntil.get(entity.getUUID());
+        if (until == null) return false;
+        if (entity.level().getGameTime() >= until) {
+            accelerateUntil.remove(entity.getUUID());
+            return false;
+        }
+        return true;
     }
 }
