@@ -36,10 +36,7 @@ public class MarionetteUtils {
         Player owner = ownerOf(hit);
         if (owner == null) return;
         if (BeyonderData.getSequence(owner, false, true) < BeyonderData.getSequence(sun, false, true)) return;
-        int sequence = BeyonderData.getSequence(sun, false, true);
-        if (sequence <= 1) killControlledMarionettes(owner);
-        else if (sequence == 2) harmControlledMarionettes(owner, 0.5f);
-        else if (sequence == 3) harmControlledMarionettes(owner, 0.35f);
+        killControlledMarionettes(owner);
     }
 
     public static void killFromSunAround(LivingEntity sun, ServerLevel level, Vec3 center, double radius) {
@@ -84,30 +81,6 @@ public class MarionetteUtils {
             String ownerUUID = controlled.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
             if (!playerUUID.equals(ownerUUID)) continue;
             ControllingUtils.cancel(other, 0f, true, true);
-        }
-    }
-
-    private static void harmControlledMarionettes(Player player, float fraction) {
-        if (!(player.level() instanceof ServerLevel) || player.getServer() == null) return;
-        String playerUUID = player.getStringUUID();
-        for (ServerLevel level : player.getServer().getAllLevels()) {
-            for (Entity e : level.getAllEntities()) {
-                if (!(e instanceof LivingEntity livingEntity) || !isMarionette(livingEntity)) continue;
-                String ownerUUID = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
-                if (!playerUUID.equals(ownerUUID)) continue;
-                livingEntity.invulnerableTime = 0;
-                livingEntity.hurt(livingEntity.damageSources().generic(), livingEntity.getMaxHealth() * fraction);
-            }
-        }
-        for (ServerPlayer other : player.getServer().getPlayerList().getPlayers()) {
-            EntityControllingComponent controlling = other.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
-            if (!controlling.isControlling()) continue;
-            LivingEntity controlled = controlling.getControlledEntity();
-            if (controlled == null || !isMarionette(controlled)) continue;
-            String ownerUUID = controlled.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
-            if (!playerUUID.equals(ownerUUID)) continue;
-            other.invulnerableTime = 0;
-            other.hurt(other.damageSources().generic(), other.getMaxHealth() * fraction);
         }
     }
 

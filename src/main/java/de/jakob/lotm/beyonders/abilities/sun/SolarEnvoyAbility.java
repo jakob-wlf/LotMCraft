@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -114,7 +113,6 @@ public class SolarEnvoyAbility extends ToggleAbility {
         // Damage entities
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* multiplier(entity),  baseDamage/2, entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity));
         AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* multiplier(entity),  baseDamage/2, entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.FAITH, entity));
-        MarionetteUtils.killFromSunAround(entity, (ServerLevel) level, entity.position(), 37 * multiplier(entity));
 
         // Particles
         ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.position(), 2.6, 60);

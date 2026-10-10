@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
@@ -87,10 +86,7 @@ public class UnshadowedDomainAbility extends Ability {
             AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 40)
                     .stream()
                     .filter(e -> (AbilityUtil.isUndeadOrEvil(e)) && (e != null))
-                    .forEach(e -> {
-                        e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity),  baseDamage);
-                        MarionetteUtils.killFromSun(entity, e);
-                    });
+                    .forEach(e -> e.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity),  baseDamage));
         }, () -> blocks.forEach(b -> {
             BlockState state = level.getBlockState(b);
             if(state.is(Blocks.LIGHT))

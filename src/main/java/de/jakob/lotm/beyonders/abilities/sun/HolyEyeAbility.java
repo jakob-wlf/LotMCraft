@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -58,7 +57,6 @@ public class HolyEyeAbility extends ToggleAbility {
 
         if(target != null && AbilityUtil.isUndeadOrEvil(target)) {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity),  baseDamage);
-            MarionetteUtils.killFromSun(entity, target);
         }
 
     }

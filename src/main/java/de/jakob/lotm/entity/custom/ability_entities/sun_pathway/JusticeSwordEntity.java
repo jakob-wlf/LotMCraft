@@ -2,7 +2,6 @@ package de.jakob.lotm.entity.custom.ability_entities.sun_pathway;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -138,10 +137,8 @@ public class JusticeSwordEntity extends Entity {
             playHitAnimation();
 
             if(!level().isClientSide()) {
-                LivingEntity owner = getOwner((ServerLevel) level());
-                AbilityUtil.damageNearbyEntities((ServerLevel) level(), owner, 3.75f, ModDamageTypes.ORDER, getDamage()/2, position(), true, false, true, 0);
-                AbilityUtil.damageNearbyEntities((ServerLevel) level(), owner, 3.75f, ModDamageTypes.LIGHT, getDamage()/2, position(), true, false, true, 0);
-                if (owner != null) MarionetteUtils.killFromSunAround(owner, (ServerLevel) level(), position(), 3.75f);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.ORDER, getDamage()/2, position(), true, false, true, 0);
+                AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner((ServerLevel) level()), 3.75f, ModDamageTypes.LIGHT, getDamage()/2, position(), true, false, true, 0);
 
                 postAbilityUsedEvent(position());
             }

@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -79,7 +78,6 @@ public class WallOfLightAbility extends Ability {
                     ParticleUtil.spawnParticles((ServerLevel) level, random.nextBoolean() ? dust : ParticleTypes.END_ROD, pos.getCenter(), 1, 0.5, 0.02);
 
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1.2f, ModDamageTypes.LIGHT, baseDamage , pos.getCenter(), true, false, false, 15);
-                MarionetteUtils.killFromSunAround(entity, (ServerLevel) level, pos.getCenter(), 1.2f);
 
                 for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, pos.getCenter(), 1f)) {
                     Vec3 knockback = target.position().subtract(pos.getCenter()).normalize().add(0, .2, 0).scale(1.4f);

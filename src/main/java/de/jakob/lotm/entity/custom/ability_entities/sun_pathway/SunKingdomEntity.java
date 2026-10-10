@@ -2,7 +2,6 @@ package de.jakob.lotm.entity.custom.ability_entities.sun_pathway;
 
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -112,9 +111,7 @@ public class SunKingdomEntity extends Entity {
             }
 
             if(BeyonderData.isEvilPathway(e)){
-                LivingEntity caster = getCasterEntity();
-                e.hurt(ModDamageTypes.source(level(), ModDamageTypes.PURIFICATION, caster), damage);
-                if (caster != null) MarionetteUtils.killFromSun(caster, e);
+                e.hurt(ModDamageTypes.source(level(), ModDamageTypes.PURIFICATION, getCasterEntity()), damage);
             }
         });
     }
