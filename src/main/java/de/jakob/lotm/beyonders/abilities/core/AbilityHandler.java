@@ -86,14 +86,18 @@ public class AbilityHandler {
 
         // TYRANT PATHWAY
         abilities.add(new IllusoryScalesAbility("illusory_scales_ability"));
+        abilities.add(new PerfectBalanceAbility("perfect_balance_ability"));
         abilities.add(new WrathAbility("wrath_ability"));
         abilities.add(new RagingBlowsAbility("raging_blows_ability"));
         abilities.add(new WaterManipulationAbility("water_manipulation_ability"));
         abilities.add(new WindManipulationAbility("wind_manipulation_ability"));
+        abilities.add(new FloatAbility("float_ability"));
+        abilities.add(new FloatingWindAbility("floating_wind_ability"));
         abilities.add(new BlessingsOfWIndAbility("blessings_of_wind_ability"));
         abilities.add(new LightningAbility("lightning_ability"));
         abilities.add(new SirenSongAbility("siren_song_ability"));
         abilities.add(new StrongLightningAbility("strong_lightning_ability"));
+        abilities.add(new ScaleArmorAbility("scale_armor_ability"));
         abilities.add(new TsunamiAbility("tsunami_ability"));
         abilities.add(new EarthquakeAbility("earthquake_ability"));
         abilities.add(new HurricaneAbility("hurricane_ability"));

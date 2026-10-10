@@ -10,6 +10,8 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class SirenSongAbility extends SelectableAbility {
+    private static final int TOTAL_SUB_ABILITIES = 3;
     public SirenSongAbility(String id) {
         super(id, 45);
     }
@@ -45,7 +48,31 @@ public class SirenSongAbility extends SelectableAbility {
                 "ability.lotmcraft.siren_song.strengthening_melody",
                 "ability.lotmcraft.siren_song.dazing_song"};
     }
+    @Override
+    public void nextAbility(LivingEntity entity) {
+        cycleToUnlocked(entity, 1);
+    }
+    private void cycleToUnlocked(LivingEntity entity, int step) {
+        int length = getAbilityNames().length;
+        if (length == 0) return;
 
+        int selected = selectedAbilities.getOrDefault(entity.getUUID(), 0);
+        for (int i = 0; i < length; i++) {
+            selected = Math.floorMod(selected + step, length);
+            if (isSubAbilityUnlocked(entity, selected)) break;
+        }
+        selectedAbilities.put(entity.getUUID(), selected);
+        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selected));
+    }
+    public boolean isSubAbilityUnlocked(LivingEntity entity, int index) {
+        int seq = AbilityUtil.getSeqWithArt(entity, this);
+        if (seq <= 4) return true;
+        if (seq == 5) return index == getSeq5SubAbility(entity);
+        return false;
+    }
+    private static int getSeq5SubAbility(LivingEntity entity) {
+        return Math.floorMod(entity.getUUID().hashCode(), TOTAL_SUB_ABILITIES);
+    }
     @Override
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide)
