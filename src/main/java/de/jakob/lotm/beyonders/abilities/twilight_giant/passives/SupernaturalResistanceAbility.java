@@ -18,9 +18,6 @@ import java.util.Map;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SupernaturalResistanceAbility extends PassiveAbility {
 
-    private static final float BASE_RESISTANCE = 0.30f;
-    private static final float RESISTANCE_PER_SEQUENCE = 0.15f;
-
     private static SupernaturalResistanceAbility instance;
 
     public SupernaturalResistanceAbility(String id) {
@@ -43,12 +40,26 @@ public class SupernaturalResistanceAbility extends PassiveAbility {
         if (instance == null || target.level().isClientSide()) return;
         DamageSource source = event.getSource();
         if (!isSupernatural(source) || !instance.shouldApplyTo(target)) return;
-        float resistance = BASE_RESISTANCE;
+        float resistance = reduction(BeyonderData.getSequence(target));
         if (source.getEntity() instanceof LivingEntity attacker && attacker != target) {
-            resistance += (BeyonderData.getSequence(target) <= 0 ?RESISTANCE_PER_SEQUENCE *2.5f : RESISTANCE_PER_SEQUENCE ) * (BeyonderData.getSequence(attacker) - BeyonderData.getSequence(target));
+            resistance += 0.15F * (BeyonderData.getSequence(attacker) - BeyonderData.getSequence(target));
         }
-        resistance = Mth.clamp(resistance, 0f, 1f);
+        resistance = Mth.clamp(resistance, 0F, 1F);
         if (resistance > 0f) event.setAmount(event.getAmount() * (1f - resistance));
+    }
+
+    private static float reduction(int sequence) {
+        return switch (sequence) {
+            case 0 -> 0.85F;
+            case 1 -> 0.75F;
+            case 2 -> 0.70F;
+            case 3 -> 0.65F;
+            case 4 -> 0.55F;
+            case 5 -> 0.45F;
+            case 6 -> 0.40F;
+            case 7 -> 0.35F;
+            default -> 0.30F;
+        };
     }
 
     public static boolean isSupernatural(DamageSource source) {

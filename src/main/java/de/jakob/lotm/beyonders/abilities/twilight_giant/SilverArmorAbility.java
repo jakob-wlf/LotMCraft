@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -34,7 +36,6 @@ public class SilverArmorAbility extends ToggleAbility {
 
 
 
-    private static final double TOUGHNESS = 3.0D;
     private static final double KNOCKBACK_RESISTANCE = 0.1D;
     private static final int HIGH_TIER_CHARGES = 3;
     private static final float HIGH_TIER_REDUCTION = 0.5f;
@@ -62,10 +63,11 @@ public class SilverArmorAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if (!(entity instanceof Player player)) return;
         charges.put(player.getUUID(), HIGH_TIER_CHARGES);
-        equip(player, EquipmentSlot.HEAD, piece(Items.IRON_HELMET, ArsenalOfDawnAbility.SILVER_HELMET, 3, EquipmentSlotGroup.HEAD));
-        equip(player, EquipmentSlot.CHEST, piece(Items.IRON_CHESTPLATE, ArsenalOfDawnAbility.SILVER_CHESTPLATE, 8, EquipmentSlotGroup.CHEST));
-        equip(player, EquipmentSlot.LEGS, piece(Items.IRON_LEGGINGS, ArsenalOfDawnAbility.SILVER_LEGGINGS, 6, EquipmentSlotGroup.LEGS));
-        equip(player, EquipmentSlot.FEET, piece(Items.IRON_BOOTS, ArsenalOfDawnAbility.SILVER_BOOTS, 3, EquipmentSlotGroup.FEET));
+        float reduction = reduction(BeyonderData.getSequence(player));
+        equip(player, EquipmentSlot.HEAD, piece(Items.IRON_HELMET, ArsenalOfDawnAbility.SILVER_HELMET, reduction, EquipmentSlotGroup.HEAD));
+        equip(player, EquipmentSlot.CHEST, piece(Items.IRON_CHESTPLATE, ArsenalOfDawnAbility.SILVER_CHESTPLATE, reduction, EquipmentSlotGroup.CHEST));
+        equip(player, EquipmentSlot.LEGS, piece(Items.IRON_LEGGINGS, ArsenalOfDawnAbility.SILVER_LEGGINGS, reduction, EquipmentSlotGroup.LEGS));
+        equip(player, EquipmentSlot.FEET, piece(Items.IRON_BOOTS, ArsenalOfDawnAbility.SILVER_BOOTS, reduction, EquipmentSlotGroup.FEET));
         if (level instanceof ServerLevel serverLevel) {
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.WHITE_ASH, player.position().add(0, 1, 0), 60, 0.5, 0.9, 0.5, 0.05);
         }
@@ -94,13 +96,24 @@ public class SilverArmorAbility extends ToggleAbility {
         target.level().playSound(null, target.blockPosition(), SoundEvents.ANVIL_LAND, target.getSoundSource(), 0.6f, 1.6f);
     }
 
-    private static ItemStack piece(Item base, String kind, double armor, EquipmentSlotGroup slot) {
+    private static float reduction(int sequence) {
+        return switch (Math.min(Math.max(sequence, 0), 3)) {
+            case 0 -> 0.60F;
+            case 1 -> 0.50F;
+            case 2 -> 0.45F;
+            default -> 0.35F;
+        };
+    }
+
+    private static ItemStack piece(Item base, String kind, float reduction, EquipmentSlotGroup slot) {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-                .add(Attributes.ARMOR, new AttributeModifier(id(kind, "armor"), armor, AttributeModifier.Operation.ADD_VALUE), slot)
-                .add(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(id(kind, "toughness"), TOUGHNESS, AttributeModifier.Operation.ADD_VALUE), slot)
+                .add(Attributes.ARMOR, new AttributeModifier(id(kind, "armor"), 0, AttributeModifier.Operation.ADD_VALUE), slot)
                 .add(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(id(kind, "knockback"), KNOCKBACK_RESISTANCE, AttributeModifier.Operation.ADD_VALUE), slot)
-                .build();
-        return ArsenalOfDawnAbility.create(base, kind, modifiers);
+                .build()
+                .withTooltip(false);
+        ItemStack stack = ArsenalOfDawnAbility.create(base, kind, modifiers);
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putFloat(ArsenalOfDawnAbility.REDUCTION_TAG, reduction));
+        return stack;
     }
 
     private static ResourceLocation id(String kind, String attribute) {
