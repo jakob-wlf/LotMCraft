@@ -6,6 +6,7 @@ import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
@@ -119,6 +120,7 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
         // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, livingOwner), (float) damage);
+            MarionetteUtils.killFromSun(livingOwner, target);
         } else {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT), (float) damage);
         }

@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -107,7 +106,5 @@ public class SpiritualBaptismAbility extends SelectableAbility {
         SanityComponent sanityComponent = target.getData(ModAttachments.SANITY_COMPONENT);
         sanityComponent.increaseSanityWithSequenceDifference(.15f, target, AbilityUtil.getSeqWithArt(caster, this), BeyonderData.getSequence(target));
         target.getData(ModAttachments.COOLDOWN_COMPONENT).removeAllCooldowns();
-        if (MarionetteUtils.isMarionette(target)) target.hurt(target.damageSources().generic(), Float.MAX_VALUE);
-        if (target instanceof Player player) MarionetteUtils.killControlledMarionettes(player);
     }
 }

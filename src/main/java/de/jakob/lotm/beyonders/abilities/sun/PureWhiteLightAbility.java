@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.sun;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -89,6 +90,7 @@ public class PureWhiteLightAbility extends Ability {
             AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.PURIFICATION, baseDamage * 0.34, finalTargetLoc, true, false, false, 10);
             AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.LIGHT, baseDamage * 0.33, finalTargetLoc, true, false, false, 10);
             AbilityUtil.damageNearbyEntities(serverLevel, entity, radius.get(), ModDamageTypes.FAITH, baseDamage * 0.33, finalTargetLoc, true, false, false, 10);
+            MarionetteUtils.killFromSunAround(entity, serverLevel, finalTargetLoc, radius.get());
 
             radius.addAndGet(0.8);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));

@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.projectiles;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
@@ -115,8 +116,12 @@ public class SpearOfLightProjectileEntity extends AbstractArrow {
             return;
         }
 
-        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, owner), (float) damage);
-        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION), (float) damage);
+        if(owner != null) {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, owner), (float) damage);
+            MarionetteUtils.killFromSun(owner, target);
+        } else {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION), (float) damage);
+        }
 
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 8, 10, false, false, false));
 

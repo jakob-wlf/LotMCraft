@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.sun;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunEntity;
@@ -102,6 +103,7 @@ public class FlaringSunAbility extends Ability {
 
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 24* multiplier(entity), baseDamage/2, targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, entity));
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 24* multiplier(entity), baseDamage/2, targetPos, true, false, 20 * 4, ModDamageTypes.source(level, ModDamageTypes.FAITH, entity));
+                MarionetteUtils.killFromSunAround(entity, (ServerLevel) level, targetPos, 24 * multiplier(entity));
             }
             else {
                 ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.SMOKE, startPos, 5.65f, 300);
