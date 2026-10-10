@@ -12,7 +12,6 @@ import de.jakob.lotm.beyonders.abilities.door.PlayerTeleportationAbility;
 import de.jakob.lotm.beyonders.abilities.door.TeleportationAuthorityAbility;
 import de.jakob.lotm.beyonders.abilities.door.TravelersDoorAbility;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
-import de.jakob.lotm.beyonders.abilities.error.TimeManipulationAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.EnvisionPositionAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
@@ -387,7 +386,6 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     private static boolean stopped(LivingEntity entity) {
         if (spared(entity)) return false;
         if (swordStopUntil.getOrDefault(entity.getUUID(), 0L) > entity.level().getGameTime()) return true;
-        if (TimeManipulationAbility.accelerates(entity)) return false;
         return fieldAt(entity, true) != null;
     }
 
@@ -496,7 +494,6 @@ public class TwilightAuthorityAbility extends SelectableAbility {
 
     private static boolean isEscape(LivingEntity caster, Ability ability) {
         if (ability instanceof ExileAbility || ability instanceof BlinkAbility || ability instanceof PlayerTeleportationAbility || ability instanceof TravelersDoorAbility || ability instanceof TeleportationAuthorityAbility || ability instanceof EnvisionPositionAbility) return true;
-        if (ability instanceof TimeManipulationAbility time && time.getSelectedAbilityIndex(caster.getUUID()) == 1) return true;
         if (ability instanceof DeceitAbility deceit && deceit.getSelectedAbilityIndex(caster.getUUID()) == 1) return true;
         for (String flag : ability.getInteractionFlags()) {
             if (flag.equals("blink_escape") || flag.equals("escape")) return true;
