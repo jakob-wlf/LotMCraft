@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:cobweb"
+    lotmcraft,
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.5
+    lotmcraft
+  ],
+  "table": "lotmcraft:ingredients/string_grass_powder"
+lotmcraft

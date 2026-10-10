@@ -3,14 +3,14 @@
   "category": "misc",
   "ingredients": [
     {
-      "item": "minecraft:book"
+      "item": "lotmcraft:distilled_liquor"
     },
     {
-      "item": "minecraft:amethyst_shard"
+      "item": "minecraft:blaze_powder"
     }
   ],
   "result": {
-    "count": 1,
-    "id": "lotmcraft:guiding_book"
+    "id": "lotmcraft:strong_liquor",
+    "count": 1
   }
 }

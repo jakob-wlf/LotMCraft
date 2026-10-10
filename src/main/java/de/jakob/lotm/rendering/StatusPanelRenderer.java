@@ -26,6 +26,9 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class StatusPanelRenderer {
 
+    private static final ResourceLocation GRIEFING_ICON =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/griefing_icon.png");
+    private static final int GRIEFING_RING_COLOR = 0xFFC0392B;
     
     public static final HashSet<String> activeToggleAbilities = new HashSet<>();
 
@@ -95,14 +98,25 @@ public class StatusPanelRenderer {
         
         renderMedallion(g, mc, ORIGIN_X, ORIGIN_Y, sequence, time);
 
-        
+
+        float dialAlpha = 0f;
         if (sanityTarget <= 0.99f || smoothSanity <= 0.99f) {
-            float alpha = HudTheme.smoothstep((1 - smoothSanity) / 0.05f);
+            dialAlpha = HudTheme.smoothstep((1 - smoothSanity) / 0.05f);
             int dialX = tubeX + TUBE_W - 8;
             int dialY = ORIGIN_Y + (MEDALLION_SIZE - DIAL_SIZE) / 2;
-            HudWidgets.drawDial(g, dialX, dialY, DIAL_SIZE, smoothSanity, time, alpha);
+            HudWidgets.drawDial(g, dialX, dialY, DIAL_SIZE, smoothSanity, time, dialAlpha);
         }
 
+        if (BeyonderData.isGriefingEnabled(mc.player)) {
+            int baseX = tubeX + TUBE_W + 2;
+            int gx = baseX + Math.round((DIAL_SIZE - 8) * dialAlpha);
+            int gy = ORIGIN_Y + (MEDALLION_SIZE - SOCKET_SIZE) / 2;
+
+            HudWidgets.blitFull(g, HudTheme.SOCKET, gx, gy, SOCKET_SIZE, SOCKET_SIZE);
+            int iconSize = Math.round(SOCKET_SIZE * 0.62f);
+            int off = (SOCKET_SIZE - iconSize) / 2;
+            HudWidgets.drawIcon(g, GRIEFING_ICON, gx + off, gy + off, iconSize);
+        }
         
         renderFuse(g, tubeX + 4, tubeY + TUBE_H + 2, TUBE_W - 8, time);
 
