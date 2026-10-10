@@ -27,7 +27,6 @@ public abstract class ToggleAbility extends Ability {
     protected ToggleAbility(String id, String... interactionFlags) {
         super(id, 0, interactionFlags);
 
-        canBeUsedByNPC = false;
         doesNotIncreaseDigestion = true;
     }
 
@@ -41,8 +40,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.putIfAbsent(entity.getUUID(), new HashSet<>());
             activeAbilities.get(entity.getUUID()).add(this);
             start(level, entity);
-            if(entity instanceof ServerPlayer player)
-                PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()));
+            PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()), (ServerLevel) level);
             return;
         }
 
@@ -54,8 +52,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.get(entity.getUUID()).remove(this);
         }
         stop(level, entity);
-        if(entity instanceof ServerPlayer player)
-            PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()));
+        PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()), level);
     }
 
     public static void cleanUp(ServerLevel serverLevel, LivingEntity entity) {

@@ -105,7 +105,7 @@ public class KnowledgeRecipe extends CustomRecipe {
         if (recipeItem == null || recipeItem.getRecipe() == null || ingredients.size() != 3) return ItemStack.EMPTY;
 
         for (int main = 0; main < 3; main++) {
-            BeyonderPotion potion = PotionRecipes.getByIngredients(ingredients.get((main + 1) % 3), ingredients.get((main + 2) % 3), ingredients.get(main));
+            BeyonderPotion potion = PotionRecipes.getByIngredients(List.of(ingredients.get((main + 1) % 3), ingredients.get((main + 2) % 3)), ingredients.get(main));
             if (potion == null) continue;
             BeyonderPotion expected = recipeItem.getRecipe().potion();
             if (expected.getSequence() != potion.getSequence() || !expected.getPathway().equals(potion.getPathway())) continue;

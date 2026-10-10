@@ -1,0 +1,227 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:moonstone",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lapis_lazuli",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_left_by_a_mist_watcher",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_watcher_crystal",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_watcher_eyelid",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:illusion_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:powder_of_dazzling_soul",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_sunflower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:meteorite_crystal",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:droplet_gem_powder",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dust_of_a_lake_spirit",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:gold",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mercury",
+          "weight": 3
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:moonstone",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lapis_lazuli",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_left_by_a_mist_watcher",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_watcher_crystal",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_watcher_eyelid",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:illusion_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:powder_of_dazzling_soul",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_sunflower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:meteorite_crystal",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:droplet_gem_powder",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dust_of_a_lake_spirit",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:gold",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mercury",
+          "weight": 3
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:moonstone",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lapis_lazuli",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_left_by_a_mist_watcher",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_watcher_crystal",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_watcher_eyelid",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:illusion_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:powder_of_dazzling_soul",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_sunflower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:meteorite_crystal",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:droplet_gem_powder",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dust_of_a_lake_spirit",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:gold",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mercury",
+          "weight": 3
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

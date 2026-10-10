@@ -24,6 +24,7 @@ import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerSefirotPacket;
+import de.jakob.lotm.network.packets.toClient.SyncPreLoadGamerulePacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -115,6 +116,7 @@ public class PlayerEvents {
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
+            PacketHandler.sendToPlayer(player, new SyncPreLoadGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.PRE_LOAD_EFFECTS)));
 
             if(player instanceof ServerPlayer serverPlayer) {
                 AllyUtil.syncAllyData(serverPlayer);
@@ -130,16 +132,8 @@ public class PlayerEvents {
             }
 
             AttributeInstance attribute = player.getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
-            if (attribute != null) {
-                if (attribute.getValue() != 0) {
-                    attribute.setBaseValue(0);
-
-                    if (player.getServer() != null) {
-                        player.getServer().getPlayerList().broadcastAll(
-                                new ClientboundPlayerInfoRemovePacket(List.of(player.getUUID()))
-                        );
-                    }
-                }
+            if (attribute != null && attribute.getValue() != 0) {
+                attribute.setBaseValue(0);
             }
 
             if(!AbilityUtil.invul.containsKey(player.getUUID())){

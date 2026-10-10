@@ -1,0 +1,20 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:dead_bush"
+    },
+    {
+      "condition": "minecraft:location_check",
+      "predicate": {
+        "biomes": "#minecraft:is_badlands"
+      }
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.08
+    }
+  ],
+  "table": "lotmcraft:ingredients/redcrown_balsam_powder"
+}

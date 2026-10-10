@@ -1,0 +1,23 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:poppy"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:red_tulip"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.2
+    }
+  ],
+  "table": "lotmcraft:ingredients/dragon_blood_grass_powder"
+}

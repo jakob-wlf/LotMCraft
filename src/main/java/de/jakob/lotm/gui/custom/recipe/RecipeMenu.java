@@ -14,16 +14,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecipeMenu extends AbstractContainerMenu {
+    public static final int SUPPLEMENTARY_COUNT = 4;
+    public static final int MAIN_SLOT = 4;
+    public static final int SLOT_COUNT = SUPPLEMENTARY_COUNT + 1;
+
+    public static final int[][] SLOT_POS = {
+            {34, 40}, {70, 40}, {106, 40}, {142, 40},   // supplementary 1-4
+            {88, 92}                                    // main
+    };
+
     private final ItemStackHandler itemHandler;
 
-    // Client-side constructor
     public RecipeMenu(int containerId, Inventory playerInventory, FriendlyByteBuf ignored) {
         this(new ArrayList<>(List.of()), containerId, playerInventory);
     }
-    // Server-side constructor
+
     public RecipeMenu(List<ItemStack> ingredients, int containerId, Inventory playerInventory) {
         super(ModMenuTypes.RECIPE_MENU.get(), containerId);
-        this.itemHandler = new ItemStackHandler(3) {
+        this.itemHandler = new ItemStackHandler(SLOT_COUNT) {
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
                 return false;
@@ -35,11 +43,11 @@ public class RecipeMenu extends AbstractContainerMenu {
             }
         };
 
-        this.addSlot(new SlotItemHandler(itemHandler, 0, 61, 49));
-        this.addSlot(new SlotItemHandler(itemHandler, 1, 133, 49));
-        this.addSlot(new SlotItemHandler(itemHandler, 2, 98, 91));
+        for (int i = 0; i < SLOT_COUNT; i++) {
+            this.addSlot(new SlotItemHandler(itemHandler, i, SLOT_POS[i][0], SLOT_POS[i][1]));
+        }
 
-        if(!ingredients.isEmpty()) {
+        if (!ingredients.isEmpty()) {
             int size = Math.min(ingredients.size(), itemHandler.getSlots());
 
             for (int i = 0; i < size; i++) {
@@ -52,7 +60,7 @@ public class RecipeMenu extends AbstractContainerMenu {
     public @NotNull ItemStack quickMoveStack(Player player, int index) {
         return ItemStack.EMPTY;
     }
-    
+
     @Override
     public boolean stillValid(Player player) {
         return true;

@@ -1,10 +1,8 @@
 package de.jakob.lotm.block.entity;
 
+import de.jakob.lotm.beyonders.potions.*;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronMenu;
-import de.jakob.lotm.beyonders.potions.BeyonderPotion;
-import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
-import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -29,22 +27,32 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvider {
-    public final ItemStackHandler itemHandler = new ItemStackHandler(5) {
+    private static final int SLOT_COUNT = 7;
+
+    private static final int INPUT_SLOT_SUPP_1 = 5;
+    private static final int INPUT_SLOT_SUPP_2 = 0;
+    private static final int INPUT_SLOT_SUPP_3 = 1;
+    private static final int INPUT_SLOT_SUPP_4 = 6;
+    private static final int[] SUPPLEMENTARY_SLOTS = {
+            INPUT_SLOT_SUPP_1, INPUT_SLOT_SUPP_2, INPUT_SLOT_SUPP_3, INPUT_SLOT_SUPP_4
+    };
+    private static final int INPUT_SLOT_MAIN = 2;
+    private static final int INPUT_SLOT_RECIPE = 4;
+    private static final int OUTPUT_SLOT = 3;
+
+    public final ItemStackHandler itemHandler = new ItemStackHandler(SLOT_COUNT) {
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
-            if(!level.isClientSide()) {
+            if(level != null && !level.isClientSide()) {
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
             }
         }
     };
-
-    private static final int INPUT_SLOT_SUPP_1 = 0;
-    private static final int INPUT_SLOT_SUPP_2 = 1;
-    private static final int INPUT_SLOT_MAIN = 2;
-    private static final int INPUT_SLOT_RECIPE = 4;
-    private static final int OUTPUT_SLOT = 3;
 
     protected final ContainerData data;
     private int progress = 0;
@@ -70,7 +78,6 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
                 }
             }
 
-            //how many variables get saved in the data (progress + maxProgress) (I would 100% forget this without having written that comment :))
             @Override
             public int getCount() {
                 return 2;
@@ -113,8 +120,9 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
     protected void loadAdditional(CompoundTag pTag, HolderLookup.Provider pRegistries) {
         super.loadAdditional(pTag, pRegistries);
 
-        CompoundTag inv = pTag.getCompound("inventory");
-        if (inv.contains("Size") && inv.getInt("Size") == itemHandler.getSlots()) {
+        if (pTag.contains("inventory")) {
+            CompoundTag inv = pTag.getCompound("inventory").copy();
+            inv.putInt("Size", itemHandler.getSlots());
             itemHandler.deserializeNBT(pRegistries, inv);
         }
 
@@ -151,18 +159,30 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
         }
     }
 
-    private void craftItem() {
-        BeyonderPotion potion = PotionRecipes.getByIngredients(
-                itemHandler.getStackInSlot(INPUT_SLOT_SUPP_1),
-                itemHandler.getStackInSlot(INPUT_SLOT_SUPP_2),
+    @Nullable
+    private BeyonderPotion findPotion() {
+        List<ItemStack> supplementaryStacks = new ArrayList<>();
+        for (int slot : SUPPLEMENTARY_SLOTS) {
+            ItemStack stack = itemHandler.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                supplementaryStacks.add(stack);
+            }
+        }
+        return PotionRecipes.getByIngredients(
+                supplementaryStacks,
                 itemHandler.getStackInSlot(INPUT_SLOT_MAIN)
         );
+    }
+
+    private void craftItem() {
+        BeyonderPotion potion = findPotion();
 
         if(potion == null)
             return;
 
-        itemHandler.setStackInSlot(INPUT_SLOT_SUPP_1, ItemStack.EMPTY);
-        itemHandler.setStackInSlot(INPUT_SLOT_SUPP_2, ItemStack.EMPTY);
+        for (int slot : SUPPLEMENTARY_SLOTS) {
+            itemHandler.setStackInSlot(slot, ItemStack.EMPTY);
+        }
         itemHandler.setStackInSlot(INPUT_SLOT_MAIN, ItemStack.EMPTY);
 
         if(BeyonderData.playerMap.check(potion.getPathway(), potion.getSequence()))
@@ -183,11 +203,7 @@ public class BrewingCauldronBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private boolean hasRecipe() {
-        BeyonderPotion potion = PotionRecipes.getByIngredients(
-                itemHandler.getStackInSlot(INPUT_SLOT_SUPP_1),
-                itemHandler.getStackInSlot(INPUT_SLOT_SUPP_2),
-                itemHandler.getStackInSlot(INPUT_SLOT_MAIN)
-        );
+        BeyonderPotion potion = findPotion();
 
         if (itemHandler.getStackInSlot(INPUT_SLOT_MAIN)
                 .getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)

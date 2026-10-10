@@ -1,5 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
+import com.lowdragmc.lowdraglib2.editor.resource.IResourcePath;
+import com.lowdragmc.photon.client.postfx.PhotonPostFX;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -7,6 +9,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import de.jakob.lotm.network.packets.toClient.SyncSpiritVisionAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -44,6 +47,7 @@ public class SpiritVisionAbility extends ToggleAbility {
         canBeReplicated = false;
         canBeUsedInArtifact = false;
         autoClear = false;
+        tickRate = 1;
     }
 
     @Override
@@ -102,6 +106,8 @@ public class SpiritVisionAbility extends ToggleAbility {
             if (VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), lookedAt))
                 return;
         }
+
+        PacketHandler.sendToPlayer(player, new PlayPhotonEntityEffectPacket("spirit_vision", player.getId(), 0, 0, 0, 1, null, true, true));
 
         PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
         AllyComponent allyComponent = entity.getData(ModAttachments.ALLY_COMPONENT);

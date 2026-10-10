@@ -563,19 +563,24 @@ public class ClientHandler {
             return;
         }
 
-        if(entity != Minecraft.getInstance().player) return;
+
 
         switch (packet.action()) {
             case 0 -> {
+                toggleAbility.updateClientCache(living, true);
+                if(entity != Minecraft.getInstance().player) return;
                 StatusPanelRenderer.activeToggleAbilities.add(packet.abilityId());
                 toggleAbility.start(living.level(), living);
-                toggleAbility.updateClientCache(living, true);
             }
-            case 1 -> toggleAbility.prepareTick(living.level(), living);
+            case 1 -> {
+                if(entity != Minecraft.getInstance().player) return;
+                toggleAbility.prepareTick(living.level(), living);
+            }
             case 2 -> {
+                toggleAbility.updateClientCache(living, false);
+                if(entity != Minecraft.getInstance().player) return;
                 StatusPanelRenderer.activeToggleAbilities.remove(packet.abilityId());
                 toggleAbility.stop(living.level(), living);
-                toggleAbility.updateClientCache(living, true);
             }
 
         }
@@ -740,6 +745,7 @@ public class ClientHandler {
     public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath());
         FX fx = FXHelper.getFX(id);
+        if(fx == null) return;
 
         Entity entity = getById(packet.entityId());
         if(entity == null) return;

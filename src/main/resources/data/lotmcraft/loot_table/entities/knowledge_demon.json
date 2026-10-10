@@ -1,0 +1,332 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:used_almanac",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:real_ancient_historical_records",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:false_history_believed_to_be_true",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:diary_pages_over_22_years_old",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_chart_drawn_with_spirit_blood",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:self_designed_cipher",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fog_of_history",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_illusion_crystal",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_dragon_blood_adult",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_dragon_blood_elderly",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mirror_dragon_blood",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mirror_dragon_eyes",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_catcher_heart",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:source_of_mad_dreams",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_rat_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_rat_heart",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_raven_heart",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sphinx_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sphinx_brain",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:drop_of_tears",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:used_almanac",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:real_ancient_historical_records",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:false_history_believed_to_be_true",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:diary_pages_over_22_years_old",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_chart_drawn_with_spirit_blood",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:self_designed_cipher",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fog_of_history",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_illusion_crystal",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_dragon_blood_adult",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_dragon_blood_elderly",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mirror_dragon_blood",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mirror_dragon_eyes",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_catcher_heart",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:source_of_mad_dreams",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_rat_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_rat_heart",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_raven_heart",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sphinx_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sphinx_brain",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:drop_of_tears",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:used_almanac",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:real_ancient_historical_records",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:false_history_believed_to_be_true",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:diary_pages_over_22_years_old",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:star_chart_drawn_with_spirit_blood",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:self_designed_cipher",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fog_of_history",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_illusion_crystal",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_dragon_blood_adult",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mind_dragon_blood_elderly",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mirror_dragon_blood",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mirror_dragon_eyes",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_catcher_heart",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:source_of_mad_dreams",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_rat_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_rat_heart",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dream_eating_raven_heart",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sphinx_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:sphinx_brain",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:drop_of_tears",
+          "weight": 1
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

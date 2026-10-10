@@ -82,8 +82,9 @@ public class ModItems {
                     .stacksTo(1)
             )
     );
-    public static final Supplier<Item> GUIDING_BOOK = ITEMS.register("guiding_book",
-            () -> new GuidingBookItem(new Item.Properties()
+
+    public static final Supplier<Item> INGREDIENT_ENCYCLOPEDIA = ITEMS.register("ingredient_encyclopedia",
+            () -> new IngredientEncyclopediaItem(new Item.Properties()
                     .stacksTo(1)
             )
     );

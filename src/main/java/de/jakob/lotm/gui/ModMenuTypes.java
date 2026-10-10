@@ -3,6 +3,7 @@ package de.jakob.lotm.gui;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelMenu;
 import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelMenu;
+import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaMenu;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpMenu;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesMenu;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelMenu;
@@ -44,6 +45,11 @@ public class ModMenuTypes {
             })
     );
 
+    public static final DeferredHolder<MenuType<?>, MenuType<IngredientEncyclopediaMenu>> INGREDIENT_ENCYCLOPEDIA =
+            MENU_TYPES.register("ingredient_encyclopedia",
+                    () -> IMenuTypeExtension.create((containerId, inventory, buf) ->
+                            new IngredientEncyclopediaMenu(containerId, inventory, buf)));
+
     public static final DeferredHolder<MenuType<?>, MenuType<RitualMenu>> RITUAL_MENU =
             MENU_TYPES.register("ritual_menu", () ->
                     IMenuTypeExtension.create(RitualMenu::new));
@@ -62,7 +68,7 @@ public class ModMenuTypes {
 
     public static final DeferredHolder<MenuType<?>, MenuType<BrewingCauldronMenu>> BREWING_CAULDRON_MENU =
             MENU_TYPES.register("brewing_cauldron_menu", () ->
-                    IMenuTypeExtension.create(BrewingCauldronMenu::new));
+                IMenuTypeExtension.create(BrewingCauldronMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<HonorificNamesMenu>> HONORIFIC_NAMES_MENU =
             MENU_TYPES.register("honorific_names_menu", () ->

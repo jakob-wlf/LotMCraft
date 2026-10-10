@@ -1,0 +1,23 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:brown_mushroom"
+        },
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "minecraft:brown_mushroom_block"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.1
+    }
+  ],
+  "table": "lotmcraft:ingredients/chestnut_spore"
+}
