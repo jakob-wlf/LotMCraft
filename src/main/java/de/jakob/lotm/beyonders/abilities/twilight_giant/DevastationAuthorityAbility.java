@@ -15,11 +15,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -99,9 +100,10 @@ public class DevastationAuthorityAbility extends SelectableAbility {
     }
 
     @SubscribeEvent
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker) || event.getSource().getDirectEntity() != attacker) return;
-        if (attacker.level().isClientSide()) return;
+    public static void onDamage(LivingDamageEvent.Post event) {
+        DamageSource source = event.getSource();
+        if (!(source.getEntity() instanceof LivingEntity attacker)) return;
+        if (attacker.level().isClientSide() || event.getNewDamage() <= 0) return;
         LivingEntity target = event.getEntity();
         Long until = followUntil.get(attacker.getUUID());
         if (until != null && attacker.level().getGameTime() <= until) strip(attacker, target);

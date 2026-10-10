@@ -98,10 +98,9 @@ public class SilverArmorAbility extends ToggleAbility {
 
     private static float reduction(int sequence) {
         return switch (Math.min(Math.max(sequence, 0), 3)) {
-            case 0 -> 0.60F;
-            case 1 -> 0.50F;
-            case 2 -> 0.45F;
-            default -> 0.35F;
+            case 0 -> 0.25F;
+            case 1, 2 -> 0.22F;
+            default -> 0.20F;
         };
     }
 

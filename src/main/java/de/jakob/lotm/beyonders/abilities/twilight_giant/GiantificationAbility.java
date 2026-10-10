@@ -43,7 +43,8 @@ public class GiantificationAbility extends ToggleAbility {
     private static final double STEP_HEIGHT = 9.0D;
     private static final double STAT_BONUS = 0.25D;
     private static final double SPEED_BONUS = 0.25D;
-    private static final float RESISTANCE = 1.25f;
+    private static final double JUMP_BONUS = 2.2D;
+    private static final float RESISTANCE = 1.15f;
     private static final double STRIDE = 4.0D;
     private static final double STOMP_RADIUS = 20.0D;
     private static final double STOMP_HEIGHT = 5.0D;
@@ -54,6 +55,7 @@ public class GiantificationAbility extends ToggleAbility {
     private static final ResourceLocation STEP_ID = id("tgiant_step");
     private static final ResourceLocation DAMAGE_ID = id("tgiant_damage");
     private static final ResourceLocation SPEED_ID = id("tgiant_speed");
+    private static final ResourceLocation JUMP_ID = id("tgiant_jump");
 
     private static final Map<UUID, Stride> strides = new HashMap<>();
 
@@ -64,7 +66,7 @@ public class GiantificationAbility extends ToggleAbility {
         instance = this;
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(250f, 160f, 100f));
-        baseDamage = 20;
+        baseDamage = 5;
     }
 
     @Override
@@ -92,6 +94,7 @@ public class GiantificationAbility extends ToggleAbility {
         setModifier(entity,Attributes.STEP_HEIGHT,STEP_ID,STEP_HEIGHT);
         setModifier(entity, Attributes.ATTACK_DAMAGE, DAMAGE_ID, STAT_BONUS);
         setModifier(entity, Attributes.MOVEMENT_SPEED, SPEED_ID, SPEED_BONUS);
+        setModifier(entity, Attributes.JUMP_STRENGTH, JUMP_ID, JUMP_BONUS);
         strides.put(entity.getUUID(), new Stride(entity.position()));
         level.playSound(null, entity.blockPosition(), SoundEvents.RAVAGER_ROAR, entity.getSoundSource(), 3f, 0.5f);
     }
@@ -114,6 +117,7 @@ public class GiantificationAbility extends ToggleAbility {
         removeModifier(entity, Attributes.STEP_HEIGHT, STEP_ID);
         removeModifier(entity, Attributes.ATTACK_DAMAGE, DAMAGE_ID);
         removeModifier(entity, Attributes.MOVEMENT_SPEED, SPEED_ID);
+        removeModifier(entity, Attributes.JUMP_STRENGTH, JUMP_ID);
         strides.remove(entity.getUUID());
         level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, entity.getSoundSource(), 1.5f, 0.6f);
     }

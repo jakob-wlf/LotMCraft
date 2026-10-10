@@ -13,6 +13,7 @@ import de.jakob.lotm.gui.custom.marionettes.MarionetteMenu;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteMenuProvider;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -24,7 +25,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -82,12 +85,18 @@ public class ServantsAbility extends SelectableAbility {
     }
 
     public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
+        dispatcher.register(Commands.literal("lotm_servant_accept")
+                .then(Commands.argument("master", StringArgumentType.word())
+                        .executes(context -> accept(context.getSource().getPlayerOrException(), StringArgumentType.getString(context, "master")))));
         dispatcher.register(Commands.literal("lotm_servant_boost")
                 .then(Commands.argument("master", StringArgumentType.word())
                         .executes(context -> choose(context.getSource().getPlayerOrException(), StringArgumentType.getString(context, "master"), true))));
         dispatcher.register(Commands.literal("lotm_servant_borrow")
                 .then(Commands.argument("master", StringArgumentType.word())
                         .executes(context -> choose(context.getSource().getPlayerOrException(), StringArgumentType.getString(context, "master"), false))));
+        dispatcher.register(Commands.literal("lotm_servant_decline")
+                .then(Commands.argument("master", StringArgumentType.word())
+                        .executes(context -> decline(context.getSource().getPlayerOrException(), StringArgumentType.getString(context, "master")))));
     }
 
     public static void dismiss(ServerPlayer master, UUID servantId) {
@@ -110,14 +119,17 @@ public class ServantsAbility extends SelectableAbility {
         Mark mark = new Mark(target.getDisplayName().getString());
         marks.computeIfAbsent(player.getUUID(), id -> new HashMap<>()).put(target.getUUID(), mark);
         if (target instanceof ServerPlayer servant) {
-            Component boost = Component.translatable("ability.lotmcraft.servants.boost")
-                    .withStyle(style -> style.withColor(0x4CAF50).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lotm_servant_boost " + player.getUUID())));
-            Component borrow = Component.translatable("ability.lotmcraft.servants.borrow")
-                    .withStyle(style -> style.withColor(0xFF6A2A).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lotm_servant_borrow " + player.getUUID())));
-            servant.sendSystemMessage(Component.translatable("ability.lotmcraft.servants.offer", player.getGameProfile().getName()).append(" ").append(boost).append(" ").append(borrow));
+            Component accept = Component.translatable("ability.lotmcraft.servants.accept")
+                    .withStyle(style -> style.withColor(0x4CAF50).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lotm_servant_accept " + player.getUUID())));
+            Component decline = Component.translatable("ability.lotmcraft.servants.decline")
+                    .withStyle(style -> style.withColor(0xF44336).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lotm_servant_decline " + player.getUUID())));
+            servant.sendSystemMessage(Component.translatable("ability.lotmcraft.servants.offer", player.getGameProfile().getName()).append(" ").append(accept).append(" ").append(decline));
+            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.servants.offered", mark.name).withColor(TwilightAging.TWILIGHT_TEXT));
+            return;
         } else {
             applyBoost(target);
             mark.boost = true;
+            syncAllies(player.server);
         }
         AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.servants.marked", mark.name).withColor(TwilightAging.TWILIGHT_TEXT));
     }
@@ -130,13 +142,42 @@ public class ServantsAbility extends SelectableAbility {
         }
         List<MarionetteMenu.ServantRow> rows = new ArrayList<>();
         for (Map.Entry<UUID, Mark> entry : owned.entrySet()) {
+            if (!active(entry.getValue())) continue;
             LivingEntity servant = find(player, entry.getKey());
             boolean visible = servant != null && !hidden(player, servant);
             boolean beyonder = visible && BeyonderData.isBeyonder(servant);
             String detail = servant == null ? Component.translatable("ability.lotmcraft.servants.away").getString() : describe(player, servant);
             rows.add(new MarionetteMenu.ServantRow(entry.getKey(), entry.getValue().name, detail, beyonder, beyonder ? BeyonderData.getPathway(servant) : "", beyonder ? BeyonderData.getSequence(servant) : -1));
         }
+        if (rows.isEmpty()) {
+            AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.servants.empty").withColor(TwilightAging.TWILIGHT_TEXT));
+            return;
+        }
         player.openMenu(MarionetteMenuProvider.servants(), buf -> MarionetteMenu.writeServants(buf, rows));
+    }
+
+    private static int accept(ServerPlayer servant, String masterId) {
+        UUID masterUuid;
+        try {
+            masterUuid = UUID.fromString(masterId);
+        } catch (IllegalArgumentException exception) {
+            return 0;
+        }
+        Map<UUID, Mark> owned = marks.get(masterUuid);
+        if (owned == null) return 0;
+        Mark mark = owned.get(servant.getUUID());
+        if (mark == null || mark.accepted || mark.boost || mark.borrowed) return 0;
+        ServerPlayer master = servant.server.getPlayerList().getPlayer(masterUuid);
+        if (master == null) return 0;
+        mark.accepted = true;
+        syncAllies(servant.server);
+        Component boost = Component.translatable("ability.lotmcraft.servants.boost")
+                .withStyle(style -> style.withColor(0x4CAF50).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lotm_servant_boost " + masterUuid)));
+        Component borrow = Component.translatable("ability.lotmcraft.servants.borrow")
+                .withStyle(style -> style.withColor(0xFF6A2A).withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/lotm_servant_borrow " + masterUuid)));
+        servant.sendSystemMessage(Component.translatable("ability.lotmcraft.servants.accepted").append(" ").append(boost).append(" ").append(borrow));
+        master.sendSystemMessage(Component.translatable("ability.lotmcraft.servants.accepted_master", servant.getGameProfile().getName()));
+        return 1;
     }
 
     private static int choose(ServerPlayer servant, String masterId, boolean boost) {
@@ -151,6 +192,7 @@ public class ServantsAbility extends SelectableAbility {
         ServerPlayer master = servant.server.getPlayerList().getPlayer(masterUuid);
         if (master == null) return 0;
         Mark mark = owned.get(servant.getUUID());
+        if (mark == null || !mark.accepted || mark.boost || mark.borrowed) return 0;
         clearMark(master, servant.getUUID(), mark);
         if (boost) {
             applyBoost(servant);
@@ -162,6 +204,25 @@ public class ServantsAbility extends SelectableAbility {
             mark.borrowed = true;
         }
         servant.sendSystemMessage(Component.translatable(boost ? "ability.lotmcraft.servants.boosted" : "ability.lotmcraft.servants.borrowed"));
+        return 1;
+    }
+
+    private static int decline(ServerPlayer servant, String masterId) {
+        UUID masterUuid;
+        try {
+            masterUuid = UUID.fromString(masterId);
+        } catch (IllegalArgumentException exception) {
+            return 0;
+        }
+        Map<UUID, Mark> owned = marks.get(masterUuid);
+        if (owned == null) return 0;
+        Mark mark = owned.get(servant.getUUID());
+        if (mark == null || mark.accepted || mark.boost || mark.borrowed) return 0;
+        owned.remove(servant.getUUID());
+        if (owned.isEmpty()) marks.remove(masterUuid);
+        servant.sendSystemMessage(Component.translatable("ability.lotmcraft.servants.declined"));
+        ServerPlayer master = servant.server.getPlayerList().getPlayer(masterUuid);
+        if (master != null) master.sendSystemMessage(Component.translatable("ability.lotmcraft.servants.refused", servant.getGameProfile().getName()));
         return 1;
     }
 
@@ -241,6 +302,69 @@ public class ServantsAbility extends SelectableAbility {
                 || VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(viewer), servant);
     }
 
+    public static boolean bound(UUID first, UUID second) {
+        if (first == null || second == null || first.equals(second)) return false;
+        for (Map.Entry<UUID, Map<UUID, Mark>> entry : marks.entrySet()) {
+            boolean firstServant = servantOf(entry.getValue(), first);
+            boolean secondServant = servantOf(entry.getValue(), second);
+            boolean firstMaster = entry.getKey().equals(first);
+            boolean secondMaster = entry.getKey().equals(second);
+            if ((firstMaster && secondServant) || (secondMaster && firstServant) || (firstServant && secondServant)) return true;
+        }
+        return false;
+    }
+
+    private static void syncAllies(MinecraftServer server) {
+        for (Map.Entry<UUID, Map<UUID, Mark>> entry : marks.entrySet()) {
+            List<LivingEntity> group = new ArrayList<>();
+            LivingEntity master = find(server, entry.getKey());
+            if (master != null) group.add(master);
+            for (Map.Entry<UUID, Mark> servantEntry : entry.getValue().entrySet()) {
+                if (!active(servantEntry.getValue())) continue;
+                LivingEntity servant = find(server, servantEntry.getKey());
+                if (servant != null) group.add(servant);
+            }
+            for (int i = 0; i < group.size(); i++) {
+                for (int j = i + 1; j < group.size(); j++) link(group.get(i), group.get(j));
+            }
+        }
+    }
+
+    private static void link(LivingEntity first, LivingEntity second) {
+        if (AllyUtil.isAlly(first, second.getUUID()) && AllyUtil.isAlly(second, first.getUUID())) return;
+        AllyUtil.makeAllies(first, second, false);
+    }
+
+    private static boolean inGraph(UUID id) {
+        if (marks.containsKey(id)) return true;
+        for (Map<UUID, Mark> owned : marks.values()) {
+            if (servantOf(owned, id)) return true;
+        }
+        return false;
+    }
+
+    private static boolean servantOf(Map<UUID, Mark> owned, UUID id) {
+        Mark mark = owned.get(id);
+        return mark != null && active(mark);
+    }
+
+    private static boolean active(Mark mark) {
+        return mark.accepted || mark.boost || mark.borrowed;
+    }
+
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !inGraph(player.getUUID())) return;
+        syncAllies(player.server);
+    }
+
+    @SubscribeEvent
+    public static void onJoin(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide() || event.getEntity() instanceof ServerPlayer || !(event.getEntity() instanceof LivingEntity living)) return;
+        if (!inGraph(living.getUUID()) || !(living.level() instanceof ServerLevel level)) return;
+        syncAllies(level.getServer());
+    }
+
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if (!(event.getEntity() instanceof LivingEntity living) || !(living.level() instanceof ServerLevel level)) return;
@@ -253,6 +377,7 @@ public class ServantsAbility extends SelectableAbility {
 
     private static final class Mark {
         private final String name;
+        private boolean accepted;
         private boolean boost;
         private boolean borrowed;
 

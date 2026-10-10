@@ -73,12 +73,8 @@ public class DawnArmorAbility extends ToggleAbility {
 
     private static float reduction(int sequence) {
         return switch (sequence) {
-            case 0 -> 0.65F;
-            case 1 -> 0.55F;
-            case 2 -> 0.50F;
-            case 3 -> 0.40F;
-            case 4 -> 0.35F;
-            case 5 -> 0.25F;
+            case 0 -> 0.30F;
+            case 1, 2 -> 0.25F;
             default -> 0.20F;
         };
     }

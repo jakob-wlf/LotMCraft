@@ -18,6 +18,7 @@ import de.jakob.lotm.util.playerMap.StoredData;
 import de.jakob.lotm.util.data.PlayerInfo;
 import de.jakob.lotm.util.data.PlayerSelectionWorkType;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -28,6 +29,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -333,6 +335,7 @@ public class ProxyAbility extends Ability {
         remember(caster, patron.getUUID());
         applyAttributes(caster, "proxy", STAT_BONUS);
         stripProxyCopies(caster);
+        syncAllies(caster.server);
         caster.sendSystemMessage(Component.translatable("ability.lotmcraft.proxy.bound", patron.getGameProfile().getName()));
         patron.sendSystemMessage(Component.translatable("ability.lotmcraft.proxy.accepted", caster.getGameProfile().getName()));
     }
@@ -428,6 +431,7 @@ public class ProxyAbility extends Ability {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         maintainRiver(player);
         stripProxyCopies(player);
+        if (stored(player.getUUID()) != null || !castersOf(player.getUUID()).isEmpty()) syncAllies(player.server);
         Bond bond = stored(player.getUUID());
         if (bond == null) return;
         applyAttributes(player, "proxy", STAT_BONUS);
@@ -458,6 +462,45 @@ public class ProxyAbility extends Ability {
         if (component.getAbilities().removeIf(data -> COPY_TYPE.equals(data.copyType()))) {
             CopiedAbilityHelper.syncToClient(player);
         }
+    }
+
+    public static boolean bound(UUID first, UUID second) {
+        if (first == null || second == null || first.equals(second)) return false;
+        Bond firstBond = stored(first);
+        Bond secondBond = stored(second);
+        if (firstBond != null && firstBond.patron.equals(second)) return true;
+        if (secondBond != null && secondBond.patron.equals(first)) return true;
+        return firstBond != null && secondBond != null && firstBond.patron.equals(secondBond.patron);
+    }
+
+    private static void syncAllies(MinecraftServer server) {
+        if (BeyonderData.playerMap == null) return;
+        Map<UUID, List<UUID>> groups = new HashMap<>();
+        for (Map.Entry<UUID, StoredData> entry : BeyonderData.playerMap.entrySet()) {
+            String patron = entry.getValue().patron();
+            if (patron == null || patron.isEmpty()) continue;
+            try {
+                groups.computeIfAbsent(UUID.fromString(patron), id -> new ArrayList<>()).add(entry.getKey());
+            } catch (IllegalArgumentException exception) {
+            }
+        }
+        for (Map.Entry<UUID, List<UUID>> entry : groups.entrySet()) {
+            List<LivingEntity> group = new ArrayList<>();
+            ServerPlayer patron = server.getPlayerList().getPlayer(entry.getKey());
+            if (patron != null) group.add(patron);
+            for (UUID casterId : entry.getValue()) {
+                ServerPlayer caster = server.getPlayerList().getPlayer(casterId);
+                if (caster != null) group.add(caster);
+            }
+            for (int i = 0; i < group.size(); i++) {
+                for (int j = i + 1; j < group.size(); j++) link(group.get(i), group.get(j));
+            }
+        }
+    }
+
+    private static void link(LivingEntity first, LivingEntity second) {
+        if (AllyUtil.isAlly(first, second.getUUID()) && AllyUtil.isAlly(second, first.getUUID())) return;
+        AllyUtil.makeAllies(first, second, false);
     }
 
     private static Bond stored(UUID caster) {

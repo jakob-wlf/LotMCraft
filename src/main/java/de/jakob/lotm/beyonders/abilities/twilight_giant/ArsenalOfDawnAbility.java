@@ -109,7 +109,6 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     private static final String[] PURIFICATION_FLAGS = {"purification"};
     private static final int UPKEEP_INTERVAL = 20;
     private static final float UPKEEP_COST = 8;
-    private static final float TWILIGHT_UPKEEP_COST = 80;
 
     public ArsenalOfDawnAbility(String id) {
         super(id, 0);
@@ -349,7 +348,6 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         Player player = event.getEntity();
         if (player.level().isClientSide() || player.tickCount % UPKEEP_INTERVAL != 0 || player.hasInfiniteMaterials()) return;
         upkeep(player, WEAPONS, UPKEEP_COST);
-        upkeep(player, TWILIGHT, TWILIGHT_UPKEEP_COST);
     }
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};

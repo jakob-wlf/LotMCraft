@@ -50,15 +50,15 @@ public class SupernaturalResistanceAbility extends PassiveAbility {
 
     private static float reduction(int sequence) {
         return switch (sequence) {
-            case 0 -> 0.85F;
-            case 1 -> 0.75F;
-            case 2 -> 0.70F;
-            case 3 -> 0.65F;
-            case 4 -> 0.55F;
-            case 5 -> 0.45F;
-            case 6 -> 0.40F;
-            case 7 -> 0.35F;
-            default -> 0.30F;
+            case 0 -> 0.75F;
+            case 1 -> 0.65F;
+            case 2 -> 0.60F;
+            case 3 -> 0.50F;
+            case 4 -> 0.45F;
+            case 5 -> 0.35F;
+            case 6 -> 0.30F;
+            case 7 -> 0.25F;
+            default -> 0.20F;
         };
     }
 

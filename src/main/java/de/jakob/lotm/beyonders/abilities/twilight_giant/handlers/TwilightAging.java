@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.twilight_giant.handlers;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
@@ -60,6 +61,7 @@ public final class TwilightAging {
     private static final int MAX_WEAKER_DIFFERENCE = 4;
     private static final int FADE_TICKS = 40;
     private static final int BLACK_FADE_TICKS = 20;
+    private static final String DEATH_LOCK = "twilight_finish_death";
 
     private static final Set<UUID> fading = new HashSet<>();
     private static final Set<UUID> aged = new HashSet<>();
@@ -74,6 +76,7 @@ public final class TwilightAging {
     }
 
     public static void age(ServerLevel level, LivingEntity target, LivingEntity source, float years, boolean fade) {
+        if (unaging(target)) return;
         if (!target.isAlive() || fading.contains(target.getUUID())) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         if (immune(source, target)) return;
@@ -145,12 +148,16 @@ public final class TwilightAging {
         int setTicks = Math.max(20, Math.round((1.0F - start) * TwilightDomeEntity.SUNSET_TICKS));
         long now = level.getServer().getTickCount();
         deaths.put(player.getUUID(), new SunsetDeath(source == null ? null : source.getUUID(), start, now, setTicks, now + setTicks, now + setTicks + TwilightDomeEntity.BLACK_TICKS));
+        DisabledAbilitiesComponent component = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime(DEATH_LOCK, setTicks + TwilightDomeEntity.BLACK_TICKS + 20, player);
         return true;
     }
 
     private static void finishDeath(ServerLevel level, LivingEntity target, LivingEntity source) {
         if (target.isRemoved() || target.deathTime > 0) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
+        DisabledAbilitiesComponent component = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime(DEATH_LOCK, 20, target);
         UUID id = target.getUUID();
         boolean fool = "fool".equals(BeyonderData.getPathway(target));
         if (!fool) LawAbility.SOLACE_KILLED.add(id);
@@ -167,6 +174,10 @@ public final class TwilightAging {
             }
         }
         if (!fool) ServerScheduler.scheduleDelayed(2, () -> LawAbility.SOLACE_KILLED.remove(id), level);
+    }
+
+    private static boolean unaging(LivingEntity target) {
+        return "twilight_giant".equals(BeyonderData.getPathway(target)) && BeyonderData.getSequence(target) <= 0;
     }
 
     private static boolean immune(LivingEntity source, LivingEntity target) {
@@ -195,7 +206,6 @@ public final class TwilightAging {
     private static void applyDebuffs(LivingEntity target, float years) {
         if (fading.contains(target.getUUID())) return;
         int amplifier = Math.min(MAX_AMPLIFIER, (int) (years / YEARS_PER_AMPLIFIER));
-        target.forceAddEffect(new MobEffectInstance(MobEffects.WEAKNESS, DEBUFF_TICKS, amplifier, false, false), null);
         target.forceAddEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, DEBUFF_TICKS, amplifier, false, false), null);
         target.forceAddEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, DEBUFF_TICKS, amplifier, false, false), null);
     }
@@ -210,6 +220,10 @@ public final class TwilightAging {
     }
 
     private static void process(LivingEntity target) {
+        if (unaging(target)) {
+            finish(target);
+            return;
+        }
         if (!(target.level() instanceof ServerLevel level) || !target.isAlive()) return;
         float years = target.getPersistentData().getFloat(YEARS);
         if (years <= 0f) {
@@ -263,7 +277,6 @@ public final class TwilightAging {
         aged.remove(target.getUUID());
         syncAgingModifier(target, 0f);
         if (fading.contains(target.getUUID())) return;
-        target.removeEffect(MobEffects.WEAKNESS);
         target.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
         target.removeEffect(MobEffects.DIG_SLOWDOWN);
     }
@@ -382,8 +395,11 @@ public final class TwilightAging {
     }
 
     private static void cancelSunset(UUID id, MinecraftServer server) {
-        deaths.remove(id);
+        boolean cancelled = deaths.remove(id) != null;
         dropDome(server, id);
+        if (!cancelled) return;
+        LivingEntity living = findLiving(server, id);
+        if (living != null) living.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAbilityUsage(DEATH_LOCK);
     }
 
     private static LivingEntity findLiving(MinecraftServer server, UUID id) {

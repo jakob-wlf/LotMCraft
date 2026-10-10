@@ -25,14 +25,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -48,10 +51,11 @@ public class SilverRapierAbility extends SelectableAbility {
     private static final double BLINK_RADIUS = 2.5D;
     private static final double FLY_SPEED = 0.8D;
     private static final double ORBIT_RADIUS = 1.6D;
-    private static final int DAMAGE = 15;
+    private static final int DAMAGE = 1;
     private static final float DODGE_CHANCE = 0.4f;
 
     private static final Map<UUID, Swarm> swarms = new HashMap<>();
+    private static final Set<UUID> noKnockback = new HashSet<>();
 
     public SilverRapierAbility(String id) {
         super(id, 12);
@@ -163,6 +167,11 @@ public class SilverRapierAbility extends SelectableAbility {
     }
 
     @SubscribeEvent
+    public static void onKnockback(LivingKnockBackEvent event) {
+        if (noKnockback.contains(event.getEntity().getUUID())) event.setCanceled(true);
+    }
+
+    @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity victim = event.getEntity();
         if (victim.level().isClientSide()) return;
@@ -242,7 +251,12 @@ public class SilverRapierAbility extends SelectableAbility {
         }
         if (!isValidTarget(owner, target)) return;
         target.invulnerableTime = 0;
-        target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), DAMAGE);
+        noKnockback.add(target.getUUID());
+        try {
+            target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), DAMAGE);
+        } finally {
+            noKnockback.remove(target.getUUID());
+        }
         level.sendParticles(ParticleTypes.SWEEP_ATTACK, target.getX(), target.getY(0.6), target.getZ(), 1, 0, 0, 0, 0);
         level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, owner.getSoundSource(), 0.6f, 1.6f);
     }

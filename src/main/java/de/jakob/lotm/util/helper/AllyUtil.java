@@ -2,6 +2,8 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ServantsAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAllyDataPacket;
 import de.jakob.lotm.util.BeyonderData;
@@ -53,6 +55,7 @@ public class AllyUtil {
 
     public static void removeAllies(LivingEntity entity1, LivingEntity entity2, boolean sendMessage) {
         if (entity1 == null || entity2 == null) return;
+        if (forced(entity1.getUUID(), entity2.getUUID())) return;
 
         AllyComponent comp1 = entity1.getData(ModAttachments.ALLY_COMPONENT.get());
         entity1.setData(ModAttachments.ALLY_COMPONENT.get(), comp1.removeAlly(entity2.getUUID()));
@@ -167,8 +170,13 @@ public class AllyUtil {
         PacketHandler.sendToPlayer(player, packet);
     }
 
+    private static boolean forced(UUID first, UUID second) {
+        return ServantsAbility.bound(first, second) || ProxyAbility.bound(first, second);
+    }
+
     public static void removeAllyOneWay(LivingEntity entity, UUID allyUUID) {
         if (entity == null || allyUUID == null) return;
+        if (forced(entity.getUUID(), allyUUID)) return;
 
         AllyComponent comp = entity.getData(ModAttachments.ALLY_COMPONENT.get());
         entity.setData(ModAttachments.ALLY_COMPONENT.get(), comp.removeAlly(allyUUID));

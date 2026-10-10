@@ -34,8 +34,10 @@ public class HurricaneOfLightAbility extends ToggleAbility {
     private static final int EVIL_MULTIPLIER = 2;
     private static final int TWILIGHT_RADIUS = 45;
     private static final float TWILIGHT_YEARS = 2f;
+    private static final int LOCK_TICKS = 20 * 5;
     private static final ResourceLocation ROOT_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "hurricane_of_light_root");
     private final Map<UUID, Integer> visuals = new HashMap<>();
+    private final Map<UUID, Long> lockedUntil = new HashMap<>();
 
     public HurricaneOfLightAbility(String id) {
         super(id, "purification");
@@ -57,6 +59,10 @@ public class HurricaneOfLightAbility extends ToggleAbility {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
+        if (!level.isClientSide() && isActiveForEntity(entity)) {
+            Long until = lockedUntil.get(entity.getUUID());
+            if (until != null && level.getGameTime() < until) return;
+        }
         if (!level.isClientSide() && !isActiveForEntity(entity) && !holdsSword(entity)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.twiligh_giant_dawn.no_sword").withColor(0xFFFFF3D6));
             return;
@@ -66,6 +72,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
+        lockedUntil.put(entity.getUUID(), level.getGameTime() + LOCK_TICKS);
         setRooted(entity, true);
         level.playSound(null, entity.blockPosition(), SoundEvents.TRIDENT_RIPTIDE_3.value(), entity.getSoundSource(), 2f, 1.2f);
         if (level instanceof ServerLevel serverLevel) ensureVisual(serverLevel, entity, radius(entity));
@@ -105,6 +112,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
 
     @Override
     public void stop(Level level, LivingEntity entity) {
+        lockedUntil.remove(entity.getUUID());
         setRooted(entity, false);
         level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, entity.getSoundSource(), 1.5f, 1.4f);
         Integer id = visuals.remove(entity.getUUID());

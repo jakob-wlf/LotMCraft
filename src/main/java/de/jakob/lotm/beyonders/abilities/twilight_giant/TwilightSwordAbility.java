@@ -1,7 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.twilight_giant;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
@@ -44,15 +44,15 @@ import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
-public class TwilightSwordAbility extends Ability {
+public class TwilightSwordAbility extends ToggleAbility {
 
     private static final ResourceLocation DAMAGE_ID = ResourceLocation.withDefaultNamespace("base_attack_damage");
     private static final ResourceLocation SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
     private static final ResourceLocation REACH_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "twilight_sword_reach");
-    private static final double SWORD_REACH_BONUS = 4.0D;
+    private static final double SWORD_REACH_BONUS = 12.0D;
     private static final double SWORD_DAMAGE = 14.0D;
     private static final double SWORD_SPEED = -2.8D;
-    private static final int BLINK_RANGE = 40^2;
+    private static final int BLINK_RANGE = 20^5;
     private static final double BLINK_OFFSET = 1.5D;
     private static final int BLINK_COOLDOWN = 20 * 8;
     private static final float BLINK_COST = 600f;
@@ -64,17 +64,17 @@ public class TwilightSwordAbility extends Ability {
     private static final double STRIKE_HIT_RADIUS = 2.5D;
     private static final int STRIKE_TICKS = 12;
     private static final int STRIKE_DAMAGE = 30;
+    private static final float UPKEEP = 80f;
 
     private static final Map<UUID, Charge> charges = new HashMap<>();
     private static final Map<UUID, Long> lastBlink = new HashMap<>();
 
     public TwilightSwordAbility(String id) {
-        super(id, 15);
+        super(id);
         canBeUsedByNPC = false;
+        tickRate = 20;
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(2000f, 1200f, 800f));
-        hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(5, 10, 15));
         baseDamage = STRIKE_DAMAGE;
     }
 
@@ -89,14 +89,8 @@ public class TwilightSwordAbility extends Ability {
     }
 
     @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
+    public void start(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof Player player)) return;
-        if (ArsenalOfDawnAbility.hasAny(player, ArsenalOfDawnAbility.TWILIGHT)) {
-            ArsenalOfDawnAbility.removeAll(player, ArsenalOfDawnAbility.TWILIGHT);
-            BeyonderData.incrementSpirituality(player, getSpiritualityCost());
-            level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, player.getSoundSource(), 1f, 1.2f);
-            return;
-        }
         ItemStack sword = createSword();
         if (player.getMainHandItem().isEmpty()) {
             player.setItemInHand(InteractionHand.MAIN_HAND, sword);
@@ -106,6 +100,34 @@ public class TwilightSwordAbility extends Ability {
         serverLevel.sendParticles(TwilightAging.TWILIGHT_DUST, player.getX(), player.getY(1.0), player.getZ(), 40, 0.5, 0.7, 0.5, 0.05);
         serverLevel.sendParticles(ParticleTypes.FLAME, player.getX(), player.getY(1.0), player.getZ(), 20, 0.4, 0.6, 0.4, 0.03);
         level.playSound(null, player.blockPosition(), SoundEvents.BEACON_POWER_SELECT, player.getSoundSource(), 1f, 0.6f);
+    }
+
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if (!(entity instanceof Player player)) return;
+        charges.remove(player.getUUID());
+        ArsenalOfDawnAbility.removeAll(player, ArsenalOfDawnAbility.TWILIGHT);
+        level.playSound(null, player.blockPosition(), SoundEvents.BEACON_DEACTIVATE, player.getSoundSource(), 1f, 1.2f);
+    }
+
+    @Override
+    public void tick(Level level, LivingEntity entity) {
+    }
+
+    @Override
+    public void prepareTick(Level level, LivingEntity entity) {
+        if (!(entity instanceof Player player) || !ArsenalOfDawnAbility.hasAny(player, ArsenalOfDawnAbility.TWILIGHT)) {
+            if (level instanceof ServerLevel serverLevel) cancel(serverLevel, entity);
+            return;
+        }
+        if (!level.isClientSide && shouldConsumeSpirituality(entity)) {
+            if (BeyonderData.getSpirituality(entity) < UPKEEP) {
+                cancel((ServerLevel) level, entity);
+                return;
+            }
+            BeyonderData.reduceSpirituality(entity, UPKEEP);
+        }
+        tick(level, entity);
     }
 
     private static ItemStack createSword() {

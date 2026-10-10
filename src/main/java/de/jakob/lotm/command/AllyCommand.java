@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.authlib.GameProfile;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ServantsAbility;
 import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -90,6 +92,16 @@ public class AllyCommand {
 
         if (!AllyUtil.isAlly(sender, targetUuid)) {
             source.sendFailure(Component.translatable("lotm.ally.not_allies", targetName));
+            return 0;
+        }
+
+        if (ServantsAbility.bound(sender.getUUID(), targetUuid)) {
+            source.sendFailure(Component.translatable("lotm.ally.servant_locked", targetName));
+            return 0;
+        }
+
+        if (ProxyAbility.bound(sender.getUUID(), targetUuid)) {
+            source.sendFailure(Component.translatable("lotm.ally.proxy_locked", targetName));
             return 0;
         }
 

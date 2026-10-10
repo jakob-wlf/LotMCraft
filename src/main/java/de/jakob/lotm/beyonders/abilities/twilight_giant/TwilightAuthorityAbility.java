@@ -59,7 +59,7 @@ import java.util.UUID;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class TwilightAuthorityAbility extends SelectableAbility {
 
-    private static final double AURA_RADIUS = 160.0D;
+    private static final double AURA_RADIUS = 80.0D;
     private static final double DOMAIN_RADIUS = 150.0D;
     private static final double PULSE_RADIUS = 16.0D;
     private static final int PULSE_LIFE = 80;
@@ -248,7 +248,7 @@ public class TwilightAuthorityAbility extends SelectableAbility {
         Ability ability = event.getAbility();
         UUID id = caster.getUUID();
         if (isDoor(ability) && doorReady.remove(id)) return;
-        if (isLight(ability) && pressured(caster, false)) {
+        if (isLight(ability) && pressured(caster, false, true)) {
             event.setCanceled(true);
             if (caster instanceof Player player) bar(player, "ability.lotmcraft.twilight_authority.light_stopped");
             return;
@@ -257,7 +257,7 @@ public class TwilightAuthorityAbility extends SelectableAbility {
             spare(caster);
             return;
         }
-        if (isDoor(ability) && pressured(caster, true)) {
+        if (isDoor(ability) && pressured(caster, true, false)) {
             event.setCanceled(true);
             if (caster instanceof Player player) bar(player, "ability.lotmcraft.twilight_authority.door_delayed");
             ServerScheduler.scheduleDelayed(DOOR_DELAY, () -> {
@@ -434,19 +434,20 @@ public class TwilightAuthorityAbility extends SelectableAbility {
         swordStopUntil.remove(entity.getUUID());
     }
 
-    private static boolean pressured(LivingEntity caster, boolean significant) {
+    private static boolean pressured(LivingEntity caster, boolean significant, boolean ignoreSelf) {
         if (!(caster.level() instanceof ServerLevel level)) return false;
         long now = level.getGameTime();
         for (UUID id : auras) {
             ServerPlayer owner = online(level, id);
-            if (owner == null || owner.level() != caster.level() || owner.distanceTo(caster) > AURA_RADIUS) continue;
+            if (owner == null || (ignoreSelf && owner.getUUID().equals(caster.getUUID()))) continue;
+            if (owner.level() != caster.level() || owner.distanceTo(caster) > AURA_RADIUS) continue;
             if (matches(owner, caster, significant)) return true;
         }
         for (Map.Entry<UUID, Domain> entry : domains.entrySet()) {
             Domain domain = entry.getValue();
             if (!caster.level().dimension().equals(domain.dimension) || caster.position().distanceTo(domain.center) > DOMAIN_RADIUS) continue;
             ServerPlayer owner = online(level, entry.getKey());
-            if (owner != null && matches(owner, caster, significant)) return true;
+            if (owner != null && !(ignoreSelf && owner.getUUID().equals(caster.getUUID())) && matches(owner, caster, significant)) return true;
         }
         Iterator<Pulse> iterator = pulses.iterator();
         while (iterator.hasNext()) {
@@ -457,7 +458,7 @@ public class TwilightAuthorityAbility extends SelectableAbility {
             }
             if (!caster.level().dimension().equals(pulse.dimension) || caster.position().distanceTo(pulse.pos) > PULSE_RADIUS) continue;
             ServerPlayer owner = online(level, pulse.owner);
-            if (owner != null && matches(owner, caster, significant)) return true;
+            if (owner != null && !(ignoreSelf && owner.getUUID().equals(caster.getUUID())) && matches(owner, caster, significant)) return true;
         }
         return false;
     }
