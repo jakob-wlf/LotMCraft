@@ -38,6 +38,8 @@ public class DevastationAuthorityAbility extends SelectableAbility {
 
     private static final Map<UUID, Integer> charges = new HashMap<>();
     private static final Map<UUID, Long> followUntil = new HashMap<>();
+    private static final Map<UUID, Long> stripTick = new HashMap<>();
+    private static final Map<UUID, UUID> stripTarget = new HashMap<>();
     private static final SetArmed humanity = new SetArmed();
     private static final Map<UUID, Integer> humanityToken = new HashMap<>();
 
@@ -89,10 +91,7 @@ public class DevastationAuthorityAbility extends SelectableAbility {
         if (event.isCanceled() || caster == null || ability == null || caster.level().isClientSide()) return;
         if (!(caster.level() instanceof ServerLevel level)) return;
         if ("devastation_authority_ability".equals(ability.getId())) return;
-        Integer left = charges.get(caster.getUUID());
-        if (left == null || left <= 0) return;
-        if (left == 1) charges.remove(caster.getUUID());
-        else charges.put(caster.getUUID(), left - 1);
+        if (!spend(caster.getUUID())) return;
         followUntil.put(caster.getUUID(), level.getGameTime() + FOLLOW_TICKS);
         for (LivingEntity target : AbilityUtil.getNearbyEntities(caster, level, caster.position(), STRIP_RADIUS)) {
             strip(caster, target);
@@ -105,8 +104,14 @@ public class DevastationAuthorityAbility extends SelectableAbility {
         if (!(source.getEntity() instanceof LivingEntity attacker)) return;
         if (attacker.level().isClientSide() || event.getNewDamage() <= 0) return;
         LivingEntity target = event.getEntity();
+        long now = attacker.level().getGameTime();
         Long until = followUntil.get(attacker.getUUID());
-        if (until != null && attacker.level().getGameTime() <= until) strip(attacker, target);
+        if (until != null && now <= until) strip(attacker, target);
+        else if (!repeated(attacker, target, now) && AbilityUtil.mayDamage(attacker, target) && spend(attacker.getUUID())) {
+            stripTick.put(attacker.getUUID(), now);
+            stripTarget.put(attacker.getUUID(), target.getUUID());
+            strip(attacker, target);
+        }
         if (!AbilityUtil.mayDamage(attacker, target) || !humanity.consume(attacker.getUUID())) return;
         drain(target);
         if (target instanceof ServerPlayer victim && BeyonderData.playerMap != null) {
@@ -121,6 +126,18 @@ public class DevastationAuthorityAbility extends SelectableAbility {
             humanityToken.remove(target.getUUID());
             if (!target.isRemoved()) drain(target);
         }, level);
+    }
+
+    private static boolean spend(UUID id) {
+        Integer left = charges.get(id);
+        if (left == null || left <= 0) return false;
+        if (left == 1) charges.remove(id);
+        else charges.put(id, left - 1);
+        return true;
+    }
+
+    private static boolean repeated(LivingEntity attacker, LivingEntity target, long now) {
+        return stripTick.getOrDefault(attacker.getUUID(), Long.MIN_VALUE) == now && target.getUUID().equals(stripTarget.get(attacker.getUUID()));
     }
 
     private static void strip(LivingEntity caster, LivingEntity target) {

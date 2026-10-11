@@ -218,6 +218,7 @@ public class TwilightAuthorityAbility extends SelectableAbility {
             living.setDeltaMovement(Vec3.ZERO);
             living.teleportTo(anchor.x, anchor.y, anchor.z);
             event.setCanceled(true);
+            advanceHurt(living);
             return;
         }
         landAnchors.remove(living.getUUID());
@@ -231,7 +232,26 @@ public class TwilightAuthorityAbility extends SelectableAbility {
         else {
             tickPart.put(living.getUUID(), acc);
             event.setCanceled(true);
+            advanceHurt(living);
         }
+    }
+
+    private static void advanceHurt(LivingEntity living) {
+        if (!hurtByFieldOwner(living)) return;
+        if (living.invulnerableTime > 0) living.invulnerableTime--;
+        if (living.hurtTime > 0) living.hurtTime--;
+    }
+
+    private static boolean hurtByFieldOwner(LivingEntity living) {
+        if (!(living.getLastHurtByMob() instanceof LivingEntity attacker)) return false;
+        UUID id = attacker.getUUID();
+        for (Map.Entry<UUID, Domain> entry : domains.entrySet()) {
+            if (!entry.getKey().equals(id)) continue;
+            Domain domain = entry.getValue();
+            if (!living.level().dimension().equals(domain.dimension)) continue;
+            if (living.position().distanceTo(domain.center) <= DOMAIN_RADIUS) return true;
+        }
+        return false;
     }
 
     @SubscribeEvent

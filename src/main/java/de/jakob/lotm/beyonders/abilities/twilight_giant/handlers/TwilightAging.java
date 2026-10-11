@@ -192,6 +192,7 @@ public final class TwilightAging {
         UUID id = target.getUUID();
         boolean fool = "fool".equals(BeyonderData.getPathway(target));
         if (!fool) LawAbility.SOLACE_KILLED.add(id);
+        if (target instanceof Mob mob) mob.skipDropExperience();
         target.invulnerableTime = 0;
         float before = target.getHealth();
         DamageSource damage = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, source);
