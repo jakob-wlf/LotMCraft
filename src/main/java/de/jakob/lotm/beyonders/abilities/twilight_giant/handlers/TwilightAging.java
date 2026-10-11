@@ -127,6 +127,7 @@ public final class TwilightAging {
         scheduleRecovery(entity, level.getGameTime());
         applyDebuffs(entity, years);
         syncAgingModifier(entity, years);
+        if (years >= yearLimit(entity) && BeyonderData.getSequence(entity) > 0) dieOfOldAge(level, entity, null);
         return true;
     }
 

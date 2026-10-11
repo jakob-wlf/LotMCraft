@@ -638,7 +638,7 @@ public class ClientHandler {
     public static void handleSyncIntrospectMenuPacket(SyncIntrospectMenuPacket packet, UUID playerUUID) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof IntrospectScreen screen) {
-            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity());
+            screen.updateMenuData(packet.sequence(), packet.pathway(), ClientBeyonderCache.getDigestionProgress(playerUUID), packet.sanity(), packet.years());
         }
     }
 

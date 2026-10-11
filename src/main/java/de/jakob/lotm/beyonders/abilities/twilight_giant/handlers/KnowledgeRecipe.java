@@ -2,7 +2,10 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant.handlers;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.KnowledgeAbility;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
+import de.jakob.lotm.beyonders.potions.PotionRecipe;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.util.BeyonderData;
@@ -79,7 +82,7 @@ public class KnowledgeRecipe extends CustomRecipe {
             if (!input.getItem(i).isEmpty()) items.add(input.getItem(i));
         }
         if (items.size() == 3) return oil(items);
-        if (items.size() == 4) return potion(items);
+        if (items.size() == 6) return potion(items);
         return ItemStack.EMPTY;
     }
 
@@ -102,17 +105,43 @@ public class KnowledgeRecipe extends CustomRecipe {
                 ingredients.add(stack.copyWithCount(1));
             }
         }
-        if (recipeItem == null || recipeItem.getRecipe() == null || ingredients.size() != 3) return ItemStack.EMPTY;
+        if (recipeItem == null || recipeItem.getRecipe() == null || ingredients.size() != 5) return ItemStack.EMPTY;
 
-        for (int main = 0; main < 3; main++) {
-            BeyonderPotion potion = PotionRecipes.getByIngredients(List.of(ingredients.get((main + 1) % 3), ingredients.get((main + 2) % 3)), ingredients.get(main));
-            if (potion == null) continue;
-            BeyonderPotion expected = recipeItem.getRecipe().potion();
-            if (expected.getSequence() != potion.getSequence() || !expected.getPathway().equals(potion.getPathway())) continue;
-            if (!BeyonderData.playerMap.check(potion.getPathway(), potion.getSequence())) return ItemStack.EMPTY;
-            return new ItemStack(potion);
+        PotionRecipe recipe = recipeItem.getRecipe();
+        if (!matches(recipe, ingredients)) return ItemStack.EMPTY;
+        BeyonderPotion expected = recipe.potion();
+        if (!BeyonderData.playerMap.check(expected.getPathway(), expected.getSequence())) return ItemStack.EMPTY;
+        return new ItemStack(expected);
+    }
+
+    private static boolean matches(PotionRecipe recipe, List<ItemStack> ingredients) {
+        for (int main = 0; main < ingredients.size(); main++) {
+            if (!isMain(recipe, ingredients.get(main))) continue;
+            if (covers(recipe.supplementaryIngredients(), ingredients, main)) return true;
         }
-        return ItemStack.EMPTY;
+        return false;
+    }
+
+    private static boolean isMain(PotionRecipe recipe, ItemStack stack) {
+        if (PotionRecipes.areSimilar(recipe.mainIngredient(), stack)) return true;
+        BeyonderCharacteristicItem characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(recipe.potion().getPathway(), recipe.potion().getSequence());
+        return characteristic != null && PotionRecipes.areSimilar(stack, new ItemStack(characteristic));
+    }
+
+    private static boolean covers(List<ItemStack> supplementaries, List<ItemStack> ingredients, int main) {
+        boolean[] used = new boolean[supplementaries.size()];
+        for (int i = 0; i < ingredients.size(); i++) {
+            if (i == main) continue;
+            boolean found = false;
+            for (int j = 0; j < supplementaries.size(); j++) {
+                if (used[j] || !PotionRecipes.areSimilar(supplementaries.get(j), ingredients.get(i))) continue;
+                used[j] = true;
+                found = true;
+                break;
+            }
+            if (!found) return false;
+        }
+        return true;
     }
 
     private static boolean hasKnowledgeCrafter(CraftingInput input, Level level) {

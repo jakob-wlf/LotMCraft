@@ -52,7 +52,7 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static final double SWORD_REACH_BONUS = 12.0D;
     private static final double SWORD_DAMAGE = 14.0D;
     private static final double SWORD_SPEED = -2.8D;
-    private static final int BLINK_RANGE = 20^5;
+    private static final int BLINK_RANGE = (int) Math.pow(20, 5);
     private static final double BLINK_OFFSET = 1.5D;
     private static final int BLINK_COOLDOWN = 20 * 8;
     private static final float BLINK_COST = 600f;

@@ -18,17 +18,19 @@ public class IntrospectMenu extends AbstractContainerMenu {
     private String pathway;
     private float digestionProgress;
     private float sanity;
+    private float years;
 
     // Client-side constructor
     public IntrospectMenu(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buf) {
         this(containerId, playerInventory, buf.readInt(), buf.readUtf(), 0.0f, 1.0f);
     }
 
-    public void updateData(int sequence, String pathway, float digestionProgress, float sanity) {
+    public void updateData(int sequence, String pathway, float digestionProgress, float sanity, float years) {
         this.sequence = sequence;
         this.pathway = pathway;
         this.digestionProgress = digestionProgress;
         this.sanity = sanity;
+        this.years = years;
     }
 
     // Server-side constructor
@@ -65,5 +67,9 @@ public class IntrospectMenu extends AbstractContainerMenu {
 
     public float getSanity() {
         return sanity;
+    }
+
+    public float getYears() {
+        return years;
     }
 }
