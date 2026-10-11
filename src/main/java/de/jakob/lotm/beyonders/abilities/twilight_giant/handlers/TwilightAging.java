@@ -299,7 +299,7 @@ public final class TwilightAging {
         while (component.modifiers.containsKey(AGING_MODIFIER)) BeyonderData.removeModifier(target, AGING_MODIFIER);
         if (years <= 0f) return;
         float fraction = Math.min(1f, years / yearLimit(target));
-        BeyonderData.addModifier(target, AGING_MODIFIER, Math.max(0.1f, 1f - fraction));
+        BeyonderData.addModifier(target, AGING_MODIFIER, Math.max(0.2f, 1f - fraction));
     }
 
     private static void finish(LivingEntity target) {
