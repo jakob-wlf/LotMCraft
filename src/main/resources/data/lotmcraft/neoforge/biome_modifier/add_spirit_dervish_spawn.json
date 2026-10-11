@@ -17,7 +17,7 @@
   "spawners": [
     {
       "type": "lotmcraft:spirit_dervish",
-      "weight": 300,
+      "weight": 175,
       "minCount": 1,
       "maxCount": 4,
       "category": "creature"

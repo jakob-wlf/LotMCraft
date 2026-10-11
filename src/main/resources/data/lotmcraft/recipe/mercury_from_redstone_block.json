@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:blasting",
+  "category": "misc",
+  "ingredient": {
+    "item": "minecraft:redstone_block"
+  },
+  "result": {
+    "id": "lotmcraft:mercury"
+  },
+  "experience": 0.1,
+  "cookingtime": 100
+}

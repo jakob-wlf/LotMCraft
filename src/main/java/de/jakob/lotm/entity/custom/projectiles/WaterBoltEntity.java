@@ -93,6 +93,10 @@ public class WaterBoltEntity extends AbstractArrow {
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
+        if(!level().isClientSide) {
+            return;
+        }
+
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "water_bolt");
         FX fx = FXHelper.getFX(id);
 
