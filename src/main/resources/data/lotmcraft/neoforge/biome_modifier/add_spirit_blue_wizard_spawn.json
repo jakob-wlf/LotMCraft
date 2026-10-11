@@ -16,7 +16,7 @@
   "spawners": [
     {
       "type": "lotmcraft:spirit_blue_wizard",
-      "weight": 40,
+      "weight": 50,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"

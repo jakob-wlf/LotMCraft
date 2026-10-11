@@ -17,7 +17,7 @@
   "spawners": [
     {
       "type": "lotmcraft:rabbit_of_knowledge",
-      "weight": 22,
+      "weight": 20,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"
