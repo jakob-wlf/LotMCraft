@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.passives.IllusionImmunityAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
@@ -113,6 +114,7 @@ public class DreamWeaveAbility extends SelectableAbility {
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
             return;
         }
+        if (IllusionImmunityAbility.immune(entity, target)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
@@ -157,6 +159,7 @@ public class DreamWeaveAbility extends SelectableAbility {
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
             return;
         }
+        if (IllusionImmunityAbility.immune(entity, target)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
@@ -268,7 +271,7 @@ public class DreamWeaveAbility extends SelectableAbility {
         }
 
         LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
-        return target != null;
+        return target != null && !IllusionImmunityAbility.immune(entity, target);
     }
 
     @Override

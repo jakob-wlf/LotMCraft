@@ -59,13 +59,16 @@ public class HurricaneOfLightAbility extends ToggleAbility {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if (!level.isClientSide() && isActiveForEntity(entity)) {
+        if (!level.isClientSide()) {
             Long until = lockedUntil.get(entity.getUUID());
             if (until != null && level.getGameTime() < until) return;
         }
-        if (!level.isClientSide() && !isActiveForEntity(entity) && !holdsSword(entity)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.twiligh_giant_dawn.no_sword").withColor(0xFFFFF3D6));
-            return;
+        if (!level.isClientSide() && !isActiveForEntity(entity)) {
+            lockedUntil.remove(entity.getUUID());
+            if (!holdsSword(entity)) {
+                AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.twiligh_giant_dawn.no_sword").withColor(0xFFFFF3D6));
+                return;
+            }
         }
         super.onAbilityUse(level, entity);
     }
@@ -83,6 +86,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!holdsSword(entity)) {
             cancel(serverLevel, entity);
+            lockedUntil.put(entity.getUUID(), level.getGameTime() + LOCK_TICKS);
             return;
         }
 
@@ -112,7 +116,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        lockedUntil.remove(entity.getUUID());
+        if (!level.isClientSide()) lockedUntil.remove(entity.getUUID());
         setRooted(entity, false);
         level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, entity.getSoundSource(), 1.5f, 1.4f);
         Integer id = visuals.remove(entity.getUUID());

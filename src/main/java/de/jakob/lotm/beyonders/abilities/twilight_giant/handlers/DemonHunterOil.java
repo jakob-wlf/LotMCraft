@@ -82,8 +82,8 @@ public final class DemonHunterOil {
     private static final int MIN_DURATION = 20 * 60 * 10;
     private static final int EXTRA_DURATION = 20 * 60 * 5;
     private static final int EXPIRY_CHECK_INTERVAL = 100;
-    private static final int FREEZE_TICKS = 100;
-    private static final int FREEZE_ROOT_TICKS = 60;
+    private static final int FREEZE_TICKS = 40;
+    private static final int FREEZE_ROOT_TICKS = 15;
     private static final int BURN_SECONDS = 8;
     private static final int DECAY_TICKS = 20 * 10;
     private static final double FLING_STRENGTH = 2.0D;

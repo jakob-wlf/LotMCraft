@@ -30,6 +30,11 @@ public class IllusionImmunityAbility extends PassiveAbility {
         instance = this;
     }
 
+    public static boolean immune(LivingEntity caster, LivingEntity target) {
+        return instance != null && caster != null && target != null && instance.shouldApplyTo(target)
+                && BeyonderData.getSequence(target) <= BeyonderData.getSequence(caster);
+    }
+
     @Override
     public Map<String, Integer> getRequirements() {
         return new HashMap<>(Map.of("twilight_giant", 5));
