@@ -86,15 +86,29 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
         float sy = (float) (start.y - ey);
         float sz = (float) (start.z - ez);
         float tx = (float) (end.x - ex);
+        float ty = (float) (end.y - ey);
         float tz = (float) (end.z - ez);
         float dx = tx - sx;
+        float dy = ty - sy;
         float dz = tz - sz;
-        float length = Mth.sqrt(dx * dx + dz * dz);
+        float length = Mth.sqrt(dx * dx + dy * dy + dz * dz);
         if (length < 1.0E-4F) return;
         float fx = dx / length;
+        float fy = dy / length;
         float fz = dz / length;
         float sdx = -fz;
         float sdz = fx;
+        float side = Mth.sqrt(sdx * sdx + sdz * sdz);
+        if (side < 1.0E-4F) {
+            sdx = 1.0F;
+            sdz = 0.0F;
+        } else {
+            sdx /= side;
+            sdz /= side;
+        }
+        float bdx = -sdz * fy;
+        float bdy = sdz * fx - sdx * fz;
+        float bdz = sdx * fy;
         float progress = TwilightSlashEntity.ease(age / TwilightSlashEntity.FLIGHT_END);
 
         VertexConsumer consumer = buffers.getBuffer(RenderType.entityTranslucentEmissive(FX_TEX));
@@ -109,7 +123,7 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
                 float phi = sheet * Mth.PI / TRAIL_SHEETS;
                 float cos = Mth.cos(phi);
                 float sin = Mth.sin(phi);
-                ribbon(consumer, pose, sx, sy, sz, dx, dz, progress, sdx * cos, sin, sdz * cos, TRAIL_HALF_WIDTH, trailFade);
+                ribbon(consumer, pose, sx, sy, sz, dx, dy, dz, progress, sdx * cos + bdx * sin, bdy * sin, sdz * cos + bdz * sin, TRAIL_HALF_WIDTH, trailFade);
             }
             for (int i = 0; i < N_STARS; i++) {
                 float seen = Mth.clamp((progress - ST_Q[i]) / 0.035F, 0, 1);
@@ -120,9 +134,9 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
                 if (alpha < 0.02F) continue;
                 float cos = Mth.cos(ST_PHI[i]);
                 float sin = Mth.sin(ST_PHI[i]);
-                float x = sx + dx * ST_Q[i] + sdx * cos * ST_OFF[i];
-                float y = sy + sin * ST_OFF[i] + ST_H[i];
-                float z = sz + dz * ST_Q[i] + sdz * cos * ST_OFF[i];
+                float x = sx + dx * ST_Q[i] + (sdx * cos + bdx * sin) * ST_OFF[i] + bdx * ST_H[i];
+                float y = sy + dy * ST_Q[i] + bdy * sin * ST_OFF[i] + bdy * ST_H[i];
+                float z = sz + dz * ST_Q[i] + (sdz * cos + bdz * sin) * ST_OFF[i] + bdz * ST_H[i];
                 int kind = i % 7;
                 float red = kind == 4 ? 1.0F : kind == 6 ? 1.0F : 0.82F;
                 float green = kind == 4 ? 0.9F : kind == 6 ? 0.7F : 0.9F;
@@ -134,37 +148,41 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
         float arcAlpha = (age < TwilightSlashEntity.FLIGHT_END ? 1.0F : 1.0F - Mth.clamp((age - TwilightSlashEntity.FLIGHT_END) / 3.0F, 0, 1))
                 * Mth.clamp(age / 2.5F, 0, 1);
         float px = sx + dx * progress;
+        float py = sy + dy * progress;
         float pz = sz + dz * progress;
         if (arcAlpha > 0) {
             float wobble = Mth.sin(age * 0.5F) * 0.06F;
             for (int j = 5; j >= 1; j--) {
                 float back = j * 0.9F;
-                crescent(consumer, pose, px - fx * back, sy, pz - fz * back, fx, fz, sdx, sdz, ARC_TILT + wobble,
+                crescent(consumer, pose, px - fx * back, py - fy * back, pz - fz * back, fx, fy, fz, sdx, sdz, bdx, bdy, bdz, ARC_TILT + wobble,
                         ARC_HALF_WIDTH * (1.0F - j * 0.03F), 1.4F, 0.9F, arcAlpha * 0.26F * (1.0F - j / 6.0F),
                         1.0F, 0.55F, 0.3F);
             }
-            bill(consumer, pose, GLOW, px, sy, pz, 3.4F, argb(0.5F * arcAlpha, 1.0F, 0.45F, 0.15F), left, up);
-            crescent(consumer, pose, px, sy, pz, fx, fz, sdx, sdz, ARC_TILT + wobble, ARC_HALF_WIDTH * 1.22F, 1.7F, 1.5F,
+            bill(consumer, pose, GLOW, px, py, pz, 3.4F, argb(0.5F * arcAlpha, 1.0F, 0.45F, 0.15F), left, up);
+            crescent(consumer, pose, px, py, pz, fx, fy, fz, sdx, sdz, bdx, bdy, bdz, ARC_TILT + wobble, ARC_HALF_WIDTH * 1.22F, 1.7F, 1.5F,
                     arcAlpha * 0.38F, 1.0F, 0.3F, 0.12F);
-            crescent(consumer, pose, px, sy, pz, fx, fz, sdx, sdz, ARC_TILT + wobble, ARC_HALF_WIDTH, 1.4F, 0.9F, arcAlpha,
+            crescent(consumer, pose, px, py, pz, fx, fy, fz, sdx, sdz, bdx, bdy, bdz, ARC_TILT + wobble, ARC_HALF_WIDTH, 1.4F, 0.9F, arcAlpha,
                     1.0F, 1.0F, 1.0F);
-            crescent(consumer, pose, px, sy + 0.04F, pz, fx, fz, sdx, sdz, ARC_TILT + wobble, ARC_HALF_WIDTH * 0.8F, 1.28F, 0.3F,
+            crescent(consumer, pose, px + bdx * 0.04F, py + bdy * 0.04F, pz + bdz * 0.04F, fx, fy, fz, sdx, sdz, bdx, bdy, bdz, ARC_TILT + wobble, ARC_HALF_WIDTH * 0.8F, 1.28F, 0.3F,
                     arcAlpha * 0.9F, 1.0F, 0.95F, 0.75F);
         }
         float flash = (age - (TwilightSlashEntity.FLIGHT_END - 3.0F)) / 11.0F;
         if (flash > 0 && flash < 1) {
-            bill(consumer, pose, GLOW, tx, sy, tz, 2.5F + flash * 5.0F, argb(1 - flash, 1.0F, 0.6F, 0.25F), left, up);
-            bill(consumer, pose, STAR, tx, sy, tz, 3.0F + flash * 3.0F, argb(1 - flash, 1.0F, 0.9F, 0.7F), left, up);
+            bill(consumer, pose, GLOW, tx, ty, tz, 2.5F + flash * 5.0F, argb(1 - flash, 1.0F, 0.6F, 0.25F), left, up);
+            bill(consumer, pose, STAR, tx, ty, tz, 3.0F + flash * 3.0F, argb(1 - flash, 1.0F, 0.9F, 0.7F), left, up);
         }
     }
 
     private static void crescent(VertexConsumer consumer, PoseStack.Pose pose, float cx, float cy, float cz,
-                                 float fx, float fz, float sdx, float sdz, float tilt,
+                                 float fx, float fy, float fz, float sdx, float sdz,
+                                 float bdx, float bdy, float bdz, float tilt,
                                  float halfWidth, float bulge, float thick, float alpha,
                                  float red, float green, float blue) {
-        float bx = fx * Mth.cos(tilt);
-        float by = Mth.sin(tilt);
-        float bz = fz * Mth.cos(tilt);
+        float ct = Mth.cos(tilt);
+        float st = Mth.sin(tilt);
+        float bx = fx * ct + bdx * st;
+        float by = fy * ct + bdy * st;
+        float bz = fz * ct + bdz * st;
         float[] ox = new float[ARC_SEGS + 1];
         float[] oy = new float[ARC_SEGS + 1];
         float[] oz = new float[ARC_SEGS + 1];
@@ -197,7 +215,7 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
     }
 
     private static void ribbon(VertexConsumer consumer, PoseStack.Pose pose, float sx, float sy, float sz,
-                               float dx, float dz, float progress, float wx, float wy, float wz,
+                               float dx, float dy, float dz, float progress, float wx, float wy, float wz,
                                float halfWidth, float alpha) {
         float midV = (NEB.v0() + NEB.v1()) * 0.5F;
         for (int segment = 0; segment < TRAIL_SEGS; segment++) {
@@ -206,8 +224,10 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
             float a0 = trailAlpha(q0, progress) * alpha;
             float a1 = trailAlpha(q1, progress) * alpha;
             float x0 = sx + dx * q0;
+            float y0 = sy + dy * q0;
             float z0 = sz + dz * q0;
             float x1 = sx + dx * q1;
+            float y1 = sy + dy * q1;
             float z1 = sz + dz * q1;
             boolean flip = (segment & 1) == 1;
             float u0 = flip ? NEB.u1() : NEB.u0();
@@ -215,14 +235,14 @@ public class TwilightSlashRenderer extends EntityRenderer<TwilightSlashEntity> {
             int edge = argb(0, TRAIL_DARK, TRAIL_DARK, TRAIL_DARK);
             int mid0 = argb(a0, TRAIL_DARK, TRAIL_DARK, TRAIL_DARK * 1.2F);
             int mid1 = argb(a1, TRAIL_DARK, TRAIL_DARK, TRAIL_DARK * 1.2F);
-            TwilightDomeGeo.v(consumer, pose, x0 - wx * halfWidth, sy - wy * halfWidth, z0 - wz * halfWidth, u0, NEB.v0(), edge, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x0, sy, z0, u0, midV, mid0, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x1, sy, z1, u1, midV, mid1, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x1 - wx * halfWidth, sy - wy * halfWidth, z1 - wz * halfWidth, u1, NEB.v0(), edge, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x0, sy, z0, u0, midV, mid0, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x0 + wx * halfWidth, sy + wy * halfWidth, z0 + wz * halfWidth, u0, NEB.v1(), edge, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x1 + wx * halfWidth, sy + wy * halfWidth, z1 + wz * halfWidth, u1, NEB.v1(), edge, FB, 0, 1, 0);
-            TwilightDomeGeo.v(consumer, pose, x1, sy, z1, u1, midV, mid1, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x0 - wx * halfWidth, y0 - wy * halfWidth, z0 - wz * halfWidth, u0, NEB.v0(), edge, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x0, y0, z0, u0, midV, mid0, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x1, y1, z1, u1, midV, mid1, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x1 - wx * halfWidth, y1 - wy * halfWidth, z1 - wz * halfWidth, u1, NEB.v0(), edge, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x0, y0, z0, u0, midV, mid0, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x0 + wx * halfWidth, y0 + wy * halfWidth, z0 + wz * halfWidth, u0, NEB.v1(), edge, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x1 + wx * halfWidth, y1 + wy * halfWidth, z1 + wz * halfWidth, u1, NEB.v1(), edge, FB, 0, 1, 0);
+            TwilightDomeGeo.v(consumer, pose, x1, y1, z1, u1, midV, mid1, FB, 0, 1, 0);
         }
     }
 
