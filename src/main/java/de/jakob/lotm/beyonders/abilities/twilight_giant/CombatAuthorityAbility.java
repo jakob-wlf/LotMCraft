@@ -480,7 +480,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
             if (aroundTarget) {
                 cage.moveTo(center.x, center.y - radius, center.z, 0.0F, 0.0F);
             } else {
-                cage.moveTo(center.x, AbilityUtil.getTargetBlock(owner, TARGET_RANGE).getY() - 25.0D, center.z, 0.0F, 0.0F);
+                cage.moveTo(center.x, AbilityUtil.getTargetBlock(owner, TARGET_RANGE).getY() - 15.0D, center.z, 0.0F, 0.0F);
             }
             level.addFreshEntity(cage);
             visual = cage.getUUID();
