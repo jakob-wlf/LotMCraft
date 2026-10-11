@@ -67,7 +67,7 @@ public class MaternalEmbraceAbility extends Ability {
             return;
         }
 
-        int duration = 20 * 2;
+        int duration = 20 * 8;
 
         if(BeyonderData.getPathway(targetEntity).equals("death")){
             duration = 20 * 15;
