@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.error.handler;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ArsenalOfDawnAbility;
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.LuckComponent;
@@ -227,7 +228,7 @@ public class TheftHandler {
 
         if(entity instanceof Player player) {
             for(ItemStack stack : player.getInventory().items) {
-                if(!stack.isEmpty() && !items.contains(stack.getItem())) {
+                if(!stack.isEmpty() && ArsenalOfDawnAbility.kind(stack).isEmpty() && !items.contains(stack.getItem())) {
                     items.add(stack.getItem());
                 }
             }
@@ -302,7 +303,8 @@ public class TheftHandler {
     private static void stealFromPlayer(Player player, Player thief) {
         ArrayList<Integer> nonEmptySlots = new ArrayList<>();
         for (int i = 0; i < player.getInventory().items.size(); i++) {
-            if (!player.getInventory().items.get(i).isEmpty()) {
+            ItemStack stack = player.getInventory().items.get(i);
+            if (!stack.isEmpty() && ArsenalOfDawnAbility.kind(stack).isEmpty()) {
                 nonEmptySlots.add(i);
             }
         }

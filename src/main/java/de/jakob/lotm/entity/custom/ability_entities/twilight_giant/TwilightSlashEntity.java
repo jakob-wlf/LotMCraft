@@ -32,7 +32,11 @@ public class TwilightSlashEntity extends TwilightVisualEntity {
 
     public void setOwner(Entity owner) {
         this.entityData.set(OWNER, owner.getId());
-        this.entityData.set(ARC_Y, (float) owner.getY() + ARC_HEIGHT);
+    }
+
+    public void setAim(Vec3 end) {
+        setPos(end.x, end.y, end.z);
+        this.entityData.set(ARC_Y, (float) end.y);
     }
 
     public Entity owner() {
@@ -50,7 +54,7 @@ public class TwilightSlashEntity extends TwilightVisualEntity {
             double x = Mth.lerp(partial, owner.xo, owner.getX());
             double y = Mth.lerp(partial, owner.yo, owner.getY());
             double z = Mth.lerp(partial, owner.zo, owner.getZ());
-            return new Vec3(x, y + ARC_HEIGHT, z);
+            return new Vec3(x, y + owner.getEyeHeight() - 0.3D, z);
         }
         return new Vec3(getX(), getY() + ARC_HEIGHT, getZ());
     }

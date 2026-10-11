@@ -208,15 +208,14 @@ public class TwilightSwordAbility extends ToggleAbility {
 
     private static void chargedStrike(ServerLevel level, ServerPlayer player) {
         Vec3 start = player.getEyePosition().add(0, -0.3, 0);
-        Vec3 forward = player.getLookAngle().normalize();
+        Vec3 look = player.getLookAngle();
+        Vec3 forward = look.lengthSqr() < 1.0E-4 ? new Vec3(0, 0, 1) : look.normalize();
         int damage = STRIKE_DAMAGE;
         Set<UUID> struck = new HashSet<>();
         int[] step = {0};
-        Vec3 travel = new Vec3(forward.x, 0, forward.z);
-        travel = travel.lengthSqr() < 1.0E-4 ? new Vec3(1, 0, 0) : travel.normalize();
-        Vec3 end = player.position().add(travel.scale(STRIKE_LENGTH));
+        Vec3 end = start.add(forward.scale(STRIKE_LENGTH));
         TwilightSlashEntity slash = new TwilightSlashEntity(ModEntities.TWILIGHT_SLASH.get(), level);
-        slash.setPos(end.x, player.getY(), end.z);
+        slash.setAim(end);
         slash.setOwner(player);
         level.addFreshEntity(slash);
         level.playSound(null, player.blockPosition(), SoundEvents.BLAZE_SHOOT, player.getSoundSource(), 3f, 0.4f);

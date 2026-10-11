@@ -29,8 +29,11 @@ import java.util.Map;
 
 public class DawnArmorAbility extends ToggleAbility {
 
+    private static DawnArmorAbility instance;
+
     public DawnArmorAbility(String id) {
         super(id);
+        instance = this;
         tickRate = 20;
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(320f, 240f, 180f, 140f, 110f, 90f, 80f));
@@ -46,14 +49,19 @@ public class DawnArmorAbility extends ToggleAbility {
         return 80;
     }
 
+    public static void dismiss(ServerLevel level, LivingEntity entity) {
+        if (instance != null && instance.isActiveForEntity(entity)) instance.cancel(level, entity);
+    }
+
     @Override
     public void start(Level level, LivingEntity entity) {
+        if (level instanceof ServerLevel serverLevel) SilverArmorAbility.dismiss(serverLevel, entity);
         if (!(entity instanceof Player player)) return;
         float reduction = reduction(BeyonderData.getSequence(player));
-        equip(player, EquipmentSlot.HEAD, piece(Items.IRON_HELMET, ArsenalOfDawnAbility.HELMET, reduction, EquipmentSlotGroup.HEAD));
-        equip(player, EquipmentSlot.CHEST, piece(Items.IRON_CHESTPLATE, ArsenalOfDawnAbility.CHESTPLATE, reduction, EquipmentSlotGroup.CHEST));
-        equip(player, EquipmentSlot.LEGS, piece(Items.IRON_LEGGINGS, ArsenalOfDawnAbility.LEGGINGS, reduction, EquipmentSlotGroup.LEGS));
-        equip(player, EquipmentSlot.FEET, piece(Items.IRON_BOOTS, ArsenalOfDawnAbility.BOOTS, reduction, EquipmentSlotGroup.FEET));
+        equip(player, EquipmentSlot.HEAD, piece(level, Items.IRON_HELMET, ArsenalOfDawnAbility.HELMET, reduction, EquipmentSlotGroup.HEAD));
+        equip(player, EquipmentSlot.CHEST, piece(level, Items.IRON_CHESTPLATE, ArsenalOfDawnAbility.CHESTPLATE, reduction, EquipmentSlotGroup.CHEST));
+        equip(player, EquipmentSlot.LEGS, piece(level, Items.IRON_LEGGINGS, ArsenalOfDawnAbility.LEGGINGS, reduction, EquipmentSlotGroup.LEGS));
+        equip(player, EquipmentSlot.FEET, piece(level, Items.IRON_BOOTS, ArsenalOfDawnAbility.BOOTS, reduction, EquipmentSlotGroup.FEET));
         if (level instanceof ServerLevel serverLevel) {
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, player.position().add(0, 1.2, 0), 40, 0.5, 0.8, 0.5, 0.05);
         }
@@ -75,11 +83,11 @@ public class DawnArmorAbility extends ToggleAbility {
         return switch (sequence) {
             case 0 -> 0.30F;
             case 1, 2 -> 0.25F;
-            default -> 0.20F;
+            default -> 0.15F;
         };
     }
 
-    private static ItemStack piece(Item base, String kind, float reduction, EquipmentSlotGroup slot) {
+    private static ItemStack piece(Level level, Item base, String kind, float reduction, EquipmentSlotGroup slot) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "dawn_" + kind + "_armor");
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
                 .add(Attributes.ARMOR, new AttributeModifier(id, 0, AttributeModifier.Operation.ADD_VALUE), slot)
@@ -87,6 +95,7 @@ public class DawnArmorAbility extends ToggleAbility {
                 .withTooltip(false);
         ItemStack stack = ArsenalOfDawnAbility.create(base, kind, modifiers);
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putFloat(ArsenalOfDawnAbility.REDUCTION_TAG, reduction));
+        ArsenalOfDawnAbility.bind(level, stack);
         return stack;
     }
 

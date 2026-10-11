@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.death.EyeOfDeathAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.item.ModItems;
@@ -14,6 +15,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -44,6 +46,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Unbreakable;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -60,16 +64,19 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.entity.item.ItemTossEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ArsenalOfDawnAbility extends SelectableAbility {
@@ -105,6 +112,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     private static final String TAG = "lotm_dawn_gear";
     public static final String REDUCTION_TAG = "lotm_dawn_reduction";
     private static final String OWNER_TAG = "lotm_dawn_owner";
+    private static final Set<UUID> restoringArmor = new HashSet<>();
     private static final float EVIL_DAMAGE_MULTIPLIER = 2.0f;
     private static final String[] PURIFICATION_FLAGS = {"purification"};
     private static final int UPKEEP_INTERVAL = 20;
@@ -245,6 +253,13 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         return stack;
     }
 
+    public static void bind(Level level, ItemStack stack) {
+        stack.enchant(level.registryAccess().registryOrThrow(Registries.ENCHANTMENT).getHolderOrThrow(Enchantments.BINDING_CURSE), 1);
+        ItemEnchantments enchants = stack.get(DataComponents.ENCHANTMENTS);
+        if (enchants != null) stack.set(DataComponents.ENCHANTMENTS, enchants.withTooltip(false));
+        stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false);
+    }
+
     public static String kind(ItemStack stack) {
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
         if (data == null || !data.contains(TAG)) return "";
@@ -312,6 +327,74 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         if (kind(stack).isEmpty() || isShareable(stack)) return;
         event.setCanceled(true);
         event.getPlayer().getInventory().add(stack);
+    }
+
+    @SubscribeEvent
+    public static void onArmorChange(LivingEquipmentChangeEvent event) {
+        if (!(event.getEntity() instanceof Player player) || player.level().isClientSide()) return;
+        if (restoringArmor.contains(player.getUUID()) || player.isDeadOrDying()) return;
+        EquipmentSlot slot = event.getSlot();
+        if (slot.getType() != EquipmentSlot.Type.HUMANOID_ARMOR) return;
+        ItemStack from = event.getFrom();
+        if (!wornArmorLocked(player, from)) return;
+        ItemStack to = event.getTo();
+        if (is(from, ARMOR) && is(to, ARMOR)) return;
+        if (is(from, SILVER_ARMOR) && is(to, SILVER_ARMOR)) return;
+        ItemStack snapshot = from.copy();
+        boolean kept;
+        restoringArmor.add(player.getUUID());
+        try {
+            kept = keepArmor(player, slot, snapshot, to);
+        } finally {
+            restoringArmor.remove(player.getUUID());
+        }
+        if (kept || !(player.level() instanceof ServerLevel serverLevel)) return;
+        ServerScheduler.scheduleDelayed(1, () -> {
+            if (!player.isAlive() || player.isDeadOrDying() || restoringArmor.contains(player.getUUID())) return;
+            if (!wornArmorLocked(player, snapshot)) return;
+            if (samePiece(player.getItemBySlot(slot), snapshot)) return;
+            restoringArmor.add(player.getUUID());
+            try {
+                keepArmor(player, slot, snapshot, player.getItemBySlot(slot));
+            } finally {
+                restoringArmor.remove(player.getUUID());
+            }
+        }, serverLevel);
+    }
+
+    private static boolean wornArmorLocked(Player player, ItemStack stack) {
+        if (is(stack, ARMOR)) return toggleActive(player, "dawn_armor_ability");
+        return is(stack, SILVER_ARMOR) && toggleActive(player, "silver_armor_ability");
+    }
+
+    private static boolean toggleActive(Player player, String id) {
+        for (ToggleAbility ability : ToggleAbility.getActiveAbilitiesForEntity(player)) {
+            if (id.equals(ability.getId())) return true;
+        }
+        return false;
+    }
+
+    private static boolean keepArmor(Player player, EquipmentSlot slot, ItemStack from, ItemStack to) {
+        ItemStack carried = player.containerMenu.getCarried();
+        if (samePiece(carried, from)) {
+            player.containerMenu.setCarried(to);
+            player.setItemSlot(slot, carried);
+            return true;
+        }
+        Inventory inventory = player.getInventory();
+        ItemStack worn = player.getItemBySlot(slot);
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            ItemStack stack = inventory.getItem(i);
+            if (stack == worn || !samePiece(stack, from)) continue;
+            inventory.setItem(i, to);
+            player.setItemSlot(slot, stack);
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean samePiece(ItemStack stack, ItemStack from) {
+        return !stack.isEmpty() && !from.isEmpty() && (stack == from || ItemStack.matches(stack, from));
     }
 
     @SubscribeEvent

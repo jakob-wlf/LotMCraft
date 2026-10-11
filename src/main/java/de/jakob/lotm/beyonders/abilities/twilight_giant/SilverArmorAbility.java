@@ -41,9 +41,11 @@ public class SilverArmorAbility extends ToggleAbility {
     private static final float HIGH_TIER_REDUCTION = 0.5f;
 
     private static final Map<UUID, Integer> charges = new HashMap<>();
+    private static SilverArmorAbility instance;
 
     public SilverArmorAbility(String id) {
         super(id);
+        instance = this;
         tickRate = 20;
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(400f, 250f, 160f, 100f));
@@ -59,15 +61,20 @@ public class SilverArmorAbility extends ToggleAbility {
         return 100;
     }
 
+    public static void dismiss(ServerLevel level, LivingEntity entity) {
+        if (instance != null && instance.isActiveForEntity(entity)) instance.cancel(level, entity);
+    }
+
     @Override
     public void start(Level level, LivingEntity entity) {
+        if (level instanceof ServerLevel serverLevel) DawnArmorAbility.dismiss(serverLevel, entity);
         if (!(entity instanceof Player player)) return;
         charges.put(player.getUUID(), HIGH_TIER_CHARGES);
         float reduction = reduction(BeyonderData.getSequence(player));
-        equip(player, EquipmentSlot.HEAD, piece(Items.IRON_HELMET, ArsenalOfDawnAbility.SILVER_HELMET, reduction, EquipmentSlotGroup.HEAD));
-        equip(player, EquipmentSlot.CHEST, piece(Items.IRON_CHESTPLATE, ArsenalOfDawnAbility.SILVER_CHESTPLATE, reduction, EquipmentSlotGroup.CHEST));
-        equip(player, EquipmentSlot.LEGS, piece(Items.IRON_LEGGINGS, ArsenalOfDawnAbility.SILVER_LEGGINGS, reduction, EquipmentSlotGroup.LEGS));
-        equip(player, EquipmentSlot.FEET, piece(Items.IRON_BOOTS, ArsenalOfDawnAbility.SILVER_BOOTS, reduction, EquipmentSlotGroup.FEET));
+        equip(player, EquipmentSlot.HEAD, piece(level, Items.IRON_HELMET, ArsenalOfDawnAbility.SILVER_HELMET, reduction, EquipmentSlotGroup.HEAD));
+        equip(player, EquipmentSlot.CHEST, piece(level, Items.IRON_CHESTPLATE, ArsenalOfDawnAbility.SILVER_CHESTPLATE, reduction, EquipmentSlotGroup.CHEST));
+        equip(player, EquipmentSlot.LEGS, piece(level, Items.IRON_LEGGINGS, ArsenalOfDawnAbility.SILVER_LEGGINGS, reduction, EquipmentSlotGroup.LEGS));
+        equip(player, EquipmentSlot.FEET, piece(level, Items.IRON_BOOTS, ArsenalOfDawnAbility.SILVER_BOOTS, reduction, EquipmentSlotGroup.FEET));
         if (level instanceof ServerLevel serverLevel) {
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.WHITE_ASH, player.position().add(0, 1, 0), 60, 0.5, 0.9, 0.5, 0.05);
         }
@@ -98,13 +105,12 @@ public class SilverArmorAbility extends ToggleAbility {
 
     private static float reduction(int sequence) {
         return switch (Math.min(Math.max(sequence, 0), 3)) {
-            case 0 -> 0.25F;
-            case 1, 2 -> 0.22F;
+            case 0, 1, 2 -> 0.25F;
             default -> 0.20F;
         };
     }
 
-    private static ItemStack piece(Item base, String kind, float reduction, EquipmentSlotGroup slot) {
+    private static ItemStack piece(Level level, Item base, String kind, float reduction, EquipmentSlotGroup slot) {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
                 .add(Attributes.ARMOR, new AttributeModifier(id(kind, "armor"), 0, AttributeModifier.Operation.ADD_VALUE), slot)
                 .add(Attributes.KNOCKBACK_RESISTANCE, new AttributeModifier(id(kind, "knockback"), KNOCKBACK_RESISTANCE, AttributeModifier.Operation.ADD_VALUE), slot)
@@ -112,6 +118,7 @@ public class SilverArmorAbility extends ToggleAbility {
                 .withTooltip(false);
         ItemStack stack = ArsenalOfDawnAbility.create(base, kind, modifiers);
         CustomData.update(DataComponents.CUSTOM_DATA, stack, tag -> tag.putFloat(ArsenalOfDawnAbility.REDUCTION_TAG, reduction));
+        ArsenalOfDawnAbility.bind(level, stack);
         return stack;
     }
 
@@ -122,6 +129,7 @@ public class SilverArmorAbility extends ToggleAbility {
     private static void equip(Player player, EquipmentSlot slot, ItemStack piece) {
         ItemStack previous = player.getItemBySlot(slot);
         player.setItemSlot(slot, piece);
+        if (player.getItemBySlot(slot) == previous) return;
         if (!previous.isEmpty() && !player.getInventory().add(previous)) player.drop(previous, false);
     }
 }
