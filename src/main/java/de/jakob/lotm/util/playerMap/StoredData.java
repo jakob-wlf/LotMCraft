@@ -95,11 +95,11 @@ public record StoredData(String pathway, Integer sequence, HonorificName honorif
         String sefirot = claimedSefirot;
 
         // Revert pathway from history if a domain-switch was recorded here
-        String regressedPathway;
+        String regressedPathway = "none";
         if (becomesNonBeyonder) {
             regressedPathway = "none";
             sefirot = "";
-        } else {
+        } else if(newSequence < pathwayHistory.length) {
             String historyEntry = pathwayHistory[newSequence];
             regressedPathway = (historyEntry != null && !historyEntry.isEmpty()) ? historyEntry : pathway;
         }

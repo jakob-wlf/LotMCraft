@@ -15,6 +15,7 @@ import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightnin
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
 import de.jakob.lotm.network.packets.toClient.HotGroundEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -49,6 +50,18 @@ public class MiracleHandler {
 
 
     public static void performMiracle(String miracleId, ServerLevel level, LivingEntity caster) {
+        Vec3 pos = caster.position();
+        BlockPos blockPos = BlockPos.containing(pos);
+
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
+                (ServerLevel) level, pos, 128
+        );
+
         switch (miracleId) {
             case "summon_village" -> summonStructure(level, caster, "village_plains", "minecraft");
             case "summon_end_city" -> summonStructure(level, caster, "end_city", "minecraft");
@@ -83,10 +96,6 @@ public class MiracleHandler {
     }
 
     private static void slowTime(ServerLevel level, LivingEntity caster) {
-        Vec3 center = caster.position();
-
-        EffectManager.playEffect(EffectIds.MIRACLE, center.x, center.y, center.z, level);
-
         float timeMultiplier = .2f;
         TimeChangeEntity timeChangeEntity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), level, 20 * 6, caster.getUUID(), 30, timeMultiplier);
         timeChangeEntity.setPos(caster.getX(), caster.getY(), caster.getZ());
@@ -227,8 +236,6 @@ public class MiracleHandler {
     private static void reverseGravity(ServerLevel level, LivingEntity caster) {
         Vec3 centerPos = caster.position();
 
-        EffectManager.playEffect(EffectIds.MIRACLE, centerPos.x, centerPos.y, centerPos.z, level);
-
         HashSet<LivingEntity> affectedEntities = new HashSet<>();
 
         ServerScheduler.scheduleForDuration(0, 2, 20 * 15, () -> {
@@ -266,8 +273,6 @@ public class MiracleHandler {
 
         float damage = ability.baseDamage * 7.5f;
         Vec3 targetPos = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 2);
-
-        EffectManager.playEffect(EffectIds.MIRACLE, targetPos.x, targetPos.y, targetPos.z, level);
 
         VolcanoEntity volcano = new VolcanoEntity(level, targetPos, damage, caster);
         level.addFreshEntity(volcano);
@@ -325,12 +330,9 @@ public class MiracleHandler {
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(caster, ability.baseDistance, 3);
 
-        EffectManager.playEffect(EffectIds.MIRACLE, targetLoc.x, targetLoc.y, targetLoc.z, level);
-
         MeteorEntity meteor = new MeteorEntity(level,
                 3.25f, damage, 4, caster, BeyonderData.isGriefingEnabled(caster),
                 0, 45);
-
         meteor.setPosition(targetLoc);
         level.addFreshEntity(meteor);
     }
@@ -374,8 +376,6 @@ public class MiracleHandler {
             System.err.println("Failed to generate valid " + structureName + " structure");
             return;
         }
-
-        EffectManager.playEffect(EffectIds.MIRACLE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, level);
 
         // Calculate the chunk range needed
         BoundingBox boundingBox = structureStart.getBoundingBox();

@@ -3,6 +3,7 @@ package de.jakob.lotm.gamerule;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
+import de.jakob.lotm.network.packets.toClient.SyncPreLoadGamerulePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.GameRules;
@@ -20,6 +21,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.BooleanValue> ALLOW_ARTIFACTS_WITH_NO_NEGATIVES;
     public static GameRules.Key<GameRules.IntegerValue> CHARSTACK_REQUIRED_FOR_APOTHEOSIS;
     public static GameRules.Key<GameRules.BooleanValue> SEQUENCE_DIMENSION_LOCK;
+    public static GameRules.Key<GameRules.BooleanValue> PRE_LOAD_EFFECTS;
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
 
@@ -50,6 +52,14 @@ public class ModGameRules {
                 "disableFlightInCombat",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
+        );
+
+        PRE_LOAD_EFFECTS = GameRules.register(
+                "preLoadEffects",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true, (server, value) -> {
+                    PacketHandler.sendToAllPlayers(new SyncPreLoadGamerulePacket(value.get()));
+                })
         );
 
         APPLY_NOT_ACTING_PENALTY = GameRules.register(

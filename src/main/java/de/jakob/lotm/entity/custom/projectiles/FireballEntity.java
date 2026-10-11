@@ -1,9 +1,16 @@
 package de.jakob.lotm.entity.custom.projectiles;
 
+import com.jcraft.jorbis.Block;
+import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
+import com.lowdragmc.photon.client.fx.FX;
+import com.lowdragmc.photon.client.fx.FXHelper;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -12,6 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,6 +31,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.jetbrains.annotations.NotNull;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class FireballEntity extends AbstractArrow {
@@ -35,6 +44,7 @@ public class FireballEntity extends AbstractArrow {
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(FireballEntity.class, EntityDataSerializers.FLOAT);
 
     Vec3 lastPos = null;
+    Double blocksPerTick = null;
 
     private int ticks = 0;
     private int petrifiedTicks = 0;
@@ -99,13 +109,40 @@ public class FireballEntity extends AbstractArrow {
 
         if(lastPos != null) {
             float size = getSize();
-            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, lastPos, Math.round(9 * size), .2 * size, 0.02);
             if(size < 1.5)
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, lastPos, Math.round(4 * size), .2 * size, .02);
             else
                 ParticleUtil.spawnParticles((ServerLevel) level, dust, lastPos, Math.round(3 * size), .2 * size, .02);
+
+            BlockPos blockPos = BlockPos.containing(lastPos);
+
+            double offsetX = lastPos.x - (blockPos.getX() + 0.5);
+            double offsetY = lastPos.y - (blockPos.getY() + 0.5);
+            double offsetZ = lastPos.z - (blockPos.getZ() + 0.5);
+
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
+                    (ServerLevel) level, lastPos, 128
+            );
+
+            if(blocksPerTick != null && blocksPerTick > 0) {
+                double velocity = blocksPerTick;
+                Vec3 halfwayPos = lastPos.add(this.getDeltaMovement().normalize().scale(velocity * -0.5));
+
+                blockPos = BlockPos.containing(halfwayPos);
+
+                offsetX = halfwayPos.x - (blockPos.getX() + 0.5);
+                offsetY = halfwayPos.y - (blockPos.getY() + 0.5);
+                offsetZ = halfwayPos.z - (blockPos.getZ() + 0.5);
+
+                PacketHandler.sendToNearbyPlayers(
+                        new PlayPhotonBlockEffectPacket("flame_particle", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
+                        (ServerLevel) level, lastPos, 128
+                );
+            }
         }
 
+        blocksPerTick = lastPos != null ? lastPos.distanceTo(position()) : null;
         lastPos = position();
     }
 

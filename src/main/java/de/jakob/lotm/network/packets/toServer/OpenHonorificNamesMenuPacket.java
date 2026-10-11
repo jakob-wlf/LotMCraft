@@ -40,8 +40,8 @@ public record OpenHonorificNamesMenuPacket() implements CustomPacketPayload {
                 var dataOpt = BeyonderData.playerMap.get(player);
                 var honorificName = dataOpt.isPresent() ? dataOpt.get().honorificName()
                         : HonorificName.EMPTY;
-                String pathway = BeyonderData.getPathway(player);
-                int sequence = BeyonderData.getSequence(player);
+                String pathway = BeyonderData.getPathway(player, true);
+                int sequence = BeyonderData.getSequence(player, true);
 
                 LinkedList<PendingPrayer> pendingPrayers =
                         HonorificNamesEventHandler.getPendingPrayers(player.getUUID());

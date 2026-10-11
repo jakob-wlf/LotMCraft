@@ -521,10 +521,10 @@ public class TransformationRenderer {
 
         poseStack.pushPose();
 
-        poseStack.translate(0.0, entity.getBbHeight() / 2.0 + .75, 0.0);
+        poseStack.translate(0.0, entity.getBbHeight() / 2.0 - 1, 0.0);
 
         float yaw = Mth.lerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180 -yaw));
+        poseStack.mulPose(Axis.YP.rotationDegrees(-yaw));
 
         poseStack.scale(2.4F, 2.4F, 2.4F);
 
@@ -637,13 +637,13 @@ public class TransformationRenderer {
         float limbSwing = 0;
         float limbSwingAmount = 0;
 
-//        if (entity instanceof LivingEntity living) {
-//            limbSwing = living.walkAnimation.position(partialTick);
-//            limbSwingAmount = living.walkAnimation.speed(partialTick);
-//        }
-//
-//        // Setup animation with proper parameters
-//        tyrantMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
+        if (entity instanceof LivingEntity living) {
+            limbSwing = living.walkAnimation.position(partialTick);
+            limbSwingAmount = living.walkAnimation.speed(partialTick);
+        }
+
+        // Setup animation with proper parameters
+        wofMythicalCreatureModel.setupAnim(entity, limbSwing, limbSwingAmount, entity.tickCount + partialTick, 0, 0);
 
         wofMythicalCreatureModel.renderToBuffer(poseStack, vertexConsumer, packedLight,
                 OverlayTexture.NO_OVERLAY, 0xFFFFFFFF);

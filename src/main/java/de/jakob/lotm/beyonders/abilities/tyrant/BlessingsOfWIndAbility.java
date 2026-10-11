@@ -130,7 +130,5 @@ public class BlessingsOfWIndAbility extends SelectableAbility {
 
             PhysicalEnhancementsAbility.removeEnhancementBoost(target, "blessings_of_wind");
         }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
-
-
     }
 }

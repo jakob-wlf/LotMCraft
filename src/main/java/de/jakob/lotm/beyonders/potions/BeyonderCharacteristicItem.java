@@ -1,12 +1,14 @@
 package de.jakob.lotm.beyonders.potions;
 
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -40,6 +42,13 @@ public class BeyonderCharacteristicItem extends Item {
     }
 
     @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        entity.setInvulnerable(true);
+        entity.setUnlimitedLifetime();
+        return false;
+    }
+
+    @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
@@ -51,22 +60,26 @@ public class BeyonderCharacteristicItem extends Item {
 
         if(!(item instanceof BeyonderCharacteristicItem beChar)) return InteractionResultHolder.fail(stack);
 
+        if(ControllingUtils.isControlling(player)){
+            return InteractionResultHolder.fail(stack);
+        }
+
         int seq = beChar.getSequence();
         String path = beChar.getPathway();
 
-        int playerSeq = BeyonderData.getSequence(player);
-        String playerPath = BeyonderData.getPathway(player);
+        int playerSeq = BeyonderData.getSequence(player, false, true);
+        String playerPath = BeyonderData.getPathway(player, true);
 
-        if(playerPath.equals("red_priest") && path.equals(playerPath)){
-            if(playerSeq == 3 && seq <= 2){
-                var component = player.getData(ModAttachments.RITUALS.get());
-                if(component.getStage() == 3) {
-                    component.setStage(4);
-
-                    return InteractionResultHolder.success(ItemStack.EMPTY);
-                }
-            }
-        }
+//        if(playerPath.equals("red_priest") && path.equals(playerPath)){
+//            if(playerSeq == 3 && seq <= 2){
+//                var component = player.getData(ModAttachments.RITUALS.get());
+//                if(component.getStage() == 3) {
+//                    component.setStage(4);
+//
+//                    return InteractionResultHolder.success(ItemStack.EMPTY);
+//                }
+//            }
+//        }
 
         if(path.equals(playerPath)){
             if(seq >= playerSeq){

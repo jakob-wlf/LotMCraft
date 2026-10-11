@@ -8,11 +8,12 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Quaternionf;
 
 public record PlayPhotonBlockEffectPacket(String effectPath, BlockPos pos, double xOffset, double yOffset, double zOffset,
-                                          double scale, Quaternionf rot, int duration, boolean checkState, boolean allowMulti) implements CustomPacketPayload {
+                                          double scale, Quaternionf rot, int duration, boolean checkState, boolean allowMulti, Vec3 scaleVector) implements CustomPacketPayload {
 
     public static final Type<PlayPhotonBlockEffectPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "play_photon_block_effect"));
@@ -39,6 +40,16 @@ public record PlayPhotonBlockEffectPacket(String effectPath, BlockPos pos, doubl
                 ByteBufCodecs.INT.encode(buf, packet.duration());
                 ByteBufCodecs.BOOL.encode(buf, packet.checkState());
                 ByteBufCodecs.BOOL.encode(buf, packet.allowMulti());
+                if(packet.scaleVector != null) {
+                    ByteBufCodecs.DOUBLE.encode(buf, packet.scaleVector.x());
+                    ByteBufCodecs.DOUBLE.encode(buf, packet.scaleVector.y());
+                    ByteBufCodecs.DOUBLE.encode(buf, packet.scaleVector.z());
+                }
+                else {
+                    ByteBufCodecs.DOUBLE.encode(buf, -1.0);
+                    ByteBufCodecs.DOUBLE.encode(buf, -1.0);
+                    ByteBufCodecs.DOUBLE.encode(buf, -1.0);
+                }
             },
             buf -> {
                 String effectPath = ByteBufCodecs.STRING_UTF8.decode(buf);
@@ -55,7 +66,14 @@ public record PlayPhotonBlockEffectPacket(String effectPath, BlockPos pos, doubl
                 int duration = ByteBufCodecs.INT.decode(buf);
                 boolean checkState = ByteBufCodecs.BOOL.decode(buf);
                 boolean allowMulti = ByteBufCodecs.BOOL.decode(buf);
-                return new PlayPhotonBlockEffectPacket(effectPath, pos, xOffset, yOffset, zOffset, scale, rot, duration, checkState, allowMulti);
+                Vec3 scaleVector = null;
+                double scaleX = ByteBufCodecs.DOUBLE.decode(buf);
+                double scaleY = ByteBufCodecs.DOUBLE.decode(buf);
+                double scaleZ = ByteBufCodecs.DOUBLE.decode(buf);
+                if(scaleX != -1 && scaleY != -1 && scaleZ != -1 ) {
+                    scaleVector = new Vec3(scaleX, scaleY, scaleZ);
+                }
+                return new PlayPhotonBlockEffectPacket(effectPath, pos, xOffset, yOffset, zOffset, scale, rot, duration, checkState, allowMulti, scaleVector);
             }
     );
     @Override

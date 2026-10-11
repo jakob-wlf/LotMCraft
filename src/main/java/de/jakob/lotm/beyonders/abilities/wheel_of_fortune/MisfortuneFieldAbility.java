@@ -77,4 +77,19 @@ public class MisfortuneFieldAbility extends Ability {
             default -> 0;
         };
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel serverLevel)) {
+            return false;
+        }
+
+        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20 * multiplier(entity))
+                .stream()
+                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
+    }
 }

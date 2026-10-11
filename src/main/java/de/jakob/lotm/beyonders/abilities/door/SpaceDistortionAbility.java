@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -47,7 +48,7 @@ public class SpaceDistortionAbility extends Ability {
         int duration = 20 * 10;
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
-        EffectManager.playEffect(EffectIds.SPACE_DISTORTION, targetLoc.x(), targetLoc.y(), targetLoc.z(), serverLevel);
+        EffectManager.playEffect(EffectIds.SPACE_DISTORTION, targetLoc.x(), targetLoc.y(), targetLoc.z(), serverLevel, EffectParams.ofDuration(20 * 20));
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> AbilityUtil.getAllNearbyEntities(entity, serverLevel, targetLoc, 60).forEach(e -> {
             e.setDeltaMovement(targetLoc.subtract(e.position()).scale(.04));

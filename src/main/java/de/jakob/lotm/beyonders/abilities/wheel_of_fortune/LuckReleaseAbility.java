@@ -96,4 +96,14 @@ public class LuckReleaseAbility extends Ability {
             default -> 0;
         };
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        LuckAccumulationComponent component = entity.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT.get());
+        return component.getTicksAccumulated() >= 20 * 60 * 2;
+    }
 }

@@ -1,0 +1,15 @@
+{
+  "vertex": "spacefrag:sf_model",
+  "fragment": "spacefrag:sf_void",
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "RimColor", "type": "float", "count": 4, "values": [2.4, 2.1, 1.7, 1] },
+    { "name": "GlowColor", "type": "float", "count": 4, "values": [1.8, 0.25, 0.2, 1] },
+    { "name": "RimPower", "type": "float", "count": 1, "values": [4] },
+    { "name": "EdgeSharp", "type": "float", "count": 1, "values": [0.1] },
+    { "name": "Pulse", "type": "float", "count": 1, "values": [0.15] }
+  ]
+}

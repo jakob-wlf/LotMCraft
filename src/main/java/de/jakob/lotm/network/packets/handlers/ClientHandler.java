@@ -226,9 +226,9 @@ public class ClientHandler {
 
     public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
         if(packet.active()) {
-            MarionetteOverlayRenderer.currentMarionette.put(
+            MarionettePanelRenderer.currentMarionette.put(
                     player.getUUID(),
-                    new MarionetteOverlayRenderer.MarionetteInfos(
+                    new MarionettePanelRenderer.MarionetteInfos(
                             packet.name(),
                             packet.health(),
                             packet.maxHealth(),
@@ -237,7 +237,7 @@ public class ClientHandler {
             );
         }
         else {
-            MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
+            MarionettePanelRenderer.currentMarionette.remove(player.getUUID());
         }
     }
 
@@ -556,19 +556,24 @@ public class ClientHandler {
             return;
         }
 
-        if(entity != Minecraft.getInstance().player) return;
+
 
         switch (packet.action()) {
             case 0 -> {
-                ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
+                toggleAbility.updateClientCache(living, true);
+                if(entity != Minecraft.getInstance().player) return;
+                StatusPanelRenderer.activeToggleAbilities.add(packet.abilityId());
                 toggleAbility.start(living.level(), living);
-                toggleAbility.updateClientCache(living, true);
             }
-            case 1 -> toggleAbility.prepareTick(living.level(), living);
+            case 1 -> {
+                if(entity != Minecraft.getInstance().player) return;
+                toggleAbility.prepareTick(living.level(), living);
+            }
             case 2 -> {
-                ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
+                toggleAbility.updateClientCache(living, false);
+                if(entity != Minecraft.getInstance().player) return;
+                StatusPanelRenderer.activeToggleAbilities.remove(packet.abilityId());
                 toggleAbility.stop(living.level(), living);
-                toggleAbility.updateClientCache(living, true);
             }
 
         }
@@ -715,7 +720,11 @@ public class ClientHandler {
         if (fx != null) {
             BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
             fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
-            fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            if(packet.scaleVector() != null) {
+                fxExecutor.setScale(packet.scaleVector().x(), packet.scaleVector().y(), packet.scaleVector().z());
+            } else {
+                fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            }
             if(packet.rot() != null) {
                 fxExecutor.setRotation(packet.rot());
             }
@@ -727,13 +736,14 @@ public class ClientHandler {
     }
 
     public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
-        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "chaos_vortex");
+        ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath());
         FX fx = FXHelper.getFX(id);
+        if(fx == null) return;
 
         Entity entity = getById(packet.entityId());
         if(entity == null) return;
 
-        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.LOOK);
         executor.setScale(packet.scale(), packet.scale(), packet.scale());
         executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
         if(packet.rot() != null)  executor.setRotation(packet.rot());

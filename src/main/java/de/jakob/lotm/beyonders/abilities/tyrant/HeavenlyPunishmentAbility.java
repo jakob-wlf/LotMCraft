@@ -57,4 +57,13 @@ public class HeavenlyPunishmentAbility extends Ability {
         GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, baseDamage, BeyonderData.isGriefingEnabled(entity), 0, 200* multiplier(entity), 0x6522a8);
         level.addFreshEntity(lightning);
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        return hasNearbyDamageableTarget(entity, (int) (70 * multiplier(entity)));
+    }
 }

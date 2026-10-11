@@ -1,0 +1,17 @@
+{
+  "vertex": "spacefrag:sf_model",
+  "fragment": "spacefrag:sf_shard",
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "BaseColor", "type": "float", "count": 4, "values": [0.04, 0.025, 0.03, 0.62] },
+    { "name": "EdgeColor", "type": "float", "count": 4, "values": [2.4, 1.6, 0.55, 1] },
+    { "name": "CrackColor", "type": "float", "count": 4, "values": [2.8, 0.35, 0.3, 1] },
+    { "name": "LightDir", "type": "float", "count": 3, "values": [-0.62, 0.42, 0.66] },
+    { "name": "EdgePower", "type": "float", "count": 1, "values": [2.4] },
+    { "name": "Seed", "type": "float", "count": 1, "values": [1] },
+    { "name": "Shimmer", "type": "float", "count": 1, "values": [0.6] }
+  ]
+}

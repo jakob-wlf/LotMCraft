@@ -38,6 +38,7 @@ import org.joml.Vector3f;
 
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.UUID;
 
 public class TravelersDoorEntity extends Entity {
     private double destX;
@@ -129,27 +130,30 @@ public class TravelersDoorEntity extends Entity {
             ServerLevel spiritWorldLevel = serverLevel.getServer().getLevel(spiritWorld);
             if (spiritWorldLevel == null) return;
 
-            String name = owner == null ? null : owner.getName().getString();
-            var factions = BeyonderData.factionStorage.getPartOfFaction(name);
-
-            FactionCore nation = null;
-            FactionCore church = null;
-
-            switch (factions.size()) {
-                case 1 -> {
-                    nation = factions.getFirst();
-                }
-                case 2 -> {
-                    nation = factions.getFirst();
-                    church = factions.getLast();
-                }
-            }
-
-            boolean allGood = true;
+//            String name = owner == null ? null : owner.getName().getString();
+//            var factions = BeyonderData.factionStorage.getPartOfFaction(name);
+//
+//            FactionCore nation = null;
+//            FactionCore church = null;
+//
+//            switch (factions.size()) {
+//                case 1 -> {
+//                    nation = factions.getFirst();
+//                }
+//                case 2 -> {
+//                    nation = factions.getFirst();
+//                    church = factions.getLast();
+//                }
+//            }
+//
+//            boolean allGood = true;
             for (Entity entity : this.level().getEntities(this, this.getBoundingBox().inflate(TELEPORT_RANGE), e -> e != this && e.isAlive())) {
                 if (!serverLevel.dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
 
                     Vec3 coords = SpiritWorldHandler.getCoordinatesInSpiritWorld(entity.position(), spiritWorldLevel);
+                    if(coords.y < 10) {
+                        coords = new Vec3(coords.x, 10, coords.z);
+                    }
                     BlockPos pos = BlockPos.containing(coords);
 
                     // elevate until not inside a block
@@ -167,24 +171,24 @@ public class TravelersDoorEntity extends Entity {
                             Set.of(), entity.getYRot(), entity.getXRot());
 
 
-                    if (owner != null) {
-                        if (BeyonderData.getPathway(owner).equals("door") && BeyonderData.getSequence(owner) == 5) {
-                            if (entity instanceof ServerPlayer target) {
-                                if (nation != null && nation.isPartOfFaction(target.getName().getString()))
-                                    allGood = false;
-                                if (church != null && church.isPartOfFaction(target.getName().getString()))
-                                    allGood = false;
-
-                                if (allGood)
-                                    allGood = !AllyUtil.areAllies(target, owner);
-
-                                if (allGood && BeyonderData.getSequence(target) <= 4) {
-                                    if (target.getHealth() <= (target.getMaxHealth() * 0.5f))
-                                        owner.getData(ModAttachments.RITUALS.get()).setStage(1);
-                                }
-                            }
-                        }
-                    }
+//                    if (owner != null) {
+//                        if (BeyonderData.getPathway(owner).equals("door") && BeyonderData.getSequence(owner) == 5) {
+//                            if (entity instanceof ServerPlayer target) {
+//                                if (nation != null && nation.isPartOfFaction(target.getName().getString()))
+//                                    allGood = false;
+//                                if (church != null && church.isPartOfFaction(target.getName().getString()))
+//                                    allGood = false;
+//
+//                                if (allGood)
+//                                    allGood = !AllyUtil.areAllies(target, owner);
+//
+//                                if (allGood && BeyonderData.getSequence(target) <= 4) {
+//                                    if (target.getHealth() <= (target.getMaxHealth() * 0.5f))
+//                                        owner.getData(ModAttachments.RITUALS.get()).setStage(1);
+//                                }
+//                            }
+//                        }
+//                    }
 
                 } else {
                     ResourceKey<Level> OVERWORLD = Level.OVERWORLD;
@@ -192,6 +196,9 @@ public class TravelersDoorEntity extends Entity {
                     if (overworldLevel == null) return;
 
                     Vec3 coords = SpiritWorldHandler.getCoordinatesInOverworld(entity.position(), overworldLevel);
+                    if (coords.y < -50) {
+                        coords = new Vec3(coords.x, -50, coords.z);
+                    }
                     BlockPos pos = BlockPos.containing(coords);
 
                     while (!overworldLevel.getBlockState(pos).isAir()) {
@@ -247,18 +254,13 @@ public class TravelersDoorEntity extends Entity {
             entity.teleportTo(spiritWorldLevel, spiritWorldPos.x(), spiritWorldPos.y(), spiritWorldPos.z(), Set.of(), entity.getYRot(), entity.getXRot());
             Vec3[] currentEntityPos = new Vec3[]{new Vec3(spiritWorldPos.toVector3f())};
 
-            AtomicBoolean stopped = new AtomicBoolean(false);
-
-            ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
-                if (stopped.get()) {
+            UUID[] taskId = new UUID[1];
+            taskId[0] = ServerScheduler.scheduleForDuration(0, 1, dragDuration, () -> {
+                if(!entity.isAlive() || ((LivingEntity) entity).isDeadOrDying() || !entity.level().equals(spiritWorldLevel)) {
+                    ServerScheduler.cancel(taskId[0]);
                     return;
                 }
-
-                if (!entity.isAlive()) {
-                    stopped.set(true);
-                }
-
-                ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
+                living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
                 Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;

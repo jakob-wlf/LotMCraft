@@ -139,8 +139,10 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
 
         if(BeyonderData.getPathway(entity).equals("visionary")){
             if(entity instanceof Player player) {
-                player.getAbilities().mayfly = false;
-                player.getAbilities().flying = false;
+                if(!player.isCreative() && !player.isSpectator()) {
+                    player.getAbilities().mayfly = false;
+                    player.getAbilities().flying = false;
+                }
                 player.getAbilities().setFlyingSpeed(.05f);
                 player.onUpdateAbilities();
             }

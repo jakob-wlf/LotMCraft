@@ -2,9 +2,12 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
+import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
+import de.jakob.lotm.network.packets.handlers.TeleportUse;
 import de.jakob.lotm.rendering.MiracleWheelOverlay;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -37,6 +40,9 @@ public class MiracleCreationAbility extends SelectableAbility {
     public MiracleCreationAbility(String id) {
         super(id, 5);
         canBeShared = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(20000f, 8750f, 7000f));
@@ -67,7 +73,12 @@ public class MiracleCreationAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player player)) return; // Will be handled later
-        if(!level.isClientSide) return; // Client-side only for opening the wheel
+        if(!level.isClientSide) {
+            if(abilityIndex == 3) {
+                PendingTeleportRequests.arm((ServerPlayer) player, TeleportUse.TELEPORTATION, Double.POSITIVE_INFINITY, 20 * 30);
+            }
+            return; // Client-side only for opening the wheel
+        }
         switch (abilityIndex) {
             case 0 -> {
                 if(!BeyonderData.isGriefingEnabled(entity)) {

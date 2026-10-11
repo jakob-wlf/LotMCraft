@@ -56,6 +56,10 @@ public class IllusoryScalesAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
+//        if(level.isClientSide)
+//            return;
+//
+//        ParticleUtil.spawnParticles((ServerLevel) level, blueDust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 5, .4, entity.getEyeHeight() / 2, .4, 0);
     }
 
     @Override

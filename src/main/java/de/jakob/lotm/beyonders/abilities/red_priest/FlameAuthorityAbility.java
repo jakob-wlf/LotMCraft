@@ -3,6 +3,8 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.projectiles.SpearOfDestructionProjectileEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -13,6 +15,7 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -27,7 +30,7 @@ import java.util.Map;
 
 public class FlameAuthorityAbility extends SelectableAbility {
     public FlameAuthorityAbility(String id) {
-        super(id, 8f, "burning");
+        super(id, 12f, "burning");
         canBeShared = false;
 
         hasDynamicCooldown = true;
@@ -70,9 +73,12 @@ public class FlameAuthorityAbility extends SelectableAbility {
     private void vortex(ServerLevel serverLevel, LivingEntity entity) {
         Vec3 startPos = entity.position();
 
-        EffectManager.playEffect(EffectIds.FLAME_VORTEX, entity.getX(), entity.getY(), entity.getZ(), serverLevel, entity);
-        ParticleUtil.createParticleSpirals(serverLevel, ParticleTypes.FLAME, startPos, 1.5, 6, 5, .75, 1, 20 * 6, 120, 1);
-        ParticleUtil.createParticleSpirals(serverLevel, ModParticles.PURPLE_FLAME.get(), startPos, 1.5, 6, 5, .75, 1, 20 * 6, 120, 1);
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("flamevortex", BlockPos.containing(startPos), 0, 0, 0, .1, null, -1, true, false, null),
+                serverLevel,
+                startPos,
+                512
+        );
 
         float damage = baseDamage/4;
 
@@ -91,8 +97,12 @@ public class FlameAuthorityAbility extends SelectableAbility {
         serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.FIRECHARGE_USE, entity.getSoundSource(), 10.0f, 1.0f);
         ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 4), () -> serverLevel.playSound(null, pos.x, pos.y, pos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 10.0f, random.nextFloat()));
 
-        // VFX
-        EffectManager.playEffect(EffectIds.INFERNO, pos.x, pos.y, pos.z, serverLevel, entity);
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("inferno", BlockPos.containing(pos), 0, 0, 0, .2, null, -1, true, false, null),
+                serverLevel,
+                pos,
+                512
+        );
 
         //Damage
         double multiplier = multiplier(entity);

@@ -13,6 +13,7 @@ import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
@@ -64,9 +65,15 @@ public class DivinationUtil {
 
         divinationPower += getDivinationItemInInventory(serverPlayer);
         divinationPower += getDivinationItemInHand(serverPlayer);
+        divinationPower += getSefirotPower(serverPlayer);
 
         return divinationPower;
     }
+
+    private static int getSefirotPower(ServerPlayer serverPlayer) {
+        if(!SefirahHandler.hasSefirot(serverPlayer)) return 0;
+        return SefirahHandler.getSefirotProgress(serverPlayer) * 4;
+    };
 
 
     private static int getLowerSequenceDivinationPower(String pathway) {

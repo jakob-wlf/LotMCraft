@@ -149,21 +149,7 @@ public class ServerScheduler {
                                      @Nullable Runnable onFinish,
                                      AtomicBoolean breakCondition,
                                      Supplier<Double> timeMultiplier) {
-        UUID id = UUID.randomUUID();
-        ScheduledTask scheduledTask = new ScheduledTask(
-                id, task, 0, interval, -1, level, () -> !breakCondition.get(), timeMultiplier);
-        tasks.put(id, scheduledTask);
-
-        if (onFinish != null) {
-            UUID finishId = UUID.randomUUID();
-            ScheduledTask finishTask = new ScheduledTask(
-                    finishId, onFinish, 0, 1, 1, level, breakCondition::get, timeMultiplier);
-            tasks.put(finishId, finishTask);
-
-            scheduledTask.setLinkedTaskId(finishId);
-        }
-
-        return id;
+        return scheduleUntil(level, task, interval, onFinish, breakCondition::get, timeMultiplier);
     }
 
     public static UUID scheduleUntil(ServerLevel level, Runnable task, int interval,
@@ -173,17 +159,8 @@ public class ServerScheduler {
         UUID id = UUID.randomUUID();
         ScheduledTask scheduledTask = new ScheduledTask(
                 id, task, 0, interval, -1, level, () -> !breakCondition.get(), timeMultiplier);
+        scheduledTask.setOnFinish(onFinish);
         tasks.put(id, scheduledTask);
-
-        if (onFinish != null) {
-            UUID finishId = UUID.randomUUID();
-            ScheduledTask finishTask = new ScheduledTask(
-                    finishId, onFinish, 0, 1, 1, level, breakCondition::get, timeMultiplier);
-            tasks.put(finishId, finishTask);
-
-            scheduledTask.setLinkedTaskId(finishId);
-        }
-
         return id;
     }
 
@@ -258,6 +235,7 @@ public class ServerScheduler {
                     }
                 } else {
                     iterator.remove();
+                    task.runOnFinish();
                 }
             }
         }
@@ -275,6 +253,8 @@ public class ServerScheduler {
         private final ServerLevel level;
         private final Supplier<Boolean> condition;
         private final Supplier<Double> timeMultiplier;
+        @Nullable
+        private Runnable onFinish = null;
 
         private double ticksElapsed = 0;
         private int executionCount = 0;
@@ -313,6 +293,20 @@ public class ServerScheduler {
             executionCount++;
             if (interval > 0) {
                 nextExecutionTick = ticksElapsed + interval;
+            }
+        }
+
+        public void setOnFinish(@Nullable Runnable onFinish) {
+            this.onFinish = onFinish;
+        }
+
+        public void runOnFinish() {
+            if (onFinish == null) return;
+            try {
+                onFinish.run();
+            } catch (Exception e) {
+                System.err.println("Error executing onFinish task: " + e.getMessage());
+                e.printStackTrace();
             }
         }
 
