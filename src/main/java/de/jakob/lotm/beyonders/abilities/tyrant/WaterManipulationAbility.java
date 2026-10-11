@@ -4,10 +4,6 @@ import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
-import de.jakob.lotm.entity.custom.projectiles.WaterBoltEntity;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -230,21 +226,14 @@ public class WaterManipulationAbility extends SelectableAbility {
         castingCorrosiveRain.add(entity.getUUID());
 
         Vec3 startPos = AbilityUtil.getTargetLocation(entity, 15, 2);
+        Vec3 cloudPos = startPos.add(0, 8, 0);
         Vec3 rainPos = startPos.add(0, 3, 0);
-
-        BlockPos blockPos = BlockPos.containing(startPos);
-
-        double offsetX = startPos.x - (blockPos.getX() + 0.5);
-        double offsetY = startPos.y - (blockPos.getY() + 0.5);
-        double offsetZ = startPos.z - (blockPos.getZ() + 0.5);
-
-        PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("corrosive_rain", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, false, true, null),
-                (ServerLevel) level, startPos, 128
-        );
-
         ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
             level.playSound(null, rainPos.x, rainPos.y, rainPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
+            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, cloudPos, 120, 5, .4, 5, 0);
+            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.RAIN, rainPos, 180, 4, 4, 4, 0);
+            ParticleUtil.spawnParticles((ServerLevel) level, dustOptions, rainPos, 35, 4, 4, 4, 0);
+            ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNEEZE, rainPos, 45, 4, 4, 4, 0);
         }, () -> castingCorrosiveRain.remove(entity.getUUID()), (ServerLevel) level);
 
         float damage = baseDamage/3;

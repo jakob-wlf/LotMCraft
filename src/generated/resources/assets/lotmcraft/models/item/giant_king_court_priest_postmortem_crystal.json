@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "lotmcraft:item/giant_king_court_priest_postmortem_crystal"
-  }
-}

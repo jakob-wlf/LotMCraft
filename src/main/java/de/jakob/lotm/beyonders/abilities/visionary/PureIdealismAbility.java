@@ -58,8 +58,13 @@ public class PureIdealismAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        String path = BeyonderData.getPathway(entity);
+        if(!path.equals("visionary")){
+            AbilityUtil.sendActionBar(entity, Component.literal("You have to be from visionary pathway!").withColor(0xFFff124d));
+            return;
+        }
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -160,8 +165,7 @@ public class PureIdealismAbility extends SelectableAbility {
                     entity.teleportTo(pos.x, pos.y, pos.z);
                     entity.setDeltaMovement(Vec3.ZERO);
 
-                    var component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT.get());
-                    component.disableAbilityUsageForTime("visionary_meditation", 20, entity);
+                    AbilityUtil.sealAllTargetAbilities(entity, entity, "visionary_meditation", 20);
 
                     entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20 * 2, 10, false, false, false));
                     entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 2, 10, false, false, false));

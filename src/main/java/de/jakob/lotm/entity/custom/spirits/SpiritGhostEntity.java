@@ -55,11 +55,11 @@ public class SpiritGhostEntity extends Animal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 90.0)
+                .add(Attributes.MAX_HEALTH, 140.0)
                 .add(Attributes.MOVEMENT_SPEED, 1)
                 .add(Attributes.FLYING_SPEED, 1)
                 .add(Attributes.SCALE, 1.35)
-                .add(Attributes.ATTACK_DAMAGE, 30.0)
+                .add(Attributes.ATTACK_DAMAGE, 45.0)
                 .add(Attributes.FOLLOW_RANGE, 100.0);
     }
 

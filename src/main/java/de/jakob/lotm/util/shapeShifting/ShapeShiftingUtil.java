@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.shapeShifting;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ShapeShiftComponent;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
@@ -12,12 +13,19 @@ import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityDimensions;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.FlyingMoveControl;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ambient.Bat;
+import net.minecraft.world.entity.animal.FlyingAnimal;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.monster.Blaze;
+import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,10 +33,13 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ShapeShiftingUtil {
+
+    private static List<String> flyingEntities = new ArrayList<>();
 
     public static void shapeShift(ServerPlayer player, Entity entity, boolean sequenceRestrict) {
         String entityType = getEntityTypeString(entity);
@@ -96,7 +107,7 @@ public class ShapeShiftingUtil {
             String entityName = entityType;
             entityName = entityName.contains(":") ? entityName.split(":")[1] : entityName;
 
-            if (List.of("bat", "phantom", "blaze", "allay", "bee", "ghast", "parrot", "vex").contains(entityName)) {
+            if (getFlyingEntities(player.serverLevel()).contains(entityName)) {
                 player.getAbilities().mayfly = true;
                 player.getAbilities().flying = true;
                 player.onUpdateAbilities();
@@ -156,6 +167,27 @@ public class ShapeShiftingUtil {
         }
     }
 
+
+    public static List<String> getFlyingEntities(ServerLevel level) {
+        if (!flyingEntities.isEmpty()) {
+            return flyingEntities;
+        }
+
+        for (EntityType<?> type : BuiltInRegistries.ENTITY_TYPE) {
+            Entity entity = type.create(level);
+            if (entity != null) {
+                if ((entity instanceof FlyingMob || entity instanceof FlyingAnimal)
+                        || (entity instanceof Bat || entity instanceof EnderDragon || entity instanceof WitherBoss || entity instanceof Vex || entity instanceof Blaze)
+                        || (entity instanceof Mob mob && (mob.getNavigation() instanceof FlyingPathNavigation || mob.getMoveControl() instanceof FlyingMoveControl)))
+                {
+                    flyingEntities.add(EntityType.getKey(type).toString());
+                }
+            }
+        }
+
+        return flyingEntities;
+    }
+
     public static String getEntityTypeString(Entity entity) {
         if (entity instanceof ServerPlayer player) {
             return ("player:"+ player.getGameProfile().getName()+":"+ player.getUUID());
@@ -212,7 +244,23 @@ public class ShapeShiftingUtil {
                     blockReachAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath("lotmcraft", "shape_shifting_block_reach"));
                 }
             }
+
+            DisabledFlightComponent flightData = serverPlayer.getData(ModAttachments.FLIGHT_DISABLE_COMPONENT);
+            if(flightData.getCooldownTicks() > 0) {
+                if (!serverPlayer.isCreative() && !serverPlayer.isSpectator()) {
+                    serverPlayer.getAbilities().mayfly = false;
+                    serverPlayer.onUpdateAbilities();
+                }
+            } else {
+                ShapeShiftComponent shapeData = serverPlayer.getData(ModAttachments.SHAPE_SHIFT);
+                if (getFlyingEntities(serverPlayer.serverLevel()).contains(shapeData.getShape())) {
+                    serverPlayer.getAbilities().mayfly = true;
+                    serverPlayer.onUpdateAbilities();
+                }
+            }
         }
+
+
     }
 
     public static float calculateScale(Player player) {
@@ -239,4 +287,5 @@ public class ShapeShiftingUtil {
         }
         return 1.0f;
     }
+
 }

@@ -28,7 +28,8 @@ public enum ActionsEnum {
     EMPTY,
     WAKE_UP,
     AGGRO,
-    MOVE
+    MOVE,
+    RESET
     ;
 
     public static ActionsEnum fromNBT(CompoundTag tag, String key) {

@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -55,7 +56,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
         canBeCopied = false;
         canBeReplicated = false;
 
-        dynamicCooldown = new LinkedList<>(List.of(2, 5, 10, 20));
+        dynamicCooldown = new LinkedList<>(List.of(1, 4, 8, 16));
     }
 
     @Override
@@ -88,9 +89,9 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
         int spiritualityCost;
         switch (BeyonderData.getSequence(entity)) {
-            case 0 -> spiritualityCost = 40000;
-            case 1 -> spiritualityCost = 20000;
-            case 2 -> spiritualityCost = 10000;
+            case 0 -> spiritualityCost = 30000;
+            case 1 -> spiritualityCost = 18000;
+            case 2 -> spiritualityCost = 9000;
             default -> spiritualityCost = 5000;
         }
 
@@ -170,7 +171,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
     public static void historicalVoidBorrowSpirituality(ServerPlayer player, ServerLevel level) {
         if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
-            if (BeyonderData.getSpirituality(player) < BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player), BeyonderData.getSequence(player))) {
+            if (BeyonderData.getSpirituality(player) < BeyonderData.getMaxSpirituality(player)) {
 
                 HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
                 for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
@@ -185,7 +186,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
                 trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY, player.getUUID(), tag);
 
-                BeyonderData.setSpirituality(player, BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player), BeyonderData.getSequence(player)));
+                BeyonderData.setSpirituality(player, BeyonderData.getMaxSpirituality(player));
             }
         }
     }
@@ -280,80 +281,82 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
     }
 
     public static void historicalVoidBorrowSequence(ServerPlayer player, ServerLevel level) {
-        SimpleContainer entityContainer = new SimpleContainer(54) {
-            @Override
-            public boolean canTakeItem(Container target, int index, ItemStack stack) {
-                return false; // Prevent taking items normally
-            }
-        };
-        List<CompoundTag> markedEntities = getMarkedEntities(player);
+        if (getHistoricalBorrowingCount(player) <= getMaxHistoricalBorrowingCount(player)) {
+            SimpleContainer entityContainer = new SimpleContainer(54) {
+                @Override
+                public boolean canTakeItem(Container target, int index, ItemStack stack) {
+                    return false; // Prevent taking items normally
+                }
+            };
+            List<CompoundTag> markedEntities = getMarkedEntities(player);
 
-        for(int i = 0; i < Math.min(markedEntities.size(), 53); i++) {
-            CompoundTag entityData = markedEntities.get(i);
-            ItemStack displayItem = createEntityDisplayItem(entityData);
-            if (entityData.contains("EntityNBT")) {
-                CompoundTag entityNBT = entityData.getCompound("EntityNBT");
-                CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
+            for(int i = 0; i < Math.min(markedEntities.size(), 53); i++) {
+                CompoundTag entityData = markedEntities.get(i);
+                ItemStack displayItem = createEntityDisplayItem(entityData);
+                if (entityData.contains("EntityNBT")) {
+                    CompoundTag entityNBT = entityData.getCompound("EntityNBT");
+                    CompoundTag nfd = entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component");
 
-                if (nfd.contains("pathway")) {
+                    if (nfd.contains("pathway")) {
 
-                    if (entityData.contains("OriginalPlayerUUID")) {
-                        if (entityData.getUUID("OriginalPlayerUUID").equals(player.getUUID()) && nfd.getInt("sequence") > 0) {
-                            boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
-                            displayItem.set(
-                                    DataComponents.LORE,
-                                    new ItemLore(List.of(
-                                            Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
-                                            Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(nfd.getString("pathway")).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                            Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(nfd.getInt("sequence") + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
-                                            Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(isMarionette + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
-                                    )));
+                        if (entityData.contains("OriginalPlayerUUID")) {
+                            if (entityData.getUUID("OriginalPlayerUUID").equals(player.getUUID()) && nfd.getInt("sequence") > 0) {
+                                boolean isMarionette = Optional.of(entityNBT.getCompound("neoforge:attachments").getCompound("lotmcraft:marionette_component")).map(c -> c.getBoolean("isMarionette")).orElse(false);
+                                displayItem.set(
+                                        DataComponents.LORE,
+                                        new ItemLore(List.of(
+                                                Component.literal("-------------------").withStyle(style -> style.withColor(0xFFa742f5).withItalic(false)),
+                                                Component.translatable("lotm.pathway").append(Component.literal(": ")).append(Component.literal(BeyonderData.pathwayInfos.get(nfd.getString("pathway")).getSequenceName(9))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                                Component.translatable("lotm.sequence").append(Component.literal(": ")).append(Component.literal(nfd.getInt("sequence") + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false)),
+                                                Component.translatable("lotm.marionette").append(Component.literal(": ")).append(Component.literal(isMarionette + "")).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
+                                        )));
+                            } else {
+                                continue;
+                            }
                         } else {
                             continue;
                         }
-                    } else {
-                        continue;
                     }
                 }
+                entityContainer.setItem(i + 1, displayItem);
             }
-            entityContainer.setItem(i + 1, displayItem);
-        }
 
-        final int finalContainerSize = entityContainer.getContainerSize();
+            final int finalContainerSize = entityContainer.getContainerSize();
 
-        player.openMenu(new SimpleMenuProvider(
-                (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x6, id, inv, entityContainer, 6) {
-                    @Override
-                    public void clicked(int slotId, int button, ClickType clickType, Player clickPlayer) {
-                        if(slotId >= 0 && slotId < finalContainerSize) {
-                            ItemStack clickedItem = entityContainer.getItem(slotId);
+            player.openMenu(new SimpleMenuProvider(
+                    (id, inv, p) -> new ChestMenu(MenuType.GENERIC_9x6, id, inv, entityContainer, 6) {
+                        @Override
+                        public void clicked(int slotId, int button, ClickType clickType, Player clickPlayer) {
+                            if(slotId >= 0 && slotId < finalContainerSize) {
+                                ItemStack clickedItem = entityContainer.getItem(slotId);
 
-                            if(clickedItem.isEmpty()) return;
+                                if(clickedItem.isEmpty()) return;
 
-                            CustomData customData = clickedItem.get(DataComponents.CUSTOM_DATA);
+                                CustomData customData = clickedItem.get(DataComponents.CUSTOM_DATA);
 
-                            if(customData == null) return;
+                                if(customData == null) return;
 
-                            CompoundTag tag = customData.copyTag();
+                                CompoundTag tag = customData.copyTag();
 
-                            if(tag.contains("EntityData")) {
-                                CompoundTag entityData = tag.getCompound("EntityData");
-                                long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
-                                CompoundTag anotherTag = new CompoundTag();
-                                anotherTag.putFloat("sequence", BeyonderData.getSequence(player));
-                                anotherTag.putString("pathway", BeyonderData.getPathway(player));
+                                if(tag.contains("EntityData")) {
+                                    CompoundTag entityData = tag.getCompound("EntityData");
+                                    long borrowTime = level.getGameTime() + getMaxHistoricalBorrowingDurationTicks(player);
+                                    CompoundTag anotherTag = new CompoundTag();
+                                    anotherTag.putFloat("sequence", BeyonderData.getSequence(player));
+                                    anotherTag.putString("pathway", BeyonderData.getPathway(player));
 
                                     trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SEQUENCE, player.getUUID(), anotherTag);
 
-                                BeyonderData.setPathway(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getString("pathway"));
-                                BeyonderData.setSequence(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getInt("sequence"));
-                                player.closeContainer();
+                                    BeyonderData.setPathway(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getString("pathway"));
+                                    BeyonderData.setSequence(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getInt("sequence"));
+                                    player.closeContainer();
+                                }
                             }
                         }
-                    }
-                },
-                Component.literal("select your strongest marked version")
-        ));
+                    },
+                    Component.literal("select your strongest marked version")
+            ));
+        }
     }
 
     public static void returnAllBorrows(ServerPlayer serverPlayer) {
@@ -427,9 +430,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 }
                 if (tag.contains("DisabledAbilities")) {
                     ListTag disabledAbilitiesList = tag.getList("DisabledAbilities", Tag.TAG_COMPOUND);
-                    DisabledAbilitiesComponent disabledComponent = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
                     for (int i = 0; i < disabledAbilitiesList.size(); i++) {
-                        disabledComponent.disableSpecificAbilityForTime(disabledAbilitiesList.getCompound(i).getString("AbilityName"), "theft_", 30 * 20);
+                        AbilityUtil.sealSpecificTargetAbility(null, player, disabledAbilitiesList.getCompound(i).getString("AbilityName"), "theft_", 30 * 20);
                     }
                 }
                 if (tag.contains("sanity")) {
@@ -456,9 +458,9 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
     private static int getMaxHistoricalBorrowingCount(ServerPlayer serverPlayer){
         return switch (BeyonderData.getSequence(serverPlayer)){
-            case 0 -> 24;
-            case 1 -> 12;
-            case 2 -> 6;
+            case 0 -> 50;
+            case 1 -> 24;
+            case 2 -> 10;
             default -> 3;
         };
     }
@@ -539,7 +541,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
         if (getHistoricalBorrowingCount(serverPlayer) > 0) {
             if (timer.getOrDefault(player.getUUID(), 0) == 0) {
-                data.historicalBorrowingCount = Math.max(0, data.historicalBorrowingCount - 1);
+                data.historicalBorrowingCount = 0;
             }
 
             timer.put(player.getUUID(), timer.getOrDefault(player.getUUID(), 0) + 1);

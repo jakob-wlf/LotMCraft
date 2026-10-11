@@ -135,7 +135,7 @@ public class SirenSongAbility extends SelectableAbility {
         }, level);
         ServerScheduler.scheduleDelayed(20 * 20, () -> {
             BeyonderData.removeModifier(entity, "buff_song");
-//
+
 //            for(var obj : buff){
 //                Seq5.affected.remove(obj);
 //            }

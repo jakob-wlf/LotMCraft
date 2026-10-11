@@ -7,9 +7,13 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MarionetteOwnerComponent;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.MirrorSubstituteAbility;
 import de.jakob.lotm.beyonders.abilities.door.DoorSubstitutionAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -144,14 +148,15 @@ public class PuppeteeringAbility extends SelectableAbility {
 
         Map<LivingEntity, Integer> validTargets = new HashMap<>();
         int sequence = AbilityUtil.getSeqWithArt(entity, this);
-        AllyComponent allyComponent = player.getData(ModAttachments.ALLY_COMPONENT);
 
         for (Entity e : serverLevel.getAllEntities()) {
-            if (e instanceof LivingEntity target && target != player && target.isAlive() && !(target instanceof Phantom) && !(target instanceof ArmorStand) && !allyComponent.isAlly(target.getUUID())) {
+            if (e instanceof LivingEntity target && target != player && target.isAlive() && !(target instanceof Phantom) && (AbilityUtil.mayTarget(player, target))) {
                 MarionetteComponent component = target.getData(ModAttachments.MARIONETTE_COMPONENT.get());
                 if (!component.isMarionette()) {
                     int time = calculatePuppetTime(player, target, 8);
                     if (time >= 0 && player.distanceTo(target) < getManipulationDistance(sequence) * 0.25) {
+                        if(VisionaryHandler.shouldStayInvisible(sequence, target)) continue;
+
                         validTargets.put(target, time);
                     }
                 }
@@ -267,10 +272,38 @@ public class PuppeteeringAbility extends SelectableAbility {
             double currentTick = elapsedTicks.addAndGet(1.0);
             float progress = (float) currentTick / time;
 
-            if (!target.isAlive() || target.isRemoved() || target.level() != level || !entity.isAlive() || entity.isRemoved()
-                    || target.distanceTo(entity) >= getManipulationDistance(sequence)
-                    || target.getHealth() < targetHealth.get() * 0.85
-                    || entity.getHealth() < casterHealth.get() * 0.5) {
+            var sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity();
+
+            boolean hasActiveGrafting = false;
+            for (Ability var : ToggleAbility.getActiveAbilitiesForEntity(entity)){
+                if (var == LOTMCraft.abilityHandler.getById("grafting_abilities_ability")) {
+                    hasActiveGrafting = true;
+                }
+            }
+
+            boolean shouldContinue;
+            if (hasActiveGrafting) {
+                shouldContinue = target.level().dimension().equals(Level.OVERWORLD)
+                        || target.level().dimension().equals(Level.NETHER)
+                        || target.level().dimension().equals(Level.END)
+                        || target.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)
+                        || target.level().dimension().equals(ModDimensions.HISTORICAL_VOID_DIMENSION_KEY);
+                if (shouldContinue) {
+                    BeyonderData.reduceSpirituality(entity, 20);
+                }
+            } else {
+                shouldContinue = target.level() == entity.level()
+                        && target.distanceTo(entity) <= getManipulationDistance(sequence);
+            }
+
+            // Main stop check
+            if (!target.isAlive() || target.isRemoved()
+                    || !entity.isAlive() || entity.isRemoved()
+                    || target.getHealth() < targetHealth.get() * 0.95
+                    || entity.getHealth() < casterHealth.get() * 0.5
+                    || sanity < 0.6
+                    || !shouldContinue) {
+
                 if (isMass) {
                     removeMassTarget(entity.getUUID(), target.getUUID());
                 } else {
@@ -284,10 +317,10 @@ public class PuppeteeringAbility extends SelectableAbility {
             Vec3 end = target.getEyePosition();
 
             if (entity instanceof ServerPlayer serverPlayer) {
-                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z()));
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverPlayer, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 0.5f, 0.1f, 0.7f));
             }
             if (target instanceof ServerPlayer serverTarget && BeyonderData.getPathway(target).equals("fool")) {
-                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverTarget, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z()));
+                EffectManager.playEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), serverTarget, EffectParams.directionWithParams(2, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 1.0f, 0.0f, 0.0f));
             }
 
             if (LOTMCraft.abilityHandler.getById("divination_ability").hasAbility(target, false) || targetSequence < BeyonderData.getSequence(entity) || (progress >= 0.5f && targetSequence == BeyonderData.getSequence(entity))) {
@@ -302,8 +335,7 @@ public class PuppeteeringAbility extends SelectableAbility {
             if (progress >= 0.60f) {
                 target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 2, false, false, false));
                 if (currentTick % 100 == 0) {
-                    DisabledAbilitiesComponent disabledAbilitiesComponent = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    disabledAbilitiesComponent.disableAbilityUsageForTime("puppeteering_ability_" + entity.getUUID(), 2 * 20, target);
+                    AbilityUtil.sealAllTargetAbilities(entity, target, "puppeteering_ability_" + entity.getUUID(), 2 * 20);
                 }
             }
 
@@ -346,7 +378,7 @@ public class PuppeteeringAbility extends SelectableAbility {
 
             // set sanity to 0.04 to prevent mirror revival and darkness revival from triggering
             SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
-            sanity.setSanity(0.03f);
+            sanity.setSanity(0.04f);
 
             MiracleOfResurrectionComponent miracleOfResurrection = target.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             miracleOfResurrection.setResurrectionAttempts(0);
@@ -402,9 +434,12 @@ public class PuppeteeringAbility extends SelectableAbility {
     public void onHold(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer serverPlayer)) return;
         if(entitiesBeingManipulated.containsKey(entity.getUUID())) return;
+        int sequence = AbilityUtil.getSeqWithArt(entity, this);
 
         for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35)) {
-            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition().add(0, 9, 0), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
+            if(VisionaryHandler.shouldStayInvisible(sequence, target)) continue;
+
+            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
             Vec3 end = target.getEyePosition();
             EffectManager.playDirectionalEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 2, serverPlayer);
         }

@@ -24,7 +24,7 @@ public class AggroAction extends ActionBase {
 
     @Override
     public ActionsEnum getType() {
-        return ActionsEnum.CONFUSION;
+        return ActionsEnum.AGGRO;
     }
 
     @Override

@@ -225,7 +225,7 @@ public class SealingAuthorityAbility extends SelectableAbility {
         sealedEntities.add(target.getUUID());
 
         DisabledAbilitiesComponent comp = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        comp.disableAbilityUsageForTime("sealed_sealing_authority", duration, target);
+        AbilityUtil.sealAllTargetAbilities(entity, target, "sealed_sealing_authority", duration);
 
         List<BlockPos> sphereBlocks = AbilityUtil.getBlocksInSphereRadius(level, targetLoc, radius, false, false, false);
         sealBlocksToRemove.clear();

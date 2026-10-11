@@ -1,6 +1,8 @@
 package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.ShapeShiftComponent;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

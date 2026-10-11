@@ -71,8 +71,8 @@ public class CalamityAttractionAbility extends SelectableAbility {
         }
         if(!(entity instanceof ServerPlayer player)) return;
 
-        var component = player.getData(ModAttachments.LUCK_COMPONENT.get());
-        component.addLuckWithMin(-500, -5200);
+        AbilityUtil.addTargetLuckWithMin(player, player, -500, -5200);
+
     }
 
     private void calamity(Level level, LivingEntity entity){
@@ -100,20 +100,5 @@ public class CalamityAttractionAbility extends SelectableAbility {
 
             calamity.spawnCalamity(serverLevel, targetPos, damage.get(), BeyonderData.isGriefingEnabled(entity), entitySeq <= 3 ? entity : null);
         }, serverLevel);
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 14)
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
     }
 }

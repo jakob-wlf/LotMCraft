@@ -5,19 +5,26 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerHelper;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.WrittenBookContent;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import java.util.*;
@@ -50,7 +57,8 @@ public class StoryWritingAbility extends ToggleAbility {
             entitySeq++;
         }
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -79,7 +87,8 @@ public class StoryWritingAbility extends ToggleAbility {
             entitySeq++;
         }
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -169,6 +178,56 @@ public class StoryWritingAbility extends ToggleAbility {
             BeyonderData.playerMap.setProphecies(player.getUUID(), prophecies);
         }
     }
+
+//    @SubscribeEvent
+//    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
+//        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+//
+//        if (!writingMap.containsKey(player.getUUID())) return;
+//
+//        ItemStack stack = event.getItemStack();
+//
+//        if (!stack.is(Items.WRITTEN_BOOK)) {
+//            return;
+//        }
+//
+//        WrittenBookContent content =
+//                stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
+//
+//        if (content == null) {
+//            return;
+//        }
+//
+//        String globalName = "";
+//        for (var page : content.pages()) {
+//            String[] lines = page.raw().getString().split(";", -1);
+//
+//            for (String line : lines) {
+//                var stream = new TokenStream(line);
+//
+//                if(stream.peek() == null) continue;
+//
+//                if(stream.peek().equals("name")){
+//                    stream.next();
+//                    globalName = stream.peek();
+//                }
+//                else if(stream.peek().equals("if")){
+//                    stream.next();
+//                    if(stream.peek() == null) continue;
+//
+//                    if(TriggerHelper.getType(stream.peek()) != null){
+//                        stream = stream.add(1, globalName);
+//                    }
+//
+//                    String cue = stream.toString();
+//
+//                    Component component = Component.literal(cue);
+//                    ServerChatEvent cueEvent = new ServerChatEvent(player, cue, component);
+//                    NeoForge.EVENT_BUS.post(cueEvent);
+//                }
+//            }
+//        }
+//    }
 
 //    private static final Map<UUID, UUID> AUTHOR_TARGET = new HashMap<>();
 //    private static final Map<UUID, GuidanceData> ACTIVE_GUIDANCE = new HashMap<>();

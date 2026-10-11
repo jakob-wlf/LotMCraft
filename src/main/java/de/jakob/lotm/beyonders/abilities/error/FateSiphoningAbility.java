@@ -163,12 +163,12 @@ public class FateSiphoningAbility extends Ability {
         if(!(target instanceof LivingEntity targetLiving))
             return;
 
-        var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
         var luckTarget = target.getData(ModAttachments.LUCK_COMPONENT.get());
+        var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
 
         if(luck.getLuck() < 0) {
-            luckTarget.setLuck(luckTarget.getLuck() + luck.getLuck());
-            luck.setLuck(0);
+            AbilityUtil.setTargetLuck(player, targetLiving, luckTarget.getLuck() + luck.getLuck());
+            AbilityUtil.setTargetLuck(player, player, 0);
         }
     }
 

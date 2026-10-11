@@ -1,12 +1,8 @@
 package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.addons.factions.FactionCore;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.dimension.SpiritWorldHandler;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -25,9 +21,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.parsing.packrat.Atom;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,7 +30,6 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.UUID;
 
 public class TravelersDoorEntity extends Entity {
@@ -260,8 +252,8 @@ public class TravelersDoorEntity extends Entity {
                     ServerScheduler.cancel(taskId[0]);
                     return;
                 }
-                living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));
-                Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
+
+                living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 5, false, false, false));                Vec3 nextPos = currentEntityPos[0].add(dir.scale(1.0));
                 entity.teleportTo(nextPos.x(), nextPos.y(), nextPos.z());
                 currentEntityPos[0] = nextPos;
 

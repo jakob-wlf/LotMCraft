@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class TriggerHelper {
-    private static @Nullable TriggerEnum getType(String str){
+    public static @Nullable TriggerEnum getType(String str){
         return switch (str){
             case "on" -> TriggerEnum.POSITION;
             case "has" -> TriggerEnum.PICK_UP;
@@ -169,8 +169,8 @@ public class TriggerHelper {
             case 6,5 -> 10;
             case 4,3 -> 15;
             case 2 -> 25;
-            case 1 -> 40;
-            case 0 -> 80;
+            case 1 -> 60;
+            case 0 -> 200;
             case -1 -> 9999999;
             default -> 1;
         };
@@ -183,7 +183,7 @@ public class TriggerHelper {
             case 4,3 -> 4;
             case 2 -> 5;
             case 1 -> 7;
-            case 0 -> 9;
+            case 0 -> 15;
             case -1 -> 99999999;
             default -> 0;
         };

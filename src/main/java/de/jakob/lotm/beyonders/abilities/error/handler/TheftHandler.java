@@ -374,7 +374,7 @@ public class TheftHandler {
             Ability stolenAbility = stealableAbilities.get(index);
             stealableAbilities.remove(index);
             // Disable the ability on the target for the duration
-            disabledComponent.disableSpecificAbilityForTime(stolenAbility.getId(), "theft_" + entity.getUUID(), disableTime * 20);
+            AbilityUtil.sealSpecificTargetAbility(entity, target, stolenAbility.getId(), "theft_" + entity.getUUID(), disableTime * 20);
 
             // Add to the thief's copied abilities
             if (entity instanceof ServerPlayer player) {
@@ -569,8 +569,8 @@ public class TheftHandler {
         var luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
         var targetLuck = target.getData(ModAttachments.LUCK_COMPONENT.get());
 
-        luck.setLuck(luck.getLuck() + targetLuck.getLuck());
-        targetLuck.setLuck(0);
+        AbilityUtil.setTargetLuck(entity, entity, luck.getLuck() + targetLuck.getLuck());
+        AbilityUtil.setTargetLuck(entity, target, 0);
     }
 
     public static double getDistancePerSeq(int seq){

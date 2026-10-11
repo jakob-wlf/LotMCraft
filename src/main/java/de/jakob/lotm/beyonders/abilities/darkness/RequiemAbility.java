@@ -121,8 +121,7 @@ public class RequiemAbility extends Ability {
             }
 
             if(BeyonderData.isBeyonder(targetEntity)) {
-                    DisabledAbilitiesComponent component = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("requiem", purified ? duration / 2 : duration, targetEntity);
+                AbilityUtil.sealAllTargetAbilities(entity, targetEntity, "requiem", purified ? duration / 2 : duration);
             }
         }
 

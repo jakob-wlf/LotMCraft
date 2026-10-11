@@ -77,8 +77,8 @@ public class VirtualPersonaAbility extends SelectableAbility {
     @Override
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -356,10 +356,10 @@ public class VirtualPersonaAbility extends SelectableAbility {
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         component.createAvatar(avatar.getUUID());
 
-        if(entity instanceof ServerPlayer player) {
-            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(),
-                    avatar.getUUID());
-        }
+//        if(entity instanceof ServerPlayer player) {
+//            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(),
+//                    avatar.getUUID());
+//        }
 
         AbilityUtil.sendActionBar(entity,
                 Component.translatable("ability.lotmcraft.virtual_persona.avatar_spawned").withColor(0xFFe3ffff));

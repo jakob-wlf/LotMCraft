@@ -204,8 +204,7 @@ public class LawAbility extends SelectableAbility {
             return;
         }
 
-        target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT)
-                .disableSpecificAbilityForTime(abilityId, "law_of_sealing", (int) (20 * 60 * 2 * multiplier(caster)));
+        AbilityUtil.sealSpecificTargetAbility(caster, target, abilityId, "law_of_sealing", (int) (20 * 60 * 2 * multiplier(caster)));
 
         serverLevel.playSound(null, caster.blockPosition(),  SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.PLAYERS, 1.3f, 0.5f);
         serverLevel.playSound(null, caster.blockPosition(),  SoundEvents.BEACON_ACTIVATE,      SoundSource.PLAYERS, 0.7f, 0.6f);

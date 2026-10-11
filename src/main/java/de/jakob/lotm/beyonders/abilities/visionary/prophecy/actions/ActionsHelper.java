@@ -41,6 +41,7 @@ public class ActionsHelper {
             case "wakeup" -> ActionsEnum.WAKE_UP;
             case "aggro" -> ActionsEnum.AGGRO;
             case "move" -> ActionsEnum.MOVE;
+            case "reset" -> ActionsEnum.RESET;
             default -> null;
         };
     }
@@ -73,6 +74,7 @@ public class ActionsHelper {
             case AGGRO -> ActionContextEnum.EMPTY;
             case MOVE -> ActionContextEnum.POSITION;
             case WAKE_UP -> ActionContextEnum.EMPTY;
+            case RESET -> ActionContextEnum.EMPTY;
         };
     }
 

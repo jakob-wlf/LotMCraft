@@ -99,7 +99,7 @@ public class SpiritualBaptismAbility extends SelectableAbility {
 
         LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
         if(luckComponent.getLuck() < 0) {
-            luckComponent.setLuck(0);
+            AbilityUtil.setTargetLuck(caster, target, 0);
         }
 
         SanityComponent sanityComponent = target.getData(ModAttachments.SANITY_COMPONENT);

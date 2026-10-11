@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -40,8 +41,7 @@ public class SpiritCalledEffect extends MobEffect {
         }
 
         if(amplifier >= 2 && BeyonderData.getSequence(entity) >= (10 - amplifier - 1)) {
-            DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("spirit_called", 20, entity);
+            AbilityUtil.sealAllTargetAbilities(null, entity, "spirit_called", 20);
         }
 
         return true;

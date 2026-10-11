@@ -20,6 +20,7 @@ public class ExileAbility extends Ability {
     public ExileAbility(String id) {
         super(id, 18, "sealing");
         canBeCopied = false;
+        canBeUsedByNPC = false;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(5, 7, 8, 10, 13));

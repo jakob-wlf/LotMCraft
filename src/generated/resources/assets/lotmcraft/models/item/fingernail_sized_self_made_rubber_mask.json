@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "lotmcraft:item/fingernail_sized_self_made_rubber_mask"
-  }
-}

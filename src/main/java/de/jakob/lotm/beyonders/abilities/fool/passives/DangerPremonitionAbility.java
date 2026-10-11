@@ -121,9 +121,24 @@ public class DangerPremonitionAbility extends PassiveAbility {
         int sequence = BeyonderData.getSequence(entity);
         if(sequence < 0 || sequence > 9) return;
         if(entity.level().random.nextFloat() <= dodgeChanceForSequence[sequence]) {
-            event.setCanceled(true);
-            entity.playSound(SoundEvents.ARMOR_STAND_BREAK, 1, 1);
-            AbilityUtil.sendActionBar(entity, Component.translatable("lotm.dodged_attack").withColor(getColorForPathway("fool")));
+            boolean hasActiveGrafting = false;
+            if (damager instanceof LivingEntity source) {
+                for (Ability var : ToggleAbility.getActiveAbilitiesForEntity(source)){
+                    if (var == LOTMCraft.abilityHandler.getById("grafting_abilities_ability")) {
+                        hasActiveGrafting = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasActiveGrafting) {
+                if (damager instanceof LivingEntity source) {
+                    BeyonderData.reduceSpirituality(source, 100);
+                }
+                event.setCanceled(true);
+                entity.playSound(SoundEvents.ARMOR_STAND_BREAK, 1, 1);
+                AbilityUtil.sendActionBar(entity, Component.translatable("lotm.dodged_attack").withColor(getColorForPathway("fool")));
+            }
         }
 
     }

@@ -29,15 +29,12 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
         return all;
     }
 
-    public void disableAbilityUsage(String cause) {
-        hasAllAbilitiesDisabled.put(cause, 1);
-    }
-
     public void enableAbilityUsage(String cause) {
         hasAllAbilitiesDisabled.remove(cause);
     }
 
-    public void disableAbilityUsageForTime(String cause, int ticks, LivingEntity entity) {
+    public void disableAbilityUsageForTime(String cause, int ticks, LivingEntity target) {
+
         hasAllAbilitiesDisabled.put(cause, hasAllAbilitiesDisabled.getOrDefault(cause, 0) + 1);
 
         ServerScheduler.scheduleDelayed(ticks, () -> {
@@ -47,8 +44,8 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
             }
         });
 
-        if(entity instanceof ServerPlayer player) {
-            PacketHandler.sendToPlayer(player, new DisableAbilityUsageForTimePacket(entity.getId(), cause, ticks));
+        if(target instanceof ServerPlayer player) {
+            PacketHandler.sendToPlayer(player, new DisableAbilityUsageForTimePacket(target.getId(), cause, ticks));
         }
     }
 
@@ -69,7 +66,7 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
     public void disableSpecificAbilityForTime(String ability, String cause, int ticks) {
         disabledAbilities.computeIfAbsent(cause, k -> new ArrayList<>());
 
-        if(disabledAbilities.get(cause).stream().noneMatch(da -> da.ability.equals(ability))) {
+        if (disabledAbilities.get(cause).stream().noneMatch(da -> da.ability.equals(ability))) {
             disabledAbilities.get(cause).add(new DisabledAbility(ability, 1));
         } else {
             DisabledAbility da = disabledAbilities.get(cause).stream().filter(d -> d.ability.equals(ability)).findFirst().orElseThrow();
@@ -80,13 +77,15 @@ public class DisabledAbilitiesComponent implements INBTSerializable<CompoundTag>
         ServerScheduler.scheduleDelayed(ticks, () -> {
             List<DisabledAbility> abilities = disabledAbilities.get(cause);
             if (abilities != null) {
-                DisabledAbility da = abilities.stream().filter(d -> d.ability.equals(ability)).findFirst().orElseThrow();
-                abilities.remove(da);
-                if (da.amountDisabled > 1) {
-                    abilities.add(new DisabledAbility(ability, da.amountDisabled - 1));
-                }
-                if (abilities.isEmpty()) {
-                    disabledAbilities.remove(cause);
+                DisabledAbility da = abilities.stream().filter(d -> d.ability.equals(ability)).findFirst().orElse(null);
+                if (da != null) {
+                    abilities.remove(da);
+                    if (da.amountDisabled > 1) {
+                        abilities.add(new DisabledAbility(ability, da.amountDisabled - 1));
+                    }
+                    if (abilities.isEmpty()) {
+                        disabledAbilities.remove(cause);
+                    }
                 }
             }
         });

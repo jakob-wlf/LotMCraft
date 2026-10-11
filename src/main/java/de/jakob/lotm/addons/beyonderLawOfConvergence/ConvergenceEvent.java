@@ -41,7 +41,7 @@ public class ConvergenceEvent {
         int convergenceTimer = data.getConvergenceTimer();
         data.setConvergenceTimer(convergenceTimer + 1);
 
-        int seq = BeyonderData.getSequence(player);
+        int seq = BeyonderData.getSequence(player, false, true);
 
         int spawnTime = 20 * getTime(seq);
 

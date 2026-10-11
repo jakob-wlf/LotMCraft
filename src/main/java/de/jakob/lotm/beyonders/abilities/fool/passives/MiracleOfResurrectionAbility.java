@@ -10,6 +10,7 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -96,13 +97,13 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
                     BeyonderData.setSpirituality(serverPlayer, BeyonderData.getMaxSpirituality(serverPlayer));
                     LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").useAbility(serverLevel, serverPlayer, false, false, false, false);
                 }
-
+                serverPlayer.getData(ModAttachments.SANITY_COMPONENT).setSanity(1);
+                serverPlayer.getData(ModAttachments.LUCK_COMPONENT).setLuck(0);
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());
 
                 serverPlayer.removeAllEffects();
 
-                DisabledAbilitiesComponent disabledComponent = serverPlayer.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                disabledComponent.disableAbilityUsageForTime("miracle_of_resurrection_" + entity.getUUID(), 10 * 60 * 20, serverPlayer);
+                AbilityUtil.sealAllTargetAbilities(serverPlayer, serverPlayer, "miracle_of_resurrection", 10 * 60 * 20);
             }
         }
     }

@@ -64,6 +64,10 @@ public class FoolingAbility extends Ability {
         for (LivingEntity target : nearby) {
             FoolingComponent component = target.getData(ModAttachments.FOOLING_COMPONENT);
 
+            if(BeyonderData.getPathway(target).equals("visionary") &&
+                    BeyonderData.getSequence(target) <= 0)
+                duration = 20 * 2;
+
             component.setTicksRemaining(duration);
         }
 

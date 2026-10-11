@@ -152,6 +152,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
+        abilities.add(new GraftingAbilitiesAbility("grafting_abilities_ability"));
         abilities.add(new FoolingAbility("fooling_ability"));
 
         // DARKNESS PATHWAY

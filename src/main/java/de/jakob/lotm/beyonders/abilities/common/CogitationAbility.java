@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -55,8 +55,7 @@ public class CogitationAbility extends ToggleAbility {
             entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 5, 1, false, false, false));
 
             player.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(.0025f, player);
-            DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("cogitation", 30, entity);
+            AbilityUtil.sealAllTargetAbilities(entity, entity, "cogitation", 30);
 
             // Send message to client from server
             Component message = Component.translatable("lotm.ability.cogitation.tick");

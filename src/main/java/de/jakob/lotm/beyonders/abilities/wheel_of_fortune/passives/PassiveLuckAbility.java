@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -55,7 +56,7 @@ public class PassiveLuckAbility extends PassiveAbility {
             if (component.getLuck() < getLuckLevelForSequence(sequence)) {
                 int rate = getLuckRate(sequence);
 
-                component.setLuck(component.getLuck() + rate);
+                AbilityUtil.setTargetLuck(entity, entity, component.getLuck() + rate);
             }
         }
     }

@@ -27,11 +27,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MidnightPoemAbility extends SelectableAbility {
 
@@ -195,7 +191,7 @@ public class MidnightPoemAbility extends SelectableAbility {
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, actualDuration, 5, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, actualDuration, 4, false, false, false));
 
-           UUID[] schedulerID = new UUID[1];
+            UUID[] schedulerID = new UUID[1];
             schedulerID[0] = ServerScheduler.scheduleForDuration(0, 3, actualDuration, () -> {
                 if(target.isDeadOrDying() || !target.isAlive()) {
                     ServerScheduler.cancel(schedulerID[0]);
@@ -236,7 +232,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
         if(luckComponent.getLuck() < 0) {
             int amplifier = 200;
-            luckComponent.addLuckWithMax(amplifier, 3000);
+            AbilityUtil.addTargetLuckWithMax(entity, entity, amplifier, 3000);
         }
 
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(0.1f, entity);
@@ -250,7 +246,7 @@ public class MidnightPoemAbility extends SelectableAbility {
             LuckComponent luckC = e.getData(ModAttachments.LUCK_COMPONENT);
             if(luckC.getLuck() < 0) {
                 int amplifier = 200;
-                luckC.addLuckWithMax(amplifier, 3000);
+                AbilityUtil.addTargetLuckWithMax(entity, e, amplifier, 3000);
             }
         });
     }
@@ -339,8 +335,7 @@ public class MidnightPoemAbility extends SelectableAbility {
                     ServerScheduler.scheduleDelayed(duration, () -> ((Mob) e).setNoAi(false));
                 }
                 if(BeyonderData.isBeyonder(e)) {
-                    DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("pacify", purified ? duration/2:duration, e);
+                    AbilityUtil.sealAllTargetAbilities(entity, e, "pacify", purified ? duration/2:duration);
                 }
             }
 

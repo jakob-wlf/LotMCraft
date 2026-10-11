@@ -84,8 +84,8 @@ public class DreamTraversalAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -363,7 +363,8 @@ public class DreamTraversalAbility extends SelectableAbility {
             return;
         }
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(hideSeqMap.getOrDefault(entity.getUUID(), 9))) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(hideSeqMap.getOrDefault(entity.getUUID(), 9), path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -407,41 +408,5 @@ public class DreamTraversalAbility extends SelectableAbility {
 
     public static boolean isHiding(UUID uuid) {
         return hideMap.containsKey(uuid);
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        if (hideMap.containsKey(entity.getUUID())) {
-            return true;
-        }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 1.5f);
-        return target != null && !checkAsleep(entity, target);
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        if (hideMap.containsKey(entity.getUUID())) {
-            return 2;
-        }
-
-        if (!(entity instanceof ServerPlayer)) {
-            return 0;
-        }
-
-        return random.nextInt(2) == 0 ? 0 : 2;
     }
 }

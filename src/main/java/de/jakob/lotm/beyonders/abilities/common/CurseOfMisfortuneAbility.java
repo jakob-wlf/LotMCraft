@@ -70,7 +70,7 @@ public class CurseOfMisfortuneAbility extends Ability {
 
         // Higher sequence opponents resist – and may fully negate – the curse
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
+        int targetSeq = BeyonderData.getSequence(target, false, true);
 
         double failureChance = AbilityUtil.getSequenceFailureChance(entitySeq, targetSeq);
 
@@ -90,8 +90,7 @@ public class CurseOfMisfortuneAbility extends Ability {
             return; // Full resistance – curse has no meaningful effect
         }
 
-        LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
-        luckComponent.addLuckWithMin(-amplifier, -5500);
+        AbilityUtil.addTargetLuckWithMin(entity, target, -amplifier, -5500);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 

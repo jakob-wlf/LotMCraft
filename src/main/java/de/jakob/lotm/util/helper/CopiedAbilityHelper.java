@@ -49,6 +49,7 @@ public class CopiedAbilityHelper {
         ));
     }
 
+
     public static void clearAbilities(LivingEntity player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.getAbilities().clear();

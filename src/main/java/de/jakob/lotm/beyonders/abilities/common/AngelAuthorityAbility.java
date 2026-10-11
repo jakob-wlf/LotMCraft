@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.addons.factions.FactionEvents;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
@@ -169,9 +168,7 @@ public class AngelAuthorityAbility extends SelectableAbility {
             }
             BlockPos below = pos.below();
             if (targetLevel.getBlockState(below).isAir()) {
-                if (!FactionEvents.shouldFail(player, player.chunkPosition())) {
-                    targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
-                }
+                targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
             }
             player.teleportTo(targetLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
         }

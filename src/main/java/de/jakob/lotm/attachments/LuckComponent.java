@@ -2,6 +2,7 @@ package de.jakob.lotm.attachments;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -14,38 +15,26 @@ public class LuckComponent implements INBTSerializable<CompoundTag> {
     }
 
     public void setLuck(int luck) {
-        this.luck = luck;
-        if(this.luck > 3000) {
-            this.luck = 3000;
-        }
-        if(this.luck < -6360) {
-            this.luck = -6360;
-        }
+        this.luck = Mth.clamp(luck, -6360, 3000);
     }
 
     public void addLuck(int amount) {
-        this.luck += amount;
-        if(luck > 3000) {
-            luck = 3000;
-        }
-        if(luck < -6360) {
-            luck = -6360;
-        }
+        setLuck(getLuck() + amount);
     }
 
     public void addLuckWithMax(int amount, int max) {
-        if (amount >= 0 && this.luck + amount > max) {
-            this.luck = max;
+        if (amount >= 0 && getLuck() + amount > max) {
+            setLuck(max);
         } else {
-            this.luck += amount;
+            setLuck(getLuck() + amount);
         }
     }
 
     public void addLuckWithMin(int amount, int min) {
-        if (amount < 0 && this.luck + amount < min) {
-            this.luck = min;
+        if (amount < 0 && getLuck() + amount < min) {
+            setLuck(min);
         } else {
-            this.luck += amount;
+            setLuck(getLuck() + amount);
         }
     }
 

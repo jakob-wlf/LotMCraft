@@ -79,7 +79,8 @@ public class DisasterFantasiaAbility extends SelectableAbility {
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq,path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -169,43 +170,5 @@ public class DisasterFantasiaAbility extends SelectableAbility {
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier(entity), damage/2 * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
 
             }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 45 * multiplier(entity))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return 3;
-        }
-
-        long nearbyTargets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 45 * multiplier(entity))
-                .stream()
-                .filter(t -> AbilityUtil.mayDamage(entity, t))
-                .count();
-
-        if (nearbyTargets > 5) {
-            return 3;
-        }
-
-        return random.nextInt(3);
     }
 }

@@ -277,7 +277,7 @@ public class FlamingJumpAbility extends SelectableAbility {
             return Collections.emptyList();
         }
 
-        double maxDistSqr = Math.pow(getMaxJumpDistance(BeyonderData.getSequence(entity)), 2);
+        double maxDistSqr = Math.pow(getMaxJumpDistance(BeyonderData.getSequence(entity, false, true)), 2);
 
         List<BlockPos> toRemove = new ArrayList<>();
         List<BlockPos> validFires = new ArrayList<>();

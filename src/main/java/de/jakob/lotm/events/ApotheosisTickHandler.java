@@ -10,7 +10,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.EntityLocation;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -49,7 +49,7 @@ public class ApotheosisTickHandler {
         player.setDeltaMovement(new Vec3(0, 0.02, 0));
         player.hurtMarked = true;
 
-        player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).disableAbilityUsageForTime("apotheosis", 20, player);
+        AbilityUtil.sealAllTargetAbilities(player, player, "apotheosis", 20);
 
         int colorInt = BeyonderData.pathwayInfos.get(component.getPathway()).color();
         float red   = ((colorInt >> 16) & 0xFF) / 255.0f;

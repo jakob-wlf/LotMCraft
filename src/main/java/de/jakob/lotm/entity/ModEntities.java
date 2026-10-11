@@ -30,6 +30,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {
@@ -79,10 +80,6 @@ public class ModEntities {
     public static final Supplier<EntityType<FireballEntity>> FIREBALL =
             ENTITY_TYPES.register("fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
                     .sized(.55f, .55f).noSave().build("fireball"));
-
-    public static final Supplier<EntityType<WaterBoltEntity>> WATER_BOLT =
-            ENTITY_TYPES.register("water_bolt", () -> EntityType.Builder.<WaterBoltEntity>of(WaterBoltEntity::new, MobCategory.MISC)
-                    .sized(.55f, .55f).noSave().build("water_bolt"));
 
     public static final Supplier<EntityType<SpiritBallEntity>> SPIRIT_BALL =
             ENTITY_TYPES.register("spirit_ball", () -> EntityType.Builder.<SpiritBallEntity>of(SpiritBallEntity::new, MobCategory.MISC)
@@ -225,7 +222,7 @@ public class ModEntities {
                     .fireImmune()
                     .build("electromagnetic_tornado"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> METEOR =
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> Meteor =
             ENTITY_TYPES.register("meteor", () -> EntityType.Builder.of(
                             (EntityType<MeteorEntity> type, net.minecraft.world.level.Level level) ->
                                     new MeteorEntity(type, level),
@@ -397,26 +394,6 @@ public class ModEntities {
     public static final Supplier<EntityType<RabbitOfKnowledgeEntity>> RABBIT_OF_KNOWLEDGE =
             ENTITY_TYPES.register("rabbit_of_knowledge", () -> EntityType.Builder.of(RabbitOfKnowledgeEntity::new, MobCategory.MONSTER)
                     .sized(1.3f, 1.3f).build("rabbit_of_knowledge"));
-
-    public static final Supplier<EntityType<SpiritGrimReaperEntity>> GRIM_REAPER =
-            ENTITY_TYPES.register("grim_reaper", () -> EntityType.Builder.of(SpiritGrimReaperEntity::new, MobCategory.MONSTER)
-                    .sized(1.6f, 2.7f).build("grim_reaper"));
-
-    public static final Supplier<EntityType<AsmannEntity>> ASMANN =
-            ENTITY_TYPES.register("asmann", () -> EntityType.Builder.of(AsmannEntity::new, MobCategory.MONSTER)
-                    .sized(1.6f, 1.6f).build("asmann"));
-
-    public static final Supplier<EntityType<KnowledgeDemonEntity>> KNOWLEDGE_DEMON =
-            ENTITY_TYPES.register("knowledge_demon", () -> EntityType.Builder.of(KnowledgeDemonEntity::new, MobCategory.MONSTER)
-                    .sized(1.6f, 1.6f).build("knowledge_demon"));
-
-    public static final Supplier<EntityType<StoneGolemEntity>> STONE_GOLEM =
-            ENTITY_TYPES.register("stone_golem", () -> EntityType.Builder.of(StoneGolemEntity::new, MobCategory.MONSTER)
-                    .sized(1.5f, 3.25f).build("stone_golem"));
-
-    public static final Supplier<EntityType<HeadlessBrideEntity>> HEADLESS_BRIDE =
-            ENTITY_TYPES.register("headless_bride", () -> EntityType.Builder.of(HeadlessBrideEntity::new, MobCategory.MONSTER)
-                    .sized(1.25f, 2f).build("headless_bride"));
 
 
     // NPCs and Living Entities

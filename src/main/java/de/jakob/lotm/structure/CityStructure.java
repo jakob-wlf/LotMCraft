@@ -7,8 +7,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.NoiseColumn;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldGenerationContext;
 import net.minecraft.world.level.levelgen.heightproviders.HeightProvider;
@@ -96,52 +94,77 @@ public class CityStructure extends Structure {
     @Override
     public Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
         ChunkPos chunkPos = context.chunkPos();
-        ChunkGenerator gen = context.chunkGenerator();
 
+        // Calculate the surface Y using the heightmap + start_height as normal
         int surfaceY = this.startHeight.sample(
                 context.random(),
-                new WorldGenerationContext(gen, context.heightAccessor()));
+                new WorldGenerationContext(context.chunkGenerator(), context.heightAccessor()));
 
         if (this.projectStartToHeightmap.isPresent()) {
-            surfaceY += gen.getFirstOccupiedHeight(
-                    chunkPos.getMinBlockX(), chunkPos.getMinBlockZ(),
+            surfaceY += context.chunkGenerator().getFirstOccupiedHeight(
+                    chunkPos.getMinBlockX(),
+                    chunkPos.getMinBlockZ(),
                     this.projectStartToHeightmap.get(),
-                    context.heightAccessor(), context.randomState());
+                    context.heightAccessor(),
+                    context.randomState());
         }
 
-        // 3x3 sample grid instead of 121 columns
-        int r = this.maxDistanceFromCenter;
-        int cx = chunkPos.getMiddleBlockX();
-        int cz = chunkPos.getMiddleBlockZ();
+        int checkRadius = this.maxDistanceFromCenter / 16; // in chunks
         int waterCount = 0;
 
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                int x = cx + dx * r / 2;
-                int z = cz + dz * r / 2;
+        for (int dx = -checkRadius; dx <= checkRadius; dx += 1) {
+            for (int dz = -checkRadius; dz <= checkRadius; dz += 1) {
+                int checkX = chunkPos.getMinBlockX() + (dx * 16);
+                int checkZ = chunkPos.getMinBlockZ() + (dz * 16);
 
-                NoiseColumn column = gen.getBaseColumn(x, z, context.heightAccessor(), context.randomState());
-                int y = gen.getFirstOccupiedHeight(x, z, Heightmap.Types.OCEAN_FLOOR_WG,
-                        context.heightAccessor(), context.randomState());
+                int solidY = context.chunkGenerator().getFirstOccupiedHeight(
+                        checkX, checkZ,
+                        Heightmap.Types.OCEAN_FLOOR_WG,
+                        context.heightAccessor(),
+                        context.randomState());
 
-                // block just above the floor is liquid -> water here
-                if (!column.getBlock(y).getFluidState().isEmpty()) {
+                int liquidY = context.chunkGenerator().getFirstOccupiedHeight(
+                        checkX, checkZ,
+                        Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                        context.heightAccessor(),
+                        context.randomState());
+
+                if (liquidY > solidY) {
                     waterCount++;
                 }
             }
         }
 
-        if (waterCount > 1) { // scaled down from >3 of 121
+        if (waterCount > 3) {
             return Optional.empty();
         }
 
+        // The structure pieces themselves spawn foundationDepth blocks underground...
         BlockPos placementPos = new BlockPos(chunkPos.getMinBlockX(), surfaceY - this.foundationDepth, chunkPos.getMinBlockZ());
 
+        // ...but we give JigsawPlacement the surface pos so terrain adaptation
+        // carves/fills at ground level, not at the buried spawn point.
+        // We achieve this by wrapping the context so that getFirstOccupiedHeight
+        // reports the surface, while the actual blockPos is shifted down.
+        //
+        // Concretely: pass projectStartToHeightmap as empty (we already resolved Y above),
+        // and shift blockPos down by foundationDepth. The Structure bounding box will
+        // sit at placementPos (underground), but terrainAdaptation() returns the value
+        // set in JSON so Minecraft uses the structure's *bounding box* top for blending —
+        // which, for beard_thin/bury, already reaches up through your foundation to surface.
         return JigsawPlacement.addPieces(
-                context, this.startPool, this.startJigsawName, this.size,
-                placementPos, false, Optional.empty(),
-                this.maxDistanceFromCenter, PoolAliasLookup.EMPTY,
-                this.dimensionPadding, this.liquidSettings);
+                context,
+                this.startPool,
+                this.startJigsawName,
+                this.size,
+                placementPos,
+                false,
+                // Pass empty here — we already applied heightmap offset manually above
+                Optional.empty(),
+                this.maxDistanceFromCenter,
+                PoolAliasLookup.EMPTY,
+                this.dimensionPadding,
+                this.liquidSettings);
     }
 
     @Override

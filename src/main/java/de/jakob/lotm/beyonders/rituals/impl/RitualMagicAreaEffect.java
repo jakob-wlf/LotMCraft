@@ -156,7 +156,7 @@ public class RitualMagicAreaEffect implements RitualResultHandler {
                 }
             }
             case "make_lucky" -> {
-                target.getData(ModAttachments.LUCK_COMPONENT).addLuck(20 * power * power);
+                AbilityUtil.addTargetLuck(null, target, 20 * power * power);
             }
             case "restore_sanity" -> {
                 target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSyncIgnoreSequence(0.1f * power, target);
@@ -177,8 +177,8 @@ public class RitualMagicAreaEffect implements RitualResultHandler {
                 });
             }
             case "execute" -> {
-                ExecutionAbility.playGuillotineAnimation(source.serverLevel(), target, source);
-                target.hurt(target.damageSources().magic(), (float) DamageLookup.lookupDamage(Math.min(9, 10 - power), 1));
+//                ExecutionAbility.playGuillotineAnimation(source.serverLevel(), target, source);
+//                target.hurt(target.damageSources().magic(), (float) DamageLookup.lookupDamage(Math.min(9, 10 - power), 1));
             }
             case "fear" -> {
                 target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference(.35f, target, Math.min(9, 10 - power), BeyonderData.getSequence(target));

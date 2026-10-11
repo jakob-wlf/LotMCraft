@@ -51,6 +51,11 @@ public class SanityComponent {
 
         float maxSanity = entity instanceof net.minecraft.world.entity.player.Player p
                 ? de.jakob.lotm.beyonders.acting.ActingCapHelper.getEffectiveCap(p) : 1.0f;
+
+        var data = entity.getData(ModAttachments.SEQUENCE_GUARD);
+        float multiplier = Math.max(0.6f, 1 - data.getTotalKills() * 0.05f);
+        maxSanity *= multiplier;
+
         if (this.sanity > maxSanity) this.sanity = maxSanity;
         else if (this.sanity < 0.0f) this.sanity = 0.0f;
 
@@ -64,6 +69,11 @@ public class SanityComponent {
 
         float maxSanity = entity instanceof net.minecraft.world.entity.player.Player p
                 ? de.jakob.lotm.beyonders.acting.ActingCapHelper.getEffectiveCap(p) : 1.0f;
+
+        var data = entity.getData(ModAttachments.SEQUENCE_GUARD);
+        float multiplier = Math.max(0.6f, 1 - data.getTotalKills() * 0.05f);
+        maxSanity *= multiplier;
+
         if (this.sanity > maxSanity) this.sanity = maxSanity;
         else if (this.sanity < 0.0f) this.sanity = 0.0f;
 

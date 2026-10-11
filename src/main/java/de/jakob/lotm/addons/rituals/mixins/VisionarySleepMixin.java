@@ -1,19 +1,19 @@
-//package de.jakob.lotm.addons.rituals.mixins;
-//
-//import de.jakob.lotm.attachments.ModAttachments;
-//import de.jakob.lotm.effect.ModEffects;
-//import de.jakob.lotm.util.BeyonderData;
-//import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
-//import net.minecraft.server.level.ServerPlayer;
-//import net.minecraft.server.network.ServerGamePacketListenerImpl;
-//import org.spongepowered.asm.mixin.Mixin;
-//import org.spongepowered.asm.mixin.injection.At;
-//import org.spongepowered.asm.mixin.injection.Inject;
-//import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//
-//
-//@Mixin(ServerGamePacketListenerImpl.class)
-//public class VisionarySleepMixin {
+package de.jakob.lotm.addons.rituals.mixins;
+
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.network.protocol.game.ServerboundPlayerCommandPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+
+@Mixin(ServerGamePacketListenerImpl.class)
+public class VisionarySleepMixin {
 //    @Inject(
 //            method = "handlePlayerCommand",
 //            at = @At("HEAD"),
@@ -49,4 +49,4 @@
 //            }
 //        }
 //    }
-//}
+}

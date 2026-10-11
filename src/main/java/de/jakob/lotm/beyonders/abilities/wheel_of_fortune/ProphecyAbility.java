@@ -147,9 +147,8 @@ public class ProphecyAbility extends SelectableAbility {
                 BeyonderData.addModifierWithTimeLimit(target, "prophecy", 0.8, 20 * 10);
             }
             case 1 -> {
-                LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
                 int amplifier = getLuck(AbilityUtil.getSeqWithArt(entity, this));
-                component.addLuckWithMin(-amplifier, (int) (-amplifier * 4));
+                AbilityUtil.addTargetLuckWithMin(entity, target, -amplifier, (int) (-amplifier * 4));
                 EffectManager.playEffect(EffectIds.MISFORTUNE_CURSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level);
             }
             case 2 -> {
@@ -179,9 +178,8 @@ public class ProphecyAbility extends SelectableAbility {
     }
 
     private void giveLuckEffect(Level level, LivingEntity entity) {
-        LuckComponent component = entity.getData(ModAttachments.LUCK_COMPONENT.get());
         int amplifier = getLuck(AbilityUtil.getSeqWithArt(entity, this));
-        component.addLuckWithMax(amplifier, 3000);
+        AbilityUtil.addTargetLuckWithMax(entity, entity, amplifier, 3000);
         EffectManager.playEffect(EffectIds.BLESSING, entity.getX(), entity.getY() + 1, entity.getZ(), (ServerLevel) level);
     }
 
@@ -208,16 +206,5 @@ public class ProphecyAbility extends SelectableAbility {
             case 9 -> new ItemStack(Items.ENDER_PEARL, random.nextInt(1, 8));
             default -> new ItemStack(Items.DIAMOND, 1);
         };
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        return super.shouldUseAbility(entity) && entity.level() instanceof ServerLevel;
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        boolean hasTarget = AbilityUtil.getTargetEntity(entity, 40, 6) != null;
-        return hasTarget ? random.nextInt(getAbilityNames().length) : random.nextInt(2);
     }
 }

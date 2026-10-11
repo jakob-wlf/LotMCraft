@@ -81,7 +81,7 @@ public class FearAuraAbility extends Ability {
                 BeyonderData.addModifier(e, "fear_aura", .4);
 
                 int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-                int targetSeq = BeyonderData.getSequence(e);
+                int targetSeq = BeyonderData.getSequence(e, false, true);
 
                 if (AbilityUtil.isTargetSignificantlyWeaker(entitySeq, targetSeq) && ticks.get() % 10 == 0) {
                     e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(3, 0.6, 10, 20) *
@@ -89,7 +89,7 @@ public class FearAuraAbility extends Ability {
                 }
 
                 SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
-                sanityComponent.decreaseSanityWithSequenceDifference(0.02168f*multiplier(entity), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e));
+                sanityComponent.decreaseSanityWithSequenceDifference(0.02168f*multiplier(entity), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e, false, true));
             });
             ticks.getAndIncrement();
         }, () -> this.clearArtifactScaling(entity), serverLevel);

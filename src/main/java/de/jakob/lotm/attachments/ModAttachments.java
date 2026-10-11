@@ -331,6 +331,14 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<SequenceGuardComponent>> SEQUENCE_GUARD =
+            ATTACHMENT_TYPES.register("sequence_guard", () ->
+                    AttachmentType.builder(SequenceGuardComponent::new)
+                            .serialize(SequenceGuardComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

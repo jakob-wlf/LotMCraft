@@ -7,6 +7,7 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -90,6 +91,7 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
             return;
         }
         if(owner != null) {
+            if (!AbilityUtil.mayTarget(owner, target)) return;
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, owner), (float) damage/2);
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.CHAOS, owner), (float) damage/2);
 
@@ -118,10 +120,10 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
 
         EffectManager.playEffect(EffectIds.CONQUERING, result.getLocation().x, result.getLocation().y, result.getLocation().z, serverLevel);
 
-        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
-        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+//        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+//        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+//        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+//        serverLevel.explode(getOwner(), result.getLocation().x, result.getLocation().y, result.getLocation().z, 9, griefing, griefing ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
 
         if(owner != null)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, result.getLocation(), owner, null, new String[]{"burning", "explosion"}, 9, 15));

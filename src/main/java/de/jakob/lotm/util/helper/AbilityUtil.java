@@ -1,22 +1,17 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
-import de.jakob.lotm.events.custom.TargetEntityEvent;
-import de.jakob.lotm.events.custom.TargetLocationEvent;
-import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
+import de.jakob.lotm.events.custom.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -284,6 +279,10 @@ public class AbilityUtil {
             return true;
         }
 
+        if (source instanceof ServerPlayer && target instanceof ServerPlayer) {
+            if (!sequenceGuardMayHarm(source, target)) return false;
+        }
+
         // Marionette targeting restrictions - invert for targeting only your marionettes
         if (!mayTargetMarionette(source, target) ^ targetMarionettes) {
             return false;
@@ -295,6 +294,34 @@ public class AbilityUtil {
         }
 
         return true;
+    }
+
+    public static boolean sequenceGuardMayHarm(LivingEntity source, LivingEntity target) {
+        if (!(source instanceof ServerPlayer sourcePlayer) || !(target instanceof ServerPlayer targetPlayer)) return true;
+
+        if (canTargetBySequence(BeyonderData.getSequence(sourcePlayer, false, true), BeyonderData.getSequence(targetPlayer, false, true))) return true;
+
+        var victimData = targetPlayer.getData(ModAttachments.SEQUENCE_GUARD);
+        // no guard - anybody can kill
+        if (!victimData.isGuardActive()) return true;
+
+        var attackerData = sourcePlayer.getData(ModAttachments.SEQUENCE_GUARD);
+        return attackerData.getAllowedToKill().contains(targetPlayer.getUUID())
+                || victimData.getConsentedAttackers().contains(sourcePlayer.getUUID())
+                || attackerData.ProvokedBy(targetPlayer.getUUID())
+                || victimData.hasProvoked(sourcePlayer.getUUID());
+    }
+
+    public static boolean canTargetBySequence(int sourceSeq, int targetSeq) {
+        return switch (sourceSeq) {
+            case 0, 1 -> targetSeq <= 2;
+            case 2    -> targetSeq <= 3;
+            case 3    -> targetSeq <= 4;
+            case 4    -> targetSeq <= 5;
+            case 5    -> targetSeq <= 7;
+            case 6    -> targetSeq <= 8;
+            default   -> true;
+        };
     }
 
     // ==================== HELPER METHODS FOR TARGETING VALIDATION ====================
@@ -467,8 +494,6 @@ public class AbilityUtil {
                                                boolean ignoreBlocks) {
         LivingEntity targetEntity = getTargetEntityInternal(entity, radius, entityDetectionRadius,
                 onlyAllowWithLineOfSight, allowAllies, targetMarionettes, ignoreBlocks);
-
-        if (targetEntity instanceof ArmorStand) return null;
 
         if (targetEntity instanceof ArmorStand) return null;
 
@@ -1370,4 +1395,101 @@ public class AbilityUtil {
     public static double getMultiplierWithArt(LivingEntity entity, Ability ability){
         return ability.artifactScalingMap.containsKey(entity.getUUID()) ? 1 : BeyonderData.getMultiplier(entity);
     }
+
+    public static void sealAllTargetAbilities(LivingEntity source ,LivingEntity target, String cause, int ticks){
+        AbilitySealedEvent event = new AbilitySealedEvent(source, target, ticks, cause);
+        NeoForge.EVENT_BUS.post(event);
+        if(event.isCanceled()) {
+            return;
+        }
+
+        LivingEntity newTarget = event.getTargetEntity();
+        int newDuration = event.getDuration();
+        String newCause = event.getCause() != null ? event.getCause() : "";
+        LivingEntity newSource = event.getSourceEntity();
+
+        if (newTarget == null || newDuration <= 0) {
+            return;
+        }
+
+        DisabledAbilitiesComponent component = newTarget.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime(newCause, newDuration, newTarget);
+    }
+
+    public static void sealSpecificTargetAbility(LivingEntity source ,LivingEntity target, String ability, String cause, int ticks){
+        AbilitySealedEvent event = new AbilitySealedEvent(source, target, ticks, cause, ability);
+        NeoForge.EVENT_BUS.post(event);
+        if(event.isCanceled()) {
+            return;
+        }
+
+        LivingEntity newTarget = event.getTargetEntity();
+        int newDuration = event.getDuration();
+        String newCause = event.getCause() != null ? event.getCause() : "";
+        LivingEntity newSource = event.getSourceEntity();
+        String newAbility = event.getAbility();
+
+        if (newTarget == null || newDuration <= 0 || newAbility == null) {
+            return;
+        }
+
+        DisabledAbilitiesComponent component = newTarget.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableSpecificAbilityForTime(newAbility, newCause, newDuration);
+    }
+
+    public static void setTargetLuck(LivingEntity source, LivingEntity target, int luck) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+
+        int oldLuck = comp.getLuck();
+        luck = Mth.clamp(luck, -6360, 3000);
+        boolean isLuckIncreased = luck > oldLuck;
+
+        LuckSetEvent event = new LuckSetEvent(source, target, luck, isLuckIncreased);
+        NeoForge.EVENT_BUS.post(event);
+
+        if (event.isCanceled()) {
+            return;
+        }
+
+        LivingEntity newTarget = event.getTargetEntity();
+        if (newTarget == null) return;
+
+        int newLuck = event.getLuck();
+
+        comp = newTarget.getData(ModAttachments.LUCK_COMPONENT);
+        comp.setLuck(newLuck);
+    }
+
+    public static void addTargetLuck(LivingEntity source, LivingEntity target, int amount) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+        setTargetLuck(source, target, comp.getLuck() + amount);
+    }
+
+    public static void addTargetLuckWithMax(LivingEntity source, LivingEntity target, int amount, int max) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+
+        int currentLuck = comp.getLuck();
+        int proposedLuck = (amount >= 0 && currentLuck + amount > max) ? max : currentLuck + amount;
+
+        setTargetLuck(source, target, proposedLuck);
+    }
+
+    public static void addTargetLuckWithMin(LivingEntity source, LivingEntity target, int amount, int min) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+
+        int currentLuck = comp.getLuck();
+        int proposedLuck = (amount < 0 && currentLuck + amount < min) ? min : currentLuck + amount;
+
+        setTargetLuck(source, target, proposedLuck);
+    }
+
+
 }

@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
 import de.jakob.lotm.attachments.AbilityCooldownComponent;
@@ -15,7 +16,6 @@ import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.entity.custom.ability_entities.darkness_pathway.ConcealedDomainEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
-import de.jakob.lotm.gui.custom.pathway_selection.PathwaySelectionMenu;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
@@ -24,7 +24,6 @@ import de.jakob.lotm.network.packets.toClient.SyncGriefingGamerulePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.network.packets.toClient.SyncPlayerSefirotPacket;
-import de.jakob.lotm.network.packets.toClient.SyncPreLoadGamerulePacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.attachments.AllyComponent;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -60,6 +59,7 @@ import org.joml.Vector3f;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PlayerEvents {
@@ -116,7 +116,6 @@ public class PlayerEvents {
     public static void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PacketHandler.sendToPlayer(player, new SyncGriefingGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.ALLOW_GRIEFING)));
-            PacketHandler.sendToPlayer(player, new SyncPreLoadGamerulePacket(player.level().getGameRules().getBoolean(ModGameRules.PRE_LOAD_EFFECTS)));
 
             if(player instanceof ServerPlayer serverPlayer) {
                 AllyUtil.syncAllyData(serverPlayer);
@@ -126,7 +125,16 @@ public class PlayerEvents {
 
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
-                PathwaySelectionMenu.openWithAllPathways(player);
+                player.addItem(new ItemStack(ModItems.GUIDING_BOOK.get()));
+
+                String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
+                Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathway, 9);
+                Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathway, 9);
+
+                if(characteristic != null && recipe != null) {
+                    player.addItem(new ItemStack(characteristic));
+                    player.addItem(new ItemStack(recipe));
+                }
 
                 component.setHasReceivedNewPlayerPerks(true);
             }
@@ -159,11 +167,37 @@ public class PlayerEvents {
             return;
         }
 
-        if(event.getEntity() instanceof ServerPlayer serverPlayer) {
-            AllyUtil.syncAllyData(serverPlayer);
-        }
-
         ToggleAbility.cleanUp(level, event.getEntity());
+
+        if (!(event.getEntity() instanceof ServerPlayer serverTarget)) return;
+
+        AllyUtil.syncAllyData(serverTarget);
+
+        // for sequence guard
+        if (event.getSource().getEntity() instanceof ServerPlayer sourcePlayer) {
+            if (AbilityUtil.canTargetBySequence(BeyonderData.getSequence(sourcePlayer), BeyonderData.getSequence(serverTarget))) return;
+
+            var victim = serverTarget.getData(ModAttachments.SEQUENCE_GUARD);
+            var killerData = sourcePlayer.getData(ModAttachments.SEQUENCE_GUARD);
+
+            // return if the target was unprotected, or if he consented the killing, or if he provoked the HIGHER UPS
+            if (!victim.isGuardActive()) return;
+            if (victim.getConsentedAttackers().contains(sourcePlayer.getUUID())) return;
+            if (killerData.ProvokedBy(serverTarget.getUUID())) return;
+
+            killerData.punish();
+            killerData.addTotalKills(1);
+            sourcePlayer.sendSystemMessage(Component.literal(
+                    "§cYou killed a protected weaker player. Your Sequence Guard is disabled for 24 hours"));
+
+            for (UUID uuid : victim.getProvoked()) {
+                ServerPlayer other = serverTarget.server.getPlayerList().getPlayer(uuid);
+                if (other != null) {
+                    other.getData(ModAttachments.SEQUENCE_GUARD).removeProvoker(serverTarget.getUUID());
+                }
+            }
+            victim.clearProvoked();
+        }
 
     }
 
@@ -171,6 +205,12 @@ public class PlayerEvents {
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             AllyUtil.syncAllyData(serverPlayer);
+
+            var data = serverPlayer.getData(ModAttachments.SEQUENCE_GUARD);
+            data.clearPunishment();
+            data.setSequenceGuard(true);
+            data.clearConsentAttackers();
+            data.resetTotalKills();
         }
     }
 
@@ -186,24 +226,46 @@ public class PlayerEvents {
         if(event.getEntity().level().isClientSide)
             return;
 
-        if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
-            Entity damager = event.getSource().getEntity();
+        Entity damager = event.getSource().getEntity();
 
-            if(damager != null &&
-                    (!(damager instanceof LivingEntity damagerLiving) ||
-                            BeyonderData.getSequence(damagerLiving) - BeyonderData.getSequence(event.getEntity()) >= -2
-            )) {
+        if (!(damager instanceof LivingEntity source)) return;
 
-                if(!event.getSource().is(ModDamageTypes.PHYSICAL))
-                    return;
+        // for sequence guard
+        if (event.getEntity() instanceof ServerPlayer serverTarget && source instanceof ServerPlayer serverSource) {
+            if (!AbilityUtil.canTargetBySequence(BeyonderData.getSequence(serverTarget), BeyonderData.getSequence(serverSource))) {
+                serverTarget.getData(ModAttachments.SEQUENCE_GUARD).addProvoker(serverSource.getUUID());
+                serverSource.getData(ModAttachments.SEQUENCE_GUARD).addProvoked(serverTarget.getUUID());
+            }
 
+            if (!AbilityUtil.sequenceGuardMayHarm(serverSource, serverTarget)) {
                 event.setCanceled(true);
-                if (event.getEntity() instanceof ServerPlayer player) {
-                    Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
-                    sendActionBar(player, actionBarText);
+                serverSource.sendSystemMessage(Component.literal("§cSequence Guard protects this player."), true);
+                return;
+            }
+        }
+
+        if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
+            if(BeyonderData.getSequence(source) - BeyonderData.getSequence(event.getEntity()) >= -2) {
+                if(event.getSource().is(ModDamageTypes.PHYSICAL)) {
+                    boolean hasActiveGrafting = false;
+                    for (Ability var : ToggleAbility.getActiveAbilitiesForEntity(source)){
+                        if (var == LOTMCraft.abilityHandler.getById("grafting_abilities_ability")) {
+                            hasActiveGrafting = true;
+                            break;
+                        }
+                    }
+                    if (!hasActiveGrafting) {
+                        BeyonderData.reduceSpirituality(source, 100);
+                        event.setCanceled(true);
+                        if (event.getEntity() instanceof ServerPlayer player) {
+                            Component actionBarText = Component.literal("Dodged Attack").withStyle(ChatFormatting.DARK_PURPLE);
+                            sendActionBar(player, actionBarText);
+                        }
+                    }
                 }
             }
         }
+
         if(NightmareAbility.hasActiveNightmare(event.getEntity())) {
             if(event.getAmount() >= event.getEntity().getHealth()) {
                 event.setCanceled(true);
@@ -211,8 +273,7 @@ public class PlayerEvents {
                 NightmareAbility.stopNightmare(event.getEntity().getUUID());
             }
         }
-        Entity damager = event.getSource().getEntity();
-        if(damager instanceof LivingEntity source && ((ToggleAbility) LOTMCraft.abilityHandler.getById("cull_ability")).isActiveForEntity(source)) {
+        if(((ToggleAbility) LOTMCraft.abilityHandler.getById("cull_ability")).isActiveForEntity(source)) {
             Level level = event.getEntity().level();
             if(!level.isClientSide) {
                 ParticleUtil.spawnParticles((ServerLevel) level, dust, event.getEntity().getEyePosition().subtract(0, .4, 0), 40, .4, .8, .4, 0);

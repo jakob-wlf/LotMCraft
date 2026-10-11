@@ -16,6 +16,7 @@ import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -199,8 +200,7 @@ public class NegativeEffect {
                 if (possibleAbilitiesToLose.isEmpty()) break;
 
                 Ability abilityToLose = possibleAbilitiesToLose.get(player.getRandom().nextInt(possibleAbilitiesToLose.size()));
-                DisabledAbilitiesComponent component = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                component.disableSpecificAbilityForTime(abilityToLose.getId(), "artifact_lose_ability", 20 * 20);
+                AbilityUtil.sealSpecificTargetAbility(null, player, abilityToLose.getId(), "artifact_lose_ability", 20 * 20);
                 break;
             case STOP_TIME:
                 TimeChangeEntity entity = new TimeChangeEntity(ModEntities.TIME_CHANGE.get(), player.level(), 20 * 5, null, 8, .001f);

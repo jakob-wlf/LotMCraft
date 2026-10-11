@@ -220,7 +220,7 @@ public class BeyonderEventHandler {
         // sorry nihil i have to mess with your method :)
         // ok ;-;
         // cancel the drop of items completely for summoned entities
-        if (event.getEntity().getPersistentData().contains("VoidSummoned") || event.getEntity().getPersistentData().contains("PuppetSummoned")) {
+        if (event.getEntity().getPersistentData().contains("VoidSummoned")) {
             event.setCanceled(true);
             return;
         }

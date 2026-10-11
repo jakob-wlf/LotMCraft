@@ -1,19 +1,18 @@
-//package de.jakob.lotm.addons.rituals.mixins;
-//
-//import de.jakob.lotm.attachments.ModAttachments;
-//import de.jakob.lotm.effect.ModEffects;
-//import de.jakob.lotm.util.BeyonderData;
-//import net.minecraft.server.level.ServerPlayer;
-//import net.minecraft.server.players.SleepStatus;
-//import org.spongepowered.asm.mixin.Mixin;
-//import org.spongepowered.asm.mixin.injection.At;
-//import org.spongepowered.asm.mixin.injection.ModifyVariable;
-//
-//import java.util.List;
-//
-//
-//@Mixin(SleepStatus.class)
-//public class VisionarySleepStatusMixin {
+package de.jakob.lotm.addons.rituals.mixins;
+
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.SleepStatus;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+
+import java.util.List;
+
+@Mixin(SleepStatus.class)
+public class VisionarySleepStatusMixin {
 //
 //    @ModifyVariable(
 //            method = "update",
@@ -43,4 +42,4 @@
 //                && player.hasEffect(ModEffects.ASLEEP)
 //                && !wakeUp.contains(player.getUUID());
 //    }
-//}
+}

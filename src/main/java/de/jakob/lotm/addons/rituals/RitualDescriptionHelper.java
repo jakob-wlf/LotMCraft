@@ -1,6 +1,5 @@
 package de.jakob.lotm.addons.rituals;
 
-
 import java.util.HashMap;
 import java.util.Map;
 

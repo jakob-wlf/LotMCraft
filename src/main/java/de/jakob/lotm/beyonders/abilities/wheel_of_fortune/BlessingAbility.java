@@ -81,7 +81,7 @@ public class BlessingAbility extends Ability {
         int luck = getLuck(entitySeq);
 
         LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        component.addLuckWithMax(luck, 3000);
+        AbilityUtil.addTargetLuckWithMax(entity, target, luck, 3000);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 

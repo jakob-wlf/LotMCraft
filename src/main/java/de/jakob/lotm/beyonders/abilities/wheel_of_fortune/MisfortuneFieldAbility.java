@@ -58,8 +58,7 @@ public class MisfortuneFieldAbility extends Ability {
 
                 if (!(BeyonderData.getPathway(e).equals("monster") && BeyonderData.getSequence(e) < entitySeq)) {
                     if (!(BeyonderData.getPathway(e).equals("darkness") && BeyonderData.getSequence(e) + 1 < entitySeq)) {
-                        LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT.get());
-                        luckComponent.addLuckWithMin(-amplifier, -amplifier * 3);
+                        AbilityUtil.addTargetLuckWithMin(entity, e, -amplifier, -amplifier * 3);
                     }
                 }
 
@@ -76,20 +75,5 @@ public class MisfortuneFieldAbility extends Ability {
             case 0 -> 1500;
             default -> 0;
         };
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20 * multiplier(entity))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
     }
 }

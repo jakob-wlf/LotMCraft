@@ -37,10 +37,6 @@ public record RequestOpenMarionetteMenuPacket() implements CustomPacketPayload {
     public static void handle(RequestOpenMarionetteMenuPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer serverPlayer)) return;
-            if(ControllingUtils.isControlling(serverPlayer)) {
-                AbilityUtil.sendActionBar(serverPlayer, Component.literal("You cannot open the marionette menu while controlling a marionette.").withColor(0xFF0000));
-                return;
-            }
             ServerLevel level = serverPlayer.serverLevel();
 
             MarionetteOwnerComponent ownerData = serverPlayer.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT);

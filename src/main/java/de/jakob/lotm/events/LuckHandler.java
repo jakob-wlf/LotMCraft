@@ -1,6 +1,9 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -171,6 +174,16 @@ public class LuckHandler {
 
         if (luck > 0) {
             if (Math.random() < getDodgeChance(luck)) {
+                if (event.getSource().getEntity() instanceof LivingEntity source) {
+                    boolean hasActiveGrafting = false;
+                    for (Ability var : ToggleAbility.getActiveAbilitiesForEntity(source)){
+                        if (var == LOTMCraft.abilityHandler.getById("grafting_abilities_ability")) {
+                            hasActiveGrafting = true;
+                            break;
+                        }
+                    }
+                    if (hasActiveGrafting) return;
+                }
                 event.setCanceled(true);
                 Entity entity = event.getEntity();
                 ParticleUtil.spawnParticles(level, LUCK_DUST, entity.position().add(0, entity.getEyeHeight() / 2, 0), 55, .4, entity.getEyeHeight() / 2, .4, 0);
@@ -520,8 +533,7 @@ public class LuckHandler {
 
         int duration = 20 * 3;
 
-        DisabledAbilitiesComponent component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("unluck_ability_disabled", duration, entity);
+        AbilityUtil.sealAllTargetAbilities(null, entity, "unluck_ability_disabled", duration);
 
         ParticleUtil.spawnParticles(level, UNLUCK_DUST, entity.position().add(0, entity.getEyeHeight() / 2, 0), 50, .5, entity.getEyeHeight() / 2, .5, 0);
         level.playSound(null, entity.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.5f, 0.5f);

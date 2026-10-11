@@ -75,8 +75,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -99,8 +99,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -110,10 +110,9 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (entity instanceof ServerPlayer) {
             if (!invisiblePlayers.containsKey(entity.getUUID())) {
                 int seq = AbilityUtil.getSeqWithArt(entity, this);
-//                String path = BeyonderData.getPathway(entity);
-//                if(!path.equals("visionary")){
-//                    seq -= 1;
-//                }
+                if(!path.equals("visionary")){
+                    seq -= 1;
+                }
 
                 add(entity, seq);
             }
@@ -349,16 +348,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        return !VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq);
     }
 
 }

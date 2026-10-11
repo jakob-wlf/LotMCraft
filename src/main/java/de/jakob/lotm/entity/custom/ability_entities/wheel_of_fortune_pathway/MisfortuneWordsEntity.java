@@ -80,10 +80,14 @@ public class MisfortuneWordsEntity extends Entity {
 //                }
 
                 if(!(BeyonderData.getSequence(e) <= 2 && e.getHealth() <= e.getMaxHealth() * 0.5)) {
-                    if (getCasterEntity() != null)
-                        e.hurt(ModDamageTypes.source(level(), ModDamageTypes.UNLUCK, getCasterEntity()), damage);
-                    else
-                        e.hurt(ModDamageTypes.source(level(), ModDamageTypes.UNLUCK), damage);
+                    if (getCasterEntity() != null){
+                        if (AbilityUtil.mayTarget(getCasterEntity(), e)) {
+                            e.hurt(ModDamageTypes.source(level(), ModDamageTypes.UNLUCK, getCasterEntity()), damage);
+                        }
+                    }
+//                    else{
+//                        e.hurt(ModDamageTypes.source(level(), ModDamageTypes.UNLUCK), damage);
+//                    }
 
                     if (!affectedEntities.contains(e.getUUID())) {
                         affectedEntities.add(e.getUUID());

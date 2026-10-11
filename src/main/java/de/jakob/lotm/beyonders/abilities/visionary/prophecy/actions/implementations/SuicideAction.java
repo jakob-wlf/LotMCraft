@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.implementations;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
@@ -29,7 +30,10 @@ public class SuicideAction extends ActionBase {
 
     @Override
     public void action(Level level, LivingEntity entity, UUID casterId) {
-        var data = BeyonderData.playerMap.get(casterId).get();
+        var dataOp = BeyonderData.playerMap.get(casterId);
+        if(dataOp.isEmpty()) return;
+
+        var data = dataOp.get();
         int seq = data.sequence();
         int targetSeq = BeyonderData.getSequence(entity);
 
@@ -37,6 +41,17 @@ public class SuicideAction extends ActionBase {
 
         if(diff >= 2)
             entity.kill();
+        else{
+            var virtual = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
+            var affectedBy = virtual.getAffectedBy(seq);
+
+            if(affectedBy.contains(data.trueName())){
+                var sanity = entity.getData(ModAttachments.SANITY_COMPONENT.get());
+                float damage = 0.005f;
+
+                sanity.setSanityAndSync(sanity.getSanity() - damage, entity);
+            }
+        }
     }
 
     public static SuicideAction load(CompoundTag tag, HolderLookup.Provider provider) {

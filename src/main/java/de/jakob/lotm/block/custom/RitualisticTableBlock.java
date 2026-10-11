@@ -43,7 +43,6 @@ public class RitualisticTableBlock extends BaseEntityBlock {
     private static final List<BlockPos> OCCUPIED_OFFSETS_NORTH = List.of(
             new BlockPos(-1, 0, 0), // Spawns 1 block to the left
             new BlockPos(1, 0, 0)   // Spawns 1 block to the right
-            // NOTE: (0,0,0) is the anchor/main block itself - don't include it here.
     );
 
     public RitualisticTableBlock(Properties properties) {

@@ -58,11 +58,11 @@ public class AvatarCreationAbility extends Ability {
         int sequence = LOTMCraft.NON_BEYONDER_SEQ;
         int entitySeq = BeyonderData.getSequence(entity);
 
-        if(entity instanceof ServerPlayer player) {
-            if (BeyonderData.anchoringStorage.getAnchoring(player.getName().getString())
-                    .getAvatarAmount() + 1 >= getMax(entitySeq) )
-                return;
-        }
+//        if(entity instanceof ServerPlayer player) {
+//            if (BeyonderData.anchoringStorage.getAnchoring(player.getName().getString())
+//                    .getAvatarAmount() + 1 >= getMax(entitySeq) )
+//                return;
+//        }
 
         for (int i = 1; i < LOTMCraft.NON_BEYONDER_SEQ; i++){
             if(entitySeq >= i) continue;
@@ -78,9 +78,9 @@ public class AvatarCreationAbility extends Ability {
         level.addFreshEntity(avatar);
         avatar.setPersistenceRequired();
 
-        if(entity instanceof ServerPlayer player) {
-            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(), avatar.getUUID());
-        }
+//        if(entity instanceof ServerPlayer player) {
+//            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(), avatar.getUUID());
+//        }
 
         if(sequence != LOTMCraft.NON_BEYONDER_SEQ)
             BeyonderData.setCharStack(entity, sequence, stacks[sequence] - 1, true);

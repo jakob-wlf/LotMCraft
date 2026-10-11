@@ -8,6 +8,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.ChatFormatting;
@@ -131,15 +132,14 @@ public class ReincarnationAbility extends PassiveAbility {
         }
 
         // Seal all current-sequence abilities (Reincarnation Debuff)
-        DisabledAbilitiesComponent disabledAbilities = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        disabledAbilities.disableAbilityUsageForTime(SEAL_CAUSE, sealTicks, player);
+        AbilityUtil.sealAllTargetAbilities(null, player, SEAL_CAUSE, sealTicks);
 
         // Also seal each current-sequence ability individually for clarity
         if (BeyonderData.isBeyonder(player)) {
             String pathway = BeyonderData.getPathway(player);
             LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).forEach(ability -> {
                 if (!ability.canAlwaysBeUsed) {
-                    disabledAbilities.disableSpecificAbilityForTime(ability.getId(), SEAL_CAUSE, sealTicks);
+                    AbilityUtil.sealSpecificTargetAbility(null, player, ability.getId(), SEAL_CAUSE, sealTicks);
                 }
             });
         }

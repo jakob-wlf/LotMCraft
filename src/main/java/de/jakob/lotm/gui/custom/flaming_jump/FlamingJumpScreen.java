@@ -89,7 +89,9 @@ public class FlamingJumpScreen extends AbstractContainerScreen<FlamingJumpMenu> 
             this.setRenderHeader(false, 0);
         }
 
-        public void addFireLocation(BlockPos pos, int index) { this.addEntry(new Entry(screen, pos, index)); }
+        public void addFireLocation(BlockPos pos, int index) {
+            this.addEntry(new Entry(screen, pos, index));
+        }
 
         @Override
         public int getRowWidth() {
@@ -118,6 +120,7 @@ public class FlamingJumpScreen extends AbstractContainerScreen<FlamingJumpMenu> 
             private void teleportToFire() {
                 if (Minecraft.getInstance().player == null) return;
                 PacketHandler.sendToServer(new FlamingJumpTeleportPacket(index));
+
                 screen.onClose();
             }
 

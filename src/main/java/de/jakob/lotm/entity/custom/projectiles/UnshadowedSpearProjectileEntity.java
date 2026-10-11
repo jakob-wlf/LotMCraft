@@ -1,19 +1,15 @@
 package de.jakob.lotm.entity.custom.projectiles;
 
-import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
-import com.lowdragmc.photon.client.fx.FX;
-import com.lowdragmc.photon.client.fx.FXHelper;
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -115,9 +111,10 @@ public class UnshadowedSpearProjectileEntity extends AbstractArrow {
         if(!(result.getEntity() instanceof LivingEntity))
             return;
         LivingEntity target = (LivingEntity) result.getEntity();
-        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, false, Level.ExplosionInteraction.NONE);
+//        level.explode(owner, target.position().x, target.position().y, target.position().z, 3.5f, false, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
-        if (this.getOwner() instanceof LivingEntity livingOwner) {
+        if (owner instanceof LivingEntity livingOwner) {
+            if (!AbilityUtil.mayTarget(livingOwner, target)) return;
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT, livingOwner), (float) damage);
         } else {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.LIGHT), (float) damage);

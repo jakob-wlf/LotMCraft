@@ -103,7 +103,7 @@ public class CalamityAction extends ActionBase {
         if(level.isClientSide || !(level instanceof ServerLevel serverLevel))
             return;
 
-        ServerScheduler.scheduleForDuration(0, 20, 20 * 80, () -> {
+        ServerScheduler.scheduleForDuration(0, 20, 20 * 10, () -> {
             Location currentLoc = new Location(entity.position(), entity.level());
             int seq = BeyonderData.getSequence(entity);
             if(InteractionHandler.isInteractionPossible(currentLoc, "purification", seq) ||
@@ -124,6 +124,8 @@ public class CalamityAction extends ActionBase {
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, damage/2, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.IMAGINATION, entity));
             AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, damage/2 * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
 
+            entity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.IMAGINATION), damage/2);
+            entity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.PLAGUE), damage/2 * damageMult);
         });
     }
 }

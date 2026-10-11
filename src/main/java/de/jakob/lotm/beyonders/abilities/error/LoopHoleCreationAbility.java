@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.addons.factions.FactionCore;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
@@ -11,13 +10,11 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -164,7 +161,7 @@ public class LoopHoleCreationAbility extends Ability {
 //            boolean allGood = true;
 //            for (var entity : entitiesInRange) {
 //                if (entity instanceof ServerPlayer player) {
-//                    if(BeyonderData.getSequence(player) > 4) continue;
+//                    if(BeyonderData.getSequence(player) > 7) continue;
 //
 //                    if (nation != null && nation.isPartOfFaction(player.getName().getString()))
 //                        allGood = false;

@@ -5,6 +5,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
@@ -50,7 +51,7 @@ public class PetrificationEffect extends MobEffect {
         livingEntity.hurtMarked = true;
 
         DisabledAbilitiesComponent component = livingEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("petrification", 20, livingEntity);
+        AbilityUtil.sealAllTargetAbilities(null, livingEntity, "petrification", 20);
 
         if(!BeyonderData.isBeyonder(livingEntity) && livingEntity instanceof Mob mob) {
             mob.setNoAi(true);

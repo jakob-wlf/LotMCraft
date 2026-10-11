@@ -94,7 +94,7 @@ public class LesserConcealmentAbility extends SelectableAbility {
                 10.0f,
                 1.0f);
 
-            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2, false, true);
+            LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true, true);
             if(targetEntity == null){
                 return;
             }

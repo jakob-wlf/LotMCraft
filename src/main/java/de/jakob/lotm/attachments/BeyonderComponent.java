@@ -135,6 +135,7 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         tag.putFloat("digestionProgress", digestionProgress);
         tag.putBoolean("isGriefingEnabled", isGriefingEnabled);
         tag.putInt("cowardWormAmount", cowardWormAmount);
+        tag.putInt("convergenceTimer", convergenceTimer);
         return tag;
     }
 
@@ -167,5 +168,6 @@ public class BeyonderComponent implements INBTSerializable<CompoundTag> {
         this.digestionProgress = compoundTag.getFloat("digestionProgress");
         this.isGriefingEnabled = compoundTag.getBoolean("isGriefingEnabled");
         this.cowardWormAmount = compoundTag.getInt("cowardWormAmount");
+        this.convergenceTimer = compoundTag.getInt("convergenceTimer");
     }
 }

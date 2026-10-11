@@ -58,6 +58,7 @@ public abstract class ActionBase {
             case AGGRO -> AggroAction.load(tag, provider);
             case MOVE -> MoveAction.load(tag, provider);
             case WAKE_UP -> WakeUpAction.load(tag, provider);
+            case RESET ->  ResetAction.load(tag, provider);
         };
     }
 
@@ -89,6 +90,7 @@ public abstract class ActionBase {
             case AGGRO -> new AggroAction(context);
             case MOVE -> new MoveAction(context);
             case WAKE_UP -> new WakeUpAction(context);
+            case RESET -> new ResetAction(context);
         };
     }
 }

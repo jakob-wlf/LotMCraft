@@ -92,8 +92,8 @@ public class NightDomainAbility extends Ability {
                     ModDamageTypes.source(level, ModDamageTypes.DARKNESS, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 35).forEach(e -> {
-                LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT);
-                luckComponent.addLuckWithMin(-60, purified ? -240 : -960);
+                AbilityUtil.addTargetLuckWithMin(entity, e, -60, purified ? -240 : -960);
+
                 BeyonderData.addModifierWithTimeLimit(e, "night_domain_debuff", .8, 2000);
             });
 

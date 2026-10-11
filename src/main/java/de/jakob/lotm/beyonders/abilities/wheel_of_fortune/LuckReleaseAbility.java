@@ -57,8 +57,7 @@ public class LuckReleaseAbility extends Ability {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int additionalLuck = getAdditionalLuckByTicks(ticks, entitySeq);
 
-        LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        luckComponent.addLuckWithMax(additionalLuck, 3000);
+        AbilityUtil.addTargetLuckWithMax(entity, entity, additionalLuck, 3000);
 
         EntityLocation loc = new EntityLocation(entity);
         ParticleUtil.createParticleSpirals(dust, loc, 1.75, 1.75, 2.25, .35, 5, 20 * 35, 15, 8);
@@ -95,15 +94,5 @@ public class LuckReleaseAbility extends Ability {
             case 0 -> 3000;
             default -> 0;
         };
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        LuckAccumulationComponent component = entity.getData(ModAttachments.LUCK_ACCUMULATION_COMPONENT.get());
-        return component.getTicksAccumulated() >= 20 * 60 * 2;
     }
 }

@@ -1,16 +1,11 @@
 package de.jakob.lotm.effect;
 
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket;
-import net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -39,8 +34,7 @@ public class ConqueredEffect extends MobEffect {
             livingEntity.setHealth(targetHealth);
         }
 
-        DisabledAbilitiesComponent component = livingEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        component.disableAbilityUsageForTime("conquered", 20, livingEntity);
+        AbilityUtil.sealAllTargetAbilities(null, livingEntity, "conquered", 20);
 
 //        if(livingEntity.tickCount % 10 == 0) {
 //            ServerLevel serverLevel = (ServerLevel) livingEntity.level();

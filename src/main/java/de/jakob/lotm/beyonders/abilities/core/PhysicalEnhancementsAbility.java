@@ -672,7 +672,7 @@ public abstract class PhysicalEnhancementsAbility extends PassiveAbility {
             if (!(event.getSource().getEntity() instanceof LivingEntity source)) return;
 
             LivingEntity target = event.getEntity();
-            if (!BeyonderData.isBeyonder(target)) return;
+            if (!BeyonderData.isBeyonder(target) || !BeyonderData.isBeyonder(source)) return;
 
 //            if (!reducedRegen.containsKey(target.getUUID()) ||
 //                    (reducedRegen.get(target.getUUID()) - System.currentTimeMillis()) <= 0) {

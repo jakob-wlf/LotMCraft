@@ -4,8 +4,7 @@ import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextEnum;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -31,15 +30,13 @@ public class SealAction extends ActionBase {
 
     @Override
     public void action(Level level, LivingEntity entity, UUID casterId) {
-        DisabledAbilitiesComponent comp = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        comp.disableAbilityUsage("sealed_visionary");
+        int duration = 20 * 7;
+        AbilityUtil.sealAllTargetAbilities(level.getPlayerByUUID(casterId), entity, "sealed_visionary", duration);
 
 //        Seq1.disabled.add(entity.getUUID());
-
-        ServerScheduler.scheduleDelayed(20 * 7, ()->{
-            comp.enableAbilityUsage("sealed_visionary");
+//        ServerScheduler.scheduleDelayed(duration, ()->{
 //            Seq1.disabled.remove(entity.getUUID());
-        });
+//        });
     }
 
     public static SealAction load(CompoundTag tag, HolderLookup.Provider provider) {

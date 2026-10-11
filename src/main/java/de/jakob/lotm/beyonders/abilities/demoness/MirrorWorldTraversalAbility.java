@@ -140,6 +140,7 @@ public class MirrorWorldTraversalAbility extends SelectableAbility {
     }
 
 
+
     private static BlockPos getNearestGlassBlock(ServerLevel level, Vec3 pos, int searchRadius) {
         return AbilityUtil.getBlocksInSphereRadius(level, pos, searchRadius, true, true, false).stream().filter(b -> {
             BlockState state = level.getBlockState(b);

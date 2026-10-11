@@ -27,7 +27,8 @@ public class VisionaryHandler {
         MIND_WORLD_SEAL = value;
     }
 
-    public static boolean shouldBeAffectedWithMindWorldSeal(int seq){
+    public static boolean shouldBeAffectedWithMindWorldSeal(int seq, String path){
+        seq = seq + (path.equals("visionary") ? 0 : 2);
         return isMindWorldSealed() && seq >= 1;
     }
 

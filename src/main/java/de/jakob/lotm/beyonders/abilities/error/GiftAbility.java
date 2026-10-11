@@ -163,9 +163,8 @@ public class GiftAbility extends SelectableAbility {
         EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         var targetLuck = target.getData(ModAttachments.LUCK_COMPONENT.get());
-
-        targetLuck.setLuck(targetLuck.getLuck() + luck.getLuck());
-        luck.setLuck(0);
+        AbilityUtil.setTargetLuck(entity, target,targetLuck.getLuck() + luck.getLuck());
+        AbilityUtil.setTargetLuck(entity, entity, 0);
     }
 
     private void giftDigestion(Level level, LivingEntity entity){

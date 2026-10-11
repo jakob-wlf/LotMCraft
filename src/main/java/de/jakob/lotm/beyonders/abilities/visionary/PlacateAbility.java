@@ -54,60 +54,14 @@ public class PlacateAbility extends SelectableAbility {
     }
 
     @Override
-    public void nextAbility(LivingEntity entity){
-        if(getAbilityNames().length == 0)
-            return;
-
-        if(!selectedAbilities.containsKey(entity.getUUID())) {
-            selectedAbilities.put(entity.getUUID(), 0);
-        }
-
-        int selectedAbility = selectedAbilities.get(entity.getUUID());
-
-        selectedAbility++;
-        if(selectedAbility >= getAbilityNames().length) {
-            selectedAbility = 0;
-        }
-
-        if((!BeyonderData.getPathway(entity).equals("visionary") && selectedAbility >= 2)){
-            selectedAbility = 0;
-        }
-
-        selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
-    }
-
-    @Override
-    public void previousAbility(LivingEntity entity){
-        if(getAbilityNames().length == 0)
-            return;
-
-        if(!selectedAbilities.containsKey(entity.getUUID())) {
-            selectedAbilities.put(entity.getUUID(), 0);
-        }
-
-        int selectedAbility = selectedAbilities.get(entity.getUUID());
-        selectedAbility--;
-        if(selectedAbility <= -1) {
-            selectedAbility = getAbilityNames().length - 1;
-        }
-
-        if((!BeyonderData.getPathway(entity).equals("visionary") && selectedAbility >= 2)){
-            selectedAbility = 0;
-        }
-
-        selectedAbilities.put(entity.getUUID(), selectedAbility);
-        PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
-    }
-
-    @Override
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(!(entity instanceof Player))
             abilityIndex = 0;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        String path = BeyonderData.getPathway(entity);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -127,7 +81,8 @@ public class PlacateAbility extends SelectableAbility {
             return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this) +
+                (BeyonderData.getPathway(entity).equals("visionary")? 0 : 2);
 
         var targetPlayer = AbilityUtil.getTargetEntity(entity, baseDistance,
                 1f, true, true) == null ?
@@ -203,7 +158,9 @@ public class PlacateAbility extends SelectableAbility {
 
         var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1f, true, true);
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this) +
+                (BeyonderData.getPathway(entity).equals("visionary")? 0 : 2);
+
         List<Prophecy> list;
         if(target instanceof ServerPlayer targetPlayer){
             list = BeyonderData.playerMap.get(targetPlayer).get().prophecies().stream().filter(obj -> {
@@ -258,7 +215,8 @@ public class PlacateAbility extends SelectableAbility {
     }
 
     private void placateEntity(LivingEntity caster, LivingEntity entity) {
-        int entitySeq = AbilityUtil.getSeqWithArt(caster, this);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this) +
+                (BeyonderData.getPathway(entity).equals("visionary")? 0 : 2);
 
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, caster, entity, this)){
             return;

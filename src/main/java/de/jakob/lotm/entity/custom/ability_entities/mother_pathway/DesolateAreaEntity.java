@@ -3,8 +3,8 @@ package de.jakob.lotm.entity.custom.ability_entities.mother_pathway;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -141,6 +141,8 @@ public class DesolateAreaEntity extends Entity {
             if(ownerUUID != null && AllyUtil.isAlly(entity, ownerUUID)){
                 continue;
             }
+
+            if (!AbilityUtil.mayTarget(owner, entity)) continue;
 
             if (distance <= EFFECT_RADIUS) {
                 // Stronger effects closer to the center

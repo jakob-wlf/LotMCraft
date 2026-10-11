@@ -183,7 +183,7 @@ public class PureIdealismUtil {
             PureIdealismUtil.stopDiscernment(player);
         }
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(component.getPreviosSeq())){
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(component.getPreviosSeq(), "visionary")){
             PureIdealismUtil.stopDiscernment(player);
         }
     }

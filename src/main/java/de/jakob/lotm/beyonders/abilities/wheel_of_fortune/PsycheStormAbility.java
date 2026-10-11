@@ -92,21 +92,4 @@ public class PsycheStormAbility extends Ability {
         serverLevel.playSound(null, BlockPos.containing(loc.getPosition()), SoundEvents.BREEZE_DEATH, SoundSource.BLOCKS);
 
     }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        float multiplier = multiplier(entity);
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier / 2, 1))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
-    }
 }

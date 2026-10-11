@@ -69,8 +69,9 @@ public class BattleHypnosisAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        String path = BeyonderData.getPathway(entity);
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -284,45 +285,5 @@ public class BattleHypnosisAbility extends SelectableAbility {
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20 * multiplier(entity))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (entitySeq > 4) {
-            return 0;
-        }
-
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return 0;
-        }
-
-        long nearbyTargets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20 * multiplier(entity))
-                .stream()
-                .filter(t -> AbilityUtil.mayDamage(entity, t))
-                .count();
-
-        return nearbyTargets > 1 ? 1 : 0;
     }
 }

@@ -86,9 +86,7 @@ public class SealingAbility extends Ability {
             }
 
             BeyonderData.addModifierWithTimeLimit(e, "sealed", .6, duration);
-
-            DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("sealed", duration, e);
+            AbilityUtil.sealAllTargetAbilities(entity, e, "sealed", duration);
 
             durationMap.put(e.getUUID(), duration);
 

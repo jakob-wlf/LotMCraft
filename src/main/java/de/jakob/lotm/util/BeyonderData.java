@@ -2,8 +2,6 @@ package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
-import de.jakob.lotm.addons.anchoring.AnchoringStorage;
-import de.jakob.lotm.addons.factions.FactionStorage;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
@@ -22,15 +20,12 @@ import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -45,8 +40,6 @@ public class BeyonderData {
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
     public static PlayerMap playerMap;
-    public static FactionStorage factionStorage;
-    public static AnchoringStorage anchoringStorage;
 
     static {
         implementedRecipes.put("fool", List.of(new Integer[]{9, 8, 7, 6, 5, 4, 3, 2, 1}));
@@ -158,15 +151,12 @@ public class BeyonderData {
     public static void initBeyonderMap(ServerLevel level){
         playerMap = PlayerMap.get(level);
         playerMap.setLevel(level);
-
-        factionStorage = FactionStorage.get(level);
-        anchoringStorage = AnchoringStorage.get(level);
     }
 
     public static void initPathwayInfos() {
         pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}, new String[]{"error", "door"}));
         pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}, new String[]{"fool", "door"}));
-        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}, new String[]{"fool", "error"}));
+        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}, new String[]{"error", "error"}));
         pathwayInfos.put("visionary", new PathwayInfos("visionary", 0xFFe3ffff, new String[]{"visionary", "author", "discerner", "dream_weaver", "manipulator", "dreamwalker", "hypnotist", "psychiatrist", "telepathist", "spectator"}, new String[]{"sun", "hanged_man", "white_tower", "tyrant"}));
         pathwayInfos.put("sun", new PathwayInfos("sun", 0xFFffad33, new String[]{"sun", "white_angel", "lightseeker", "justice_mentor", "unshadowed", "priest_of_light", "notary", "solar_high_priest", "light_supplicant", "bard"}, new String[]{"visionary", "hanged_man", "white_tower", "tyrant"}));
         pathwayInfos.put("tyrant", new PathwayInfos("tyrant", 0xFF336dff, new String[]{"tyrant", "thunder_god", "calamity", "sea_king", "cataclysmic_interrer", "ocean_songster", "wind_blessed", "seafarer", "folk_of_rage", "sailor"}, new String[]{"sun", "hanged_man", "white_tower", "visionary"}));
@@ -187,8 +177,6 @@ public class BeyonderData {
         pathwayInfos.put("black_emperor", new PathwayInfos("black_emperor", 0xFF3D2A9C, new String[]{"black_emperor", "prince_of_abolition", "duke_of_entropy", "frenzied_mage", "earl_of_the_fallen", "mentor_of_disorder", "baron_of_corruption", "briber", "barbarian", "lawyer"}, new String[]{"justiciar"}));
         pathwayInfos.put("justiciar", new PathwayInfos("justiciar", 0xFFfcd99f, new String[]{"justiciar", "hand_of_order", "balancer", "chaos_hunter", "imperative_mage", "disciplinary_paladin", "judge", "interrogator", "sheriff", "arbiter"}, new String[]{"black_emperor"}));
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
-        pathwayInfos.put("none", new PathwayInfos("none", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
-        pathwayInfos.put("", new PathwayInfos("", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
     }
 
     public static boolean isEvilPathway(LivingEntity entity){
@@ -282,6 +270,9 @@ public class BeyonderData {
         if (isSequenceUp && entity instanceof Player player && entity.level() instanceof ServerLevel) {
             SanityComponent sanityComp = entity.getData(ModAttachments.SANITY_COMPONENT);
             float cap = ActingCapHelper.getEffectiveCap(player);
+            var data = player.getData(ModAttachments.SEQUENCE_GUARD);
+            float multiplier = Math.max(0.6f, 1 - data.getTotalKills() * 0.05f);
+            cap *= multiplier;
             if (sanityComp.getSanity() > cap) {
                 sanityComp.setSanityAndSync(cap, entity);
             }
@@ -560,7 +551,9 @@ public class BeyonderData {
 
     // for getting the spirituality of the main body instead, works on both client and server side
     public static float getMaxSpirituality(String path, int seq, Player player){
-        return getMaxSpirituality(path, seq) * ActingCapHelper.getEffectiveCap(player);
+        var data = player.getData(ModAttachments.SEQUENCE_GUARD);
+        float multiplier = Math.max(0.6f, 1 - data.getTotalKills() * 0.05f); // 5% reduction for every weaker player kill
+        return getMaxSpirituality(path, seq) * ActingCapHelper.getEffectiveCap(player) * multiplier;
     }
 
     public static float getMaxSpirituality(String path, int seq){

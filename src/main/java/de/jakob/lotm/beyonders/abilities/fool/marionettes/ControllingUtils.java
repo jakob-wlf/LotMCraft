@@ -55,7 +55,6 @@ public class ControllingUtils {
         component.captureAttributesFrom(player);
 
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
-        BeyonderDataTickHandler.invalidateCache(player);
 
         ControlBodyDouble controlBodyDouble = ControlBodyDouble.create(level, player, !spawnOriginalBody);
         level.addFreshEntity(controlBodyDouble);
@@ -115,6 +114,10 @@ public class ControllingUtils {
                 }
             }
         }
+
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(target);
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(source);
+
 
         float maxHealth = target.getMaxHealth();
         float sourceHealth = source.getHealth();
@@ -236,7 +239,7 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDimensionChange(EntityTravelToDimensionEvent event) {
         if (!(event.getEntity() instanceof Player player) || !isControlling(player)) return;
-        if (getManipulationDistance(BeyonderData.getSequence(player)) < 0 && BeyonderData.getPathway(player).equals("fool")) {
+        if (getManipulationDistance(BeyonderData.getSequence(player, false, true)) < 0 && BeyonderData.getPathway(player, true).equals("fool")) {
             if (event.getDimension().equals(Level.NETHER) ||
                     event.getDimension().equals(Level.END) ||
                     event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
@@ -274,7 +277,7 @@ public class ControllingUtils {
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        int maxDistance = getManipulationDistance(BeyonderData.getSequence(player));
+        int maxDistance = getManipulationDistance(BeyonderData.getSequence(player, false, true));
         if (maxDistance < 0) return;
         if(player.distanceTo(component.bodyDouble) > maxDistance * 5) {
             cancel(player, 0, true, false);

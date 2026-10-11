@@ -3,8 +3,6 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -128,16 +126,7 @@ public class BloodSovereignAbility extends SelectableAbility {
             }, level);
         }
 
-        BlockPos blockPos = BlockPos.containing(center);
-
-        double offsetX = center.x - (blockPos.getX() + 0.5);
-        double offsetY = center.y - (blockPos.getY() + 0.5) - 1.2;
-        double offsetZ = center.z - (blockPos.getZ() + 0.5);
-
-        PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("blood_surge", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
-                (ServerLevel) level, center, 128
-        );
+        EffectManager.playEffect(EffectIds.BLOOD_SURGE, center.x, center.y, center.z, level);
 
         ServerScheduler.scheduleDelayed(12, () -> {
             AbilityUtil.getNearbyEntities(entity, level, entity.position(), range)
@@ -273,37 +262,5 @@ public class BloodSovereignAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onTargetDeath(LivingDeathEvent event) {
         corrodedEntities.remove(event.getEntity().getUUID());
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        int seq = AbilityUtil.getSeqWithArt(entity, this);
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10)
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t)
-                        && !AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(t)));
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        if (!(level instanceof ServerLevel serverLevel)) {
-            return 0;
-        }
-
-        long nearbyTargets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10)
-                .stream()
-                .filter(t -> AbilityUtil.mayDamage(entity, t))
-                .count();
-
-        return nearbyTargets > 1 ? 0 : 1;
     }
 }
