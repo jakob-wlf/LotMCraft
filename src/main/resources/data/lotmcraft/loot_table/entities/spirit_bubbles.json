@@ -6,23 +6,85 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "lotmcraft:spirit_eater_stomach_pouch"
+          "name": "lotmcraft:blood_speckled_black_mosquito",
+          "weight": 45
         },
         {
           "type": "minecraft:item",
-          "name": "lotmcraft:powder_of_dazzling_soul"
+          "name": "lotmcraft:red_chestnut_flower",
+          "weight": 45
         },
         {
           "type": "minecraft:item",
-          "name": "lotmcraft:lavos_squid_blood"
+          "name": "lotmcraft:deep_grained_walnut",
+          "weight": 45
         },
         {
           "type": "minecraft:item",
-          "name": "lotmcraft:black_feather_of_monster_bird"
+          "name": "lotmcraft:poplar_tree_leaf_powder",
+          "weight": 45
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blood_speckled_black_mosquito",
+          "weight": 45
         },
         {
           "type": "minecraft:item",
-          "name": "lotmcraft:true_root_of_mist_treant"
+          "name": "lotmcraft:red_chestnut_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_grained_walnut",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:poplar_tree_leaf_powder",
+          "weight": 45
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:blood_speckled_black_mosquito",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:red_chestnut_flower",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_grained_walnut",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:poplar_tree_leaf_powder",
+          "weight": 45
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
         }
       ]
     }

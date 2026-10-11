@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:sniffer_egg"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:agate_peacock_egg",
+    "count": 1
+  }
+}

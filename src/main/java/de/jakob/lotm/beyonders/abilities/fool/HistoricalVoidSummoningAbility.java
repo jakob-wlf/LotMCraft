@@ -586,6 +586,38 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         return display;
     }
 
+    private static int getEffectiveSequence(LivingEntity entity) {
+        String pathway = BeyonderData.getPathway(entity);
+        if (pathway == null || pathway.isEmpty() || pathway.equalsIgnoreCase("none")) return 10;
+        int sequence = BeyonderData.getSequence(entity);
+        return sequence < 0 ? 10 : sequence;
+    }
+
+    private static int getSlotCost(int targetSequence) {
+        return switch (targetSequence) {
+            case 2 -> 3;
+            case 1 -> 5;
+            default -> 1;
+        };
+    }
+
+    private static int getDrainPerSecond(int targetSequence) {
+        return switch (targetSequence) {
+            case 2 -> 50;
+            case 1 -> 150;
+            default -> 0;
+        };
+    }
+
+    private static double getDurationMultiplier(int targetSequence) {
+        return Math.max(0.1, 1.0 - Math.max(0, 9 - targetSequence) * 0.1);
+    }
+
+    private static double getFailureChance(int playerSequence, int targetSequence) {
+        if (targetSequence > playerSequence) return 0;
+        return Math.min(0.9, 0.3 + 0.15 * (playerSequence - targetSequence));
+    }
+
     private void spawnTemporaryEntity(ServerLevel level, ServerPlayer player, CompoundTag entityData) {
         try {
             String entityTypeId = entityData.getString("EntityType");
@@ -643,10 +675,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
                 ((BeyonderNPCEntity) entity).setQuestId("");
                 entity.getPersistentData().putBoolean("Initialized", true);
-
-                if (sequence == 0) {
-                    entity = null;
-                }
             } else {
                 entity = entityType.create(level);
             }
@@ -671,9 +699,30 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                 entity.load(entityNBT);
             }
 
+            int targetSequence = entity instanceof LivingEntity livingTarget ? getEffectiveSequence(livingTarget) : 10;
+
+            if(targetSequence == 0) {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.cannot_summon_sequence_zero").withStyle(ChatFormatting.RED));
+                return;
+            }
+
+            int slotCost = getSlotCost(targetSequence);
+            if(getSummonedCount(player) + slotCost > getMaxSummoned(player)) {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.max_summoned").withStyle(ChatFormatting.RED));
+                return;
+            }
+
+            double failureChance = getFailureChance(BeyonderData.getSequence(player), targetSequence);
+            if(failureChance > 0 && player.getRandom().nextDouble() < failureChance) {
+                player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summon_failed", entity.getName().getString()).withStyle(ChatFormatting.RED));
+                return;
+            }
+
+            final int duration = Math.max(20, (int) (getSummonDurationTicks(player) * getDurationMultiplier(targetSequence)));
+
             CopiedInventoryComponent data = entity.getData(ModAttachments.COPIED_INVENTORY);
             SimpleContainer container = data.getInv();
-            long summonTimeInv = level.getGameTime() + getSummonDurationTicks(player);
+            long summonTimeInv = level.getGameTime() + duration;
 
             for (int i = 0; i < container.getContainerSize(); i++) {
                 ItemStack stack = container.getItem(i);
@@ -691,38 +740,33 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             }
             entity.setData(ModAttachments.COPIED_INVENTORY, data);
 
-            // Position in front of player (after loading NBT to override any position data)
             Vec3 lookVec = player.getLookAngle();
             Vec3 pos = player.position().add(lookVec.x * 2, 0, lookVec.z * 2);
             entity.moveTo(pos.x, pos.y, pos.z, player.getYRot(), 0);
 
-            // Ensure entity has a new UUID
             entity.setUUID(UUID.randomUUID());
 
-            // Mark as temporary
-            long summonTime = level.getGameTime() + getSummonDurationTicks(player);
+            long summonTime = level.getGameTime() + duration;
             CompoundTag tag = entity.getPersistentData();
             tag.putLong("VoidSummonTime", summonTime);
             tag.putUUID("VoidSummonOwner", player.getUUID());
             tag.putBoolean("VoidSummoned", true);
+            tag.putInt("VoidSlotCost", slotCost);
+            tag.putInt("VoidDrainPerSecond", getDrainPerSecond(targetSequence));
 
-            // Add entity to world
             boolean spawned = level.addFreshEntity(entity);
 
             if(spawned) {
                 EffectManager.playEffect(EffectIds.HISTORICAL_VOID_SUMMONING, entity.getX(), entity.getY(), entity.getZ(), level);
                 final UUID entityUUID = entity.getUUID();
 
-                // Track this summon
-                incrementSummonedCount(player, summonTime, SummonType.ENTITY, entityUUID);
+                incrementSummonedCount(player, summonTime, SummonType.ENTITY, entityUUID, slotCost);
 
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.summoned_entity", entity.getName().getString()).withStyle(ChatFormatting.GREEN));
                 if(entity instanceof LivingEntity living)
                     AllyUtil.makeAllies(player, living);
 
-                // Schedule removal after duration
-                ServerScheduler.scheduleDelayed(getSummonDurationTicks(player), () -> {
-                    // Verify player is still online
+                ServerScheduler.scheduleDelayed(duration, () -> {
                     ServerPlayer onlinePlayer = level.getServer().getPlayerList().getPlayer(player.getUUID());
                     if(onlinePlayer != null) {
                         removeTemporaryEntity(level, onlinePlayer, summonTime, entityUUID);
@@ -739,8 +783,8 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
     private void removeTemporaryEntity(ServerLevel level, ServerPlayer player, long summonTime, UUID entityUUID) {
         boolean removed = false;
+        int cost = 1;
 
-        // Try direct UUID lookup first
         Entity entity = level.getEntity(entityUUID);
 
         if(entity != null && entity.getPersistentData().getBoolean("VoidSummoned")) {
@@ -748,12 +792,12 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             UUID ownerId = entity.getPersistentData().getUUID("VoidSummonOwner");
 
             if(entitySummonTime == summonTime && ownerId.equals(player.getUUID())) {
+                cost = Math.max(1, entity.getPersistentData().getInt("VoidSlotCost"));
                 entity.remove(Entity.RemovalReason.DISCARDED);
                 removed = true;
             }
         }
 
-        // Fallback: search nearby if direct UUID lookup failed
         if(!removed) {
             AABB searchBox = new AABB(player.blockPosition()).inflate(100);
             List<Entity> entities = level.getEntities((Entity)null, searchBox, e -> {
@@ -766,14 +810,14 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
             });
 
             for(Entity e : entities) {
+                cost = Math.max(1, e.getPersistentData().getInt("VoidSlotCost"));
                 e.remove(Entity.RemovalReason.DISCARDED);
                 removed = true;
             }
         }
 
-        // Decrement count and notify
         if(removed) {
-            decrementSummonedCount(player, summonTime);
+            decrementSummonedCount(player, summonTime, cost);
             if(player.isAlive()) {
                 player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.entity_returned").withStyle(ChatFormatting.GRAY));
             }
@@ -904,8 +948,12 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private void incrementSummonedCount(ServerPlayer player, long summonTime, SummonType type, UUID entityUUID) {
+        incrementSummonedCount(player, summonTime, type, entityUUID, 1);
+    }
+
+    private void incrementSummonedCount(ServerPlayer player, long summonTime, SummonType type, UUID entityUUID, int amount) {
         HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        data.summonedCount++;
+        data.summonedCount += amount;
         HistoricalVoidComponent.SummonInfo info = new HistoricalVoidComponent.SummonInfo(
                 summonTime,
                 type,
@@ -916,8 +964,12 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private static void decrementSummonedCount(ServerPlayer player, long summonTime) {
+        decrementSummonedCount(player, summonTime, 1);
+    }
+
+    private static void decrementSummonedCount(ServerPlayer player, long summonTime, int amount) {
         HistoricalVoidComponent data = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
-        data.summonedCount = Math.max(0, data.summonedCount - 1);
+        data.summonedCount = Math.max(0, data.summonedCount - amount);
         data.activeSummonTimes.remove(summonTime);
     }
 
@@ -974,13 +1026,42 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) return;
 
         if(entity.getPersistentData().getBoolean("VoidSummoned")) {
-            if (entity.getPersistentData().getLong("VoidSummonTime") < serverLevel.getGameTime()) {
+            long summonTime = entity.getPersistentData().getLong("VoidSummonTime");
+            if (summonTime < serverLevel.getGameTime()) {
+                int cost = Math.max(1, entity.getPersistentData().getInt("VoidSlotCost"));
                 entity.remove(Entity.RemovalReason.DISCARDED);
-            }
-            if (serverLevel.getPlayerByUUID(entity.getPersistentData().getUUID("VoidSummonOwner")) instanceof ServerPlayer serverPlayer) {
-                decrementSummonedCount(serverPlayer, entity.getPersistentData().getLong("VoidSummonTime"));
+                if (serverLevel.getPlayerByUUID(entity.getPersistentData().getUUID("VoidSummonOwner")) instanceof ServerPlayer serverPlayer) {
+                    decrementSummonedCount(serverPlayer, summonTime, cost);
+                }
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onSummonedEntityDrain(EntityTickEvent.Post event) {
+        Entity entity = event.getEntity();
+        if (entity.tickCount % 20 != 0) return;
+        if (!(entity.level() instanceof ServerLevel serverLevel)) return;
+
+        CompoundTag data = entity.getPersistentData();
+        if (!data.getBoolean("VoidSummoned")) return;
+
+        int drain = data.getInt("VoidDrainPerSecond");
+        if (drain <= 0 || !data.hasUUID("VoidSummonOwner")) return;
+
+        ServerPlayer owner = serverLevel.getServer().getPlayerList().getPlayer(data.getUUID("VoidSummonOwner"));
+        if (owner == null) return;
+
+        if (BeyonderData.getSpirituality(owner) < drain) {
+            long summonTime = data.getLong("VoidSummonTime");
+            int cost = Math.max(1, data.getInt("VoidSlotCost"));
+            entity.remove(Entity.RemovalReason.DISCARDED);
+            decrementSummonedCount(owner, summonTime, cost);
+            owner.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.out_of_spirituality").withStyle(ChatFormatting.RED));
+            return;
+        }
+
+        BeyonderData.reduceSpirituality(owner, drain);
     }
 
     @SubscribeEvent

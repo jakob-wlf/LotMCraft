@@ -10,7 +10,7 @@
   "spawners": [
     {
       "type": "lotmcraft:spirit_bane",
-      "weight": 2,
+      "weight": 12,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"

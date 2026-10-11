@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:mangrove_roots"
+    },
+    {
+      "item": "minecraft:mangrove_roots"
+    },
+    {
+      "item": "minecraft:mangrove_roots"
+    },
+    {
+      "item": "minecraft:mangrove_roots"
+    },
+    {
+      "item": "minecraft:bone_block"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:mist_treant_true_root",
+    "count": 1
+  }
+}
