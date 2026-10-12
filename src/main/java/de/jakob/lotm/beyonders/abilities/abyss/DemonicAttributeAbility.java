@@ -29,12 +29,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.Random;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility.getPoisonDamageMultiplier;
@@ -47,7 +42,7 @@ public class DemonicAttributeAbility extends SelectableAbility {
     private static final int[][] POOL_PAIRS = {
             {1, 2}, {1, 3}, {1, 4}, {2, 3}, {2, 4}, {3, 4}
     };
-
+    private final Map<UUID, int[]> unlockedAbilities = new HashMap<>();
     private static final DustParticleOptions SMOKE_DUST = new DustParticleOptions(new Vector3f(35 / 255f, 168 / 255f, 102 / 255f), 3f);
     private static final DustParticleOptions FLAME_DUST = new DustParticleOptions(new Vector3f(35 / 255f, 168 / 255f, 102 / 255f), 1f);
     public DemonicAttributeAbility(String id) {
@@ -73,15 +68,17 @@ public class DemonicAttributeAbility extends SelectableAbility {
                 "ability.lotmcraft.demonic_attribute.curse",
                 "ability.lotmcraft.demonic_attribute.sink_into_ground"};
     }
-
+    private int[] getUnlockedPair(LivingEntity entity) {
+        UUID uuid = entity.getUUID();
+        long combinedSeed = uuid.getMostSignificantBits() ^ Long.rotateLeft(uuid.getLeastSignificantBits(), 32);
+        Random random = new Random(combinedSeed);
+        return POOL_PAIRS[random.nextInt(POOL_PAIRS.length)];
+    }
     public boolean isSubAbilityUnlocked(LivingEntity entity, int index) {
         if (index == 0) return true;
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {return false;}
-        long seed = serverLevel.getSeed();
-        UUID uuid = entity.getUUID();
-        long combinedSeed = seed ^ uuid.getMostSignificantBits() ^ Long.rotateLeft(uuid.getLeastSignificantBits(), 32);
-        Random random = new Random(combinedSeed);
-        int[] pair = POOL_PAIRS[random.nextInt(POOL_PAIRS.length)];
+        if (index < 0 || index >= getAbilityNames().length) return false;
+
+        int[] pair = getUnlockedPair(entity);
         return index == pair[0] || index == pair[1];
     }
     @Override
