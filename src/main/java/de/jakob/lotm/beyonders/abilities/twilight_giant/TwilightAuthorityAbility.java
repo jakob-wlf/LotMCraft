@@ -74,7 +74,7 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     private static final float AURA_UPKEEP = 40f;
     private static final float DOMAIN_UPKEEP = 15f;
     private static final float LAND_UPKEEP = 10f;
-    private static final float CAST_COST = 5000f;
+    private static final float CAST_COST = 40000f;
     private static final DustParticleOptions AIR_DUST = new DustParticleOptions(new Vector3f(1f, 0.45f, 0.15f), 0.7f);
 
     private static final Set<UUID> auras = new HashSet<>();

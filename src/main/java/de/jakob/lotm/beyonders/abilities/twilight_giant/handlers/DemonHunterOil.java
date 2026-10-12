@@ -217,7 +217,7 @@ public final class DemonHunterOil {
         if (possessor == null) return;
 
         level.playSound(null, target.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, target.getSoundSource(), 1f, 0.6f);
-        if (BeyonderData.getSequence(possessor) > BeyonderData.getSequence(attacker)) {
+        if (BeyonderData.getSequence(possessor) > BeyonderData.getSequence(attacker) && !TwilightAging.spared(attacker, possessor)) {
             possessor.invulnerableTime = 0;
             possessor.setHealth(0f);
             possessor.die(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker));

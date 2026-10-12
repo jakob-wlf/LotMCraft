@@ -3,6 +3,7 @@ package de.jakob.lotm.network.packets.toServer;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.LightConcealmentAbility;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -27,6 +28,9 @@ public record ReturnToMainBodyPacket() implements CustomPacketPayload {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 if(ControllingUtils.isControlling(serverPlayer)) {
                     ControllingUtils.cancel(serverPlayer, 0, true, false);
+                }
+                if (LightConcealmentAbility.isHidden(serverPlayer)) {
+                    LightConcealmentAbility.leave(serverPlayer);
                 }
             }
         });

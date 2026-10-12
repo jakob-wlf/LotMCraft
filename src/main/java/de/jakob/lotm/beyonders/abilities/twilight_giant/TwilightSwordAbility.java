@@ -50,13 +50,17 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static final ResourceLocation SPEED_ID = ResourceLocation.withDefaultNamespace("base_attack_speed");
     private static final ResourceLocation REACH_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "twilight_sword_reach");
     private static final double SWORD_REACH_BONUS = 12.0D;
+    private static final double SWORD_REACH_BONUS_S1 = 8.0D;
+    private static final double SWORD_REACH_BONUS_S2 = 4.0D;
     private static final double SWORD_DAMAGE = 14.0D;
-    private static final double SWORD_SPEED = -2.8D;
+    private static final double SWORD_DAMAGE_S1 = 10.0D;
+    private static final double SWORD_DAMAGE_S2 = 8.0D;
+    private static final double SWORD_SPEED = -0.7D;
     private static final int BLINK_RANGE = (int) Math.pow(20, 5);
     private static final double BLINK_OFFSET = 1.5D;
     private static final int BLINK_COOLDOWN = 20 * 8;
-    private static final float BLINK_COST = 600f;
-    private static final float STRIKE_COST = 2500f;
+    private static final float BLINK_COST = 5000f;
+    private static final float STRIKE_COST = 15000f;
     private static final int HOLD_GAP = 8;
     private static final int CHARGE_TICKS = 30;
     private static final double STRIKE_LENGTH = 30.0D;
@@ -74,7 +78,7 @@ public class TwilightSwordAbility extends ToggleAbility {
         canBeUsedByNPC = false;
         tickRate = 20;
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1200f, 800f));
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3000f, 1500f));
         baseDamage = STRIKE_DAMAGE;
     }
 
@@ -91,7 +95,7 @@ public class TwilightSwordAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof Player player)) return;
-        ItemStack sword = createSword();
+        ItemStack sword = createSword(entity);
         if (player.getMainHandItem().isEmpty()) {
             player.setItemInHand(InteractionHand.MAIN_HAND, sword);
         } else if (!player.getInventory().add(sword)) {
@@ -130,10 +134,26 @@ public class TwilightSwordAbility extends ToggleAbility {
         tick(level, entity);
     }
 
-    private static ItemStack createSword() {
+    private static double swordDamage(LivingEntity entity) {
+        return switch (BeyonderData.getSequence(entity)) {
+            case 1 -> SWORD_DAMAGE_S1;
+            case 2 -> SWORD_DAMAGE_S2;
+            default -> SWORD_DAMAGE;
+        };
+    }
+
+    private static double swordReach(LivingEntity entity) {
+        return switch (BeyonderData.getSequence(entity)) {
+            case 1 -> SWORD_REACH_BONUS_S2;
+            case 2 -> SWORD_REACH_BONUS_S1;
+            default -> SWORD_REACH_BONUS;
+        };
+    }
+
+    private static ItemStack createSword(LivingEntity entity) {
         ItemAttributeModifiers modifiers = ItemAttributeModifiers.builder()
-                .add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(REACH_ID, SWORD_REACH_BONUS, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
-                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(DAMAGE_ID, SWORD_DAMAGE, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ENTITY_INTERACTION_RANGE, new AttributeModifier(REACH_ID, swordReach(entity), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(DAMAGE_ID, swordDamage(entity), AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                 .add(Attributes.ATTACK_SPEED, new AttributeModifier(SPEED_ID, SWORD_SPEED, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
                 .build();
         ItemStack sword = ArsenalOfDawnAbility.create(ModItems.TWILIGHT_SWORD.get(), ArsenalOfDawnAbility.TWILIGHT_SWORD, modifiers);
@@ -159,9 +179,13 @@ public class TwilightSwordAbility extends ToggleAbility {
 
     @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!event.isCanceled() || !(event.getSource().getEntity() instanceof LivingEntity attacker) || !holds(attacker)) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
         if (!(event.getEntity() instanceof LivingEntity target) || !AbilityUtil.mayDamage(attacker, target)) return;
-        event.setCanceled(false);
+        if (TwilightAging.spared(attacker, target)) {
+            if (holds(attacker) || "twilight_giant".equals(BeyonderData.getPathway(attacker))) event.setCanceled(true);
+            return;
+        }
+        if (event.isCanceled() && holds(attacker)) event.setCanceled(false);
     }
 
     @SubscribeEvent
@@ -238,7 +262,7 @@ public class TwilightSwordAbility extends ToggleAbility {
         target.invulnerableTime = 0;
         DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, attacker);
         target.hurt(source, damage);
-        if (!target.isAlive() || target.getHealth() < before) return;
+        if (!target.isAlive() || target.getHealth() < before || TwilightAging.spared(attacker, target)) return;
         float health = before - damage;
         if (health > 0) {
             target.setHealth(health);

@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 import com.jcraft.jorbis.Block;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.AvatarEntity;
@@ -389,6 +390,7 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
     @SubscribeEvent
     public static void onLivingDeath(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
+            if (LawAbility.SOLACE_KILLED.contains(player.getUUID())) return;
             if(!(player.level() instanceof ServerLevel serverLevel)) return;
 
             var component = player.getData(ModAttachments.ENVISION_SPLIT.get());

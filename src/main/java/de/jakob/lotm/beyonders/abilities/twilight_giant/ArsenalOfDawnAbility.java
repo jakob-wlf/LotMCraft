@@ -18,8 +18,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -35,8 +37,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.BowItem;
@@ -48,8 +53,11 @@ import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.item.component.Unbreakable;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -69,7 +77,9 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowNockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -112,6 +122,8 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     private static final String TAG = "lotm_dawn_gear";
     public static final String REDUCTION_TAG = "lotm_dawn_reduction";
     private static final String OWNER_TAG = "lotm_dawn_owner";
+    private static final String CREATOR_TAG = "lotm_dawn_creator";
+    private static final int SWEEP_INTERVAL = 4*20;
     private static final Set<UUID> restoringArmor = new HashSet<>();
     private static final float EVIL_DAMAGE_MULTIPLIER = 2.0f;
     private static final String[] PURIFICATION_FLAGS = {"purification"};
@@ -197,6 +209,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
             case 3 -> create(Items.BOW, BOW, ItemAttributeModifiers.EMPTY);
             default -> weapon(ModItems.DAWN_AXE.get(), AXE, 8.0, -3.05, ItemAttributeModifiers.builder());
         };
+        CustomData.update(DataComponents.CUSTOM_DATA, weapon, tag -> tag.putString(CREATOR_TAG, player.getUUID().toString()));
         if (silverKnight) makeShareable(weapon, player);
 
         removeAll(player, WEAPONS);
@@ -431,6 +444,84 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         Player player = event.getEntity();
         if (player.level().isClientSide() || player.tickCount % UPKEEP_INTERVAL != 0 || player.hasInfiniteMaterials()) return;
         upkeep(player, WEAPONS, UPKEEP_COST);
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
+        MinecraftServer server = event.getServer();
+        if (server.getTickCount() % SWEEP_INTERVAL != 0) return;
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            UUID id = player.getUUID();
+            strip(player.getInventory().items, id);
+            strip(player.getInventory().armor, id);
+            strip(player.getInventory().offhand, id);
+            if (storedAway(player.containerMenu.getCarried(), id)) player.containerMenu.setCarried(ItemStack.EMPTY);
+            for (Slot slot : player.containerMenu.slots) {
+                if (!storedAway(slot.getItem(), slot.container instanceof Inventory ? id : null)) continue;
+                slot.set(ItemStack.EMPTY);
+            }
+            player.getInventory().setChanged();
+            player.containerMenu.broadcastChanges();
+            player.containerMenu.sendAllDataToRemote();
+            clearAway(player.getEnderChestInventory(), null);
+        }
+        for (ServerLevel level : server.getAllLevels()) {
+            List<ItemEntity> drops = new ArrayList<>();
+            for (Entity entity : level.getAllEntities()) {
+                if (entity instanceof ItemEntity item && storedAway(item.getItem(), null)) drops.add(item);
+                else if (entity instanceof ItemFrame frame && storedAway(frame.getItem(), null)) frame.setItem(ItemStack.EMPTY);
+                else if (entity instanceof Container container) clearAway(container, null);
+            }
+            for (ItemEntity drop : drops) drop.discard();
+            int range = server.getPlayerList().getViewDistance();
+            Set<Long> seen = new HashSet<>();
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                if (player.serverLevel() != level) continue;
+                int cx = player.chunkPosition().x;
+                int cz = player.chunkPosition().z;
+                for (int x = cx - range; x <= cx + range; x++) {
+                    for (int z = cz - range; z <= cz + range; z++) {
+                        if (!seen.add(ChunkPos.asLong(x, z))) continue;
+                        LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
+                        if (chunk == null) continue;
+                        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+                            if (blockEntity instanceof Container container) clearAway(container, null);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void strip(List<ItemStack> stacks, UUID holder) {
+        for (int i = 0; i < stacks.size(); i++) {
+            if (!storedAway(stacks.get(i), holder)) continue;
+            stacks.set(i, ItemStack.EMPTY);
+        }
+    }
+
+    private static void clearAway(Container container, UUID holder) {
+        for (int i = 0; i < container.getContainerSize(); i++) {
+            if (!storedAway(container.getItem(i), holder)) continue;
+            container.setItem(i, ItemStack.EMPTY);
+            container.setChanged();
+        }
+    }
+
+    private static boolean storedAway(ItemStack stack, UUID holder) {
+        if (!is(stack, WEAPONS)) return false;
+        UUID owner = owner(stack);
+        return holder == null || owner == null || !owner.equals(holder);
+    }
+
+    private static UUID owner(ItemStack stack) {
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        if (data == null) return null;
+        CompoundTag tag = data.copyTag();
+        if (tag.contains(CREATOR_TAG, Tag.TAG_STRING)) return UUID.fromString(tag.getString(CREATOR_TAG));
+        if (tag.hasUUID(CREATOR_TAG)) return tag.getUUID(CREATOR_TAG);
+        if (tag.hasUUID(OWNER_TAG)) return tag.getUUID(OWNER_TAG);
+        return null;
     }
 
     private static final EquipmentSlot[] ARMOR_SLOTS = {EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};

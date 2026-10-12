@@ -4,6 +4,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
+import de.jakob.lotm.beyonders.abilities.door.DoorTransfigurationAbility;
+import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
+import de.jakob.lotm.beyonders.abilities.error.FateSiphoningAbility;
+import de.jakob.lotm.beyonders.abilities.fool.GraftingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
@@ -75,11 +79,15 @@ public final class TwilightAging {
         age(level, target, source, years, false);
     }
 
+    public static boolean spared(LivingEntity attacker, LivingEntity target) {
+        return DeceitAbility.blocksHarm(target, attacker) || GraftingAbility.redirectsDamage(target) || FateSiphoningAbility.absorbs(target) || DoorTransfigurationAbility.ignoresDamage(target);
+    }
+
     public static void age(ServerLevel level, LivingEntity target, LivingEntity source, float years, boolean fade) {
         if (unaging(target)) return;
         if (!target.isAlive() || fading.contains(target.getUUID())) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
-        if (immune(source, target)) return;
+        if (spared(source, target) || immune(source, target)) return;
         float amount = years * resistance(source, target);
         if (amount <= 0) return;
         float total = target.getPersistentData().getFloat(YEARS) + amount;
@@ -136,6 +144,7 @@ public final class TwilightAging {
     }
 
     public static void fade(ServerLevel level, LivingEntity target, LivingEntity source) {
+        if (spared(source, target)) return;
         UUID id = target.getUUID();
         if (!fading.add(id)) return;
         Vec3 spot = target.position();
@@ -163,6 +172,7 @@ public final class TwilightAging {
 
     public static void dieOfOldAge(ServerLevel level, LivingEntity target, LivingEntity source) {
         if (target.isRemoved() || target.deathTime > 0) return;
+        if (spared(source, target)) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         if (deaths.containsKey(target.getUUID())) return;
         if (target instanceof Player && beginSunset(level, target, source)) return;
@@ -359,20 +369,8 @@ public final class TwilightAging {
 
     private static void tickSunsets(MinecraftServer server) {
         long now = server.getTickCount();
-        for (UUID id : new ArrayList<>(aged)) {
-            if (deaths.containsKey(id)) continue;
-            LivingEntity living = findLiving(server, id);
-            if (!(living instanceof Player player) || !player.isAlive() || !(player.level() instanceof ServerLevel level) || player.getPersistentData().getFloat(YEARS) <= 0.0F) {
-                dropDome(server, id);
-                continue;
-            }
-            float target = sunFor(player);
-            TwilightDomeEntity dome = ensureDome(level, player, target);
-            if (dome == null) continue;
-            float step = TwilightDomeEntity.SUN_HORIZON / 20.0F;
-            float next = dome.sun() + Mth.clamp(target - dome.sun(), -step, step);
-            if (Math.abs(dome.sun() - next) > 0.0001F) dome.setSun(next);
-            if (dome.black() != 0.0F) dome.setBlack(0.0F);
+        for (UUID id : new ArrayList<>(domes.keySet())) {
+            if (!deaths.containsKey(id)) dropDome(server, id);
         }
         if (deaths.isEmpty()) return;
         for (UUID id : new ArrayList<>(deaths.keySet())) {
@@ -397,12 +395,6 @@ public final class TwilightAging {
             dropDome(server, id);
             finishDeath(level, player, findLiving(server, death.source));
         }
-    }
-
-    private static float sunFor(LivingEntity target) {
-        float limit = yearLimit(target);
-        if (limit <= 0.0F) return 0.0F;
-        return TwilightDomeEntity.SUN_HORIZON * Mth.clamp(target.getPersistentData().getFloat(YEARS) / limit, 0.0F, 1.0F);
     }
 
     private static TwilightDomeEntity ensureDome(ServerLevel level, Player player, float initialSun) {

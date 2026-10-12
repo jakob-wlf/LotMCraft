@@ -114,6 +114,10 @@ public class FateSiphoningAbility extends Ability {
         ServerScheduler.scheduleDelayed((int) (20 * 10), () -> linkedEntities.remove(entity.getUUID()));
     }
 
+    public static boolean absorbs(LivingEntity entity) {
+        return entity != null && linkedEntities.containsKey(entity.getUUID());
+    }
+
     @SubscribeEvent
     public static void onLivingDamage(LivingIncomingDamageEvent event) {
         if(!(event.getEntity().level() instanceof ServerLevel serverLevel)) {

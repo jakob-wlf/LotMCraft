@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.events.BeyonderDataTickHandler;
@@ -259,6 +260,7 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (LawAbility.SOLACE_KILLED.contains(player.getUUID())) return;
         if(isControlling(player)) {
             event.setCanceled(true);
             cancel(player, 0, true, true);

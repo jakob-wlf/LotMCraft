@@ -132,7 +132,8 @@ public class DamageResistanceHandler {
     private static boolean isTwilightNormalAttack(DamageSource source) {
         if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return false;
         if (!"twilight_giant".equals(BeyonderData.getPathway(attacker))) return false;
-        return source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK) || source.is(ModDamageTypes.IMPACT);
+        if (!(BeyonderData.getSequence(attacker) <=2)) return false;
+        return source.is(DamageTypes.PLAYER_ATTACK) || source.is(ModDamageTypes.IMPACT);
     }
 
     //Hand Damage

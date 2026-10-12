@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -136,16 +137,17 @@ public class GiantificationAbility extends ToggleAbility {
             if (!target.onGround() || target.getY() > feet.y + STOMP_HEIGHT || !AbilityUtil.mayDamage(entity, target)) continue;
             DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity);
             if (AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
-                crush(target, source);
+                crush(entity, target, source);
                 continue;
             }
             target.invulnerableTime = 0;
             target.hurt(source, baseDamage);
-            if (target.getHealth() <= 0f && target.deathTime <= 0) crush(target, source);
+            if (target.getHealth() <= 0f && target.deathTime <= 0) crush(entity, target, source);
         }
     }
 
-    private static void crush(LivingEntity target, DamageSource source) {
+    private static void crush(LivingEntity attacker, LivingEntity target, DamageSource source) {
+        if (TwilightAging.spared(attacker, target)) return;
         if (target.isRemoved() || target.deathTime > 0) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         target.invulnerableTime = 0;

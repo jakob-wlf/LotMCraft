@@ -18,6 +18,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -165,6 +166,7 @@ public class BasicTwilightAuthorityAbility extends SelectableAbility {
     }
 
     private static void reborn(ServerLevel level, ServerPlayer player) {
+        dropInventory(player);
         level.sendParticles(TwilightAging.TWILIGHT_DUST, player.getX(), player.getY(0.5), player.getZ(), 120, 0.6, 1.0, 0.6, 0.2);
         level.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY(0.5), player.getZ(), 60, 0.5, 1.0, 0.5, 0.1);
         level.playSound(null, player.blockPosition(), SoundEvents.TOTEM_USE, player.getSoundSource(), 1.5f, 0.8f);
@@ -190,6 +192,36 @@ public class BasicTwilightAuthorityAbility extends SelectableAbility {
         current.sendParticles(ParticleTypes.END_ROD, player.getX(), player.getY(0.5), player.getZ(), 80, 0.5, 1.0, 0.5, 0.15);
         current.playSound(null, player.blockPosition(), SoundEvents.BEACON_ACTIVATE, player.getSoundSource(), 1.5f, 0.8f);
         bar(player, "ability.lotmcraft.basic_twilight_authority.reborn_done");
+    }
+
+    private static void dropInventory(ServerPlayer player) {
+        Inventory inventory = player.getInventory();
+        drop(player, inventory.items);
+        drop(player, inventory.armor);
+        drop(player, inventory.offhand);
+        ItemStack carried = player.containerMenu.getCarried();
+        if (!carried.isEmpty()) {
+            spawn(player, carried.copy());
+            player.containerMenu.setCarried(ItemStack.EMPTY);
+        }
+        inventory.setChanged();
+        player.containerMenu.broadcastChanges();
+    }
+
+    private static void drop(ServerPlayer player, List<ItemStack> stacks) {
+        for (int i = 0; i < stacks.size(); i++) {
+            ItemStack stack = stacks.get(i);
+            if (stack.isEmpty()) continue;
+            spawn(player, stack.copy());
+            stacks.set(i, ItemStack.EMPTY);
+        }
+    }
+
+    private static void spawn(ServerPlayer player, ItemStack stack) {
+        ItemEntity entity = new ItemEntity(player.serverLevel(), player.getX(), player.getY() + 0.5, player.getZ(), stack);
+        entity.setPickUpDelay(40);
+        entity.setDeltaMovement(player.getRandom().nextGaussian() * 0.05, 0.2, player.getRandom().nextGaussian() * 0.05);
+        player.serverLevel().addFreshEntity(entity);
     }
 
     private static void tickGratefulDead(ServerLevel level, ServerPlayer player) {
