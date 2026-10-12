@@ -17,7 +17,7 @@
   "spawners": [
     {
       "type": "lotmcraft:spirit_bubbles",
-      "weight": 250,
+      "weight": 120,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"

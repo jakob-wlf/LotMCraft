@@ -17,7 +17,7 @@
   "spawners": [
     {
       "type": "lotmcraft:spirit_ghost",
-      "weight": 50,
+      "weight": 45,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"

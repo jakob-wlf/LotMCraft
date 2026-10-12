@@ -38,7 +38,7 @@ public class CullAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide || !(entity instanceof ServerPlayer))
             return;
         BeyonderData.addModifier(entity, "cull", 1.3);
         if(entity instanceof ServerPlayer player)
@@ -47,7 +47,7 @@ public class CullAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide || !(entity instanceof ServerPlayer))
             return;
 
         List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
@@ -67,7 +67,7 @@ public class CullAbility extends ToggleAbility {
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide || !(entity instanceof ServerPlayer))
             return;
         BeyonderData.removeModifier(entity, "cull");
         if(!(entity instanceof ServerPlayer player))
