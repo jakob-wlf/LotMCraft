@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:hanging_roots"
+    },
+    {
+      "item": "minecraft:hanging_roots"
+    },
+    {
+      "item": "minecraft:hanging_roots"
+    },
+    {
+      "item": "minecraft:hanging_roots"
+    },
+    {
+      "item": "minecraft:amethyst_shard"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:tree_of_elder_crystalized_roots",
+    "count": 1
+  }
+}

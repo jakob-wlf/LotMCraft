@@ -16,19 +16,19 @@ import java.util.List;
 
 public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNamesMenu> {
 
-    // Colours used throughout the screen
-    private static final int COL_BG_OUTER   = 0xFF0D0D1A; // very dark blue-black
-    private static final int COL_BG_INNER   = 0xFF141422; // slightly lighter
-    private static final int COL_BORDER_LO  = 0xFF2A1A4A; // deep purple
-    private static final int COL_BORDER_HI  = 0xFF6A3A9A; // bright purple
-    private static final int COL_TITLE      = 0xFFFFFFFF; // antique gold
-    private static final int COL_LABEL      = 0xFF9090D0; // soft blue-purple
-    private static final int COL_TEXT       = 0xFFCCCCCC; // light grey text
-    private static final int COL_DIVIDER    = 0xFF3A2A6A; // muted purple divider
-    private static final int COL_PRAYER_BG  = 0xFF1C1C30; // prayer card background
-    private static final int COL_PRAYER_BRD = 0xFF4A3A7A; // prayer card border
+    
+    private static final int COL_BG_OUTER   = 0xFF0D0D1A; 
+    private static final int COL_BG_INNER   = 0xFF141422; 
+    private static final int COL_BORDER_LO  = 0xFF2A1A4A; 
+    private static final int COL_BORDER_HI  = 0xFF6A3A9A; 
+    private static final int COL_TITLE      = 0xFFFFFFFF; 
+    private static final int COL_LABEL      = 0xFF9090D0; 
+    private static final int COL_TEXT       = 0xFFCCCCCC; 
+    private static final int COL_DIVIDER    = 0xFF3A2A6A; 
+    private static final int COL_PRAYER_BG  = 0xFF1C1C30; 
+    private static final int COL_PRAYER_BRD = 0xFF4A3A7A; 
 
-    // Layout
+    
     private static final int W = 280;
     private static final int H = 240;
     private static final int PADDING = 10;
@@ -37,7 +37,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
     private static final int DIVIDER_H = 6;
     private static final int PRAYER_ENTRY_H = 44;
 
-    // Scroll state for the pending prayers list
+    
     private int prayerScrollOffset = 0;
 
     public HonorificNamesScreen(HonorificNamesMenu menu, Inventory inv, Component title) {
@@ -52,11 +52,11 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         rebuildButtons();
     }
 
-    /** Re-create all buttons based on current scroll position. */
+    
     private void rebuildButtons() {
         this.clearWidgets();
 
-        // "Set Name" button in the own-name section
+        
         if (menu.getSequence() < 4) {
             this.addRenderableWidget(
                     Button.builder(Component.literal("Set Name"),
@@ -79,7 +79,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             PendingPrayer prayer = prayers.get(idx);
             int entryY = listTop + i * PRAYER_ENTRY_H;
 
-            // "Send Message" button
+            
             int btnIdx = idx;
             this.addRenderableWidget(
                     Button.builder(Component.literal("Send Message"),
@@ -88,7 +88,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
                             .build()
             );
 
-            // "Teleport" button
+            
             this.addRenderableWidget(
                     Button.builder(Component.literal("Teleport"),
                                     btn -> respondToPrayer(btnIdx, true))
@@ -97,7 +97,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             );
         }
 
-        // Scroll buttons (up / down) if needed
+        
         if (prayers.size() > visibleCount) {
             int scrollBtnX = leftPos + W - PADDING - 16;
             int scrollBtnY = listTop;
@@ -134,9 +134,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         if (index >= 0 && index < prayers.size()) {
             PendingPrayer prayer = prayers.get(index);
             PacketHandler.sendToServer(new HonorificNamesRespondPacket(prayer.senderUUID(), teleport));
-            // Remove immediately client-side so the UI updates without waiting for a server round-trip
             prayers.remove(index);
-            // Clamp scroll offset so it stays within valid bounds
             int listHeight = H - TITLE_H - OWN_NAME_H - DIVIDER_H - PADDING;
             int visibleCount = Math.max(1, listHeight / PRAYER_ENTRY_H);
             prayerScrollOffset = Math.min(prayerScrollOffset, Math.max(0, prayers.size() - visibleCount));
@@ -144,7 +142,6 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         }
     }
 
-    // ── Rendering ──────────────────────────────────────────────────────────────────
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
@@ -157,46 +154,37 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         int x = leftPos;
         int y = topPos;
 
-        // ── Outer shadow / glow border ──
         gfx.fill(x - 2, y - 2, x + W + 2, y + H + 2, COL_BORDER_LO);
 
-        // ── Main background ──
         gfx.fillGradient(x, y, x + W, y + H, COL_BG_OUTER, COL_BG_INNER);
 
-        // ── Inner decorative border (1px inset, bright purple) ──
-        // Top edge
         gfx.fill(x + 2, y + 2,     x + W - 2, y + 3,     COL_BORDER_HI);
-        // Bottom edge
         gfx.fill(x + 2, y + H - 3, x + W - 2, y + H - 2, COL_BORDER_HI);
-        // Left edge
         gfx.fill(x + 2, y + 2,     x + 3,     y + H - 2, COL_BORDER_HI);
-        // Right edge
         gfx.fill(x + W - 3, y + 2, x + W - 2, y + H - 2, COL_BORDER_HI);
 
-        // ── Title bar gradient ──
         gfx.fillGradient(x + 3, y + 3, x + W - 3, y + TITLE_H,
                 0xFF1E0A3C, 0xFF0D0D1A);
 
-        // ── Title underline ──
         gfx.fill(x + PADDING, y + TITLE_H, x + W - PADDING, y + TITLE_H + 1, COL_BORDER_HI);
 
-        // ── Own-name section background ──
+        
         gfx.fill(x + PADDING - 2, y + TITLE_H + 4,
                  x + W - PADDING + 2, y + TITLE_H + OWN_NAME_H + 2,
                  0xFF1A1A2E);
-        // Own-name section top border
+        
         gfx.fill(x + PADDING - 2, y + TITLE_H + 4,
                  x + W - PADDING + 2, y + TITLE_H + 5,
                  COL_DIVIDER);
 
-        // ── Divider between own-name and prayer list ──
+        
         int dividerY = y + TITLE_H + OWN_NAME_H + DIVIDER_H / 2;
         gfx.fillGradient(x + PADDING, dividerY, x + W - PADDING, dividerY + 1,
                 COL_BORDER_LO, COL_BORDER_HI);
         gfx.fillGradient(x + PADDING, dividerY + 1, x + W - PADDING, dividerY + 2,
                 COL_BORDER_HI, COL_BORDER_LO);
 
-        // ── Prayer cards ──
+        
         renderPrayerCards(gfx, x, y);
     }
 
@@ -212,7 +200,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
 
             int cardY = listTop + i * PRAYER_ENTRY_H;
 
-            // Card background
+            
             gfx.fill(x + PADDING - 2, cardY - 2,
                      x + W - PADDING + 2, cardY + PRAYER_ENTRY_H - 4,
                      COL_PRAYER_BRD);
@@ -224,17 +212,17 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
 
     @Override
     protected void renderLabels(GuiGraphics gfx, int mouseX, int mouseY) {
-        // NOTE: coordinates here are relative to (leftPos, topPos)
+        
 
-        // ── Title ──
+        
         String titleStr = "Honorific Name";
         int titleX = (W - font.width(titleStr)) / 2;
         gfx.drawString(font, titleStr, titleX, 7, COL_TITLE, false);
 
-        // ── Own name section ──
+        
         renderOwnNameSection(gfx);
 
-        // ── Pending prayers section ──
+        
         renderPendingPrayersSection(gfx);
     }
 
@@ -257,7 +245,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             }
         }
 
-        String badge = BeyonderData.pathwayInfos.get(menu.getPathway()).getSequenceName(menu.getSequence());
+        String badge = BeyonderData.pathwayInfos.containsKey(menu.getPathway()) ? BeyonderData.pathwayInfos.get(menu.getPathway()).getSequenceName(menu.getSequence()) : "";
         int badgeX = W - PADDING - font.width(badge) - 2;
         gfx.drawString(font, badge, badgeX, TITLE_H + 6, 0xFF7777AA, false);
     }
@@ -273,7 +261,7 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             return;
         }
 
-        int listTop = listTop() - topPos; // relative Y
+        int listTop = listTop() - topPos; 
         int listHeight = H - TITLE_H - OWN_NAME_H - DIVIDER_H - PADDING;
         int visibleCount = Math.max(1, listHeight / PRAYER_ENTRY_H);
 
@@ -284,19 +272,19 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
             PendingPrayer prayer = prayers.get(idx);
             int entryRelY = listTop + i * PRAYER_ENTRY_H;
 
-            // Name & info
+            
             String nameLine = prayer.senderName()
                     + "  [" + prayer.senderPathway() + " / Seq " + prayer.senderSequence() + "]";
             gfx.drawString(font, nameLine, PADDING, entryRelY + 2, 0xFFFFCC55, false);
 
-            // Coordinates
+            
             String coordLine = String.format("@ %.0f, %.0f, %.0f",
                     prayer.x(), prayer.y(), prayer.z());
             gfx.drawString(font, coordLine, PADDING, entryRelY + 12, 0xFF8888AA, false);
-            // (the two buttons are rendered by rebuildButtons)
+            
         }
 
-        // Scroll indicator
+        
         if (prayers.size() > visibleCount) {
             String indicator = (prayerScrollOffset + 1) + " / " + prayers.size();
             gfx.drawString(font, indicator,
@@ -305,9 +293,9 @@ public class HonorificNamesScreen extends AbstractContainerScreen<HonorificNames
         }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────────────
+    
 
-    /** Absolute Y-coordinate of the top of the prayer list. */
+    
     private int listTop() {
         return topPos + TITLE_H + OWN_NAME_H + DIVIDER_H + 11;
     }

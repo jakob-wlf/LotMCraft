@@ -8,6 +8,8 @@ import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -88,38 +90,21 @@ public class WeatherManipulationAbility extends SelectableAbility {
                 .toList();
 
         double multiplier = multiplier(entity);
+        PacketHandler.sendToNearbyPlayers(new PlayPhotonBlockEffectPacket("snow_storm", BlockPos.containing(startPos), 0, 0, 0, 2, null, -1, false, true, null), serverLevel, startPos, 256);
 
-        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 15*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 4, (int) (20 * 20), () -> {
             // Damage and Effects
             AbilityUtil.damageNearbyEntities(serverLevel, entity, 45*multiplier(entity), DamageLookup.lookupDps(2, .5, 4, 30) *multiplier(entity), startPos, true, false);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, 45*multiplier(entity), startPos,
                     new MobEffectInstance(MobEffects.WEAKNESS, (int) (20 * 5*multiplier(entity)), 1, false, false, false),
                     new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 5*multiplier(entity)), 7, false, false, false));
 
-            // Particles and shader
-            for(Player player : AbilityUtil.getNearbyEntities(null, serverLevel, startPos, 45*multiplier(entity), true)
-                    .stream()
-                    .filter(e -> e instanceof Player)
-                    .map(e -> (Player)e)
-                    .toList()) {
-
-                FogComponent fogComponent = player.getData(ModAttachments.FOG_COMPONENT);
-                fogComponent.setActiveAndSync(true, player);
-                fogComponent.setFogIndexAndSync(FogComponent.FOG_TYPE.BLIZZARD, player);
-                fogComponent.setFogColorAndSync(new Vec3f(152 / 255f, 237 / 255f, 237 / 255f), player);
-
-                ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, player.position(), 60, 5, 2, 5, .05);
-                ParticleUtil.spawnParticles(serverLevel, blizzardDust, player.position(), 200, 6, 3, 6, .05);
-
-                ActiveShaderComponent component = player.getData(ModAttachments.SHADER_COMPONENT);
-                component.setShaderActiveAndSync(true, player);
-                component.setShaderIndexAndSync(ActiveShaderComponent.SHADERTYPE.BLIZZARD, player);
-            }
-
             // Weather Change
             if(serverLevel.isRaining()) {
                 serverLevel.setWeatherParameters(6000, 0, false, false);
             }
+
+            PacketHandler.sendToNearbyPlayers(new PlayPhotonBlockEffectPacket("snow_shader", BlockPos.containing(startPos), 0, 0, 0, 1, null, -1, false, true, null), serverLevel, startPos, 45 * multiplier(entity));
 
             // Block Changes
             if(griefing) {

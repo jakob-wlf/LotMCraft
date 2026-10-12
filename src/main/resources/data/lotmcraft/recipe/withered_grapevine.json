@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "misc",
+  "ingredient": {
+    "item": "minecraft:vine"
+  },
+  "result": {
+    "id": "lotmcraft:withered_grapevine"
+  },
+  "experience": 0.1,
+  "cookingtime": 600
+}

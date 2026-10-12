@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.door.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;

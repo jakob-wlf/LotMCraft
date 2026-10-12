@@ -2,10 +2,15 @@ package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.dimension.*;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldBiomeSource;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldChunkGenerator;
+import de.jakob.lotm.dimension.spirit_world.spirit_patch.SpiritPatchWorldgen;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -32,7 +37,10 @@ public class DimensionProvider {
                         packOutput,
                         lookupProvider,
                         new RegistrySetBuilder()
+                                .add(Registries.CONFIGURED_FEATURE, SpiritPatchWorldgen::configuredFeatures)
+                                .add(Registries.PLACED_FEATURE,     SpiritPatchWorldgen::placedFeatures)
                                 .add(Registries.BIOME, bootstrap -> {
+                                    SpiritPatchWorldgen.biome(bootstrap);
 
                                     bootstrap.register(ModDimensions.SPACE_BIOME_KEY,
                                             new Biome.BiomeBuilder()
@@ -217,16 +225,16 @@ public class DimensionProvider {
                                                     .hasPrecipitation(false)
                                                     .temperature(0.0f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x050010)          // near-black with a violet tint
-                                                            .fogColor(0x0D0025)          // deep indigo fog (short render distance feel)
-                                                            .waterColor(0x6600CC)        // electric purple water
-                                                            .waterFogColor(0x220044)     // void purple water fog
+                                                            .skyColor(0x050010)          
+                                                            .fogColor(0x0D0025)          
+                                                            .waterColor(0x6600CC)        
+                                                            .waterFogColor(0x220044)     
                                                             .grassColorOverride(0x3B006B)
                                                             .foliageColorOverride(0x4D0088)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     new DustParticleOptions(
-                                                                            new Vector3f(0.45f, 0.05f, 0.9f), 1.0f), // purple dust
+                                                                            new Vector3f(0.45f, 0.05f, 0.9f), 1.0f), 
                                                                     0.007f))
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
@@ -458,7 +466,12 @@ public class DimensionProvider {
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
+
+                                    underworldBiomes(bootstrap);
+
                                 })
+                                .add(Registries.STRUCTURE,     SpiritPatchWorldgen::structures)
+                                .add(Registries.STRUCTURE_SET, SpiritPatchWorldgen::structureSets)
 
                                 .add(Registries.DIMENSION_TYPE, bootstrap -> {
                                     bootstrap.register(ModDimensions.DREAM_MAZE_TYPE_KEY, new DimensionType(
@@ -486,20 +499,20 @@ public class DimensionProvider {
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
 
                                     bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY, new DimensionType(
-                                            OptionalLong.of(18000),   // always "night" (fixed time)
-                                            false,                    // hasSkylight – false: no daylight cycle lighting
-                                            false,                    // hasCeiling
-                                            false,                    // ultraWarm
-                                            false,                    // natural
-                                            1.0,                      // coordinateScale
-                                            false,                    // bedWorks
-                                            false,                    // respawnAnchorWorks
-                                            0,                        // minY
-                                            256,                      // height
-                                            256,                      // logicalHeight
+                                            OptionalLong.of(18000),   
+                                            false,                    
+                                            false,                    
+                                            false,                    
+                                            false,                    
+                                            1.0,                      
+                                            false,                    
+                                            false,                    
+                                            0,                        
+                                            256,                      
+                                            256,                      
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"),
-                                            0.05f,                    // ambientLight – very dark
+                                            0.05f,                    
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
 
                                     bootstrap.register(ModDimensions.WORLD_CREATION_TYPE_KEY, new DimensionType(
@@ -531,6 +544,14 @@ public class DimensionProvider {
                                             1.0, false, false, 0, 256, 256,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world"),
+                                            1.0f,
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+
+                                    bootstrap.register(ModDimensions.UNDERWORLD_TYPE, new DimensionType(
+                                            OptionalLong.empty(), true, false, false, false,
+                                            1.0, false, false, UnderworldTerrain.MIN_Y, UnderworldTerrain.HEIGHT, UnderworldTerrain.HEIGHT,
+                                            BlockTags.INFINIBURN_OVERWORLD,
+                                            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld"),
                                             1.0f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
 
@@ -609,6 +630,14 @@ public class DimensionProvider {
                                                     dimensionTypes.getOrThrow(ModDimensions.SPIRIT_WORLD_TYPE_KEY),
                                                     new SpiritWorldChunkGenerator(spiritBiomeSource)));
 
+                                    var underworldBiomeSource = new UnderworldBiomeSource(
+                                            biomeRegistry.getOrThrow(ModDimensions.BIOME_STYX_CHASM),
+                                            biomeRegistry.getOrThrow(ModDimensions.BIOME_PALE_WHITE_NATION));
+                                    bootstrap.register(ModDimensions.UNDERWORLD_LEVEL_STEM,
+                                            new LevelStem(
+                                                    dimensionTypes.getOrThrow(ModDimensions.UNDERWORLD_TYPE),
+                                                    new UnderworldChunkGenerator(underworldBiomeSource)));
+
                                     bootstrap.register(ModDimensions.SEFIRAH_CASTLE_LEVEL_KEY,
                                             new LevelStem(
                                                     dimensionTypes.getOrThrow(ModDimensions.SEFIRAH_CASTLE_TYPE_KEY),
@@ -654,5 +683,38 @@ public class DimensionProvider {
                         Set.of(LOTMCraft.MOD_ID)
                 )
         );
+    }
+
+
+    private static void underworldBiomes(BootstrapContext<Biome> bootstrap) {
+        bootstrap.register(ModDimensions.BIOME_STYX_CHASM, underworldBiome(
+                0.0f, 0x000000, 0x050508, 0x1A1A33, 0x050510, 0xCCEEFF, 0xAADDFF,
+                null, 0f));
+
+        bootstrap.register(ModDimensions.BIOME_PALE_WHITE_NATION, underworldBiome(
+                -1.0f, 0xC8E8FF, 0xDDEEFF, 0x1A1A33, 0x1A3366, 0xCCEEFF, 0xAADDFF,
+                ParticleTypes.SNOWFLAKE, 0.003f));
+    }
+
+    private static Biome underworldBiome(float temperature, int sky, int fog, int water, int waterFog,
+                                         int grass, int foliage, ParticleOptions particle, float particleChance) {
+        BiomeSpecialEffects.Builder fx = new BiomeSpecialEffects.Builder()
+                .skyColor(sky)
+                .fogColor(fog)
+                .waterColor(water)
+                .waterFogColor(waterFog)
+                .grassColorOverride(grass)
+                .foliageColorOverride(foliage)
+                .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS);
+        if (particle != null) {
+            fx.ambientParticle(new AmbientParticleSettings(particle, particleChance));
+        }
+        return new Biome.BiomeBuilder()
+                .hasPrecipitation(false)
+                .temperature(temperature).downfall(0.0f)
+                .specialEffects(fx.build())
+                .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                .build();
     }
 }

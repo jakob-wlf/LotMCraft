@@ -69,11 +69,11 @@ public class SpiritDervishEntity extends Animal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 60.0)
+                .add(Attributes.MAX_HEALTH, 36.0)
                 .add(Attributes.FLYING_SPEED, 2.5)
                 .add(Attributes.SCALE, 1)
                 .add(Attributes.ARMOR, 5.0)
-                .add(Attributes.ATTACK_DAMAGE, 25.0)
+                .add(Attributes.ATTACK_DAMAGE, 12.0)
                 .add(Attributes.FOLLOW_RANGE, 30.0);
     }
 

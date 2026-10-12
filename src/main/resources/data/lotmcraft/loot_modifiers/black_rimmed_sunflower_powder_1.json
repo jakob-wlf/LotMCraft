@@ -1,0 +1,22 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:sunflower"
+    },
+    {
+      "condition": "minecraft:time_check",
+      "value": {
+        "min": 13000,
+        "max": 23000
+      },
+      "period": 24000
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.12
+    }
+  ],
+  "table": "lotmcraft:ingredients/black_rimmed_sunflower_powder"
+}

@@ -175,4 +175,16 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
             return locations.getOrDefault(entity.getUUID(), new Location(new Vec3(entity.getX(), findSafeY(overWorld, (int) entity.getX(), (int) entity.getZ()), entity.getZ()), overWorld));
         }
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if(entity.getHealth() > entity.getMaxHealth() * 0.15 && ((ToggleAbility) LOTMCraft.abilityHandler.getById("historical_void_hiding_ability")).isActiveForEntity(entity)) {
+            return true;
+        }
+        if(entity.getHealth() <= entity.getMaxHealth() * 0.15 && !entity.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).hasSummonedSelf) {
+            return true;
+        }
+
+        return  false;
+    }
 }

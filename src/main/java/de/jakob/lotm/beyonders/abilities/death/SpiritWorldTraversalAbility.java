@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.death;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;

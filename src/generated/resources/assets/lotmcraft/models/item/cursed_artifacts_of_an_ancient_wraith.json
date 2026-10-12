@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/cursed_artifacts_of_an_ancient_wraith"
+  }
+}

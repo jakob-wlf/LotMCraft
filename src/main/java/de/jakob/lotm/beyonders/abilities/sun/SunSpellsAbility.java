@@ -4,6 +4,9 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayCancellablePhotonBlockEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -113,9 +116,26 @@ public class SunSpellsAbility extends SelectableAbility {
         }
 
         level.playSound(null, BlockPos.containing(targetLoc), SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 1, 1);
+
+        ServerScheduler.scheduleDelayed(3, () -> {
+            BlockPos blockPos = BlockPos.containing(targetLoc);
+
+            double offsetX = targetLoc.x - (blockPos.getX() + 0.5);
+            double offsetY = targetLoc.y - (blockPos.getY() + 0.5);
+            double offsetZ = targetLoc.z - (blockPos.getZ() + 0.5);
+
+
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket(
+                            "sunshine", blockPos, offsetX, offsetY, offsetZ, 3.5, null, -1, true, true, null
+                    ),
+                    (ServerLevel) level, targetLoc, 128
+            );
+        });
+
         ServerScheduler.scheduleForDuration(0, 5, 20 * 12, () -> {
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, goldenDust, targetLoc, 1.4f, 100);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, 1.4f, 50);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, goldenDust, targetLoc, 2f, 20);
+            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, 2f, 10);
 
             AbilityUtil.getNearbyEntities(null, (ServerLevel) level, targetLoc, 10).forEach(e -> {
                 if(!AbilityUtil.isUndead(e)) return;

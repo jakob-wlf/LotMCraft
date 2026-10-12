@@ -93,12 +93,16 @@ public class WaterBoltEntity extends AbstractArrow {
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
+        if(!level().isClientSide) {
+            return;
+        }
+
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "water_bolt");
         FX fx = FXHelper.getFX(id);
 
         executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
         executor.setForcedDeath(true);
-        executor.setScale(0.8, 0.8, 0.8);
+        executor.setScale(1, 1, 1);
 
         try {
             executor.start();
