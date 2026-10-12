@@ -2,6 +2,7 @@ package de.jakob.lotm.dimension;
 
 import com.mojang.serialization.MapCodec;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.abyss.AbyssChunkGenerator;
 import de.jakob.lotm.dimension.spirit_world.SpiritWorldBiomeSource;
 import de.jakob.lotm.dimension.spirit_world.SpiritWorldChunkGenerator;
 import net.minecraft.core.registries.Registries;
@@ -57,7 +58,8 @@ public class ModDimensions {
 
     public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<DeepSpaceDimensionChunkGenerator>> EXILE_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("exile_chunk_generator", () -> DeepSpaceDimensionChunkGenerator.CODEC);
-
+    public static final Supplier<MapCodec<AbyssChunkGenerator>> ABYSS_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("abyss", () -> AbyssChunkGenerator.CODEC);
 
 
     // -------------------------------------------------------------------------
@@ -372,7 +374,7 @@ public class ModDimensions {
             ResourceKey.create(Registries.DIMENSION_TYPE, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss"));
 
     public static final ResourceKey<Biome> ABYSS_BIOME_KEY =
-            ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss"));
+            ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss_biome"));
 
     // -------------------------------------------------------------------------
     // Registration
