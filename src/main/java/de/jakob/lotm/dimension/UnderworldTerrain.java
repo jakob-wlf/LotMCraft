@@ -20,7 +20,7 @@ public final class UnderworldTerrain {
     public static final int NATION_RADIUS = 200;
     public static final int PIT_RADIUS    = 250;
     public static final int GROUND_INNER  = 118;
-    public static final int WORLD_COUNT   = 8;    
+    public static final int WORLD_COUNT   = 7;
 
     
     public static final double BRIDGE_HALF_WIDTH = 3.0;

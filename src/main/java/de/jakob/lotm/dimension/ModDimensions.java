@@ -369,7 +369,6 @@ public class ModDimensions {
     public static final ResourceKey<LevelStem> UNDERWORLD_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, ID);
     public static final ResourceKey<DimensionType> UNDERWORLD_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, ID);
 
-    public static final ResourceKey<Biome> BIOME_SINNER_LAYERS     = biome("underworld_sinner_layers");
     public static final ResourceKey<Biome> BIOME_STYX_CHASM        = biome("underworld_styx_chasm");
     public static final ResourceKey<Biome> BIOME_PALE_WHITE_NATION = biome("underworld_pale_white_nation");
 
