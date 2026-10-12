@@ -60,8 +60,6 @@ public class ModDimensions {
             CHUNK_GENERATORS.register("exile_chunk_generator", () -> DeepSpaceDimensionChunkGenerator.CODEC);
     public static final Supplier<MapCodec<AbyssChunkGenerator>> ABYSS_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("abyss", () -> AbyssChunkGenerator.CODEC);
-
-
     public static final Supplier<MapCodec<UnderworldChunkGenerator>> UNDERWORLD_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("underworld", () -> UnderworldChunkGenerator.CODEC);
 

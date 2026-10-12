@@ -68,7 +68,7 @@ public class AbyssChunkGenerator extends ChunkGenerator {
         double excess = n - BASE_THRESHOLD;
         if (excess <= 0) { return null; }
         // 0 at the shoreline, 1 at the heart of the island.
-        double t = Math.min(1.0, excess / FULL_EXCESS);-
+        double t = Math.min(1.0, excess / FULL_EXCESS);
         double height = Math.pow(t, SLOPE_SHAPE) * PEAK_HEIGHT;
         double ridge = 1.0 - Math.abs(ridgeNoise.getValue(x * 0.03, z * 0.03, false)) * 2.0;
         height += Math.max(0.0, ridge) * RIDGE_HEIGHT * t;
@@ -161,6 +161,11 @@ public class AbyssChunkGenerator extends ChunkGenerator {
         }
         return new NoiseColumn(minY, states);
     }
+
+    @Override
+    public void addDebugScreenInfo(List<String> list, RandomState randomState, BlockPos blockPos) {
+    }
+
     @Override
     public int getMinY() {return MIN_Y;}
     @Override
