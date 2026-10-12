@@ -75,6 +75,7 @@ public class ImprisonAbility extends Ability {
         int duration = 20 * getDuration(entitySeq);
 
         final UUID targetId = target.getUUID();
+        final UUID casterId = caster.getUUID();
         IMPRISONED.add(targetId);
 
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 127, false, false));
@@ -84,7 +85,7 @@ public class ImprisonAbility extends Ability {
         serverLevel.playSound(null, target.blockPosition(), SoundEvents.BEACON_ACTIVATE, SoundSource.PLAYERS, 0.8f, 0.4f);
         AbilityUtil.sendActionBar(caster, Component.literal("§6⚖ §e" + target.getType().getDescription().getString() + " §fimprisoned §6⚖"));
 
-        UUID velTaskId = ServerScheduler.scheduleRepeating(0, 5, duration, () -> {
+        UUID velTaskId = ServerScheduler.scheduleRepeating(0, 5, -1, () -> {
             Entity e = serverLevel.getEntity(targetId);
             if (!(e instanceof LivingEntity t) || !t.isAlive()) return;
             t.setDeltaMovement(Vec3.ZERO);
@@ -128,6 +129,17 @@ public class ImprisonAbility extends Ability {
             }
             BeyonderData.incrementSpirituality(caster, -300);
         }, serverLevel, () -> IMPRISONED.contains(targetId) && caster.isAlive());
+
+        UUID expiryTaskId = ServerScheduler.scheduleDelayed(duration, () -> {
+            IMPRISON_DATA.computeIfPresent(casterId, (k, data) -> {
+                if (data[0].equals(targetId)) {
+                    cancelImprisonment(casterId);
+                    spawnReleaseEffect(serverLevel, caster.position());
+                    AbilityUtil.sendActionBar(caster, Component.literal("§6⚖ §eImprisonment §7has ended §6⚖"));
+                }
+                return IMPRISON_DATA.get(casterId);
+            });
+        }, serverLevel);
 
         IMPRISON_DATA.put(caster.getUUID(), new UUID[]{targetId, velTaskId, vfxTaskId, effectTaskId, drainTaskId});
 

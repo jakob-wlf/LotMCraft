@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.death;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -20,10 +22,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class DeathFlameAbility extends Ability {
 
-    private static final int DURATION = 20 * 7;
+    private static final int DURATION = 20 * 10;
     private static final double FLAME_LENGTH = 16.0;
     private static final double FLAME_MAX_RADIUS = 5.0;
 
@@ -41,6 +44,8 @@ public class DeathFlameAbility extends Ability {
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.FIRE_AMBIENT, SoundSource.AMBIENT, 3.0f, 0.5f);
         serverLevel.playSound(null, entity.blockPosition(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.5f, 0.6f);
 
+        PacketHandler.sendToNearbyPlayers(new PlayPhotonEntityEffectPacket("pale_flame", entity.getId(), 0, -.5, 0, 1, null, false, true, UUID.randomUUID(), true), serverLevel, entity.position(), 128);
+
         ServerScheduler.scheduleForDuration(0, 1, DURATION, () -> {
             if (!entity.isAlive()) return;
 
@@ -49,7 +54,6 @@ public class DeathFlameAbility extends Ability {
             Vec3 p1 = getPerp(look);
             Vec3 p2 = look.cross(p1).normalize();
 
-            spawnConeParticles(serverLevel, origin, look, p1, p2);
             damageEntitiesInCone(serverLevel, entity, origin, look);
 
             if (BeyonderData.isGriefingEnabled(entity)) {

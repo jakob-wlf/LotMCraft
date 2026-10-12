@@ -11,6 +11,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringMenuProvider;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PuppetTimerPacket;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -245,17 +247,22 @@ public class PuppeteeringAbility extends SelectableAbility {
                 Set<UUID> targets = massEntitiesBeingManipulated.get(entity.getUUID());
                 if (targets == null || !targets.contains(target.getUUID())) {
                     stopped.set(true);
+                    syncPuppetTimer(entity, target, time, 0);
                     return;
                 }
             } else {
                 if (!entitiesBeingManipulated.containsKey(entity.getUUID())) {
                     stopped.set(true);
+                    syncPuppetTimer(entity, target, time, 0);
                     return;
                 }
             }
 
             double currentTick = elapsedTicks.addAndGet(1.0);
             float progress = (float) currentTick / time;
+            if (currentTick == 1 || currentTick % 10 == 0) {
+                syncPuppetTimer(entity, target, time, time - (int) currentTick);
+            }
 
             if (!target.isAlive() || target.isRemoved() || target.level() != level || !entity.isAlive() || entity.isRemoved()
                     || target.distanceTo(entity) >= getManipulationDistance(sequence)
@@ -267,6 +274,7 @@ public class PuppeteeringAbility extends SelectableAbility {
                     entitiesBeingManipulated.remove(entity.getUUID());
                 }
                 stopped.set(true);
+                syncPuppetTimer(entity, target, time, 0);
                 return;
             }
 
@@ -300,6 +308,7 @@ public class PuppeteeringAbility extends SelectableAbility {
             targetHealth.set(target.getHealth());
         }, () -> {
             if (stopped.get()) return;
+            syncPuppetTimer(entity, target, time, 0);
 
             if (isMass) {
                 removeMassTarget(entity.getUUID(), target.getUUID());
@@ -324,6 +333,12 @@ public class PuppeteeringAbility extends SelectableAbility {
         }, level);
     }
 
+    private void syncPuppetTimer(LivingEntity caster, LivingEntity target, int total, int remaining) {
+        if (caster instanceof ServerPlayer serverPlayer) {
+            PacketDistributor.sendToPlayer(serverPlayer, new PuppetTimerPacket(target.getId(), total, remaining));
+        }
+    }
+
     private void turnIntoMarionette(LivingEntity target, Player player) {
         if(target instanceof Player) {
             Vec3 pos = target.position();
@@ -332,7 +347,6 @@ public class PuppeteeringAbility extends SelectableAbility {
             MirrorSubstituteAbility.setFigurineNumber(target.getUUID(), 0);
             DoorSubstitutionAbility.setFigurineNumber(target.getUUID(), 0);
 
-            // set sanity to 0.04 to prevent mirror revival and darkness revival from triggering
             SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
             sanity.setSanity(0.04f);
 
@@ -363,7 +377,7 @@ public class PuppeteeringAbility extends SelectableAbility {
         if (MarionetteUtils.turnEntityIntoMarionette(target, player)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned").withColor(0xa26fc9));
         } else {
-                player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
+            player.sendSystemMessage(Component.translatable("ability.lotmcraft.puppeteering.entity_turned_failed").withColor(0xa26fc9));
         }
     }
 
@@ -377,8 +391,8 @@ public class PuppeteeringAbility extends SelectableAbility {
         if(entitiesBeingManipulated.containsKey(entity.getUUID())) return;
 
         for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 35)) {
-            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition(), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
-            Vec3 end = target.getEyePosition().add(0, 9, 0);
+            Vec3 start = VectorUtil.getRelativePosition(entity.getEyePosition().add(0, 9, 0), new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z), .1, .35, -.5);
+            Vec3 end = target.getEyePosition();
             EffectManager.playDirectionalEffect(EffectIds.MARIONETTE_THREADS, start.x(), start.y(), start.z(), end.x(), end.y(), end.z(), 2, serverPlayer);
         }
     }

@@ -2,6 +2,8 @@ package de.jakob.lotm.dimension;
 
 import com.mojang.serialization.MapCodec;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldBiomeSource;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldChunkGenerator;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;

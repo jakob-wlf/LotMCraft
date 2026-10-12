@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/lake_water_freshly_reflecting_the_cosmos"
+  }
+}

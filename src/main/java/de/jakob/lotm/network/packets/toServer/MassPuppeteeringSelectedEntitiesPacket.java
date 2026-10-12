@@ -45,6 +45,7 @@ public record MassPuppeteeringSelectedEntitiesPacket(Map<Integer, Integer> entit
                     }
                 }
                 PuppeteeringAbility ability = (PuppeteeringAbility) LOTMCraft.abilityHandler.getById("puppeteering_ability");
+                if(ability.hasAbility(player, false))
                 ability.executeMassPuppeteering(level, player, selectedEntitiesWithTimes);
             }
         });

@@ -30,10 +30,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import javax.annotation.Nullable;
+import java.util.ConcurrentModificationException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -61,7 +60,7 @@ public class MeteorEntity extends Entity {
     }
 
     public MeteorEntity(Level level, float speed, float damage, float size, @Nullable Entity caster, boolean griefing, float explosionSize, float radius) {
-        super(ModEntities.Meteor.get(), level);
+        super(ModEntities.METEOR.get(), level);
         this.setSpeed(speed * 1.75f);
         this.setDamage(damage);
         this.setSize(size);
@@ -173,13 +172,21 @@ public class MeteorEntity extends Entity {
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
+        if(!level().isClientSide) {
+            return;
+        }
+
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "meteor_trail");
         FX fx = FXHelper.getFX(id);
 
         EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
-        executor.setScale(1.75, 1.75, 1.75);
+        executor.setScale(2.5, 2.5, 2.5);
 
-        executor.start();
+        try {
+            executor.start();
+        } catch (ConcurrentModificationException ignored) {
+
+        }
     }
 
     Vec3 direction;

@@ -1,7 +1,7 @@
 package de.jakob.lotm.gui.custom.flaming_jump;
 
 import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.TeleportPlayerToLocationPacket;
+import de.jakob.lotm.network.packets.toServer.FlamingJumpTeleportPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,9 +36,8 @@ public class FlamingJumpScreen extends AbstractContainerScreen<FlamingJumpMenu> 
                 listBottom - listTop, listTop, ROW_HEIGHT);
         this.list.setX(PANEL_MARGIN);
 
-        for (BlockPos pos : menu.getFireLocations()) {
-            this.list.addFireLocation(pos);
-        }
+        List<BlockPos> fires = menu.getFireLocations();
+        for (int i = 0; i < fires.size(); i++) this.list.addFireLocation(fires.get(i), i);
         this.addRenderableWidget(this.list);
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.lotm.flaming_jump.close"), b -> onClose())
@@ -90,9 +89,7 @@ public class FlamingJumpScreen extends AbstractContainerScreen<FlamingJumpMenu> 
             this.setRenderHeader(false, 0);
         }
 
-        public void addFireLocation(BlockPos pos) {
-            this.addEntry(new Entry(screen, pos));
-        }
+        public void addFireLocation(BlockPos pos, int index) { this.addEntry(new Entry(screen, pos, index)); }
 
         @Override
         public int getRowWidth() {
@@ -104,9 +101,11 @@ public class FlamingJumpScreen extends AbstractContainerScreen<FlamingJumpMenu> 
             private final FlamingJumpScreen screen;
             private final BlockPos pos;
             private final Button teleportButton;
+            private final int index;
 
-            Entry(FlamingJumpScreen screen, BlockPos pos) {
+            Entry(FlamingJumpScreen screen, BlockPos pos, int index) {
                 this.screen = screen;
+                this.index = index;
                 this.pos = pos;
 
                 this.teleportButton = Button.builder(
@@ -118,8 +117,7 @@ public class FlamingJumpScreen extends AbstractContainerScreen<FlamingJumpMenu> 
 
             private void teleportToFire() {
                 if (Minecraft.getInstance().player == null) return;
-                PacketHandler.sendToServer(new TeleportPlayerToLocationPacket(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, Minecraft.getInstance().player.getId()));
-
+                PacketHandler.sendToServer(new FlamingJumpTeleportPacket(index));
                 screen.onClose();
             }
 

@@ -2,6 +2,8 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
+import de.jakob.lotm.network.packets.handlers.TeleportUse;
 import de.jakob.lotm.network.packets.toClient.OpenEnvisionLocationScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.TeleportationUtil;
@@ -75,6 +77,7 @@ public class EnvisionPositionAbility extends SelectableAbility {
         if(!(level instanceof ServerLevel serverLevel)) return;
         if(!(entity instanceof ServerPlayer player)) return;
 
+        PendingTeleportRequests.arm(player, TeleportUse.ENVISION_LOCATION, Double.POSITIVE_INFINITY, 20 * 30);
         PacketHandler.sendToPlayer(player, new OpenEnvisionLocationScreenPacket());
     }
 

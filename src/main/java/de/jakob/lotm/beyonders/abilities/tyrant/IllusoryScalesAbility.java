@@ -35,14 +35,14 @@ public class IllusoryScalesAbility extends ToggleAbility {
         PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.RESISTANCE, "illusory_scales", 5);
     }
 
-    private final DustParticleOptions blueDust = new DustParticleOptions(new Vector3f(87 / 255f, 212 / 255f, 183 / 255f), 1.75f);
+    private final DustParticleOptions blueDust = new DustParticleOptions(new Vector3f(87 / 255f, 212 / 255f, 183 / 255f), .5f);
 
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
-        ParticleUtil.spawnParticles((ServerLevel) level, blueDust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 12, .4, entity.getEyeHeight() / 2, .4, 0);
+        ParticleUtil.spawnParticles((ServerLevel) level, blueDust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 5, .4, entity.getEyeHeight() / 2, .4, 0);
     }
 
     @Override

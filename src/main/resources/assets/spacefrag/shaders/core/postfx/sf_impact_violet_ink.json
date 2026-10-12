@@ -1,0 +1,10 @@
+{
+  "vertex": "ldlib2:fast_blit",
+  "fragment": "spacefrag:postfx/sf_storm_post",
+  "samplers": [ { "name": "DiffuseSampler" } ],
+  "uniforms": [
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "Strength", "type": "float", "count": 1, "values": [0] },
+    { "name": "Mode", "type": "float", "count": 1, "values": [1] }
+  ]
+}

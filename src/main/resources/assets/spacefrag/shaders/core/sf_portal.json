@@ -1,0 +1,14 @@
+{
+  "vertex": "spacefrag:sf_model",
+  "fragment": "spacefrag:sf_portal",
+  "samplers": [],
+  "uniforms": [
+    { "name": "ModelViewMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "ProjMat", "type": "matrix4x4", "count": 16, "values": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1] },
+    { "name": "GameTime", "type": "float", "count": 1, "values": [0] },
+    { "name": "DeepColor", "type": "float", "count": 4, "values": [0.015, 0.01, 0.05, 1] },
+    { "name": "ArmColor", "type": "float", "count": 4, "values": [0.36, 0.27, 0.84, 1] },
+    { "name": "HotColor", "type": "float", "count": 4, "values": [0.9, 0.86, 1.0, 1] },
+    { "name": "Intensity", "type": "float", "count": 1, "values": [1] }
+  ]
+}

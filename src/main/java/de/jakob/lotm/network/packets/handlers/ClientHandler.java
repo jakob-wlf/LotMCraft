@@ -1,9 +1,6 @@
 package de.jakob.lotm.network.packets.handlers;
 
-import com.lowdragmc.photon.client.fx.BlockEffectExecutor;
-import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
-import com.lowdragmc.photon.client.fx.FX;
-import com.lowdragmc.photon.client.fx.FXHelper;
+import com.lowdragmc.photon.client.fx.*;
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
@@ -63,12 +60,15 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class ClientHandler {
+    private static final HashMap<UUID, EntityEffectExecutor> activeEffects = new HashMap<>();
+    private static final HashMap<UUID, BlockEffectExecutor> activeBlockEffects = new HashMap<>();
     public static void openCoordinateScreen(Player player, String use) {
         Minecraft.getInstance().setScreen(new CoordinateInputScreen(player, use));
     }
@@ -221,9 +221,9 @@ public class ClientHandler {
 
     public static void syncSelectedMarionette(SyncSelectedMarionettePacket packet, Player player) {
         if(packet.active()) {
-            MarionetteOverlayRenderer.currentMarionette.put(
+            MarionettePanelRenderer.currentMarionette.put(
                     player.getUUID(),
-                    new MarionetteOverlayRenderer.MarionetteInfos(
+                    new MarionettePanelRenderer.MarionetteInfos(
                             packet.name(),
                             packet.health(),
                             packet.maxHealth(),
@@ -232,7 +232,7 @@ public class ClientHandler {
             );
         }
         else {
-            MarionetteOverlayRenderer.currentMarionette.remove(player.getUUID());
+            MarionettePanelRenderer.currentMarionette.remove(player.getUUID());
         }
     }
 
@@ -551,19 +551,24 @@ public class ClientHandler {
             return;
         }
 
-        if(entity != Minecraft.getInstance().player) return;
+
 
         switch (packet.action()) {
             case 0 -> {
-                ActiveToggleAbilitiesRenderer.activeToggleAbilities.add(packet.abilityId());
+                toggleAbility.updateClientCache(living, true);
+                if(entity != Minecraft.getInstance().player) return;
+                StatusPanelRenderer.activeToggleAbilities.add(packet.abilityId());
                 toggleAbility.start(living.level(), living);
-                toggleAbility.updateClientCache(living, true);
             }
-            case 1 -> toggleAbility.prepareTick(living.level(), living);
+            case 1 -> {
+                if(entity != Minecraft.getInstance().player) return;
+                toggleAbility.prepareTick(living.level(), living);
+            }
             case 2 -> {
-                ActiveToggleAbilitiesRenderer.activeToggleAbilities.remove(packet.abilityId());
+                toggleAbility.updateClientCache(living, false);
+                if(entity != Minecraft.getInstance().player) return;
+                StatusPanelRenderer.activeToggleAbilities.remove(packet.abilityId());
                 toggleAbility.stop(living.level(), living);
-                toggleAbility.updateClientCache(living, true);
             }
 
         }
@@ -725,22 +730,71 @@ public class ClientHandler {
 
     }
 
+    public static void playCancellablePhotonBlockEffect(PlayCancellablePhotonBlockEffectPacket packet) {
+        FX fx = FXHelper.getFX(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath()));
+        if (fx != null) {
+            BlockEffectExecutor fxExecutor = new BlockEffectExecutor(fx, Minecraft.getInstance().level, packet.pos());
+            fxExecutor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
+            if(packet.scaleVector() != null) {
+                fxExecutor.setScale(packet.scaleVector().x(), packet.scaleVector().y(), packet.scaleVector().z());
+            } else {
+                fxExecutor.setScale(packet.scale(), packet.scale(), packet.scale());
+            }
+            if(packet.rot() != null) {
+                fxExecutor.setRotation(packet.rot());
+            }
+            fxExecutor.setCheckState(packet.checkState());
+            fxExecutor.setAllowMulti(packet.allowMulti());
+            fxExecutor.start();
+            activeBlockEffects.put(packet.effectUUID(), fxExecutor);
+        }
+
+    }
+
     public static void playPhotonEntityEffect(PlayPhotonEntityEffectPacket packet) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, packet.effectPath());
         FX fx = FXHelper.getFX(id);
+        if(fx == null) return;
 
         Entity entity = getById(packet.entityId());
         if(entity == null) return;
 
-        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, EntityEffectExecutor.AutoRotate.NONE);
+        EntityEffectExecutor executor = new EntityEffectExecutor(fx, Minecraft.getInstance().level, entity, packet.autoRotate() ? EntityEffectExecutor.AutoRotate.LOOK : EntityEffectExecutor.AutoRotate.NONE);
         executor.setScale(packet.scale(), packet.scale(), packet.scale());
         executor.setOffset(packet.xOffset(), packet.yOffset(), packet.zOffset());
         if(packet.rot() != null)  executor.setRotation(packet.rot());
         executor.setAllowMulti(packet.allowMulti());
 
         executor.start();
+
+        activeEffects.put(packet.effectUUID(), executor);
     }
 
+
+    public static void cancelEntityEffect(UUID effectUUID) {
+        System.out.println("Canceling effect with UUID: " + effectUUID);
+        EntityEffectExecutor executor = activeEffects.get(effectUUID);
+        if(executor != null) {
+            System.out.println("Found executor for effect UUID: " + effectUUID);
+            FXRuntime runtime = executor.getRuntime();
+            if (runtime != null) {
+                runtime.destroy(true);
+            }
+            activeEffects.remove(effectUUID);
+        }
+    }
+    public static void cancelBlockEffect(UUID effectUUID) {
+        System.out.println("Canceling block effect with UUID: " + effectUUID);
+        BlockEffectExecutor executor = activeBlockEffects.get(effectUUID);
+        if(executor != null) {
+            System.out.println("Found executor for block effect UUID: " + effectUUID);
+            FXRuntime runtime = executor.getRuntime();
+            if (runtime != null) {
+                runtime.destroy(true);
+            }
+            activeBlockEffects.remove(effectUUID);
+        }
+    }
     public static void handleControllingSync(SyncControllingPacket packet) {
         Player player = getPlayer();
         if(player == null) return;

@@ -46,9 +46,6 @@ public class BeyonderCharacteristicItemHandler {
             return null;
         }
 
-        // Calculate weights for each potion
-        // Higher sequence = more common = higher weight
-        // Weight formula: sequence + 1 makes sequence 9 -> weight 10, sequence 0 -> weight 1
         Map<BeyonderCharacteristicItem, Integer> weights = new HashMap<>();
         int totalWeight = 0;
 
@@ -58,10 +55,8 @@ public class BeyonderCharacteristicItemHandler {
             totalWeight += weight;
         }
 
-        // Generate random number between 0 and totalWeight-1
         int randomValue = random.nextInt(totalWeight);
 
-        // Find the selected potion based on cumulative weights
         int cumulativeWeight = 0;
         for (Map.Entry<BeyonderCharacteristicItem, Integer> entry : weights.entrySet()) {
             cumulativeWeight += entry.getValue();
@@ -70,7 +65,6 @@ public class BeyonderCharacteristicItemHandler {
             }
         }
 
-        // Fallback (should never reach here with valid input)
         return items.getLast();
     }
 

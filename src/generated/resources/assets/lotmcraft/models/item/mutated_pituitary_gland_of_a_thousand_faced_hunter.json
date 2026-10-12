@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "lotmcraft:item/mutated_pituitary_gland_of_a_thousand_faced_hunter"
+  }
+}

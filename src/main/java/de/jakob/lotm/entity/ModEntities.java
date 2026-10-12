@@ -11,6 +11,7 @@ import de.jakob.lotm.entity.custom.ability_entities.door_pathway.*;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.FirePlateEntity;
 import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
@@ -30,7 +31,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-import javax.sound.sampled.Port;
 import java.util.function.Supplier;
 
 public class ModEntities {
@@ -80,6 +80,18 @@ public class ModEntities {
     public static final Supplier<EntityType<FireballEntity>> FIREBALL =
             ENTITY_TYPES.register("fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
                     .sized(.55f, .55f).noSave().build("fireball"));
+
+    public static final Supplier<EntityType<WaterBoltEntity>> WATER_BOLT =
+            ENTITY_TYPES.register("water_bolt", () -> EntityType.Builder.<WaterBoltEntity>of(WaterBoltEntity::new, MobCategory.MISC)
+                    .sized(.55f, .55f).noSave().build("water_bolt"));
+
+    public static final Supplier<EntityType<FireballEntity>> GIANT_FIREBALL =
+            ENTITY_TYPES.register("giant_fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
+                    .sized(1.55f, 1.55f).noSave().build("giant_fireball"));
+
+    public static final Supplier<EntityType<FirePlateEntity>> FIRE_PLATE =
+            ENTITY_TYPES.register("fire_armor_plate", () -> EntityType.Builder.<FirePlateEntity>of(FirePlateEntity::new, MobCategory.MISC)
+                    .sized(1.5f, 4f).build("fire_armor_plate"));
 
     public static final Supplier<EntityType<SpiritBallEntity>> SPIRIT_BALL =
             ENTITY_TYPES.register("spirit_ball", () -> EntityType.Builder.<SpiritBallEntity>of(SpiritBallEntity::new, MobCategory.MISC)
@@ -222,7 +234,7 @@ public class ModEntities {
                     .fireImmune()
                     .build("electromagnetic_tornado"));
 
-    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> Meteor =
+    public static final DeferredHolder<EntityType<?>, EntityType<MeteorEntity>> METEOR =
             ENTITY_TYPES.register("meteor", () -> EntityType.Builder.of(
                             (EntityType<MeteorEntity> type, net.minecraft.world.level.Level level) ->
                                     new MeteorEntity(type, level),
