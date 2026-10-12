@@ -1,6 +1,14 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
+import de.jakob.lotm.beyonders.abilities.abyss.contract.ContractAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineCorroderAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineBloodDropAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineCurselingAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil.FlameCageAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil.FlameSpellsAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Phantom.BloodlinePhantomAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Shapeshifter.BloodlineSkinshifterAbility;
 import de.jakob.lotm.beyonders.abilities.common.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.*;
 import de.jakob.lotm.beyonders.abilities.darkness.*;
@@ -117,9 +125,16 @@ public class AbilityHandler {
         // ABYSS PATHWAY
         abilities.add(new ToxicSmokeAbility("toxic_smoke_ability"));
         abilities.add(new PoisonousFlameAbility("poisonous_flame_ability"));
+        abilities.add(new DemonicAttributeAbility("demonic_attribute_ability"));
         abilities.add(new FlameSpellsAbility("flame_spells_ability"));
         abilities.add(new LanguageOfFoulnessAbility("language_of_foulness_ability"));
         abilities.add(new DevilTransformationAbility("devil_transformation_ability"));
+        abilities.add(new ContractAbility("contract_ability"));
+        abilities.add(new BloodlineSkinshifterAbility("bloodline_shapeshifter_ability"));
+        abilities.add(new BloodlineCorroderAbility("bloodline_corroder_ability"));
+        abilities.add(new BloodlineCurselingAbility("bloodline_curseling_ability"));
+        abilities.add(new BloodlineBloodDropAbility("bloodline_blood_drop_ability"));
+        abilities.add(new BloodlinePhantomAbility("bloodline_phantom_ability"));
         abilities.add(new DangerPremonitionAbility("danger_premonition_ability"));
         abilities.add(new FlameCageAbility("flame_cage_ability"));
         abilities.add(new ShadowShiftAbility("shadow_shift_ability"));

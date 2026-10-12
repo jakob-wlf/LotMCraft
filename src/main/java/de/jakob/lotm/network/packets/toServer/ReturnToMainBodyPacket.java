@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeedAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import io.netty.buffer.ByteBuf;
@@ -25,6 +26,7 @@ public record ReturnToMainBodyPacket() implements CustomPacketPayload {
     public static void handle(ReturnToMainBodyPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
+                MaliceSeedAbility.endSpeakAs(serverPlayer);
                 if(ControllingUtils.isControlling(serverPlayer)) {
                     ControllingUtils.cancel(serverPlayer, 0, true, false);
                 }

@@ -1,8 +1,10 @@
-package de.jakob.lotm.beyonders.abilities.abyss;
+package de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -42,7 +44,14 @@ public class FlameSpellsAbility extends SelectableAbility {
     protected float getSpiritualityCost() {
         return 30;
     }
-
+    @Override
+    public boolean meetsBloodlineRequirement(LivingEntity entity) {
+        return hasFlameDevilBloodline(entity);
+    }
+    private static boolean hasFlameDevilBloodline(LivingEntity entity) {
+        if (entity instanceof AvatarEntity) return false;
+        return DevilBloodlineAbility.hasBloodline(entity, DevilBloodlineAbility.Bloodline.FLAME_DEVIL);
+    }
     @Override
     protected String[] getAbilityNames() {
         return new String[]{

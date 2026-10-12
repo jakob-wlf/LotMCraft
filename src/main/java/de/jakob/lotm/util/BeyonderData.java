@@ -336,7 +336,7 @@ public class BeyonderData {
     }
 
     public static String getPathway(LivingEntity entity) {
-        return getPathway(entity, false);
+        return getPathway(entity, true);
     }
 
     public static String getPathway(LivingEntity entity, boolean ignoreControlling) {
@@ -353,7 +353,7 @@ public class BeyonderData {
     }
 
     public static int getSequence(LivingEntity entity) {
-        return getSequence(entity, false, false);
+        return getSequence(entity, false, true);
     }
 
     public static int getSequence(LivingEntity entity, boolean returnTrueMarionetteLvl) {

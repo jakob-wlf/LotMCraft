@@ -35,7 +35,10 @@ public abstract class PassiveAbility {
 
     public abstract Map<String, Integer> getRequirements();
 
+    public boolean meetsBloodlineRequirement(LivingEntity entity) {return true;}
+
     public boolean shouldApplyTo(LivingEntity entity) {
+        if (!meetsBloodlineRequirement(entity)) return false;
         if(
                 entity instanceof Player player &&
                 ControllingUtils.isControlling(player)

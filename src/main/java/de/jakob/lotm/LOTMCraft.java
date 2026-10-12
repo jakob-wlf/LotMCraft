@@ -3,6 +3,7 @@ package de.jakob.lotm;
 import com.zigythebird.playeranim.animation.PlayerAnimationController;
 import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Phantom.PhantomFormAttachment;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
@@ -95,6 +96,7 @@ import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
+import de.jakob.lotm.gui.custom.malice_seed.MaliceSeedScreen;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
 import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringScreen;
 import de.jakob.lotm.gui.custom.recipe.RecipeScreen;
@@ -225,8 +227,10 @@ public class LOTMCraft
         PotionRecipeItemHandler.registerRecipes(modEventBus);
         BeyonderCharacteristicItemHandler.registerCharacteristics(modEventBus);
         ModAttachments.register(modEventBus);
+        PhantomFormAttachment.ATTACHMENTS.register(modEventBus);
         ModDimensions.register(modEventBus);
         ModGameRules.register();
+
 
         PotionItemHandler.registerPotions(modEventBus);
 
@@ -406,6 +410,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
             event.register(ModMenuTypes.FLAMING_JUMP_MENU.get(), FlamingJumpScreen::new);
             event.register(ModMenuTypes.MASS_PUPPETEERING_MENU.get(), MassPuppeteeringScreen::new);
+            event.register(ModMenuTypes.MALICE_SEED_MENU.get(), MaliceSeedScreen::new);
         }
 
         @SubscribeEvent

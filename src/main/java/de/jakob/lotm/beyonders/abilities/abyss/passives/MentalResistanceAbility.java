@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.abyss.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -26,7 +27,7 @@ public class MentalResistanceAbility extends PassiveAbility{
     public void tick(Level level, LivingEntity entity) {
         // Reduce LOOSING_CONTROL duration once per 2 second
         int EntitySeq = BeyonderData.getSequence(entity);
-        if (EntitySeq < 2)return;
+        if (EntitySeq <= 2)return;
         if (entity.tickCount % 40 != 0)
             return;
         MobEffectInstance loosingControl = entity.getEffect(ModEffects.LOOSING_CONTROL);
@@ -44,8 +45,10 @@ public class MentalResistanceAbility extends PassiveAbility{
     public static void onEntityDamage(LivingDamageEvent.Pre event) {// 30% resistance
         if (!event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
         LivingEntity entity = event.getEntity();
+        PassiveAbility ability = PassiveAbilityHandler.getById("mental_resistance_ability");
+        if (!ability.shouldApplyTo(entity)) return;
         int EntitySeq = BeyonderData.getSequence(entity);
-        if (EntitySeq < 2)return;
+        if (EntitySeq <= 2)return;
         float damage = event.getNewDamage();
         event.setNewDamage(damage * 0.7F);
     }

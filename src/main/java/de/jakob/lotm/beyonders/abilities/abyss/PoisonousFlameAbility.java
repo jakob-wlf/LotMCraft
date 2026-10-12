@@ -39,7 +39,7 @@ public class PoisonousFlameAbility extends Ability {
     @Override
     public Map<String, Integer> getRequirements() {
         return new HashMap<>(Map.of(
-                "abyss", 8
+                "abyss", -1
         ));
     }
 

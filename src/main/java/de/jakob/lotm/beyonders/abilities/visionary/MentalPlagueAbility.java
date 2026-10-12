@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -92,6 +93,8 @@ public class MentalPlagueAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
+        BloodlineMindRotterAbility.onMindInvasion(entitySeq, entity, target);
+        if (BloodlineMindRotterAbility.isPlagueImmune(target, entitySeq)) return;
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
@@ -173,6 +176,10 @@ public class MentalPlagueAbility extends SelectableAbility {
         Random random = new Random();
 
         var component = entity.getData(ModAttachments.MENTAL_PLAGUE.get());
+        if (BloodlineMindRotterAbility.isPlagueImmune(entity, component.getSequence())) {
+            component.reset();
+            return;
+        }
         int stage = component.getStage() + 1;
         int seq = component.getSequence();
 
@@ -240,7 +247,7 @@ public class MentalPlagueAbility extends SelectableAbility {
             for(var e : nearBy){
                 if(e.getName().getString().equals(component.getOwnerName())) continue;
 
-                if(!VisionaryHandler.shouldFail(component.getSequence(), e))
+                if(!VisionaryHandler.shouldFail(component.getSequence(), e) && !BloodlineMindRotterAbility.isPlagueImmune(e, component.getSequence()))
                     e.getData(ModAttachments.MENTAL_PLAGUE.get()).place(component.getOwnerName(), component.getSequence());
 
                 component.setInfected(component.getInfected() + 1);

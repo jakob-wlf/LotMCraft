@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.demoness.CharmAbility;
@@ -100,6 +101,7 @@ public class BattleHypnosisAbility extends SelectableAbility {
         UUID charmCasterUUID = CharmAbility.getCharmed().get(target.getUUID());
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        BloodlineMindRotterAbility.onMindInvasion(entitySeq, entity, target);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }

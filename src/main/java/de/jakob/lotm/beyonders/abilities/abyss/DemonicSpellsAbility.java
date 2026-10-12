@@ -31,6 +31,8 @@ import org.joml.Vector3f;
 
 import java.util.*;
 
+import static de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility.getPoisonDamageMultiplier;
+
 public class DemonicSpellsAbility extends SelectableAbility {
     private final DustParticleOptions greenDust = new DustParticleOptions(new Vector3f(0.2f, 0.8f, 0.2f), 1.2f);
     private final DustParticleOptions purpleDust = new DustParticleOptions(new Vector3f(0.6f, 0.2f, 0.8f), 1.2f);
@@ -89,7 +91,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
                 return;
             }
 
-            AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage, swampCenter, true, false);
+            AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage*getPoisonDamageMultiplier(entity), swampCenter, true, false);
 
             AbilityUtil.getNearbyEntities(entity, level, swampCenter, swampRadius)
                     .stream()

@@ -1,6 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.passives.*;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.ShadowShifter.BloodlineShadowShiftAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
 import de.jakob.lotm.beyonders.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
@@ -84,10 +87,13 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new FireResistanceAbyssAbility("fire_resistance_abyss_ability"));
         passiveAbilities.add(new PoisonResistanceAbility("poison_resistance_ability"));
         passiveAbilities.add(new CurseResistanceAbility("curse_resistance_ability"));
-        passiveAbilities.add(new MentalResistanceAbility("mental_resistane_ability"));
-        passiveAbilities.add(new DemonofTheBodyAbility("demon_of_the_body_ability"));
+        passiveAbilities.add(new DevilBloodlineAbility("devil_bloodline_ability"));
+        passiveAbilities.add(new BloodlineShadowShiftAbility("bloodline_shadowshift_ability"));
+        passiveAbilities.add(new BloodlineMindRotterAbility("bloodline_mind_rotter_ability"));
+        passiveAbilities.add(new MentalResistanceAbility("mental_resistance_ability"));
+        passiveAbilities.add(new DemonOfTheBodyAbility("demon_of_the_body_ability"));
         passiveAbilities.add(new WordImmunityAbility("word_immunity_abyss_ability"));
-        passiveAbilities.add(new DomainofBodyAbility("domain_of_body_ability"));
+        passiveAbilities.add(new DomainOfBodyAbility("domain_of_body_ability"));
         passiveAbilities.add(new MaliceAuthorityAbility("malice_authority_ability"));
         passiveAbilities.add(new SinLordAbility("sin_lord_ability"));
 

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.abyss;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineCurselingAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
@@ -39,7 +40,12 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.language_of_foulness.slow", "ability.lotmcraft.language_of_foulness.corruption", "ability.lotmcraft.language_of_foulness.death"};
+        return new String[]{"ability.lotmcraft.language_of_foulness.slow",
+                "ability.lotmcraft.language_of_foulness.corruption",
+                "ability.lotmcraft.language_of_foulness.death"};
+    }
+    private static int foulness(LivingEntity entity) {
+        return (int) BloodlineCurselingAbility.getFoulnessMultiplier(entity);
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(114 / 255f, 59 / 255f, 148 / 255f), 1.5f);
@@ -75,28 +81,28 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 2, () -> {
             if(random.nextInt(8) == 0) {
-                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDps(6, .8, 8, 8) * multiplier(entity)));
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDps(6, .8, 8, 8) * multiplier(entity)*foulness(entity)));
             }
-            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 8*20, 3, false, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.WITHER, 8*20*foulness(entity), 3*foulness(entity), false, false, false));
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
-    private void castCorruption(ServerLevel serverLevel, LivingEntity entity, LivingEntity target) {
+    private void castCorruption(ServerLevel ignoredServerLevel, LivingEntity entity, LivingEntity target) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, BeyonderData.getSequence(target))) {
             return;
         }
 
-        target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 8* (int) Math.max(multiplier(entity)/2,1), 1, false, false, false));
-        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 8* (int) Math.max(multiplier(entity)/2,1), 1, false, false, false));
-        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8* (int) Math.max(multiplier(entity)/2,1), random.nextInt(3), false, false, false));
+        target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 20 * 8* (int) Math.max(multiplier(entity)/2,1)*foulness(entity), 1, false, false, false));
+        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 20 * 8* (int) Math.max(multiplier(entity)/2,1)*foulness(entity), 1, false, false, false));
+        target.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 8* (int) Math.max(multiplier(entity)/2,1)*foulness(entity), random.nextInt(3), false, false, false));
     }
 
     private void castSlow(ServerLevel serverLevel, LivingEntity entity, LivingEntity target) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        int duration = 8 * 20* (int) Math.max(multiplier(entity)/2,1);
+        int duration = 8 * 20* (int) Math.max(multiplier(entity)/2,1)*foulness(entity);
 
         if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, BeyonderData.getSequence(target))) {
             duration = (int) (10* multiplier(entity));

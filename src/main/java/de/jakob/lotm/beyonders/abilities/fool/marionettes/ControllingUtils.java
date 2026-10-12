@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.fool.marionettes;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.EntityControllingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeedAbility;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -25,6 +26,8 @@ import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
@@ -33,16 +36,18 @@ import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class ControllingUtils {
+    private static final Map<UUID, ControlBodyDouble> spiritBodies = new ConcurrentHashMap<>();
 
     public static boolean startControlling(ServerPlayer player, LivingEntity target, boolean keepOwnAbilities, boolean spawnOriginalBody) {
-        if(target == null || !target.isAlive() || target instanceof Player) return false;
+        if(target == null || !target.isAlive()) return false;
 
         if(target.level() != player.level()) {
             return false;
@@ -91,8 +96,14 @@ public class ControllingUtils {
         player.teleportTo(level, target.getX(), target.getY(), target.getZ(), target.getYRot(), target.getXRot());
 
         copyAttributesAndHealthFrom(target, player);
-
-        target.discard();
+        if (target instanceof ServerPlayer controlledPlayer) {
+            EntityControllingComponent targetComponent = controlledPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+            targetComponent.setControlled(true);
+            targetComponent.setControllingPlayerUUID(player.getUUID());
+            controlledPlayer.setGameMode(GameType.SPECTATOR);
+            controlledPlayer.setCamera(player);
+        }
+        else {target.discard();}
         return true;
     }
 
@@ -163,14 +174,23 @@ public class ControllingUtils {
         if(returnPreviousEntity) {
             LivingEntity controlled = component.getControlledEntity();
             if(controlled != null) {
-                controlled.unsetRemoved();
                 controlled.setPos(player.position());
-                level.addFreshEntity(controlled);
-                controlled.setHealth(Math.clamp(player.getHealth(), 1, controlled.getHealth()));
-                if(killPreviousEntity) {
-                    controlled.hurt(controlled.damageSources().generic(), Float.MAX_VALUE);
+                if (controlled instanceof ServerPlayer controlledPlayer) {
+                    EntityControllingComponent targetComponent = controlledPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+                    targetComponent.setControlled(false);
+                    targetComponent.setControllingPlayerUUID(null);
+                    controlledPlayer.setGameMode(GameType.SURVIVAL);
+                    controlledPlayer.setCamera(controlledPlayer);
+                    controlled.setHealth(Math.clamp(player.getHealth(), 1, controlled.getMaxHealth()));
+                    if (killPreviousEntity) {controlled.hurt(controlled.damageSources().generic(), Float.MAX_VALUE);}
                 }
-
+                else {
+                    controlled.unsetRemoved();
+                    level.addFreshEntity(controlled);
+                    controlled.setHealth(Math.clamp(player.getHealth(), 1, controlled.getMaxHealth()));
+                    if (killPreviousEntity) {controlled.hurt(controlled.damageSources().generic(), Float.MAX_VALUE);}
+                }
+                MaliceSeedAbility.cleanupTakeover(player);
                 AbilityWheelHelper.setAbilitiesForEntity(player, controlled, player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
                 AbilityBarHelper.setAbilities(controlled, player.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities());
             }
@@ -256,11 +276,13 @@ public class ControllingUtils {
 
     @SubscribeEvent
     public static void onDeath(LivingDeathEvent event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
-        if(isControlling(player)) {
-            event.setCanceled(true);
-            cancel(player, 0, true, true);
-        }
+        if (!(event.getEntity() instanceof ServerPlayer controlledPlayer)) {return;}
+        EntityControllingComponent component = controlledPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        if (!component.isControlled()) {return;}
+        ServerPlayer owner = getPlayerByUUID(component.getControllingPlayerUUID());
+        component.setControlled(false);
+        component.setControllingPlayerUUID(null);
+        if (owner != null) {cancel(owner, 0, false, false);}
     }
 
     @SubscribeEvent
@@ -268,7 +290,7 @@ public class ControllingUtils {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if(!isControlling(player)) return;
-        System.out.println("Pathway: " + BeyonderData.getPathway(player) + " - Sequence" + BeyonderData.getSequence(player) + " - Controlled Sequence: " + getControlledSequence(player));
+        //System.out.println("Pathway: " + BeyonderData.getPathway(player) + " - Sequence" + BeyonderData.getSequence(player) + " - Controlled Sequence: " + getControlledSequence(player));
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
@@ -287,5 +309,139 @@ public class ControllingUtils {
             case 1 -> 2000;
             case 0 -> 5000;
         };
+    }
+    @SubscribeEvent
+    public static void onControlledPlayerTick(EntityTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer controlledPlayer)) {return;}
+        EntityControllingComponent data = controlledPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        if (!data.isControlled()) {return;}
+        ServerPlayer owner = getPlayerByUUID(data.getControllingPlayerUUID());
+        if (owner != null && owner.isAlive()) {
+            controlledPlayer.setGameMode(GameType.SPECTATOR);
+            controlledPlayer.setCamera(owner);
+        }
+        else {
+            controlledPlayer.setGameMode(GameType.SURVIVAL);
+            controlledPlayer.setCamera(controlledPlayer);
+        }
+    }
+    private static ServerPlayer getPlayerByUUID(UUID uuid) {
+        if (uuid == null) {
+            return null;
+        }
+        var server = ServerLifecycleHooks.getCurrentServer();
+        return server != null ? server.getPlayerList().getPlayer(uuid) : null;
+    }
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {return;}
+        EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        if (component.isControlling()) {
+            cancel(player, 0, true, false);
+            return;
+        }
+        if (component.isControlled()) {
+            ServerPlayer owner = getPlayerByUUID(component.getControllingPlayerUUID());
+            if (owner != null) {cancel(owner, 0, false, false);}
+            component.setControlled(false);
+            component.setControllingPlayerUUID(null);
+        }
+    }
+    public static void addTemporaryAbility(ServerPlayer player, String abilityId) {
+        EntityControllingComponent component =
+                player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+
+        if (!component.isControlling()) {
+            return;
+        }
+
+        ArrayList<String> abilities = new ArrayList<>(
+                player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities()
+        );
+
+        if (!abilities.contains(abilityId)) {
+            abilities.add(abilityId);
+            AbilityWheelHelper.setAbilities(player, abilities);
+        }
+    }
+
+    public static void removeTemporaryAbility(ServerPlayer player, String abilityId) {
+        EntityControllingComponent component =
+                player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+
+        if (!component.isControlling()) {
+            return;
+        }
+
+        ArrayList<String> abilities = new ArrayList<>(
+                player.getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities()
+        );
+
+        if (abilities.remove(abilityId)) {
+            AbilityWheelHelper.setAbilities(player, abilities);
+        }
+    }
+    public static void setAllowedAbilitiesWhileControlling(ServerPlayer player, Collection<String> abilities) {
+        EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        if (!component.isControlling()) {return;}
+        component.setAllowedAbilitiesWhileControlling(abilities);
+    }
+    public static boolean canUseAbilityWhileControlling(Player player, String abilityId) {
+        EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        if (!component.isControlling()) {return true;}
+        if (component.isCanUseOwnAbilities()) {return true;}
+        return component.getAllowedAbilitiesWhileControlling().contains(abilityId);
+    }
+    public static boolean isAbilityAllowedWhileControlling(Player player, String abilityId) {
+        EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+        return component.getAllowedAbilitiesWhileControlling().contains(abilityId);
+    }
+    public static boolean startSpiritProjection(ServerPlayer caster, LivingEntity viewTarget) {
+        if (spiritBodies.containsKey(caster.getUUID())) return false;
+        if (!(caster.level() instanceof ServerLevel level)) return false;
+
+        ControlBodyDouble spiritBody = ControlBodyDouble.create(level, caster, false);
+        spiritBody.setPos(caster.getX(), caster.getY(), caster.getZ());
+        spiritBody.setYRot(caster.getYRot());
+        spiritBody.setXRot(caster.getXRot());
+        level.addFreshEntity(spiritBody);
+
+        spiritBodies.put(caster.getUUID(), spiritBody);
+        caster.setGameMode(GameType.SPECTATOR);
+        caster.setCamera(viewTarget);
+        return true;
+    }
+    public static void endSpiritProjection(ServerPlayer caster) {
+        ControlBodyDouble spiritBody = spiritBodies.remove(caster.getUUID());
+
+        if (spiritBody != null && spiritBody.isAlive()) {
+            ServerLevel level = (ServerLevel) spiritBody.level();
+            caster.setGameMode(GameType.SURVIVAL);
+            caster.teleportTo(level, spiritBody.getX(), spiritBody.getY(), spiritBody.getZ(),
+                    Set.of(), spiritBody.getYRot(), spiritBody.getXRot());
+            caster.setDeltaMovement(0, 0, 0);
+            spiritBody.discard();
+        } else {
+            caster.setGameMode(GameType.SURVIVAL);
+        }
+        caster.setCamera(caster);
+    }
+
+    public static boolean isProjecting(ServerPlayer caster) {
+        return spiritBodies.containsKey(caster.getUUID());
+    }
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onSpiritBodyDamaged(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity() instanceof ControlBodyDouble body)) return;
+
+        UUID casterUUID = null;
+        for (Map.Entry<UUID, ControlBodyDouble> entry : spiritBodies.entrySet()) {
+            if (entry.getValue() == body) { casterUUID = entry.getKey(); break; }
+        }
+        if (casterUUID == null) return;
+
+        event.setCanceled(true);
+        ServerPlayer caster = getPlayerByUUID(casterUUID);
+        if (caster != null) endSpiritProjection(caster);
     }
 }

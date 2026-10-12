@@ -8,9 +8,9 @@ import net.minecraft.world.level.Level;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DemonofTheBodyAbility extends PassiveAbility {
+public class DemonOfTheBodyAbility extends PassiveAbility {
 
-    public DemonofTheBodyAbility(String id) {super(id);}
+    public DemonOfTheBodyAbility(String id) {super(id);}
     @Override
     public Map<String, Integer> getRequirements() {return new HashMap<>(Map.of("abyss", 4));}
 

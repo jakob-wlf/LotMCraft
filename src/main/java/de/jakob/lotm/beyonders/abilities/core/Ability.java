@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Phantom.BloodlinePhantomAbility;
 import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
@@ -249,6 +250,8 @@ public abstract class Ability {
         return true;
     }
 
+    public boolean meetsBloodlineRequirement(LivingEntity entity) {return true;}
+
     public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
         if(entity.getData(ModAttachments.MARIONETTE_COMPONENT).isMarionette() && entity.getData(ModAttachments.MARIONETTE_COMPONENT).hasWorm()) {
             if(entity.level() instanceof ServerLevel serverLevel) {
@@ -260,6 +263,8 @@ public abstract class Ability {
         }
 
         if(!BeyonderData.isBeyonder(entity)) return false;
+
+        if (!meetsBloodlineRequirement(entity)) {return false;}
 
         String pathway = BeyonderData.getPathway(entity, true);
         int sequence = BeyonderData.getSequence(entity, false, true);
@@ -275,6 +280,9 @@ public abstract class Ability {
             boolean hasTargetAbility = getRequirements().containsKey(pathwayData.pathway()) && getRequirements().get(pathwayData.pathway()) >= pathwayData.sequence();
 
             if (!canUseOwnAbilities) {
+                if (ControllingUtils.isAbilityAllowedWhileControlling(player, getId())) {
+                    return true;
+                }
                 return hasTargetAbility;
             }
 
@@ -315,7 +323,12 @@ public abstract class Ability {
 
     public boolean canUse(LivingEntity entity, boolean hasToHaveAbility, boolean doesConsumeSpirituality, boolean isCopied) {
         if(!hasAbility(entity, false) && hasToHaveAbility && !isCopied) return false;
-
+        if (!(this instanceof BloodlinePhantomAbility) && BloodlinePhantomAbility.blocksAbilities(entity)) {
+            if (entity instanceof ServerPlayer player) {
+                AbilityUtil.sendActionBar(player, Component.literal("You can't use abilities in Phantom form.").withColor(0xBFA7FF));
+            }
+            return false;
+        }
         if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
             if (entity instanceof ServerPlayer player) {
                 AbilityUtil.sendActionBar(player,
@@ -414,6 +427,7 @@ public abstract class Ability {
         }
         return description.withStyle(ChatFormatting.DARK_GRAY);
     }
+
 
     public String getId() {
         return id;

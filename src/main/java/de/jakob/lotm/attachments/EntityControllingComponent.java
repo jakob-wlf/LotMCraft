@@ -8,11 +8,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.level.GameType;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.jetbrains.annotations.UnknownNullability;
 
@@ -36,6 +40,12 @@ public class EntityControllingComponent implements INBTSerializable<CompoundTag>
     private int selectedAbilityInWheel = 0;
 
     private ArrayList<String> abilityBarAbilities = new ArrayList<>();
+
+    private UUID controllingPlayerUUID;
+    private boolean controlled;
+    private ArrayList<String> allowedAbilitiesWhileControlling = new ArrayList<>();
+
+
 
 
     public boolean isControlling() {
@@ -160,6 +170,7 @@ public class EntityControllingComponent implements INBTSerializable<CompoundTag>
 
         controlledEntityPathway = LOTMCraft.NON_BEYONDER_PATHWAY;
         controlledEntitySequence = LOTMCraft.NON_BEYONDER_SEQ;
+        allowedAbilitiesWhileControlling.clear();
         controlledEntity = null;
         bodyDouble = null;
         canUseOwnAbilities = true;
@@ -236,4 +247,11 @@ public class EntityControllingComponent implements INBTSerializable<CompoundTag>
             savedAttributes.put(attributeId, new AttributeSnapshot(baseValue, modifiers));
         }
     }
+    public boolean isControlled() {return controlled;}
+    public void setControlled(boolean controlled) {this.controlled = controlled;}
+    public UUID getControllingPlayerUUID() {return controllingPlayerUUID;}
+    public void setControllingPlayerUUID(UUID uuid) {this.controllingPlayerUUID = uuid;}
+    public ArrayList<String> getAllowedAbilitiesWhileControlling() {return allowedAbilitiesWhileControlling;}
+    public void setAllowedAbilitiesWhileControlling(Collection<String> abilities) {this.allowedAbilitiesWhileControlling = new ArrayList<>(abilities);}
+    public void clearAllowedAbilitiesWhileControlling() {this.allowedAbilitiesWhileControlling.clear();}
 }

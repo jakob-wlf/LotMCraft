@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -51,9 +52,11 @@ public class PsycheStormAbility extends Ability {
         float multiplier = multiplier(entity);
         int seq = AbilityUtil.getSeqWithArt(entity, this);
 
+
         AbilityUtil.damageNearbyEntities(serverLevel, entity, 10 * Math.max(multiplier / 2, 1), DamageLookup.lookupDamage(6, 1.2) * multiplier, entity.getEyePosition(), true, false);
 
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier / 2, 1)).forEach(e -> {
+            BloodlineMindRotterAbility.onMindInvasion(seq, entity, e);
             boolean shouldFail = VisionaryHandler.shouldFailAndTrigger(seq, entity, e, this, false);
 
             if(!shouldFail) {

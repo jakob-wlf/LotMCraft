@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -135,6 +136,8 @@ public class DreamTraversalAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = BeyonderData.getSequence(entity);
+        // Mind Rotter: whoever connects to a Mind Rotter's mind gets poisoned
+        BloodlineMindRotterAbility.onMindInvasion(entitySeq, entity, target);
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
@@ -178,6 +181,7 @@ public class DreamTraversalAbility extends SelectableAbility {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
             return;
         }
+
 
         if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)){
             return;

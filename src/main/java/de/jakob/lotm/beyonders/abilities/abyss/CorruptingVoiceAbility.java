@@ -84,7 +84,7 @@ CorruptingVoiceAbility extends ToggleAbility {
 
         for (int i = 0; i < 5; i++) {
             double angle = RANDOM.nextDouble() * Math.PI * 2;
-            double radius = 0.3 + RANDOM.nextDouble() * 1.0;
+            double radius = 0.3 + RANDOM.nextDouble();
             double x = pos.x + Math.cos(angle) * radius;
             double z = pos.z + Math.sin(angle) * radius;
             double y = pos.y + (RANDOM.nextDouble() - 0.3) * 0.6;
@@ -102,9 +102,18 @@ CorruptingVoiceAbility extends ToggleAbility {
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.corrupting_voice.deactivated").withColor(0x9932cc));
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     public static void onChatMessage(ServerChatEvent event) {
         ServerPlayer player = event.getPlayer();
+
+        LivingEntity speaker;
+        LivingEntity speakAsHost = MaliceSeedAbility.getSpeakAsHost(player.getUUID());
+
+        if (speakAsHost != null && speakAsHost.isAlive()) {
+            speaker = speakAsHost;
+        } else {
+            speaker = player;
+        }
 
         if (!(player.level() instanceof ServerLevel serverLevel)) {
             return;
@@ -136,32 +145,18 @@ CorruptingVoiceAbility extends ToggleAbility {
 
         // Damage = (base hearts + chars * hearts_per_char) * 2 (convert hearts to Minecraft damage units)
         float damage = (BASE_DAMAGE_HEARTS + charCount * DAMAGE_PER_CHAR_HEARTS) * 2f;
-
-        AbilityUtil.damageNearbyEntities(serverLevel, player, CORRUPTING_VOICE_RANGE, damage,
-                player.position(), true, false);
-
-        AbilityUtil.getNearbyEntities(player, serverLevel, player.position(), CORRUPTING_VOICE_RANGE, false)
-                .stream()
-                .filter(target -> AbilityUtil.mayDamage(player, target))
-                .forEach(target -> {
-                    applyRandomNegativeEffects(target);
-
-                    // Particle burst on targets
-                    ParticleUtil.spawnParticles(serverLevel, DARK_DUST,
-                            target.getEyePosition(), 15, 0.4, 0.4, 0.4, 0.08);
-                    ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SMOKE,
-                            target.getEyePosition(), 10, 0.3, 0.3, 0.3, 0.05);
-                });
-
+        Vec3 origin = speaker.position();
+        AbilityUtil.damageNearbyEntities(serverLevel, speaker, CORRUPTING_VOICE_RANGE, damage, origin, true, false);
+        AbilityUtil.getNearbyEntities(speaker, serverLevel, origin, CORRUPTING_VOICE_RANGE, false).stream().filter(target -> AbilityUtil.mayDamage(speaker, target)).filter(target -> !MaliceSeedAbility.isSpeakAsHost(player.getUUID(), target.getUUID())).forEach(target -> {applyRandomNegativeEffects(target);
+                    ParticleUtil.spawnParticles(serverLevel, DARK_DUST, target.getEyePosition(), 15, 0.4, 0.4, 0.4, 0.08);
+                    ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SMOKE, target.getEyePosition(), 10, 0.3, 0.3, 0.3, 0.05);});
         int heartsDealt = (int) (damage / 2f);
-        AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.corrupting_voice.triggered")
-                .append(Component.literal(charCount + " chars \u2014 " + heartsDealt + " \u2665"))
-                .withColor(0x6600cc));
+        AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.corrupting_voice.triggered").append(Component.literal(charCount + " chars — " + heartsDealt + " ♥")).withColor(0x6600cc));
     }
 
     private static void applyRandomNegativeEffects(LivingEntity entity) {
         for (int i = 0; i < 3; i++) {
-            int effectChoice = RANDOM.nextInt(8);
+            int effectChoice = RANDOM.nextInt(9);
             int amplifier = RANDOM.nextInt(5);
             int duration = 20 * (10 + RANDOM.nextInt(21));
 

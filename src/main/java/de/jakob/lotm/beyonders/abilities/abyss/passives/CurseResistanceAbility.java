@@ -21,11 +21,6 @@ public class CurseResistanceAbility extends PassiveAbility {
     public Map<String, Integer> getRequirements() {return new HashMap<>(Map.of("abyss", 6));}
     @Override
     public void tick(Level level, LivingEntity entity) {
-        // Reduce LOOSING_CONTROL duration once per 2 second
-        MobEffectInstance Wither = entity.getEffect(MobEffects.WITHER);
-        if (Wither != null) {
-            entity.removeEffect(MobEffects.WITHER);
-        }
     }
     @SubscribeEvent
     public static void onEntityDamage(LivingDamageEvent.Pre event) {// 30% resistance
