@@ -56,6 +56,10 @@ public class ModDimensions {
     public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<DeepSpaceDimensionChunkGenerator>> EXILE_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("exile_chunk_generator", () -> DeepSpaceDimensionChunkGenerator.CODEC);
 
+    public static final Supplier<MapCodec<AbyssChunkGenerator>> ABYSS_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("abyss", () -> AbyssChunkGenerator.CODEC);
+
+
     // -------------------------------------------------------------------------
     // BiomeSource Registry
     // -------------------------------------------------------------------------
@@ -353,6 +357,22 @@ public class ModDimensions {
     public static final ResourceKey<Biome> MIRROR_WORLD_BIOME_KEY =
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "mirror_world_biome"));
+
+    // =========================================================================
+    // ABYSS dimension
+    // =========================================================================
+
+    public static final ResourceKey<LevelStem> ABYSS_LEVEL_KEY =
+            ResourceKey.create(Registries.LEVEL_STEM, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss"));
+
+    public static final ResourceKey<Level> ABYSS_DIMENSION_KEY =
+            ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss"));
+
+    public static final ResourceKey<DimensionType> ABYSS_TYPE_KEY =
+            ResourceKey.create(Registries.DIMENSION_TYPE, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss"));
+
+    public static final ResourceKey<Biome> ABYSS_BIOME_KEY =
+            ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss"));
 
     // -------------------------------------------------------------------------
     // Registration
