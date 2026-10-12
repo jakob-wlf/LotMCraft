@@ -598,17 +598,10 @@ public class PacketHandler {
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
         registrar.playToServer(
-                BecomeBeyonderPacket.TYPE,
-                BecomeBeyonderPacket.STREAM_CODEC,
-                BecomeBeyonderPacket::handle
-        );
-
-        registrar.playToServer(
                 WhipSlashPayload.TYPE,
                 WhipSlashPayload.STREAM_CODEC,
                 WhipSlashPayload::handle
         );
-
 
         registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
