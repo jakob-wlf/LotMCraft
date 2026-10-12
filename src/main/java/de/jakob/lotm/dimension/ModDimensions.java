@@ -58,8 +58,6 @@ public class ModDimensions {
     public static final DeferredHolder<MapCodec<? extends ChunkGenerator>, MapCodec<DeepSpaceDimensionChunkGenerator>> EXILE_CHUNK_GENERATOR =
             CHUNK_GENERATORS.register("exile_chunk_generator", () -> DeepSpaceDimensionChunkGenerator.CODEC);
 
-    public static final Supplier<MapCodec<AbyssChunkGenerator>> ABYSS_CHUNK_GENERATOR =
-            CHUNK_GENERATORS.register("abyss", () -> AbyssChunkGenerator.CODEC);
 
 
     // -------------------------------------------------------------------------
