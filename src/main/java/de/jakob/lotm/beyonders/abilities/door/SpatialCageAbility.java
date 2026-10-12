@@ -32,7 +32,7 @@ public class SpatialCageAbility extends SelectableAbility {
     private static final HashMap<UUID, HashSet<SpatialCage>> activeCages = new HashMap<>();
 
     public SpatialCageAbility(String id) {
-        super(id, 35);
+        super(id, 20);
     }
 
     @Override

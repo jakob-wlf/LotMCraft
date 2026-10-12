@@ -62,6 +62,9 @@ public class ModDimensions {
             CHUNK_GENERATORS.register("abyss", () -> AbyssChunkGenerator.CODEC);
 
 
+    public static final Supplier<MapCodec<UnderworldChunkGenerator>> UNDERWORLD_CHUNK_GENERATOR =
+            CHUNK_GENERATORS.register("underworld", () -> UnderworldChunkGenerator.CODEC);
+
     // -------------------------------------------------------------------------
     // BiomeSource Registry
     // -------------------------------------------------------------------------
@@ -71,6 +74,9 @@ public class ModDimensions {
 
     public static final Supplier<MapCodec<SpiritWorldBiomeSource>> SPIRIT_WORLD_BIOME_SOURCE =
             BIOME_SOURCES.register("spirit_world_biome_source", () -> SpiritWorldBiomeSource.CODEC);
+
+    public static final Supplier<MapCodec<UnderworldBiomeSource>> UNDERWORLD_BIOME_SOURCE =
+            BIOME_SOURCES.register("underworld_biome_source", () -> UnderworldBiomeSource.CODEC);
 
     // =======================
     // DREAM MAZE dimension
@@ -93,7 +99,7 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "dream_maze_biome"));
 
-    
+
     // =========================================================================
     // SPACE dimension
     // =========================================================================
@@ -341,7 +347,7 @@ public class ModDimensions {
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "historical_void_biome"));
 
     // =========================================================================
-        // MIRROR WORLD dimension
+    // MIRROR WORLD dimension
     // =========================================================================
 
     public static final ResourceKey<LevelStem> MIRROR_WORLD_LEVEL_KEY =
@@ -375,6 +381,20 @@ public class ModDimensions {
 
     public static final ResourceKey<Biome> ABYSS_BIOME_KEY =
             ResourceKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "abyss_biome"));
+    public static final ResourceLocation ID =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld");
+
+    public static final ResourceKey<Level> UNDERWORLD_DIMENSION = ResourceKey.create(Registries.DIMENSION, ID);
+    public static final ResourceKey<LevelStem> UNDERWORLD_LEVEL_STEM = ResourceKey.create(Registries.LEVEL_STEM, ID);
+    public static final ResourceKey<DimensionType> UNDERWORLD_TYPE = ResourceKey.create(Registries.DIMENSION_TYPE, ID);
+
+    public static final ResourceKey<Biome> BIOME_STYX_CHASM        = biome("underworld_styx_chasm");
+    public static final ResourceKey<Biome> BIOME_PALE_WHITE_NATION = biome("underworld_pale_white_nation");
+
+    private static ResourceKey<Biome> biome(String name) {
+        return ResourceKey.create(Registries.BIOME,
+                ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, name));
+    }
 
     // -------------------------------------------------------------------------
     // Registration
