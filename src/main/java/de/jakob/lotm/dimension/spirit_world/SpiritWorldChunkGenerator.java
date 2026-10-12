@@ -1,4 +1,4 @@
-package de.jakob.lotm.dimension;
+package de.jakob.lotm.dimension.spirit_world;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -859,6 +859,12 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
 
     @Override
     public void buildSurface(WorldGenRegion r, StructureManager sm, RandomState rs, ChunkAccess c) {}
+
+    @Override
+    public void applyBiomeDecoration(WorldGenLevel level, ChunkAccess chunk, StructureManager structureManager) {
+        super.applyBiomeDecoration(level, chunk, structureManager);
+        SpiritWorldStructures.generate(level, chunk);
+    }
 
     @Override
     public void spawnOriginalMobs(WorldGenRegion r) {}

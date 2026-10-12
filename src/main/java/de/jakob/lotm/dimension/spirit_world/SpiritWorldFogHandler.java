@@ -1,6 +1,7 @@
-package de.jakob.lotm.dimension;
+package de.jakob.lotm.dimension.spirit_world;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.ModDimensions;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.FogRenderer;

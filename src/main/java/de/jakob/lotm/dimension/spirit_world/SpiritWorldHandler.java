@@ -1,4 +1,4 @@
-package de.jakob.lotm.dimension;
+package de.jakob.lotm.dimension.spirit_world;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

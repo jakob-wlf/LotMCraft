@@ -2,7 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldHandler;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;

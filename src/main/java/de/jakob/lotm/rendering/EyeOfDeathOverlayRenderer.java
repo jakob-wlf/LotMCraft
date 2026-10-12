@@ -41,8 +41,9 @@ public class EyeOfDeathOverlayRenderer {
         guiGraphics.pose().pushPose();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.3f);
         guiGraphics.blit(backgroundTexture, 0, 0, screenWidth, screenHeight, 0, 0, 44, 256, 44, 256);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1f);
         RenderSystem.disableBlend();
         guiGraphics.pose().popPose();
 

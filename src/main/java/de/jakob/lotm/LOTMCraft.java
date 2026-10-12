@@ -13,6 +13,7 @@ import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.dimension.spirit_world.spirit_patch.SpiritPatchSetup;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.big_moon.BigMoonRenderer;
@@ -230,6 +231,8 @@ public class LOTMCraft
         ModAttachments.register(modEventBus);
         ModDimensions.register(modEventBus);
         ModGameRules.register();
+
+        SpiritPatchSetup.init(modEventBus);
 
         PotionItemHandler.registerPotions(modEventBus);
 

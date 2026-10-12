@@ -1,6 +1,7 @@
-package de.jakob.lotm.dimension;
+package de.jakob.lotm.dimension.spirit_world;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

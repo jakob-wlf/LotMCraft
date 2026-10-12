@@ -1,4 +1,4 @@
-package de.jakob.lotm.dimension;
+package de.jakob.lotm.dimension.spirit_world;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;

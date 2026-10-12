@@ -2,6 +2,9 @@ package de.jakob.lotm.datagen;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.dimension.*;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldBiomeSource;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldChunkGenerator;
+import de.jakob.lotm.dimension.spirit_world.spirit_patch.SpiritPatchWorldgen;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,7 +35,10 @@ public class DimensionProvider {
                         packOutput,
                         lookupProvider,
                         new RegistrySetBuilder()
+                                .add(Registries.CONFIGURED_FEATURE, SpiritPatchWorldgen::configuredFeatures)
+                                .add(Registries.PLACED_FEATURE,     SpiritPatchWorldgen::placedFeatures)
                                 .add(Registries.BIOME, bootstrap -> {
+                                    SpiritPatchWorldgen.biome(bootstrap);
 
                                     bootstrap.register(ModDimensions.SPACE_BIOME_KEY,
                                             new Biome.BiomeBuilder()
@@ -459,6 +465,8 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
                                 })
+                                .add(Registries.STRUCTURE,     SpiritPatchWorldgen::structures)
+                                .add(Registries.STRUCTURE_SET, SpiritPatchWorldgen::structureSets)
 
                                 .add(Registries.DIMENSION_TYPE, bootstrap -> {
                                     bootstrap.register(ModDimensions.DREAM_MAZE_TYPE_KEY, new DimensionType(

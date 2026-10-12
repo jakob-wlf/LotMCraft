@@ -3,6 +3,7 @@ package de.jakob.lotm.rendering;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ClientPuppetTimerCache;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
@@ -29,13 +30,13 @@ public class StatusPanelRenderer {
     private static final ResourceLocation GRIEFING_ICON =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/griefing_icon.png");
     private static final int GRIEFING_RING_COLOR = 0xFFC0392B;
-    
+
     public static final HashSet<String> activeToggleAbilities = new HashSet<>();
 
     private static float smoothSpirit = -1f;
     private static float smoothSanity = -1f;
 
-    
+
     private static final int ORIGIN_X = 6;
     private static final int ORIGIN_Y = 6;
     private static final int MEDALLION_SIZE = 28;
@@ -44,6 +45,9 @@ public class StatusPanelRenderer {
     private static final int DIAL_SIZE = 28;
     private static final int SOCKET_SIZE = 22;
     private static final int SOCKET_STEP = 24;
+    private static final int PUPPET_TUBE_W = 92;
+    private static final int PUPPET_TUBE_H = 10;
+    private static final int PUPPET_ROW_SPACE = PUPPET_TUBE_H + 3;
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -53,6 +57,7 @@ public class StatusPanelRenderer {
             return;
         }
         ClientSacrificeCache.tickDown();
+        ClientPuppetTimerCache.tickDown();
     }
 
     @SubscribeEvent
@@ -70,6 +75,7 @@ public class StatusPanelRenderer {
         if (!ClientBeyonderCache.isBeyonder(id)) {
             smoothSpirit = -1f;
             smoothSanity = -1f;
+            ClientPuppetTimerCache.clear();
             return;
         }
 
@@ -79,7 +85,7 @@ public class StatusPanelRenderer {
         float time = HudTheme.time(mc, dt);
         float smooth = HudTheme.smoothFactor(dt.getRealtimeDeltaTicks(), 0.8f);
 
-        
+
         float max = BeyonderData.getMaxSpirituality(pathway, sequence, mc.player);
         float spiritTarget = max > 0 ? HudTheme.clamp01(ClientBeyonderCache.getSpirituality(id) / max) : 0f;
         smoothSpirit = smoothSpirit < 0 ? spiritTarget : smoothSpirit + (spiritTarget - smoothSpirit) * smooth;
@@ -92,10 +98,10 @@ public class StatusPanelRenderer {
         int tubeX = ORIGIN_X + MEDALLION_SIZE - 6;
         int tubeY = ORIGIN_Y + (MEDALLION_SIZE - TUBE_H) / 2;
 
-        
+
         HudWidgets.drawTube(g, tubeX, tubeY, TUBE_W, TUBE_H, smoothSpirit, color, time, smoothSpirit < 0.2f);
 
-        
+
         renderMedallion(g, mc, ORIGIN_X, ORIGIN_Y, sequence, time);
 
 
@@ -117,15 +123,41 @@ public class StatusPanelRenderer {
             int off = (SOCKET_SIZE - iconSize) / 2;
             HudWidgets.drawIcon(g, GRIEFING_ICON, gx + off, gy + off, iconSize);
         }
-        
+
         renderFuse(g, tubeX + 4, tubeY + TUBE_H + 2, TUBE_W - 8, time);
 
-        
-        renderToggles(g, ORIGIN_X, ORIGIN_Y + MEDALLION_SIZE + 3, color, time);
+
+        int rowY = ORIGIN_Y + MEDALLION_SIZE + 3;
+        if (ClientPuppetTimerCache.isActive()) {
+            renderPuppetTimer(g, mc, ORIGIN_X + 2, rowY, time, dt.getGameTimeDeltaPartialTick(false));
+            rowY += PUPPET_ROW_SPACE;
+        }
+        renderToggles(g, ORIGIN_X, rowY, color, time);
+    }
+
+    /** Marionette binding timer: a purple tube that fills as the puppeteering completes, with the time left beside it. */
+    private static void renderPuppetTimer(GuiGraphics g, Minecraft mc, int x, int y, float time, float partial) {
+        float[] data = ClientPuppetTimerCache.getLongest();
+        if (data == null) return;
+
+        float total = data[0];
+        float remaining = Math.max(0f, data[1] - partial);
+        float fill = HudTheme.clamp01(1f - remaining / total);
+        boolean finishing = remaining / total < 0.1f;
+
+        HudWidgets.drawTube(g, x, y, PUPPET_TUBE_W, PUPPET_TUBE_H, fill, HudTheme.MARIONETTE_ACCENT, time, finishing);
+
+        int seconds = (int) Math.ceil(remaining / 20f);
+        String label = String.format("%d:%02d", seconds / 60, seconds % 60);
+        int count = ClientPuppetTimerCache.count();
+        if (count > 1) label += " x" + count;
+
+        int textY = y + (PUPPET_TUBE_H - mc.font.lineHeight) / 2 + 1;
+        g.drawString(mc.font, label, x + PUPPET_TUBE_W + 4, textY, HudTheme.PARCHMENT, true);
     }
 
     private static void renderMedallion(GuiGraphics g, Minecraft mc, int x, int y, int sequence, float time) {
-        
+
         HudWidgets.blitRotated(g, HudTheme.MEDALLION_COG, x, y, MEDALLION_SIZE, MEDALLION_SIZE,
                 time * 0.8f, 0xFFFFFFFF);
         HudWidgets.blitFull(g, HudTheme.MEDALLION, x, y, MEDALLION_SIZE, MEDALLION_SIZE);
@@ -145,18 +177,18 @@ public class StatusPanelRenderer {
         float frac = HudTheme.clamp01((float) remaining / total);
         int burn = Math.max(1, Math.round(width * frac));
 
-        
+
         g.fill(x, y, x + burn, y + 2, 0xFF8A6A3A);
         g.fill(x, y, x + burn, y + 1, 0xFFB8893B);
 
-        
+
         int sx = x + burn;
         float flick = 0.6f + 0.4f * (float) Math.abs(Math.sin(time * 1.7f) * Math.sin(time * 0.6f + 2f));
         g.fill(sx - 3, y - 1, sx + 2, y + 3, HudTheme.withAlpha(HudTheme.EMBER, 0.35f * flick));
         g.fill(sx - 1, y - 1, sx + 1, y + 3, HudTheme.withAlpha(HudTheme.EMBER_BRIGHT, flick));
         g.fill(sx - 1, y, sx, y + 2, 0xFFFFF2C0);
 
-        
+
         for (int i = 0; i < 3; i++) {
             float p = HudTheme.frac(time * 0.05f + i * 0.33f);
             int px = sx + (int) (Math.sin(i * 12.9f + time * 0.2f) * 3f);
@@ -168,7 +200,7 @@ public class StatusPanelRenderer {
     private static void renderToggles(GuiGraphics g, int startX, int y, int ringColor, float time) {
         if (activeToggleAbilities.isEmpty()) return;
 
-        
+
         List<String> ids = new ArrayList<>(activeToggleAbilities);
         ids.sort(String::compareTo);
 
@@ -184,6 +216,7 @@ public class StatusPanelRenderer {
 
     public static void clearCache() {
         activeToggleAbilities.clear();
+        ClientPuppetTimerCache.clear();
         smoothSpirit = -1f;
         smoothSanity = -1f;
     }

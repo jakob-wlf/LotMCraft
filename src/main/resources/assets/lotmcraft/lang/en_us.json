@@ -2903,5 +2903,7 @@
   "lotm.marionette.cycle_hint": "Press %s to cycle marionettes",
   "ability.lotmcraft.historical_void_summoning.out_of_spirituality": "No Spirituality left",
   "ability.lotmcraft.historical_void_summoning.summon_failed": "Summon failed",
-  "ability.lotmcraft.historical_void_summoning.cannot_summon_sequence_zero": "You cannot summon this"
+  "ability.lotmcraft.historical_void_summoning.cannot_summon_sequence_zero": "You cannot summon this",
+  "block.lotmcraft.spirit_portal": "Spirit Portal",
+  "biome.lotmcraft.spirit_world_patch": "Spirit World Patch"
 }

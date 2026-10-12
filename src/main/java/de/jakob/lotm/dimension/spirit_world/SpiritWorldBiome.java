@@ -1,4 +1,4 @@
-package de.jakob.lotm.dimension;
+package de.jakob.lotm.dimension.spirit_world;
 
 import java.util.ArrayList;
 import java.util.List;

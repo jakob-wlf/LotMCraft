@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "minecraft:random_spread",
+    "salt": 1747302,
+    "separation": 1,
+    "spacing": 4
+  },
+  "structures": [
+    {
+      "structure": "lotmcraft:spirit_shrine",
+      "weight": 1
+    }
+  ]
+}
