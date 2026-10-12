@@ -2,7 +2,6 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -52,7 +51,7 @@ public class GiantificationAbility extends ToggleAbility {
     private static final float SHAKE_RADIUS = 48f;
     private static final float SHAKE_INTENSITY = 1.5f;
     private static final int SHAKE_TICKS = 10;
-    private static final ResourceLocation SCALE_ID = id("gtiant_scale");
+    private static final ResourceLocation SCALE_ID = id("tgiant_scale");
     private static final ResourceLocation STEP_ID = id("tgiant_step");
     private static final ResourceLocation DAMAGE_ID = id("tgiant_damage");
     private static final ResourceLocation SPEED_ID = id("tgiant_speed");
@@ -147,7 +146,6 @@ public class GiantificationAbility extends ToggleAbility {
     }
 
     private static void crush(LivingEntity attacker, LivingEntity target, DamageSource source) {
-        if (TwilightAging.spared(attacker, target)) return;
         if (target.isRemoved() || target.deathTime > 0) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
         target.invulnerableTime = 0;

@@ -52,7 +52,7 @@ public class FightingArenaRenderer extends EntityRenderer<FightingArenaEntity> {
         float age = arena.getAge(partial);
         int light = TwilightDomeGeo.lift(packedLight);
         VertexConsumer c = buffers.getBuffer(RenderType.entityCutoutNoCull(TEX));
-        float fit = arena.radius() / FightingArenaEntity.NATIVE_RADIUS;
+        float fit = arena.radius() / R_PODIUM;
 
         ps.pushPose();
         ps.scale(fit, fit * arena.rise(partial), fit);

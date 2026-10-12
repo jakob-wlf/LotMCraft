@@ -116,11 +116,6 @@ public class DoorTransfigurationAbility extends ToggleAbility {
         return 14;
     }
 
-    public static boolean ignoresDamage(LivingEntity entity) {
-        if (entity == null || entity.level().isClientSide() || !doorSizeModifier.containsKey(entity.getUUID())) return false;
-        return LOTMCraft.abilityHandler.getById("door_transfiguration_ability") instanceof DoorTransfigurationAbility ability && ability.isActiveForEntity(entity);
-    }
-
     @SubscribeEvent
     public static void onIncomingDamage(LivingDamageEvent.Pre event) {
         LivingEntity entity = event.getEntity();

@@ -43,20 +43,20 @@ public class HolinessAuthorityAbility extends SelectableAbility {
     private static final int RADIANCE_TICKS = 20 * 30;
     private static final int RADIANCE_INTERVAL = 10;
     private static final double RADIANCE_RADIUS = 30.0D;
-    private static final int RADIANCE_DAMAGE = 44;
+    private static final int RADIANCE_DAMAGE = 5;
     private static final int RADIANCE_RINGS = 3;
     private static final int RADIANCE_RING_POINTS = 36;
     private static final int BEAM_RANGE = 50;
     private static final int BEAM_DURATION = 20 * 4;
     private static final int BEAM_AGE_INTERVAL = 5;
-    private static final float BEAM_YEARS = 2f;
+    private static final float BEAM_YEARS = 150f;
     private static final int BEAM_DAMAGE = 3;
     private static final float BEAM_R = ((TwilightAging.TWILIGHT_TEXT >> 16) & 0xFF) / 255f;
     private static final float BEAM_G = ((TwilightAging.TWILIGHT_TEXT >> 8) & 0xFF) / 255f;
     private static final float BEAM_B = (TwilightAging.TWILIGHT_TEXT & 0xFF) / 255f;
     private static final int EVIL_MULTIPLIER = 2;
-    private static final int PURIFY_DAMAGE = 41;
-    private static final int[] SPIRITUALITY = {6000, 4000, 2500};
+    private static final int PURIFY_DAMAGE = 20;
+    private static final int[] SPIRITUALITY = {15000, 10000, 4000};
 
     private static final Map<UUID, Integer> radiant = new HashMap<>();
     private static final Set<UUID> holyCages = new HashSet<>();
@@ -78,7 +78,7 @@ public class HolinessAuthorityAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 2500;
+        return 5000;
     }
 
     @Override
@@ -143,7 +143,7 @@ public class HolinessAuthorityAbility extends SelectableAbility {
                     EffectParams.ofParams(BEAM_R, BEAM_G, BEAM_B));
             if (target != null && AbilityUtil.mayDamage(player, target)) {
                 target.hurt(source, ArsenalOfDawnAbility.isEvil(target) ? damage * EVIL_MULTIPLIER : damage);
-                if (player.tickCount % BEAM_AGE_INTERVAL == 0) TwilightAging.age(level, target, player, BEAM_YEARS);
+                if (player.tickCount % BEAM_AGE_INTERVAL == 0) TwilightAging.age(level, target, player, BEAM_YEARS * Math.max(1, 2 - BeyonderData.getSequence(player)));
             }
         }, () -> NeoForge.EVENT_BUS.post(new AbilityUsedEvent(level, player.position(), player, null, PURIFICATION_FLAGS, BEAM_RANGE, 20)), level);
     }

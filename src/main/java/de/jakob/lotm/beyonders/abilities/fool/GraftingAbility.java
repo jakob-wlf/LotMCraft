@@ -344,15 +344,6 @@ public class GraftingAbility extends SelectableAbility {
         graftingDamageEntities.remove(entity.getUUID());
     }
 
-    public static boolean redirectsDamage(LivingEntity entity) {
-        if (entity == null) return false;
-        UUID id = entity.getUUID();
-        for (Pair<UUID, UUID> pair : graftingDamagePairs) {
-            if (id.equals(pair.getA())) return true;
-        }
-        return false;
-    }
-
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onLivingDamage(LivingIncomingDamageEvent event) {
         LivingEntity hurt = event.getEntity();

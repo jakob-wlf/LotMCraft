@@ -82,7 +82,7 @@ public class HealingAbility extends SelectableAbility {
         float restoredHealth = getAmount(entitySeq);
 
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + restoredHealth));
-        if (BeyonderData.getSequence(entity) <= 0) TwilightAging.setYears(entity, TwilightAging.years(entity) - 50f);
+        if (BeyonderData.getSequence(entity) <= 0) TwilightAging.setYears(entity, TwilightAging.years(entity) - 500f);
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), entity.getEyePosition().subtract(0, .3, 0), 35, .9);
     }

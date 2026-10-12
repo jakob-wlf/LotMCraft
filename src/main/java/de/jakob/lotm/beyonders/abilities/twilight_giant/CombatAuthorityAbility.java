@@ -62,7 +62,7 @@ public class CombatAuthorityAbility extends SelectableAbility {
     private static final double ACTIVE_DISTANCE = 10.0D;
     private static final double OUTSIDE_MARGIN = 2.0D;
     private static final double ALLY_RANGE = 20.0D;
-    private static final float SEAL_YEARS = 1f;
+    private static final float SEAL_YEARS = 100f;
     private static final int EFFECT_INTERVAL = 20;
     private static final double CAGE_RADIUS = 8.0D;
     private static final double CAGE_SPAWN_OFFSET = 4.0D;

@@ -6,7 +6,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
-import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -138,7 +137,7 @@ public class LastStandAbility extends SelectableAbility {
             }
         }
         for (LivingEntity living : victims) {
-            if (endures(living) || TwilightAging.spared(caster, living)) continue;
+            if (endures(living)) continue;
             UUID id = living.getUUID();
             LawAbility.SOLACE_KILLED.add(id);
             killed.add(id);

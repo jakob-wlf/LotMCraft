@@ -556,7 +556,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
                         info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
                         info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
-                        info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE
+                        info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE ||
+                        info.type() == HistoricalVoidSummoningAbility.SummonType.EFFECT
                 ) {
                     resetHistoricalBorrows(serverPlayer, info.summonTime());
                 }

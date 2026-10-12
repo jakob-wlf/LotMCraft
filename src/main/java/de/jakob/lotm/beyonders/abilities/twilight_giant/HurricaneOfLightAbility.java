@@ -33,7 +33,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
     private static final int RADIUS = 20;
     private static final int EVIL_MULTIPLIER = 2;
     private static final int TWILIGHT_RADIUS = 45;
-    private static final float TWILIGHT_YEARS = 2f;
+    private static final float TWILIGHT_YEARS = 120f;
     private static final int LOCK_TICKS = 20 * 5;
     private static final ResourceLocation ROOT_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "hurricane_of_light_root");
     private final Map<UUID, Integer> visuals = new HashMap<>();
@@ -99,7 +99,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
         float damage = baseDamage;
         DamageSource source = ModDamageTypes.source(serverLevel, ModDamageTypes.PURIFICATION, entity);
         for (LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), radius)) {
-            if (!AbilityUtil.mayDamage(entity, target) || TwilightAging.spared(entity, target)) continue;
+            if (!AbilityUtil.mayDamage(entity, target)) continue;
             float amount = ArsenalOfDawnAbility.isEvil(target) ? damage * EVIL_MULTIPLIER : damage;
             if (!twilight) {
                 target.hurt(source, amount);
@@ -110,7 +110,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
                 continue;
             }
             target.hurt(source, amount);
-            TwilightAging.age(serverLevel, target, entity, TWILIGHT_YEARS, true);
+            TwilightAging.age(serverLevel, target, entity, TWILIGHT_YEARS * Math.max(1, 2 - BeyonderData.getSequence(entity)), true);
         }
     }
 

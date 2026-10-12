@@ -28,10 +28,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
@@ -52,10 +50,10 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static final double SWORD_REACH_BONUS = 12.0D;
     private static final double SWORD_REACH_BONUS_S1 = 8.0D;
     private static final double SWORD_REACH_BONUS_S2 = 4.0D;
-    private static final double SWORD_DAMAGE = 14.0D;
+    private static final double SWORD_DAMAGE = 12.0D;
     private static final double SWORD_DAMAGE_S1 = 10.0D;
     private static final double SWORD_DAMAGE_S2 = 8.0D;
-    private static final double SWORD_SPEED = -0.7D;
+    private static final double SWORD_SPEED = -3.0D;
     private static final int BLINK_RANGE = (int) Math.pow(20, 5);
     private static final double BLINK_OFFSET = 1.5D;
     private static final int BLINK_COOLDOWN = 20 * 8;
@@ -78,7 +76,7 @@ public class TwilightSwordAbility extends ToggleAbility {
         canBeUsedByNPC = false;
         tickRate = 20;
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3000f, 1500f));
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 6000f, 3000f));
         baseDamage = STRIKE_DAMAGE;
     }
 
@@ -89,7 +87,7 @@ public class TwilightSwordAbility extends ToggleAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 800;
+        return 1800;
     }
 
     @Override
@@ -134,6 +132,18 @@ public class TwilightSwordAbility extends ToggleAbility {
         tick(level, entity);
     }
 
+    private static void drain(LivingEntity target) {
+        if (target.level().isClientSide()) return;
+        float amount = switch (BeyonderData.getSequence(target)) {
+            case 0 -> 5000f;
+            case 1 -> 3000f;
+            case 2 -> 1500f;
+            default -> 0f;
+        };
+        if (amount <= 0f) return;
+        BeyonderData.reduceSpirituality(target, amount);
+    }
+
     private static double swordDamage(LivingEntity entity) {
         return switch (BeyonderData.getSequence(entity)) {
             case 1 -> SWORD_DAMAGE_S1;
@@ -162,7 +172,7 @@ public class TwilightSwordAbility extends ToggleAbility {
         return sword;
     }
 
-    private static boolean holds(LivingEntity entity) {
+    public static boolean holds(LivingEntity entity) {
         return ArsenalOfDawnAbility.is(entity.getMainHandItem(), ArsenalOfDawnAbility.TWILIGHT_SWORD);
     }
 
@@ -174,18 +184,10 @@ public class TwilightSwordAbility extends ToggleAbility {
             return;
         }
         target.invulnerableTime = 0;
-        if (event.getEntity() instanceof ServerPlayer player) TwilightAuthorityAbility.onSwordLeftClick(player, target);
-    }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
-    public static void onIncomingDamage(LivingIncomingDamageEvent event) {
-        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
-        if (!(event.getEntity() instanceof LivingEntity target) || !AbilityUtil.mayDamage(attacker, target)) return;
-        if (TwilightAging.spared(attacker, target)) {
-            if (holds(attacker) || "twilight_giant".equals(BeyonderData.getPathway(attacker))) event.setCanceled(true);
-            return;
+        if (event.getEntity() instanceof ServerPlayer player) {
+            TwilightAuthorityAbility.onSwordLeftClick(player, target);
+            drain(player);
         }
-        if (event.isCanceled() && holds(attacker)) event.setCanceled(false);
     }
 
     @SubscribeEvent
@@ -258,18 +260,10 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static void pierce(ServerLevel level, LivingEntity attacker, LivingEntity target, float damage) {
         if (!AbilityUtil.mayDamage(attacker, target)) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
-        float before = target.getHealth();
+        drain(attacker);
         target.invulnerableTime = 0;
-        DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, attacker);
+        DamageSource source = ModDamageTypes.source(level, ModDamageTypes.PHYSICAL_BASED, attacker);
         target.hurt(source, damage);
-        if (!target.isAlive() || target.getHealth() < before || TwilightAging.spared(attacker, target)) return;
-        float health = before - damage;
-        if (health > 0) {
-            target.setHealth(health);
-        } else {
-            target.setHealth(0f);
-            target.die(source);
-        }
     }
 
     private static boolean pay(ServerPlayer player, float cost) {

@@ -11,9 +11,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.EventPriority;
@@ -94,14 +92,12 @@ public class DamageResistanceHandler {
                 case 0, 1, 2 -> mult = 0f;
             }
 
-            if (!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE / 2) && !isTwilightNormalAttack(source)) {
+            if (!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE / 2)) {
                 damage *= mult;
             }
 
-            if (!isTwilightNormalAttack(source)) {
                 damage *= AuthorityResistanceManager.getResistance(source,
                         BeyonderData.getPathway(entity), BeyonderData.getSequence(entity));
-            }
         }
 
         event.setAmount(damage);
@@ -126,14 +122,6 @@ public class DamageResistanceHandler {
         if (damage <= 0f) {
             event.setCanceled(true);
         }
-    }
-
-
-    private static boolean isTwilightNormalAttack(DamageSource source) {
-        if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return false;
-        if (!"twilight_giant".equals(BeyonderData.getPathway(attacker))) return false;
-        if (!(BeyonderData.getSequence(attacker) <=2)) return false;
-        return source.is(DamageTypes.PLAYER_ATTACK) || source.is(ModDamageTypes.IMPACT);
     }
 
     //Hand Damage
@@ -189,7 +177,7 @@ public class DamageResistanceHandler {
 
         float damage = list.get(seq);
 
-        target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, entity), damage);
+        target.hurt(ModDamageTypes.source(level, "twilight_giant".equals(path) ? ModDamageTypes.PHYSICAL_BASED : ModDamageTypes.IMPACT, entity), damage);
     }
 
     @SubscribeEvent

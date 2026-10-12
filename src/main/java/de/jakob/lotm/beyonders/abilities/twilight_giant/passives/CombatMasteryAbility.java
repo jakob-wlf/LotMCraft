@@ -30,6 +30,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -102,6 +103,19 @@ public class CombatMasteryAbility extends PassiveAbility {
         setStacks(entity, 0, 0);
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onTwilightWeapon(LivingIncomingDamageEvent event) {
+        DamageSource source = event.getSource();
+        if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return;
+        if (!source.is(DamageTypes.PLAYER_ATTACK) && !source.is(DamageTypes.MOB_ATTACK)) return;
+        if (!(attacker.level() instanceof ServerLevel level)) return;
+        if (!"twilight_giant".equals(BeyonderData.getPathway(attacker))) return;
+        if (!WeaponMasteryAbility.isWeapon(attacker.getMainHandItem())) return;
+        float amount = event.getAmount();
+        event.setCanceled(true);
+        event.getEntity().hurt(ModDamageTypes.source(level, ModDamageTypes.PHYSICAL_BASED, attacker), amount);
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onAttack(AttackEntityEvent event) {
         Player player = event.getEntity();
@@ -119,13 +133,9 @@ public class CombatMasteryAbility extends PassiveAbility {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingDamageEvent.Post event) {
-        DamageSource source = event.getSource();
-        if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
         if (attacker.level().isClientSide() || event.getNewDamage() <= 0) return;
-        if (!source.is(DamageTypes.PLAYER_ATTACK) && !source.is(DamageTypes.MOB_ATTACK) && !source.is(ModDamageTypes.IMPACT)) return;
-        if (!applies(attacker)) return;
-        boolean awaited = awaitingHit.remove(attacker.getUUID());
-        if (!awaited) return;
+        if (!applies(attacker) || !awaitingHit.remove(attacker.getUUID())) return;
         setStacks(attacker, getStacks(attacker) + 1, STACK_DURATION);
     }
 

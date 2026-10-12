@@ -216,7 +216,6 @@ public class BasicTwilightAuthorityAbility extends SelectableAbility {
             stacks.set(i, ItemStack.EMPTY);
         }
     }
-
     private static void spawn(ServerPlayer player, ItemStack stack) {
         ItemEntity entity = new ItemEntity(player.serverLevel(), player.getX(), player.getY() + 0.5, player.getZ(), stack);
         entity.setPickUpDelay(40);

@@ -13,7 +13,6 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -28,8 +27,8 @@ import java.util.*;
 public class DeceitAbility extends SelectableAbility {
 
     public static final HashSet<UUID> cannotBeTargeted = new HashSet<>();
-    public static final HashSet<UUID> cannotBeHarmed = new HashSet<>();
-    public static final HashMap<UUID, Integer> seqMap = new HashMap<>(50);
+    private static final HashSet<UUID> cannotBeHarmed = new HashSet<>();
+    private static final HashMap<UUID, Integer> seqMap = new HashMap<>(50);
 
     public DeceitAbility(String id) {
         super(id, 15);
@@ -130,16 +129,18 @@ public class DeceitAbility extends SelectableAbility {
         event.setCanceled(true);
     }
 
-    public static boolean blocksHarm(LivingEntity target, Entity source) {
-        if (target == null || !(source instanceof LivingEntity living) || !cannotBeHarmed.contains(target.getUUID())) return false;
-        Integer sequence = seqMap.get(target.getUUID());
-        return sequence != null && BeyonderData.getSequence(living) >= sequence;
-    }
-
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity entity = event.getEntity();
-        if (!blocksHarm(entity, event.getSource().getEntity()) || !(entity.level() instanceof ServerLevel serverLevel)) return;
+
+        var source = event.getSource().getEntity();
+
+        if(!cannotBeHarmed.contains(entity.getUUID()) || !(entity.level() instanceof ServerLevel serverLevel)) return;
+
+        if(!(source instanceof LivingEntity livingSource) ||
+                BeyonderData.getSequence(livingSource) < seqMap.get(entity.getUUID())){
+           return;
+        }
 
         ParticleUtil.spawnParticles(serverLevel, ParticleTypes.END_ROD, entity.position().add(0, entity.getEyeHeight() / 2, 0), 60, 0.5, 0.5, 0.5, 0.1);
         event.setCanceled(true);

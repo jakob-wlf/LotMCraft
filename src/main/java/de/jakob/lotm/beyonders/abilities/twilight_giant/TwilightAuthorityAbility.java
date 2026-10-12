@@ -67,10 +67,10 @@ public class TwilightAuthorityAbility extends SelectableAbility {
     private static final int GRACE_TICKS = 240;
     private static final int SWORD_TIME = 100;
     private static final float SLOW_STEP = 0.2f;
-    private static final float HIT_YEARS = 10f;
-    private static final float AURA_YEARS = 3f;
-    private static final float DOMAIN_YEARS = 5f;
-    private static final float LAND_YEARS = 5f;
+    private static final float HIT_YEARS = 1000f;
+    private static final float AURA_YEARS = 100f;
+    private static final float DOMAIN_YEARS = 200f;
+    private static final float LAND_YEARS = 500f;
     private static final float AURA_UPKEEP = 40f;
     private static final float DOMAIN_UPKEEP = 15f;
     private static final float LAND_UPKEEP = 10f;
