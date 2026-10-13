@@ -431,6 +431,8 @@
   "lotmcraft.bloodline_curseling_ability.description": "Your foulness grow stronger letting your curse beings from a single drop of blood",
   "lotmcraft.bloodline_blood_drop_ability": "Blood Drop",
   "lotmcraft.bloodline_blood_drop_ability.description": "Allows you to harvest blood on hit",
+  "lotmcraft.bloodline_desire_symbiosis_ability": "Desire Symbiosis",
+  "lotmcraft.bloodline_desire_symbiosis_ability.description": "Link yourself with the Targets desire, never dying by their hand until the desire does as well",
   "ability.lotmcraft.bloodline_shadowshift_ability": "Shadow Shifter",
   "ability.lotmcraft.bloodline_shadowshift_ability.description": "On Low health teleport 100 blocks away and leave your shadow as a decoy",
   "lotmcraft.contract_ability": "Abyss Contract",

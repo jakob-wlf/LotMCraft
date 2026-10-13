@@ -1,11 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +26,7 @@ import static com.machinezoo.noexception.Exceptions.log;
  * - The bloodline is picked from the world seed and the player's UUID.
  * - At sequence 0 the player has every bloodline.
  */
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DevilBloodlineAbility extends PassiveAbility {
 
     public enum Bloodline { SHADOW_SHIFTER, PHANTOM, SHAPESHIFTER, CURSELING, CORRODER, FLAME_DEVIL }
@@ -56,11 +62,17 @@ public class DevilBloodlineAbility extends PassiveAbility {
     public static boolean hasBloodline(LivingEntity entity, Bloodline required) {
         String pathway = BeyonderData.getPathway(entity);
         int seq = BeyonderData.getSequence(entity);
-        if (!"abyss".equals(pathway) && (seq <= 6)) return false;
+        if (!"abyss".equals(pathway)) return false;
         if (hasAllBloodlines(entity)) return true;
         var component = entity.getData(ModAttachments.BLOODLINE_COMPONENT.get());
         if (!component.hasBloodline()) return false;
         return required.name().equals(component.getBloodline());
+    }
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player && player.level() instanceof ServerLevel level) {
+            getBloodlineFor(player, level);
+        }
     }
 
     @Override

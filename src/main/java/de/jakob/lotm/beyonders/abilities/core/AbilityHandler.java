@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.abyss.contract.ContractAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineBloodDropAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineCurselingAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineDesireSymbiosisAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil.FlameCageAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil.FlameSpellsAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Phantom.BloodlinePhantomAbility;
@@ -138,6 +139,7 @@ public class AbilityHandler {
         abilities.add(new BloodlineCorroderAbility("bloodline_corroder_ability"));
         abilities.add(new BloodlineCurselingAbility("bloodline_curseling_ability"));
         abilities.add(new BloodlineBloodDropAbility("bloodline_blood_drop_ability"));
+        abilities.add(new BloodlineDesireSymbiosisAbility("bloodline_desire_symbiosis_ability"));
         abilities.add(new BloodlinePhantomAbility("bloodline_phantom_ability"));
         abilities.add(new DangerPremonitionAbility("danger_premonition_ability"));
         abilities.add(new FlameCageAbility("flame_cage_ability"));

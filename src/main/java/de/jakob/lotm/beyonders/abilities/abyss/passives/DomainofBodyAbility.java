@@ -4,6 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,15 +53,13 @@ public class DomainOfBodyAbility extends PassiveAbility {
         LivingEntity entity = event.getEntity();
         Level level = entity.level();
         if (level.isClientSide()) return;
+        if (event.getNewDamage() <= 0) return;
+        if (!event.getSource().is(ModDamageTypes.PURIFICATION)) return;
 
         PassiveAbility ability = PassiveAbilityHandler.getById("domain_of_body_abyss_ability");
         if (ability == null || !ability.shouldApplyTo(entity)) return;
 
-        Location loc = new Location(entity.position(), level);
-        int seq = BeyonderData.getSequence(entity);
-        if (InteractionHandler.isInteractionPossible(loc, "purification", seq)) {
-            regenBlockedUntil.put(entity.getUUID(), level.getGameTime() + REGEN_BLOCK_TICKS);
-        }
+        regenBlockedUntil.put(entity.getUUID(), level.getGameTime() + REGEN_BLOCK_TICKS);
     }
 
     @SubscribeEvent
