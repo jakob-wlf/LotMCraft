@@ -30,7 +30,6 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.server.level.ServerPlayer;
@@ -123,7 +122,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     public static final String REDUCTION_TAG = "lotm_dawn_reduction";
     private static final String OWNER_TAG = "lotm_dawn_owner";
     private static final String CREATOR_TAG = "lotm_dawn_creator";
-    private static final int SWEEP_INTERVAL = 4*20;
+    private static final int SWEEP_INTERVAL = 2*20;
     private static final Set<UUID> restoringArmor = new HashSet<>();
     private static final float EVIL_DAMAGE_MULTIPLIER = 2.0f;
     private static final String[] PURIFICATION_FLAGS = {"purification"};
@@ -135,7 +134,6 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         canBeUsedByNPC = false;
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(200f, 150f, 120f, 100f, 80f, 60f, 50f));
-        baseDamage = BOW_DAMAGE;
     }
 
     @Override
@@ -463,14 +461,14 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
             player.getInventory().setChanged();
             player.containerMenu.broadcastChanges();
             player.containerMenu.sendAllDataToRemote();
-            clearAway(player.getEnderChestInventory(), null);
+            clearAway(player.getEnderChestInventory());
         }
         for (ServerLevel level : server.getAllLevels()) {
             List<ItemEntity> drops = new ArrayList<>();
             for (Entity entity : level.getAllEntities()) {
-                if (entity instanceof ItemEntity item && storedAway(item.getItem(), null)) drops.add(item);
-                else if (entity instanceof ItemFrame frame && storedAway(frame.getItem(), null)) frame.setItem(ItemStack.EMPTY);
-                else if (entity instanceof Container container) clearAway(container, null);
+                if (entity instanceof ItemEntity item && is(item.getItem(), WEAPONS)) drops.add(item);
+                else if (entity instanceof ItemFrame frame && is(frame.getItem(), WEAPONS)) frame.setItem(ItemStack.EMPTY);
+                else if (entity instanceof Container container) clearAway(container);
             }
             for (ItemEntity drop : drops) drop.discard();
             int range = server.getPlayerList().getViewDistance();
@@ -485,7 +483,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
                         LevelChunk chunk = level.getChunkSource().getChunkNow(x, z);
                         if (chunk == null) continue;
                         for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-                            if (blockEntity instanceof Container container) clearAway(container, null);
+                            if (blockEntity instanceof Container container) clearAway(container);
                         }
                     }
                 }
@@ -500,9 +498,9 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         }
     }
 
-    private static void clearAway(Container container, UUID holder) {
+    private static void clearAway(Container container) {
         for (int i = 0; i < container.getContainerSize(); i++) {
-            if (!storedAway(container.getItem(i), holder)) continue;
+            if (!is(container.getItem(i), WEAPONS)) continue;
             container.setItem(i, ItemStack.EMPTY);
             container.setChanged();
         }
@@ -551,6 +549,10 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         if (!(event.getSource().getEntity() instanceof LivingEntity attacker) || event.getSource().getDirectEntity() != attacker) return;
         if (!(attacker.level() instanceof ServerLevel level) || !is(attacker.getMainHandItem(), WEAPONS)) return;
+        if (BeyonderData.getSequence(attacker) == 6 && !isEvil(event.getEntity())) {
+            event.setCanceled(true);
+            return;
+        }
         purify(event, attacker, level);
     }
 
@@ -604,6 +606,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
         if (hit == null) return;
         Entity entity = hit.getEntity();
         if (!(entity instanceof LivingEntity target)) return;
+        if (BeyonderData.getSequence(player) == 6 && !isEvil(target)) return;
         int damage = Math.round(BOW_DAMAGE * power);
         if (isEvil(target)) damage *= BOW_EVIL_MULTIPLIER;
         target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, player), damage);

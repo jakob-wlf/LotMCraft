@@ -279,6 +279,20 @@ public class GraftingAbility extends SelectableAbility {
         });
     }
 
+    public static void endOwned(LivingEntity owner) {
+        if (owner == null) return;
+        UUID id = owner.getUUID();
+        graftingDamagePairs.removeIf(pair -> id.equals(pair.getA()));
+        graftingDamageCasters.remove(id);
+        graftingAbilitiesPairs.removeIf(pair -> id.equals(pair.getA()) || id.equals(graftingAbilitiesCasters.get(pair.getA())));
+        graftingAbilitiesCasters.entrySet().removeIf(entry -> id.equals(entry.getKey()) || id.equals(entry.getValue()));
+        graftingTargetsPairs.removeIf(pair -> id.equals(pair.getA()));
+        graftingDamageEntities.remove(id);
+        graftingAbilitiesEntities.remove(id);
+        graftingTargetsEntities.remove(id);
+        graftingLocations.remove(id);
+    }
+
     private void graftLocations(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;

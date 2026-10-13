@@ -5,10 +5,12 @@ import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
+import de.jakob.lotm.beyonders.abilities.fool.GraftingAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidSummoningAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.TwilightDomeEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -53,7 +55,6 @@ public final class TwilightAging {
     private static final String YEARS = "lotmcraft_twilight_years";
     private static final String PASSIVE_YEARS = "lotmcraft_twilight_passive_years";
     private static final String PASSIVE_TICKS = "lotmcraft_twilight_passive_ticks";
-    private static final int PASSIVE_YEAR_TICKS = 20 * 20;
     private static final String AGING_MODIFIER = "twilight_aging";
     private static final String RECOVER_AT = "lotmcraft_twilight_recover_at";
     private static final String CLEAR_AT = "lotmcraft_twilight_clear_at";
@@ -63,7 +64,7 @@ public final class TwilightAging {
     private static final int RECOVER_TICKS = 20 * 60;
     private static final int CLEAR_TICKS = 20 * 300;
     private static final int DEBUFF_TICKS = 40;
-    private static final int DEBUFF_LINGER = 20 * 60 * 60;
+    private static final int DEBUFF_LINGER = 100;
     private static final float DEBUFF_START = 0.6f;
     private static final float YEARS_PER_AMPLIFIER = 4f;
     private static final int MAX_AMPLIFIER = 4;
@@ -88,6 +89,7 @@ public final class TwilightAging {
     }
 
     public static void age(ServerLevel level, LivingEntity target, LivingEntity source, float years, boolean fade) {
+        breakGraft(source, target);
         if (unaging(target)) return;
         if (!target.isAlive() || fading.contains(target.getUUID())) return;
         if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
@@ -149,6 +151,7 @@ public final class TwilightAging {
     }
 
     public static void fade(ServerLevel level, LivingEntity target, LivingEntity source) {
+        breakGraft(source, target);
         UUID id = target.getUUID();
         if (!fading.add(id)) return;
         Vec3 spot = target.position();
@@ -223,6 +226,12 @@ public final class TwilightAging {
 
     private static boolean unaging(LivingEntity target) {
         return "twilight_giant".equals(BeyonderData.getPathway(target)) && BeyonderData.getSequence(target) <= 0;
+    }
+
+    private static void breakGraft(LivingEntity source, LivingEntity target) {
+        if (source == null || target == null || !"twilight_giant".equals(BeyonderData.getPathway(source))) return;
+        if (BeyonderData.getSequence(target) < BeyonderData.getSequence(source)) return;
+        GraftingAbility.endOwned(target);
     }
 
     private static boolean immune(LivingEntity source, LivingEntity target) {
@@ -386,14 +395,16 @@ public final class TwilightAging {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer player) || player.level().isClientSide() || !player.isAlive() || player.isSpectator() || unaging(player)) return;
+        if (!player.serverLevel().getGameRules().getBoolean(ModGameRules.PASSIVE_TWILIGHT_AGING)) return;
         if (player.tickCount % 20 != 0) return;
         CompoundTag tag = player.getPersistentData();
         long played = tag.getLong(PASSIVE_TICKS) + 20;
         float passive = tag.getFloat(PASSIVE_YEARS);
         boolean gained = false;
         boolean earned = false;
-        if (played >= PASSIVE_YEAR_TICKS) {
-            played -= PASSIVE_YEAR_TICKS;
+        long needed = player.serverLevel().getGameRules().getInt(ModGameRules.PASSIVE_TWILIGHT_AGING_MINUTES) * 60L * 20L;
+        if (played >= needed) {
+            played -= needed;
             passive += 1f;
             tag.putFloat(PASSIVE_YEARS, passive);
             gained = true;

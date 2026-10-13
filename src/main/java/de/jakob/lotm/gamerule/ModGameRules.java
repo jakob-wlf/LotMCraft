@@ -40,6 +40,8 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> AFTER_DEATH_REGRESSION_INVULNERABILITY;
     public static GameRules.Key<GameRules.BooleanValue> APPLY_ANCHORING;
     public static GameRules.Key<GameRules.BooleanValue> APPLY_RITUALS;
+    public static GameRules.Key<GameRules.BooleanValue> PASSIVE_TWILIGHT_AGING;
+    public static GameRules.Key<GameRules.IntegerValue> PASSIVE_TWILIGHT_AGING_MINUTES;
 
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
@@ -313,6 +315,23 @@ public class ModGameRules {
                         (server, value) -> {
                             if (value.get() < 0) {
                                 value.set(0, server);
+                            }
+                        })
+        );
+
+        PASSIVE_TWILIGHT_AGING = GameRules.register(
+                "passiveTwilightAging",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(false)
+        );
+
+        PASSIVE_TWILIGHT_AGING_MINUTES = GameRules.register(
+                "passiveTwilightAgingMinutes",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(60,
+                        (server, value) -> {
+                            if (value.get() < 1) {
+                                value.set(1, server);
                             }
                         })
         );

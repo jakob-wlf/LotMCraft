@@ -100,6 +100,7 @@ public class HurricaneOfLightAbility extends ToggleAbility {
         DamageSource source = ModDamageTypes.source(serverLevel, ModDamageTypes.PURIFICATION, entity);
         for (LivingEntity target : AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), radius)) {
             if (!AbilityUtil.mayDamage(entity, target)) continue;
+            if (BeyonderData.getSequence(entity) == 6 && !ArsenalOfDawnAbility.isEvil(target)) continue;
             float amount = ArsenalOfDawnAbility.isEvil(target) ? damage * EVIL_MULTIPLIER : damage;
             if (!twilight) {
                 target.hurt(source, amount);

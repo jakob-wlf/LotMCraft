@@ -113,7 +113,13 @@ public class CombatMasteryAbility extends PassiveAbility {
         if (!WeaponMasteryAbility.isWeapon(attacker.getMainHandItem())) return;
         float amount = event.getAmount();
         event.setCanceled(true);
-        event.getEntity().hurt(ModDamageTypes.source(level, ModDamageTypes.PHYSICAL_BASED, attacker), amount);
+        LivingEntity target = event.getEntity();
+        int sequence = BeyonderData.getSequence(attacker);
+        float damage = sequence <= 6 ? amount * 0.5f : amount;
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.PHYSICAL_BASED, attacker), damage);
+        if (sequence <= 6) {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker), damage);
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
