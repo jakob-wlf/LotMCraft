@@ -155,7 +155,7 @@ public class UnderworldChunkGenerator extends ChunkGenerator {
     }
 
     private static World worldFor(int x, int z) {
-        return WORLDS[UnderworldTerrain.worldIndex(x, z)];
+        return WORLDS[Math.min(UnderworldTerrain.worldIndex(x, z), WORLDS.length - 1)];
     }
 
     private static BlockState wildState(UnderworldTerrain.Column col, int x, int y, int z, int depth) {
