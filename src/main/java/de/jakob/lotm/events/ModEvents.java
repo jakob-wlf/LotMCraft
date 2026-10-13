@@ -71,10 +71,12 @@ import de.jakob.lotm.rendering.models.red_priest.RedPriestMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.sun.SunMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.visionary.VisionaryMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.wheel_of_fortune.WheelOfFortuneMythicalCreatureModel;
+import de.jakob.lotm.util.helper.CohortUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
 import de.jakob.lotm.rendering.models.door.DoorMythicalCreatureModel;
 import de.jakob.lotm.rendering.models.tyrant.TyrantMythicalCreatureModel;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
@@ -400,25 +402,47 @@ public class ModEvents {
         if (team.isInTeam()) {
             // Player is a member — check if their leader still has them listed
             ServerPlayer leader = server.getPlayerList().getPlayer(java.util.UUID.fromString(team.leaderUUID()));
-            if (leader != null && !leader.getData(ModAttachments.TEAM_COMPONENT.get()).hasMember(player.getStringUUID())) {
+            if (leader != null) {
+                if(team.isLeader(player)) {
+                    TeamComponent current = team;
+                    for (String memberUUID : new ArrayList<>(current.memberUUIDs())) {
+                        ServerPlayer member = server.getPlayerList().getPlayer(java.util.UUID.fromString(memberUUID));
+                        if (member != null && !member.getData(ModAttachments.TEAM_COMPONENT.get()).leaderUUID().equals(player.getStringUUID())) {
+                            player.sendSystemMessage(Component.literal("removed"));
+                            leader.sendSystemMessage(Component.literal("removed1"));
+
+                            current = current.removeMember(memberUUID);
+                        }
+                    }
+                    if (!current.memberUUIDs().equals(team.memberUUIDs())) {
+                        player.setData(ModAttachments.TEAM_COMPONENT.get(), current.withLeader(player.getStringUUID()));
+                        CohortUtil.syncToTeam(player);
+                    }
+                    return;
+                }
                 // Leader is online but no longer claims this player — clear stale membership
-                player.setData(ModAttachments.TEAM_COMPONENT.get(), team.clearLeader());
-                PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
-                        "", new ArrayList<>(), new ArrayList<>(), new java.util.HashMap<>(), 0, 0));
-            }
-        } else if (team.memberCount() > 0) {
-            // Player is a leader — remove any members whose leaderUUID no longer points back to this leader
-            TeamComponent current = team;
-            for (String memberUUID : new ArrayList<>(current.memberUUIDs())) {
-                ServerPlayer member = server.getPlayerList().getPlayer(java.util.UUID.fromString(memberUUID));
-                if (member != null && !member.getData(ModAttachments.TEAM_COMPONENT.get()).leaderUUID().equals(player.getStringUUID())) {
-                    current = current.removeMember(memberUUID);
+                if(!leader.getData(ModAttachments.TEAM_COMPONENT.get()).hasMember(player.getStringUUID())) {
+                    player.setData(ModAttachments.TEAM_COMPONENT.get(), team.clearAll());
+                    PacketHandler.sendToPlayer(player, new de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket(
+                            "", new ArrayList<>(), new ArrayList<>(), new java.util.HashMap<>(), 0, 0));
+                    return;
                 }
             }
-            if (!current.memberUUIDs().equals(team.memberUUIDs())) {
-                player.setData(ModAttachments.TEAM_COMPONENT.get(), current);
-            }
         }
+//        else if (team.memberCount() > 0) {
+//            // Player is a leader — remove any members whose leaderUUID no longer points back to this leader
+//            TeamComponent current = team;
+//            for (String memberUUID : new ArrayList<>(current.memberUUIDs())) {
+//                ServerPlayer member = server.getPlayerList().getPlayer(java.util.UUID.fromString(memberUUID));
+//                if (member != null && !member.getData(ModAttachments.TEAM_COMPONENT.get()).leaderUUID().equals(player.getStringUUID())) {
+//                    current = current.removeMember(memberUUID);
+//                }
+//            }
+//            if (!current.memberUUIDs().equals(team.memberUUIDs())) {
+//                player.setData(ModAttachments.TEAM_COMPONENT.get(), current.withLeader(player.getStringUUID()));
+//                CohortUtil.syncToTeam(player);
+//            }
+//        }
     }
 
     // --- WTF, why? That is way too op
