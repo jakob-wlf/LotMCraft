@@ -23,33 +23,50 @@ public class MentalResistanceAbility extends PassiveAbility{
     }
     @Override
     public Map<String, Integer> getRequirements() {return new HashMap<>(Map.of("abyss", 7));}
+    private final Map<LivingEntity, Integer> processedEffects = new HashMap<>();
     @Override
     public void tick(Level level, LivingEntity entity) {
-        // Reduce LOOSING_CONTROL duration once per 2 second
-        int EntitySeq = BeyonderData.getSequence(entity);
-        if (EntitySeq <= 2)return;
-        if (entity.tickCount % 40 != 0)
-            return;
-        MobEffectInstance loosingControl = entity.getEffect(ModEffects.LOOSING_CONTROL);
-        if (loosingControl != null) {
-            int remaining = loosingControl.getDuration();
-            if (remaining <= 20) {
-                entity.removeEffect(ModEffects.LOOSING_CONTROL);
-            } else {
-                entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, remaining - 20, loosingControl.getAmplifier(), loosingControl.isAmbient(), loosingControl.isVisible(), loosingControl.showIcon()
-                ));
-            }
-        }
     }
     @SubscribeEvent
-    public static void onEntityDamage(LivingDamageEvent.Pre event) {// 30% resistance
-        if (!event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
+    public static void onEntityDamage(LivingDamageEvent.Pre event) {
+        System.out.println("Damage event fired: " + event.getSource());
+
+        if (!event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+            System.out.println("Not losing control damage");
+            return;
+        }
+
         LivingEntity entity = event.getEntity();
-        PassiveAbility ability = PassiveAbilityHandler.getById("mental_resistance_ability");
-        if (!ability.shouldApplyTo(entity)) return;
-        int EntitySeq = BeyonderData.getSequence(entity);
-        if (EntitySeq <= 2)return;
+
+        System.out.println("Sequence: " + BeyonderData.getSequence(entity));
+
+        PassiveAbility ability =
+                PassiveAbilityHandler.getById("mental_resistance_ability");
+
+        System.out.println("Ability found: " + (ability != null));
+
+        if (ability == null || !ability.shouldApplyTo(entity)) {
+            System.out.println("Passive not applicable");
+            return;
+        }
+
+        int entitySeq = BeyonderData.getSequence(entity);
+        if (entitySeq <= 2) {
+            System.out.println("Sequence too high");
+            return;
+        }
+
         float damage = event.getNewDamage();
         event.setNewDamage(damage * 0.7F);
+
+        System.out.println("Damage reduced: " + damage + " -> " + event.getNewDamage());
+    }
+    public static float reduceSanityDrain(LivingEntity entity, float drain) {
+        PassiveAbility mental = PassiveAbilityHandler.getById("mental_resistance_ability");
+        boolean hasMental = mental != null && mental.shouldApplyTo(entity) && BeyonderData.getSequence(entity) > 2;
+        boolean hasMalice = MaliceAuthorityAbility.isActiveFor(entity);
+        if (hasMental && hasMalice) return drain * 0.5f;
+        if (hasMental || hasMalice) return drain * 0.75f;
+        return drain;
     }
 }

@@ -23,10 +23,12 @@ public class DomainOfBodyAbility extends PassiveAbility {
 
     private static final float REGEN_AMOUNT = 2.0F;
     private static final float CORROSION_RADIUS = 16.0F;
-    private static final float CORROSION_DAMAGE = 1.0F;
-    private static final float SANITY_DAMAGE = 0.5F;
+    private static final float CORROSION_DAMAGE = 3.0F;
+    private static final float SANITY_DAMAGE = 1.5F;
     private static final long REGEN_BLOCK_TICKS = 20L * 10L;
     private static final Map<UUID, Long> regenBlockedUntil = new ConcurrentHashMap<>();
+    private static final long RETALIATION_COOLDOWN_TICKS = 20L * 10L;
+    private static final Map<UUID, Long> retaliationCooldowns = new ConcurrentHashMap<>();
     private static boolean retaliating = false;
 
     public DomainOfBodyAbility(String id) {super(id);}
@@ -71,14 +73,23 @@ public class DomainOfBodyAbility extends PassiveAbility {
         LivingEntity entity = event.getEntity();
         Level level = entity.level();
         if (level.isClientSide()) return;
+        if (event.getNewDamage() <= 0) return;
         PassiveAbility ability = PassiveAbilityHandler.getById("domain_of_body_ability");
         if (ability == null || !ability.shouldApplyTo(entity)) return;
         // Purification blocks regen
-        if (event.getNewDamage() > 0 && event.getSource().is(ModDamageTypes.PURIFICATION)) {
+        if (event.getSource().is(ModDamageTypes.PURIFICATION)) {
             regenBlockedUntil.put(entity.getUUID(), level.getGameTime() + REGEN_BLOCK_TICKS);
         }
-        // Radius retaliation
+        // Prevent recursive retaliation
         if (retaliating) return;
+        // Check retaliation cooldown
+        UUID entityId = entity.getUUID();
+        long currentTime = level.getGameTime();
+        Long cooldownUntil = retaliationCooldowns.get(entityId);
+        if (cooldownUntil != null && currentTime < cooldownUntil) return;
+        // Start cooldown
+        retaliationCooldowns.put(entityId, currentTime + RETALIATION_COOLDOWN_TICKS);
+        // Radius retaliation
         retaliating = true;
         try {
             int entitySeq = BeyonderData.getSequence(entity);

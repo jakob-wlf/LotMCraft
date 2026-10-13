@@ -2,6 +2,7 @@ package de.jakob.lotm.effect;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.MentalResistanceAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
@@ -49,7 +50,7 @@ public class LoosingControlEffect extends MobEffect {
 
         if(amplifier >= 1) {
             var sanity = livingEntity.getData(ModAttachments.SANITY_COMPONENT.get());
-            sanity.decreaseSanityAndSync((float) (0.0025 * amplifier), livingEntity);
+            sanity.decreaseSanityAndSync(MentalResistanceAbility.reduceSanityDrain(livingEntity, (float) (0.0025 * amplifier)), livingEntity);
         }
 
         return true;
