@@ -4,9 +4,14 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,6 +33,34 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
 
     private int ticks = 0;
     private int petrifiedTicks = 0;
+    private static final EntityDataAccessor<Integer> VARIANT_ID = SynchedEntityData.defineId(FlamingSpearProjectileEntity.class, EntityDataSerializers.INT);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(VARIANT_ID, PriestFlameVariants.DEFAULT.getId());
+    }
+
+    public void setVariant(PriestFlameVariants variant) {
+        this.entityData.set(VARIANT_ID, variant.getId());
+    }
+
+    public PriestFlameVariants getVariant() {
+        return PriestFlameVariants.byId(this.entityData.get(VARIANT_ID));
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        compound.putInt("Variant", this.getVariant().getId());
+
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        if (compound.contains("Variant", 3)) {
+            this.setVariant(PriestFlameVariants.byId(compound.getInt("Variant")));
+        }
+    }
 
     public FlamingSpearProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
@@ -76,8 +109,8 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         if(level.getBlockState(BlockPos.containing(position())).is(Blocks.WATER) || level.getBlockState(BlockPos.containing(position())).is(Blocks.LAVA)) {
             onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
         }
-
-        ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, position(), random.nextInt(1, 15), .33, .045);
+        if(this.getVariant().getId() <= 4 && this.getVariant().getId() != 0) ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SOUL_FIRE_FLAME, position(), random.nextInt(1, 15), .33, .045);
+        else ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, position(), random.nextInt(1, 15), .33, .045);
     }
 
     @Override

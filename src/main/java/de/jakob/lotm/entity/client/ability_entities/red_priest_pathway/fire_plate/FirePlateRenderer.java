@@ -4,16 +4,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.war_banner.WarBannerModel;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.FirePlateEntity;
-import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+
+import static de.jakob.lotm.util.data.PriestFlameVariants.*;
 
 public class FirePlateRenderer extends EntityRenderer<FirePlateEntity> {
 
@@ -27,7 +26,17 @@ public class FirePlateRenderer extends EntityRenderer<FirePlateEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(FirePlateEntity firePlateEntity) {
-        return TEXTURE;
+        return switch (firePlateEntity.getVariant()) {
+            case DEFAULT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate.png");
+            case CRIMSON -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate7.png");
+            case WHITISH_RED -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate6.png");
+            case WHITE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate5.png");
+            case WHITISH_BLUE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate4.png");
+            case AZURE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate3.png");
+            case AZURE_VIOLENT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate2.png");
+            case VIOLENT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate1.png");
+            case DARK -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fire_armor_plate/fire_armor_plate0.png");
+        };
     }
 
     @Override

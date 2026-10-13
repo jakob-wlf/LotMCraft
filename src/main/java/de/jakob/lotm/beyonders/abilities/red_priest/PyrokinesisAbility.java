@@ -8,6 +8,7 @@ import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -75,6 +76,7 @@ public class PyrokinesisAbility extends SelectableAbility {
 
         FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+        spear.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
         spear.shoot(direction.x, direction.y, direction.z, 2f*multiplier(entity), 0);
         level.addFreshEntity(spear);
 

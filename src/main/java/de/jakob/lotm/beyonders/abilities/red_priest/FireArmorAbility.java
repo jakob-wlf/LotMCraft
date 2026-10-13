@@ -5,9 +5,11 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.FirePlateEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -90,6 +92,7 @@ public class FireArmorAbility extends ToggleAbility {
 
                     FirePlateEntity firePlateEntity = new FirePlateEntity(ModEntities.FIRE_PLATE.get(), level, entity.getUUID());
                     firePlateEntity.setPos(entity.getX()+0.5D, entity.getY(), entity.getZ());
+                    firePlateEntity.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
                     plates.add(firePlateEntity);
                 }
                 ServerScheduler.scheduleRepeating(0, INTERVAL, MAX, () -> {
@@ -234,7 +237,12 @@ public class FireArmorAbility extends ToggleAbility {
         double rightZ = -Math.sin(yaw);
         double backX  =  Math.sin(yaw);
         double backZ  = -Math.cos(yaw);
-
+        SimpleParticleType bigtype = ParticleTypes.FLAME;
+        SimpleParticleType small = ParticleTypes.SMALL_FLAME;
+        if(BeyonderData.getSequence(player) <= 4 && BeyonderData.getSequence(player) != 0) {
+            bigtype = ParticleTypes.SOUL_FIRE_FLAME;
+            small = ParticleTypes.SOUL;
+        }
         // ---------------- BODY: stops below the head so vision stays clear ----------------
         int bodyCount = 26;
         for (int i = 0; i < bodyCount; i++) {
@@ -249,11 +257,11 @@ public class FireArmorAbility extends ToggleAbility {
             double y = py + h;
             double z = pz + Math.sin(angle) * radius;
 
-            level.sendParticles(ParticleTypes.FLAME, x, y, z,
+            level.sendParticles(bigtype, x, y, z,
                     1, 0, 0.02 + rand.nextDouble() * 0.03, 0, 0.0);
 
             if (rand.nextFloat() < 0.30F) {
-                level.sendParticles(ParticleTypes.SMALL_FLAME, x, y, z, 1, 0, 0.02, 0, 0.0);
+                level.sendParticles(small, x, y, z, 1, 0, 0.02, 0, 0.0);
             }
             if (rand.nextFloat() < 0.04F) {
                 level.sendParticles(ParticleTypes.LAVA, x, y, z, 1, 0, 0, 0, 0.0);
@@ -289,10 +297,10 @@ public class FireArmorAbility extends ToggleAbility {
                 double vx = rightX * side * 0.03 * t + backX * 0.02;
                 double vz = rightZ * side * 0.03 * t + backZ * 0.02;
 
-                level.sendParticles(ParticleTypes.FLAME, x, y, z, 1, vx, vy, vz, 0.012);
+                level.sendParticles(bigtype, x, y, z, 1, vx, vy, vz, 0.012);
 
                 if (rand.nextFloat() < 0.55F) {
-                    level.sendParticles(ParticleTypes.SMALL_FLAME, x, y, z, 1, vx, vy, vz, 0.0);
+                    level.sendParticles(small, x, y, z, 1, vx, vy, vz, 0.0);
                 }
                 if (rand.nextFloat() < 0.06F) {
                     level.sendParticles(ParticleTypes.LAVA, x, y, z, 1, 0, 0, 0, 0.0);
@@ -311,7 +319,7 @@ public class FireArmorAbility extends ToggleAbility {
                 double z = pz + rightZ * lateral * side + backZ * back
                         + (rand.nextDouble() - 0.5) * 0.20;
                 double y = py + 2.20 + rand.nextDouble() * 0.25;
-                level.sendParticles(ParticleTypes.FLAME, x, y, z, 1, 0, 0.055, 0, 0.012);
+                level.sendParticles(bigtype, x, y, z, 1, 0, 0.055, 0, 0.012);
             }
         }
 
@@ -319,83 +327,11 @@ public class FireArmorAbility extends ToggleAbility {
         if (rand.nextFloat() < 0.6F) {
             double a = rand.nextDouble() * Math.PI * 2.0;
             double r = 0.45 + rand.nextDouble() * 0.20;
-            level.sendParticles(ParticleTypes.FLAME,
+            level.sendParticles(bigtype,
                     px + Math.cos(a) * r, py + 0.05, pz + Math.sin(a) * r,
                     1, 0, 0.025, 0, 0.0);
         }
     }
 
-//    private static void spawnFlameCloak(ServerLevel level, Player player) {
-//        RandomSource rand = level.random;
-//        double px = player.getX();
-//        double py = player.getY();
-//        double pz = player.getZ();
-//        float bodyYaw = player.yBodyRot;
-//
-//        // Main cloak: tall pillar that bulges in the middle and flares at the top
-//        int count = 24;
-//        for (int i = 0; i < count; i++) {
-//            double h = rand.nextDouble() * 2.3;
-//            double t = h / 2.3;
-//
-//            // Radius profile: narrow at feet, widest mid-body, wide flare up top
-//            double radius = 0.55
-//                    + 0.45 * Math.sin(t * Math.PI)    // mid-body bulge
-//                    + 0.55 * Math.pow(t, 1.8);         // top flare (matches ref image wings)
-//
-//            radius += (rand.nextDouble() - 0.5) * 0.40; // jagged edges
-//            if (radius < 0.2) radius = 0.2;
-//
-//            double angle = rand.nextDouble() * Math.PI * 2.0;
-//            double ox = Math.cos(angle) * radius;
-//            double oz = Math.sin(angle) * radius;
-//
-//            double x = px + ox;
-//            double y = py + h + rand.nextDouble() * 0.12;
-//            double z = pz + oz;
-//
-//            // Flames lick outward from the body and rise
-//            double vx = ox * 0.05;
-//            double vy = 0.02 + rand.nextDouble() * 0.035;
-//            double vz = oz * 0.05;
-//
-//            level.sendParticles(ParticleTypes.FLAME, x, y, z, 1, vx, vy, vz, 0.0);
-//
-//            if (rand.nextFloat() < 0.40F) {
-//                level.sendParticles(ParticleTypes.SMALL_FLAME, x, y, z, 1, vx, vy, vz, 0.0);
-//            }
-//            if (rand.nextFloat() < 0.18F) {
-//                level.sendParticles(ParticleTypes.LAVA, x, y, z, 1, 0, 0, 0, 0.0);
-//            }
-//            if (rand.nextFloat() < 0.14F && t > 0.45) {
-//                level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
-//                        x, y + 0.15, z, 1, vx * 0.3, 0.03, vz * 0.3, 0.004);
-//            }
-//        }
-//
-//        // Outer flare "wings" that rise above the head — the tall spikes from the ref
-//        int flares = 4;
-//        for (int i = 0; i < flares; i++) {
-//            double angle = rand.nextDouble() * Math.PI * 2.0;
-//            double radius = 0.7 + rand.nextDouble() * 0.6;
-//            double h = 2.2 + rand.nextDouble() * 1.0;
-//
-//            double x = px + Math.cos(angle) * radius;
-//            double y = py + h;
-//            double z = pz + Math.sin(angle) * radius;
-//
-//            level.sendParticles(ParticleTypes.FLAME, x, y, z, 1, 0, 0.06, 0, 0.015);
-//            level.sendParticles(ParticleTypes.SMALL_FLAME, x, y, z, 1, 0, 0.05, 0, 0.01);
-//        }
-//
-//        // Low ring at the feet — grounds the effect visually
-//        if (level.random.nextFloat() < 0.85F) {
-//            double a = rand.nextDouble() * Math.PI * 2.0;
-//            double r = 0.6 + rand.nextDouble() * 0.25;
-//            level.sendParticles(ParticleTypes.FLAME,
-//                    px + Math.cos(a) * r, py + 0.05, pz + Math.sin(a) * r,
-//                    1, 0, 0.03, 0, 0.0);
-//        }
-//    }
 
 }
