@@ -16,10 +16,12 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
@@ -120,6 +122,16 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
             return;
 
         ticks++;
+        if(this.owner != null) {
+            if(this.owner instanceof ServerPlayer player) {
+                if(player.isPassenger()){
+                    if(ticks > 5 * 20) {
+                        this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
+                        return;
+                    }
+                }
+            }
+        }
         if(ticks > 20 * 20) {
             this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
             return;
@@ -137,6 +149,11 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
+        if(this.owner instanceof ServerPlayer player) {
+            player.setGameMode(GameType.DEFAULT_MODE);
+            player.stopRiding();
+
+        }
         this.discard();
         if(!(result.getEntity() instanceof LivingEntity target)) {
             return;
@@ -145,13 +162,19 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.HUNTER_FIRE, owner), (float) damage);
         else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.HUNTER_FIRE), (float) damage);
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
+
         if(!level.isClientSide && owner != null)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, position(), owner, null, new String[]{"burning", "explosion"}, 3.5, 10));
     }
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
+        if(this.owner instanceof ServerPlayer player) {
+            player.setGameMode(GameType.DEFAULT_MODE);
+            player.stopRiding();
+        }
         this.discard();
+
         if(griefing) {
             level.explode(owner, result.getLocation().x, result.getLocation().y, result.getLocation().z, 4f, true, Level.ExplosionInteraction.MOB);
         }
