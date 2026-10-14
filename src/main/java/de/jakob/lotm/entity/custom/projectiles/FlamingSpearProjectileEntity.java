@@ -4,10 +4,13 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
+import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameParticle;
 import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -33,10 +36,14 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
 
     private int ticks = 0;
     private int petrifiedTicks = 0;
+    private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(FlamingSpearProjectileEntity.class, EntityDataSerializers.FLOAT);
+
     private static final EntityDataAccessor<Integer> VARIANT_ID = SynchedEntityData.defineId(FlamingSpearProjectileEntity.class, EntityDataSerializers.INT);
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
+        builder.define(SIZE, 1.0f);
         builder.define(VARIANT_ID, PriestFlameVariants.DEFAULT.getId());
+
     }
 
     public void setVariant(PriestFlameVariants variant) {
@@ -47,9 +54,18 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         return PriestFlameVariants.byId(this.entityData.get(VARIANT_ID));
     }
 
+    public void setSize(float size) {
+        this.entityData.set(SIZE, size);
+    }
+
+    public float getSize() {
+        return this.entityData.get(SIZE);
+    }
+
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
+        compound.putFloat("Size", this.getSize());
         compound.putInt("Variant", this.getVariant().getId());
 
     }
@@ -57,6 +73,7 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
+        this.setSize(compound.getFloat("Size"));
         if (compound.contains("Variant", 3)) {
             this.setVariant(PriestFlameVariants.byId(compound.getInt("Variant")));
         }
@@ -68,15 +85,18 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         this.owner = null;
         this.damage = 0;
         this.griefing = false;
+        this.setSize(1.0f);
         init();
     }
 
-    public FlamingSpearProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing) {
+    public FlamingSpearProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing, float size) {
         super(ModEntities.FLAMING_SPEAR.get(), level);
         this.level = level;
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.setSize(size);
+        this.setBoundingBox(this.getBoundingBox().inflate(size));
         init();
     }
 
@@ -109,8 +129,10 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         if(level.getBlockState(BlockPos.containing(position())).is(Blocks.WATER) || level.getBlockState(BlockPos.containing(position())).is(Blocks.LAVA)) {
             onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
         }
-        if(this.getVariant().getId() <= 4 && this.getVariant().getId() != 0) ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SOUL_FIRE_FLAME, position(), random.nextInt(1, 15), .33, .045);
-        else ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, position(), random.nextInt(1, 15), .33, .045);
+        SimpleParticleType bigtype = PriestFlameParticle.byId(this.getVariant().getId()).getType();
+        int density = random.nextInt(1, 20);
+        if(bigtype == ParticleTypes.DRAGON_BREATH) density = 30;
+        ParticleUtil.spawnParticles((ServerLevel) level, bigtype, position(), density, .33, .045);
     }
 
     @Override

@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.FirePlateEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameParticle;
 import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -237,12 +238,9 @@ public class FireArmorAbility extends ToggleAbility {
         double rightZ = -Math.sin(yaw);
         double backX  =  Math.sin(yaw);
         double backZ  = -Math.cos(yaw);
-        SimpleParticleType bigtype = ParticleTypes.FLAME;
-        SimpleParticleType small = ParticleTypes.SMALL_FLAME;
-        if(BeyonderData.getSequence(player) <= 4 && BeyonderData.getSequence(player) != 0) {
-            bigtype = ParticleTypes.SOUL_FIRE_FLAME;
-            small = ParticleTypes.SOUL;
-        }
+        SimpleParticleType bigtype = PriestFlameParticle.byId(BeyonderData.getSequence(player)).getType();
+        SimpleParticleType small = PriestFlameParticle.byId(BeyonderData.getSequence(player)).getSubType();
+
         // ---------------- BODY: stops below the head so vision stays clear ----------------
         int bodyCount = 26;
         for (int i = 0; i < bodyCount; i++) {

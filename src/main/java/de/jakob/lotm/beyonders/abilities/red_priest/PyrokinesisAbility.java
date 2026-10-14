@@ -74,7 +74,7 @@ public class PyrokinesisAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 2.0f);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         spear.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
         spear.shoot(direction.x, direction.y, direction.z, 2f*multiplier(entity), 0);
