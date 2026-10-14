@@ -38,6 +38,6 @@ public record WhipSlashPayload() implements CustomPacketPayload {
                 ? hit.getLocation()
                 : start.add(player.getLookAngle().scale(reach));
 
-        ConjureAbility.makeFireSlash(level, start, end, (BeyonderData.getSequence(player) <= 4 && BeyonderData.getSequence(player) != 0));
+        ConjureAbility.makeFireSlash(level, start, end, player);
     }
 }

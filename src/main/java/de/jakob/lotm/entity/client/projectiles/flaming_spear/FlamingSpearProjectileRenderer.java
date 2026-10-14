@@ -32,6 +32,7 @@ public class FlamingSpearProjectileRenderer extends EntityRenderer<FlamingSpearP
         boolean petrified = entity.getTags().contains("petrified");
 
         poseStack.pushPose();
+        poseStack.scale(entity.getSize(), entity.getSize(), entity.getSize());
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
 

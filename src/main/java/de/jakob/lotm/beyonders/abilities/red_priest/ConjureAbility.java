@@ -8,6 +8,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.network.packets.toServer.WhipSlashPayload;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameParticle;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -19,6 +20,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -243,7 +245,7 @@ public class ConjureAbility extends SelectableAbility {
                             target.getY() + target.getBbHeight() * 0.5,
                             target.getZ()
                     );
-                    makeFireSlash(serverLevel, start, end, (BeyonderData.getSequence(player) <= 4 && BeyonderData.getSequence(player) != 0));
+                    makeFireSlash(serverLevel, start, end, (ServerPlayer) player);
                 }
             }
             ExplosionDamageCalculator zeroDamageCalc = new ExplosionDamageCalculator() {
@@ -335,16 +337,12 @@ public class ConjureAbility extends SelectableAbility {
         return false;
     }
 
-    public static void makeFireSlash(ServerLevel level, Vec3 start, Vec3 end, @Nullable boolean blue) {
+    public static void makeFireSlash(ServerLevel level, Vec3 start, Vec3 end, @Nullable ServerPlayer player) {
         Vec3 axis = end.subtract(start);
         double dist = Math.max(axis.length(), 0.1);
         Vec3 dir = axis.normalize();
-        SimpleParticleType big = ParticleTypes.FLAME;
-        SimpleParticleType small = ParticleTypes.SMALL_FLAME;
-        if(blue) {
-            big = ParticleTypes.SOUL_FIRE_FLAME;
-            small = ParticleTypes.SOUL;
-        }
+        SimpleParticleType big = PriestFlameParticle.byId(BeyonderData.getSequence(player)).getType();
+        SimpleParticleType small = PriestFlameParticle.byId(BeyonderData.getSequence(player)).getSubType();
         Vec3 ref = Math.abs(dir.y) > 0.99 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
         Vec3 perp1 = dir.cross(ref).normalize();
         Vec3 perp2 = perp1.cross(dir).normalize();
