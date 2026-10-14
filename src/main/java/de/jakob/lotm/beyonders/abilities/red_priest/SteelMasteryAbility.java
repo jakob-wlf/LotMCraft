@@ -77,7 +77,7 @@ public class SteelMasteryAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        PacketHandler.sendToNearbyPlayers(new PlayPhotonEntityEffectPacket("steel_chains", target.getId(), 0, -1.25, 0, 1.5, null, false, true), level, entity.position(), 128);
+        PacketHandler.sendToNearbyPlayers(new PlayPhotonEntityEffectPacket("steel_chains", target.getId(), 0, -1.25, 0, 1.5, null, false, true, UUID.randomUUID(), true), level, entity.position(), 128);
 
         UUID taskId = ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 8), () -> {
             if(entity.isDeadOrDying())

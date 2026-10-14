@@ -203,4 +203,12 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             default -> 1f;
         };
     }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if(BeyonderData.getSequence(entity) > 2 && entity.getHealth() > entity.getMaxHealth() * 0.2) {
+            return false;
+        }
+        return super.shouldUseAbility(entity);
+    }
 }

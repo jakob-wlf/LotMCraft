@@ -39,6 +39,24 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                CancelPhotonEntityEffectPacket.TYPE,
+                CancelPhotonEntityEffectPacket.STREAM_CODEC,
+                CancelPhotonEntityEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                CancelPhotonBlockEffectPacket.TYPE,
+                CancelPhotonBlockEffectPacket.STREAM_CODEC,
+                CancelPhotonBlockEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                PlayCancellablePhotonBlockEffectPacket.TYPE,
+                PlayCancellablePhotonBlockEffectPacket.STREAM_CODEC,
+                PlayCancellablePhotonBlockEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncPlayerSefirotPacket.TYPE,
                 SyncPlayerSefirotPacket.STREAM_CODEC,
                 SyncPlayerSefirotPacket::handle
@@ -282,6 +300,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncPreLoadGamerulePacket.TYPE,
+                SyncPreLoadGamerulePacket.STREAM_CODEC,
+                SyncPreLoadGamerulePacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncCullAbilityPacket.TYPE,
                 SyncCullAbilityPacket.STREAM_CODEC,
                 SyncCullAbilityPacket::handle
@@ -336,11 +361,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncExplodedTrapPacket.TYPE,
-                SyncExplodedTrapPacket.STREAM_CODEC,
-                SyncExplodedTrapPacket::handle
-        );
-        registrar.playToClient(
                 SyncGriefingStatePacket.TYPE,
                 SyncGriefingStatePacket.STREAM_CODEC,
                 SyncGriefingStatePacket::handle
@@ -350,6 +370,12 @@ public class PacketHandler {
                 DarknessEffectPacket.TYPE,
                 DarknessEffectPacket.STREAM_CODEC,
                 DarknessEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                PuppetTimerPacket.TYPE,
+                PuppetTimerPacket.STREAM_CODEC,
+                PuppetTimerPacket::handle
         );
 
         registrar.playToClient(
@@ -571,6 +597,12 @@ public class PacketHandler {
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
+        registrar.playToServer(
+                WhipSlashPayload.TYPE,
+                WhipSlashPayload.STREAM_CODEC,
+                WhipSlashPayload::handle
+        );
+
         registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
                 RequestSefirotSyncPacket.STREAM_CODEC,

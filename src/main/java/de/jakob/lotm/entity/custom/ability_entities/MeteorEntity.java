@@ -172,6 +172,10 @@ public class MeteorEntity extends Entity {
     public void onAddedToLevel() {
         super.onAddedToLevel();
 
+        if(!level().isClientSide) {
+            return;
+        }
+
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "meteor_trail");
         FX fx = FXHelper.getFX(id);
 

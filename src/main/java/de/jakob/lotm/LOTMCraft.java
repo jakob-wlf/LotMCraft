@@ -7,11 +7,13 @@ import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.dimension.spirit_world.spirit_patch.SpiritPatchSetup;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.big_moon.BigMoonRenderer;
@@ -33,6 +35,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.blooming_area
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.coffin.CoffinRenderer;
 import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_nature.ReturnFromNaturelRenderer;
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
+import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.fire_plate.FirePlateRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
 import de.jakob.lotm.entity.client.projectiles.water_bolt.WaterBoltRenderer;
 import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideRenderer;
@@ -93,6 +96,7 @@ import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
@@ -113,7 +117,6 @@ import de.jakob.lotm.particle.*;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
-import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
@@ -230,6 +233,8 @@ public class LOTMCraft
         ModDimensions.register(modEventBus);
         ModGameRules.register();
 
+        SpiritPatchSetup.init(modEventBus);
+
         PotionItemHandler.registerPotions(modEventBus);
 
         QuestRegistry.init();
@@ -276,6 +281,7 @@ public class LOTMCraft
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.FLAMING_SPEAR.get(), FlamingSpearProjectileRenderer::new);
+            EntityRenderers.register(ModEntities.FIRE_PLATE.get(), FirePlateRenderer::new);
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);
@@ -410,6 +416,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.FLAMING_JUMP_MENU.get(), FlamingJumpScreen::new);
             event.register(ModMenuTypes.MASS_PUPPETEERING_MENU.get(), MassPuppeteeringScreen::new);
             event.register(ModMenuTypes.PATHWAY_SELECTION.get(), PathwaySelectionScreen::new);
+            event.register(ModMenuTypes.INGREDIENT_ENCYCLOPEDIA.get(), IngredientEncyclopediaScreen::new);
         }
 
         @SubscribeEvent

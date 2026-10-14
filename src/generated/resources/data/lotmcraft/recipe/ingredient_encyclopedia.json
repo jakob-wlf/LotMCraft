@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "minecraft:azure_bluet"
+    },
+    "B": {
+      "item": "minecraft:book"
+    },
+    "L": {
+      "item": "minecraft:lilac"
+    },
+    "P": {
+      "item": "minecraft:poppy"
+    },
+    "S": {
+      "item": "minecraft:sugar_cane"
+    }
+  },
+  "pattern": [
+    " L ",
+    "PBS",
+    " A "
+  ],
+  "result": {
+    "count": 1,
+    "id": "lotmcraft:ingredient_encyclopedia"
+  }
+}

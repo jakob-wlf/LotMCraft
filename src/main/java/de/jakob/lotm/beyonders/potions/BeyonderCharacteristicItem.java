@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.potions;
 
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -57,6 +58,10 @@ public class BeyonderCharacteristicItem extends Item {
         var item = stack.getItem();
 
         if(!(item instanceof BeyonderCharacteristicItem beChar)) return InteractionResultHolder.fail(stack);
+
+        if(ControllingUtils.isControlling(player)){
+            return InteractionResultHolder.fail(stack);
+        }
 
         int seq = beChar.getSequence();
         String path = beChar.getPathway();

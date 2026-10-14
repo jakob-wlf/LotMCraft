@@ -6,7 +6,175 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "lotmcraft:murloc_bladder"
+          "name": "lotmcraft:abyss_demonic_fish_blood",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sea_marlin_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sea_naga_hair_strand",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:goat_horned_blackfish_blood",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:matured_manhal_fish_eyeball",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:murloc_bladder",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_vocal_sac",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:octopus_eyeballs",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_blood",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_crystallized_blood",
+          "weight": 15
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:abyss_demonic_fish_blood",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sea_marlin_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sea_naga_hair_strand",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:goat_horned_blackfish_blood",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:matured_manhal_fish_eyeball",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:murloc_bladder",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_vocal_sac",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:octopus_eyeballs",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_blood",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_crystallized_blood",
+          "weight": 15
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:abyss_demonic_fish_blood",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sea_marlin_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:deep_sea_naga_hair_strand",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:goat_horned_blackfish_blood",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:matured_manhal_fish_eyeball",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:murloc_bladder",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_vocal_sac",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:octopus_eyeballs",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_blood",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:lavos_squid_crystallized_blood",
+          "weight": 15
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
         }
       ]
     }

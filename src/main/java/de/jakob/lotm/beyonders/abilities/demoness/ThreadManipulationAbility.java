@@ -141,10 +141,6 @@ public class ThreadManipulationAbility extends SelectableAbility {
             }
 
             if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
-                if(BeyonderData.isGriefingEnabled(entity)) {
-                    pos = pos.subtract(direction);
-                    level.setBlockAndUpdate(BlockPos.containing(pos.x, pos.y, pos.z), Blocks.FIRE.defaultBlockState());
-                }
                 hasHit.set(true);
                 return;
             }

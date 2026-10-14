@@ -101,7 +101,7 @@ public class SpiritVisionAbility extends ToggleAbility {
                 return;
         }
 
-        PacketHandler.sendToPlayer(player, new PlayPhotonEntityEffectPacket("spirit_vision", player.getId(), 0, 0, 0, 1, null, true, true));
+        PacketHandler.sendToPlayer(player, new PlayPhotonEntityEffectPacket("spirit_vision", player.getId(), 0, 0, 0, 1, null, true, true, UUID.randomUUID(), true));
 
         PacketHandler.sendToPlayer(player, new SyncSpiritVisionAbilityPacket(true, lookedAt == null ? -1 : lookedAt.getId()));
         AllyComponent allyComponent = entity.getData(ModAttachments.ALLY_COMPONENT);

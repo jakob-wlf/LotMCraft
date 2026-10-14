@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.UUID;
 
 public class HeadlessBrideEntity extends Monster {
 
@@ -391,7 +392,7 @@ public class HeadlessBrideEntity extends Monster {
                         1.25,
                         null,
                         true,
-                        false
+                        false, UUID.randomUUID(), true
                 ), serverLevel, bride.position(), 128);
             }
 
@@ -407,7 +408,7 @@ public class HeadlessBrideEntity extends Monster {
                         1.75,
                         null,
                         true,
-                        false
+                        false, UUID.randomUUID(), true
                 ), serverLevel, target.position(), 128);
             }
         }

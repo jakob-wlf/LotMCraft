@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.network.packets.toClient.CancelPhotonEntityEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.entity.custom.spirits.SpiritBaneEntity;
@@ -79,6 +81,7 @@ public class EyeOfDeathAbility extends ToggleAbility {
         }
         if (!(entity instanceof ServerPlayer player)) return;
 
+        PacketHandler.sendToPlayer(player, new PlayPhotonEntityEffectPacket("eye_of_death", player.getId(), 0, 0, 0, 1, null, true, true, UUID.randomUUID(), true));
         LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f);
 
         if(lookedAt != null){

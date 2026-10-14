@@ -69,7 +69,7 @@ public class FxWarmup {
 
     public static class WarmupScreen extends Screen {
         private static final int PER_TICK = 3;
-        private static final int SETTLE_TICKS = 10;
+        private static final int SETTLE_TICKS = 20;
         private int settle = 0;
         private boolean closed = false;
 
@@ -116,7 +116,8 @@ public class FxWarmup {
         @Override
         public void render(GuiGraphics g, int mx, int my, float pt) {
             super.render(g, mx, my, pt);
-            g.drawCenteredString(font, "Loading effects...", width / 2, height / 2, 0xFFFFFF);
+            g.drawCenteredString(font, "Pre-Loading heavy effects to reduce lag when they play...", width / 2, height / 2, 0xFFFFFF);
+            g.drawCenteredString(font, "Skip this screen by disabling the gamerule preLoadEffects", width / 2, height / 2 + 10, 0xFFFFFF);
         }
 
         @Override public boolean shouldCloseOnEsc() { return false; }

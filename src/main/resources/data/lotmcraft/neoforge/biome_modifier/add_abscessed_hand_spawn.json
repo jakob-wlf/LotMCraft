@@ -17,7 +17,7 @@
   "spawners": [
     {
       "type": "lotmcraft:abscessed_hand",
-      "weight": 20,
+      "weight": 23,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:pitcher_plant"
+    },
+    {
+      "item": "minecraft:carved_pumpkin"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:human_faced_pitcher_plant",
+    "count": 1
+  }
+}

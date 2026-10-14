@@ -1,0 +1,67 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:any_of",
+      "terms": [
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/armorer_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/butcher_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/cartographer_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/cleric_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/farmer_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/fisherman_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/fletcher_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/leatherworker_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/librarian_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/mason_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/shepherd_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/toolsmith_gift"
+        },
+        {
+          "condition": "neoforge:loot_table_id",
+          "loot_table_id": "minecraft:gameplay/hero_of_the_village/weaponsmith_gift"
+        }
+      ]
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.25
+    }
+  ],
+  "table": "lotmcraft:ingredients/one_favorite_food_or_drink"
+}

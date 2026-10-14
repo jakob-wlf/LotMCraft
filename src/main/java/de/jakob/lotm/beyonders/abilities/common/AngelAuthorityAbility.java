@@ -5,7 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
-import de.jakob.lotm.dimension.SpiritWorldHandler;
+import de.jakob.lotm.dimension.spirit_world.SpiritWorldHandler;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;

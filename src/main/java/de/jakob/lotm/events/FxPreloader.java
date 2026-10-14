@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.gamerule.ClientGameruleCache;
 import de.jakob.lotm.util.helper.FxWarmup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -13,21 +14,16 @@ import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public class FxPreloader {
 
-    private static final String FOLDER = "fx";
+    private static final String[] heavyEffects = new String[]{"space_fragmentation", "space_time_storm", "flamevortex", "inferno", "ice_age"};
 
     @SubscribeEvent
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) rm -> {
-            var files = rm.listResources(FOLDER, loc -> loc.getNamespace().equals(LOTMCraft.MOD_ID));
+            if(!ClientGameruleCache.isPreLoadEffectsEnabled) return;
 
             int loaded = 0;
-            for (ResourceLocation file : files.keySet()) {
-                String path = file.getPath();
-                int dot = path.lastIndexOf('.');
-                if (dot < 0) continue;
-
-                String name = path.substring(FOLDER.length() + 1, dot);
-                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, name);
+            for (String path : heavyEffects) {
+                ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, path);
 
                 try {
                     FxWarmup.queue(id);
