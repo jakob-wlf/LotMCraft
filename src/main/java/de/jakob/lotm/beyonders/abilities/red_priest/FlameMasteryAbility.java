@@ -7,6 +7,7 @@ import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.*;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -207,6 +208,7 @@ public class FlameMasteryAbility extends SelectableAbility {
         FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(4, 0.4) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 1.75f);
         //LOTMCraft.LOGGER.info("damage {} multiplier {}",DamageLookup.lookupDamage(4, 0.4),multiplier(entity));
         fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position,
+        fireball.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
         fireball.shoot(direction.x, direction.y, direction.z, 1.85f*multiplier(entity), 0);
         level.addFreshEntity(fireball);
     }
