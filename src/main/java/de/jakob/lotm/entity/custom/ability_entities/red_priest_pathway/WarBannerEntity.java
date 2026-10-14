@@ -4,6 +4,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.data.PriestFlameParticle;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.world.entity.LivingEntity;
@@ -100,7 +101,7 @@ public class WarBannerEntity extends Entity {
         Entity casterEntity = getCasterEntity();
 
         AbilityUtil.getNearbyEntities(null, (ServerLevel) level(), position(), getRadius()).forEach(e -> {
-            ParticleUtil.spawnParticles((ServerLevel) level(), ParticleTypes.FLAME, e.position().add(0, e.getBbHeight() / 2, 0), 1, .4, 1, .4, 0);
+            ParticleUtil.spawnParticles((ServerLevel) level(), PriestFlameParticle.byId(BeyonderData.getSequence(level().getPlayerByUUID(this.getCasterUUID()))).getType(), e.position().add(0, e.getBbHeight() / 2, 0), 1, .4, 1, .4, 0);
             ParticleUtil.spawnParticles((ServerLevel) level(), dust, e.position().add(0, e.getBbHeight() / 2, 0), 7, .4, 1, .4, 0);
 
             boolean isCaster = e.getUUID().equals(getCasterUUID());
