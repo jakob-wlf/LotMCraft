@@ -28,7 +28,7 @@ import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.Map;
-@EventBusSubscriber
+//@EventBusSubscriber
 public class PyrokinesisAbility extends SelectableAbility {
 
     public PyrokinesisAbility(String id) {
@@ -75,14 +75,16 @@ public class PyrokinesisAbility extends SelectableAbility {
         Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 1.4f).subtract(startPos).normalize();
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-
-        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 2.0f);
+        boolean ride = player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5;
+        if(player.isPassenger()) ride = false;
+        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 2.0f, ride);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
         spear.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
         spear.shoot(direction.x, direction.y, direction.z, 2f*multiplier(entity), 0);
         level.addFreshEntity(spear);
         if(player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5) {
-            player.setGameMode(GameType.SPECTATOR);
+            if(player.getVehicle() instanceof FlamingSpearProjectileEntity) return;
+            spear.setRide(true);
             player.startRiding(spear, true);
         }
     }
@@ -179,19 +181,18 @@ public class PyrokinesisAbility extends SelectableAbility {
                 (ServerLevel) level, pos, 128
         );
     }
-
-
-        @SubscribeEvent
-        public static void onEntityDismount(EntityMountEvent event) {
-            if (event.getEntityMounting() instanceof ServerPlayer player) {
-                if (event.isDismounting()) {
-                    if (event.getEntityBeingMounted() instanceof FlamingSpearProjectileEntity) {
-                        if(!player.isSpectator()) return;
-                        if(event.getEntityBeingMounted().isAlive()) event.setCanceled(true);
-                    }
-                }
-            }
-        }
+//
+//
+//        @SubscribeEvent
+//        public static void onEntityDismount(EntityMountEvent event) {
+//            if (event.getEntityMounting() instanceof ServerPlayer player) {
+//                if (event.isDismounting()) {
+//                    if (event.getEntityBeingMounted() instanceof FlamingSpearProjectileEntity spear) {
+//                        if(spear.isRide()) event.setCanceled(true);
+//                    }
+//                }
+//            }
+//        }
 
 
 }

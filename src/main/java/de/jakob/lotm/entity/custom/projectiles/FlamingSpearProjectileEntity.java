@@ -1,10 +1,10 @@
 package de.jakob.lotm.entity.custom.projectiles;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PriestFlameParticle;
 import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -17,11 +17,14 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
@@ -35,19 +38,26 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
     private final LivingEntity owner;
     private final double damage;
     private final boolean griefing;
-
     private int ticks = 0;
     private int petrifiedTicks = 0;
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(FlamingSpearProjectileEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> TRANSFORMED = SynchedEntityData.defineId(FlamingSpearProjectileEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final EntityDataAccessor<Integer> VARIANT_ID = SynchedEntityData.defineId(FlamingSpearProjectileEntity.class, EntityDataSerializers.INT);
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SIZE, 1.0f);
         builder.define(VARIANT_ID, PriestFlameVariants.DEFAULT.getId());
+        builder.define(TRANSFORMED, false);
 
     }
 
+    public void setRide(boolean ride) {
+        this.entityData.set(TRANSFORMED, ride);
+    }
+    public boolean isRide() {
+        return this.entityData.get(TRANSFORMED);
+    }
     public void setVariant(PriestFlameVariants variant) {
         this.entityData.set(VARIANT_ID, variant.getId());
     }
@@ -69,7 +79,7 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Size", this.getSize());
         compound.putInt("Variant", this.getVariant().getId());
-
+        compound.putBoolean("Ride", this.isRide());
     }
 
     @Override
@@ -79,6 +89,7 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         if (compound.contains("Variant", 3)) {
             this.setVariant(PriestFlameVariants.byId(compound.getInt("Variant")));
         }
+        this.setRide(compound.getBoolean("Ride"));
     }
 
     public FlamingSpearProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
@@ -87,16 +98,18 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         this.owner = null;
         this.damage = 0;
         this.griefing = false;
+        this.setRide(false);
         this.setSize(1.0f);
         init();
     }
 
-    public FlamingSpearProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing, float size) {
+    public FlamingSpearProjectileEntity(Level level, LivingEntity owner, double damage, boolean griefing, float size, boolean ride) {
         super(ModEntities.FLAMING_SPEAR.get(), level);
         this.level = level;
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.setRide(ride);
         this.setSize(size);
         this.setBoundingBox(this.getBoundingBox().inflate(size));
         init();
@@ -122,16 +135,20 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
             return;
 
         ticks++;
-        if(this.owner != null) {
-            if(this.owner instanceof ServerPlayer player) {
-                if(player.isPassenger()){
-                    if(ticks > 5 * 20) {
-                        this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
-                        return;
-                    }
+        if(this.owner instanceof Player) {
+            if(this.isRide()){
+                owner.startRiding(this);
+                owner.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 20, 1, false, false, false));
+                if(ticks > 5 * 20) {
+                    this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
+                    owner.stopRiding();
+                    owner.removeEffect(MobEffects.INVISIBILITY);
+                    this.setRide(false);
+                    return;
                 }
             }
         }
+
         if(ticks > 20 * 20) {
             this.onHitBlock(new BlockHitResult(this.position(), this.getDirection(), BlockPos.containing(this.position()), false));
             return;
@@ -148,13 +165,23 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
     }
 
     @Override
+    protected boolean canHitEntity(@NotNull Entity target) {
+        if(target.level().isClientSide) return false;
+        if (this.owner != null) {
+            if(this.owner.getStringUUID().equals(target.getStringUUID())) return false;
+        }
+        return super.canHitEntity(target);
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult result) {
+
+
+        this.discard();
         if(this.owner instanceof ServerPlayer player) {
-            player.setGameMode(GameType.DEFAULT_MODE);
             player.stopRiding();
 
         }
-        this.discard();
         if(!(result.getEntity() instanceof LivingEntity target)) {
             return;
         }
@@ -169,10 +196,7 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
 
     @Override
     protected void onHitBlock(BlockHitResult result) {
-        if(this.owner instanceof ServerPlayer player) {
-            player.setGameMode(GameType.DEFAULT_MODE);
-            player.stopRiding();
-        }
+        if(this.owner instanceof ServerPlayer player && this.isRide()) player.stopRiding();
         this.discard();
 
         if(griefing) {
