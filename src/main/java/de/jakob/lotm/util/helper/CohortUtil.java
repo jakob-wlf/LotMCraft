@@ -7,6 +7,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PendingTeamInvitePacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
+import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
@@ -15,6 +16,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.*;
@@ -189,12 +192,10 @@ public class CohortUtil {
 
 
     public static List<String[]> getAllMembers(LivingEntity leader) {
-        List<String[]> players = getALlPlayers(leader);
-        List<LivingEntity> subordinates = getAllSubordinates(leader);
+        List<String[]> players = getAllMembersGrouped(leader).get("players");
+        List<String[]> subordinates = getAllMembersGrouped(leader).get("npc");
         List<String[]> list = new ArrayList<>(players);
-        for (LivingEntity subordinate : subordinates) {
-            list.add(new String[]{subordinate.getStringUUID(), subordinate.getDisplayName().toString()});
-        }
+        list.addAll(subordinates);
         return list;
     }
 
@@ -206,7 +207,8 @@ public class CohortUtil {
         list.put("players", players);
         List<String[]> subordinatesList = new ArrayList<>();
         for (LivingEntity subordinate : subordinates) {
-            subordinatesList.add(new String[]{subordinate.getStringUUID(), subordinate.getDisplayName().toString()});
+            if(BeyonderData.isBeyonder(subordinate)) subordinatesList.add(new String[]{subordinate.getStringUUID(), subordinate.getDisplayName().getString(), BeyonderData.getPathway(subordinate), String.valueOf(BeyonderData.getSequence(subordinate))});
+            else subordinatesList.add(new String[]{subordinate.getStringUUID(), subordinate.getDisplayName().getString()});
         }
         list.put("npc", subordinatesList);
         return list;
@@ -424,4 +426,41 @@ public class CohortUtil {
     }
 
 
+    public static void removeSubordinate(Player player, int s) {
+        Entity entity = CohortUtil.getAllSubordinates(player).get(s);
+        if (!(entity instanceof LivingEntity livingEntity)) {
+            player.sendSystemMessage(Component.literal("Subordinate not found!").withStyle(ChatFormatting.RED));
+            return;
+        }
+        SubordinateComponent component = livingEntity.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+        if(!Objects.equals(component.getControllerUUID(), player.getStringUUID())) {
+            player.sendSystemMessage(Component.literal("This subordinate does not belong to you!").withStyle(ChatFormatting.RED));
+            return;
+        }
+        if(!component.isSubordinate()) return;
+        component.setSubordinate(false);
+        component.setControllerUUID("");
+        livingEntity.setHealth(0);
+        player.sendSystemMessage(Component.translatable("ability.lotm.chain_of_command.entity_released").withColor(0xa26fc9));
+    }
+
+    public static void obtainController(Player player, int s) {
+        LivingEntity entity = CohortUtil.getAllSubordinates(player).get(s);
+        if (!(entity instanceof LivingEntity livingEntity)) {
+            player.sendSystemMessage(Component.literal("Subordinate not found!").withStyle(ChatFormatting.RED));
+            return;
+        }
+        SubordinateComponent component = livingEntity.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+        if(!Objects.equals(component.getControllerUUID(), player.getStringUUID())) {
+            player.sendSystemMessage(Component.literal("This subordinate does not belong to you!").withStyle(ChatFormatting.RED));
+            return;
+        }
+        if(!component.isSubordinate()) return;
+        ItemStack controllerItem = SubordinateUtils.createController(entity);
+
+
+        if (!player.getInventory().add(controllerItem)) {
+            player.drop(controllerItem, false);
+        }
+    }
 }

@@ -83,8 +83,8 @@ public class ChainOfCommandAbility extends SelectableAbility {
     private void damageAlleviation(Level level, LivingEntity entity) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player)) return;
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
-        if(CohortUtil.getALlPlayers(player).isEmpty()) {
-            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Team").withStyle(ChatFormatting.RED));
+        if(CohortUtil.getAllMembers(player).isEmpty()) {
+            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Cohort").withStyle(ChatFormatting.RED));
             return;
         }
         player.sendSystemMessage(Component.literal(team.leaderUUID()));
@@ -151,15 +151,15 @@ public class ChainOfCommandAbility extends SelectableAbility {
     private void manage(Level level, LivingEntity entity) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player)) return;
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
-        if(CohortUtil.getALlPlayers(player).isEmpty()) {
-            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Team").withStyle(ChatFormatting.RED));
+        if(CohortUtil.getAllMembers(player).isEmpty()) {
+            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Cohort").withStyle(ChatFormatting.RED));
             return;
         }
-        if(!team.leaderUUID().equals(player.getStringUUID())) {
+        else if(!CohortUtil.getALlPlayers(player).isEmpty() && !team.leaderUUID().equals(player.getStringUUID())) {
             player.sendSystemMessage(Component.literal("you are not the leader of this team").withStyle(ChatFormatting.RED));
             return;
         }
-        List<String[]> members = CohortUtil.getALlPlayers(entity);
+        HashMap<String, List<String[]>> members = CohortUtil.getAllMembersGrouped(entity);
         player.openMenu(new CohortMenuProvider(members));
     }
 
@@ -194,7 +194,7 @@ public class ChainOfCommandAbility extends SelectableAbility {
             CohortUtil.addMember(player, serverPlayer);
         } else {
             if (!BeyonderData.isBeyonder(target) || targetSeq > entitySeq) {
-                SubordinateUtils.turnEntityIntoSubordinate(target, player);
+                SubordinateUtils.turnEntityIntoSubordinate(target, player, false);
                 ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
             } else {
                 ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);

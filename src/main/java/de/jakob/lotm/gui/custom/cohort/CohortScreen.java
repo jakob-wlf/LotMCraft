@@ -10,8 +10,8 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class CohortScreen extends AbstractContainerScreen<CohortMenu> {
     private final ResourceLocation containerBackground;
-    private static final int W = 280;
-    private static final int H = 240;
+    private static final int W = 176;
+    private static final int H = 166;
     public CohortScreen(CohortMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
 

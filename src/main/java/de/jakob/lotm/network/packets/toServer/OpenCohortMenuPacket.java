@@ -61,7 +61,7 @@ public static final StreamCodec<FriendlyByteBuf, OpenCohortMenuPacket> STREAM_CO
 
 
 
-                player.openMenu(new CohortMenuProvider(members));
+//                player.openMenu(new CohortMenuProvider(members));
             }
         });
     }

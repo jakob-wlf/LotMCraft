@@ -10,12 +10,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class CohortMenuProvider implements MenuProvider {
 
-    private final List<String[]> members;
-    public CohortMenuProvider(List<String[]> members) {
+    private final HashMap<String, List<String[]>> members;
+    public CohortMenuProvider(HashMap<String, List<String[]>> members) {
         this.members = members;
     }
 
