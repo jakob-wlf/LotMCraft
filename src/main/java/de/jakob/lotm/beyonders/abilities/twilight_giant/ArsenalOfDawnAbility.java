@@ -317,9 +317,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
 
     public static boolean isEvil(LivingEntity entity) {
         if (AbilityUtil.isUndead(entity) || EyeOfDeathAbility.isSpiritEntity(entity)) return true;
-        String pathway = BeyonderData.getPathway(entity);
-        return pathway.equals("darkness") || pathway.equals("demoness") || pathway.equals("abyss")
-                || pathway.equals("death") || pathway.equals("hanged_man");
+        return BeyonderData.isEvilPathway(entity);
     }
 
     public static void purify(LivingIncomingDamageEvent event, LivingEntity attacker, ServerLevel level) {
