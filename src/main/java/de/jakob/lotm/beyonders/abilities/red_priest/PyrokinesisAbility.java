@@ -1,14 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
-import com.google.common.util.concurrent.AtomicDouble;
-import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
 import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -16,30 +13,17 @@ import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
-import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.util.helper.VectorUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.EntityMountEvent;
+
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PyrokinesisAbility extends SelectableAbility {
 
@@ -73,8 +57,7 @@ public class PyrokinesisAbility extends SelectableAbility {
                 "ability.lotmcraft.pyrokinesis.flame_wave",
                 "ability.lotmcraft.pyrokinesis.wall_of_fire",
                 "ability.lotmcraft.pyrokinesis.fire_ravens",
-                "ability.lotmcraft.pyrokinesis.flaming_spear",
-                "ability.lotmcraft.pyrokinesis.flame_transformation"
+                "ability.lotmcraft.pyrokinesis.flaming_spear"
         };
     }
 
@@ -187,7 +170,7 @@ public class PyrokinesisAbility extends SelectableAbility {
 
     //TODO: PLace flame blocks on griefing
     private void flameWave(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return;
 
         Vec3 startPos = entity.getEyePosition().add(0, .5, 0);
@@ -197,8 +180,9 @@ public class PyrokinesisAbility extends SelectableAbility {
         float damage = baseDamage;
 
         ServerScheduler.scheduleDelayed(18, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.FIRE, damage/2, entity.position().add(0, .2, 0), true, false);
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.SOUL_FIRE, damage/2, entity.position().add(0, .2, 0), true, false);});
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.SOUL_FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
+        });
 
         Vec3 pos = entity.position();
         BlockPos blockPos = BlockPos.containing(pos);
@@ -212,18 +196,6 @@ public class PyrokinesisAbility extends SelectableAbility {
                 (ServerLevel) level, pos, 128
         );
     }
-//
-//
-//        @SubscribeEvent
-//        public static void onEntityDismount(EntityMountEvent event) {
-//            if (event.getEntityMounting() instanceof ServerPlayer player) {
-//                if (event.isDismounting()) {
-//                    if (event.getEntityBeingMounted() instanceof FlamingSpearProjectileEntity spear) {
-//                        if(spear.isRide()) event.setCanceled(true);
-//                    }
-//                }
-//            }
-//        }
 
 
 }
