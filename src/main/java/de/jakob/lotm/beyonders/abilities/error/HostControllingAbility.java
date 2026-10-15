@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -34,7 +35,10 @@ public class HostControllingAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.host_controlling.drain_health", "ability.lotmcraft.host_controlling.kill"};
+        return new String[]{
+                "ability.lotmcraft.host_controlling.drain_health",
+                "ability.lotmcraft.host_controlling.kill"
+        };
     }
 
     @Override
@@ -44,7 +48,8 @@ public class HostControllingAbility extends SelectableAbility {
         }
 
         LivingEntity host = ParasitationAbility.getHostForEntity(serverLevel, entity);
-        if(host == null || !AbilityUtil.mayTarget(entity, host)) {
+
+        if(host == null || AllyUtil.isAlly(entity, host.getUUID())) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.host_controlling.no_host").withColor(0x3240bf));
             return;
         }
@@ -57,8 +62,7 @@ public class HostControllingAbility extends SelectableAbility {
                 entity.heal(healthToDrain);
             }
             case 1 -> {
-                host.setHealth(0.5f);
-                host.hurt(entity.damageSources().magic(), 1000);
+                host.kill();
             }
         }
     }

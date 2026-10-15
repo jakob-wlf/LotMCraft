@@ -19,10 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class CrossbreedingAbility extends Ability {
     private final HashMap<UUID, LivingEntity> targets = new HashMap<>();
@@ -31,6 +28,9 @@ public class CrossbreedingAbility extends Ability {
         super(id, 1);
 
         canBeUsedByNPC = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1200f, 800f, 470f, 280f, 260f, 160f, 134f));
     }
 
     @Override

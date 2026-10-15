@@ -85,8 +85,8 @@ public class FrostSpearProjectileEntity extends AbstractArrow {
         if(!(result.getEntity() instanceof LivingEntity target))
             return;
 
-        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, owner), (float) damage);
-        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC), (float) damage);
+        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.WATER, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.WATER), (float) damage);
         if(!level.isClientSide && owner != null)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, position(), owner, null, new String[]{"freezing"}, 2, 10));
     }

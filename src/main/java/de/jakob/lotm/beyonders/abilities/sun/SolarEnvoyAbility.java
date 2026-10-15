@@ -1,13 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -33,6 +32,11 @@ public class SolarEnvoyAbility extends ToggleAbility {
         interactionRadius = 37;
         cannotBeStolen = true;
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(400f, 300f, 200f));
+
+        baseDamage = 8f;
     }
 
     @Override
@@ -57,6 +61,12 @@ public class SolarEnvoyAbility extends ToggleAbility {
         transformationComponent.setTransformationIndexAndSync(TransformationComponent.TransformationType.SOLAR_ENVOY, entity);
 
         locations.put(entity.getUUID(), entity.position().add(0, 5, 0));
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(entitySeq <= 1){
+            if(serverLevel.isNight())
+                serverLevel.setDayTime(6000);
+        }
 
         Random random = new Random();
 
@@ -100,7 +110,8 @@ public class SolarEnvoyAbility extends ToggleAbility {
         }
 
         // Damage entities
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* multiplier(entity), DamageLookup.lookupDps(2, 1.1, 5, 20) * multiplier(entity), entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.PURIFICATION_INDIRECT, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* multiplier(entity),  baseDamage/2, entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.LIGHT, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 37* multiplier(entity),  baseDamage/2, entity.position(), true, true, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.FAITH, entity));
 
         // Particles
         ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, entity.position(), 2.6, 60);

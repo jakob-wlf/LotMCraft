@@ -9,6 +9,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class DivineKingdomManifestationAbility extends Ability {
@@ -20,6 +22,14 @@ public class DivineKingdomManifestationAbility extends Ability {
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(100, 360));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(25000f, 10000f));
+
+        baseDamage = 3f;
     }
 
     @Override

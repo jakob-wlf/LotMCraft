@@ -1,18 +1,17 @@
 package de.jakob.lotm.beyonders.abilities.demoness;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
@@ -30,10 +29,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class CharmAbility extends Ability {
@@ -42,6 +38,13 @@ public class CharmAbility extends Ability {
 
     public CharmAbility(String id) {
         super(id, 2, "charm");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
     }
 
     @Override
@@ -67,7 +70,7 @@ public class CharmAbility extends Ability {
         if(level.isClientSide)
             return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 18, 1.5f);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, 15, 1.5f);
         if(target == null) {
             if(entity instanceof ServerPlayer player) {
                 ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.literal("No entity to charm found.").withColor(0xFFf980ff));
@@ -76,8 +79,10 @@ public class CharmAbility extends Ability {
             return;
         }
 
-        if(VisionaryHandler.shouldStayInvisible(BeyonderData.getSequence(entity), target))
+        int casterSequence = AbilityUtil.getSeqWithArt(entity, this);
+        if(VisionaryHandler.shouldFailAndTrigger(casterSequence, entity, target, this)){
             return;
+        }
 
         if(charmed.containsKey(target.getUUID()) || onCharmedCooldown.contains(target.getUUID())) {
             if(entity instanceof ServerPlayer player) {
@@ -88,8 +93,6 @@ public class CharmAbility extends Ability {
         }
 
         onCharmedCooldown.add(target.getUUID());
-
-        int casterSequence = AbilityUtil.getSeqWithArt(entity, this);
 
         // Charm vs Battle Hypnosis: charm prevails if caster has lower (stronger) sequence
         DisabledAbilitiesComponent disabledComp = target.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
@@ -112,10 +115,6 @@ public class CharmAbility extends Ability {
             mob.setTarget(null);
         }
 
-        // Charm can temporarily suppress Frenzy (LOOSING_CONTROL effect)
-        if(target.hasEffect(ModEffects.LOOSING_CONTROL)) {
-            target.removeEffect(ModEffects.LOOSING_CONTROL);
-        }
 
         // Charm can break puppet soldier loyalty
         if(target instanceof BeyonderNPCEntity npc && npc.isPuppetWarrior()) {
@@ -145,7 +144,7 @@ public class CharmAbility extends Ability {
             }
         }
 
-        ServerScheduler.scheduleForDuration(0, 5, 20 * 15, () -> {
+        ServerScheduler.scheduleForDuration(0, 5, 20 * 5, () -> {
            if(!charmed.containsKey(target.getUUID()))
                return;
 
@@ -160,7 +159,7 @@ public class CharmAbility extends Ability {
         }, () -> charmed.remove(target.getUUID()), (ServerLevel) level);
 
         charmed.put(target.getUUID(), entity.getUUID());
-        ServerScheduler.scheduleDelayed(20 * 30, () -> {
+        ServerScheduler.scheduleDelayed(20 * 10, () -> {
             onCharmedCooldown.remove(target.getUUID());
             charmed.remove(target.getUUID());
         });

@@ -4,8 +4,13 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.HistoricalMarkedComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.CopiedInventoryComponent;
+import de.jakob.lotm.attachments.HistoricalMarkedComponent;
 import de.jakob.lotm.attachments.HistoricalVoidComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
+import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
+import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.gui.custom.historical_void.HistoricalVoidMenu;
@@ -39,6 +44,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.horse.Donkey;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickType;
@@ -878,7 +884,7 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
     }
 
     private void markEntity(ServerLevel level, ServerPlayer player) {
-        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(player, 20, 2f, true, true, true, false);
 
         if(target == null){
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.historical_void_summoning.no_nearby_entities").withStyle(ChatFormatting.RED));

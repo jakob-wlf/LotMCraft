@@ -36,6 +36,16 @@ public class MultiplierModifierComponent implements INBTSerializable<CompoundTag
         }
     }
 
+    public void replaceMultiplier(String cause, float value){
+        removeMultiplier(cause);
+
+        addMultiplier(cause, value);
+    }
+
+    public boolean hasMultiplier(String reason){
+        return modifiers.containsKey(reason);
+    }
+
     public void addMultiplierForTime(String cause, float multiplier, int ticks) {
         addMultiplier(cause, multiplier);
 
