@@ -57,16 +57,14 @@ public class CullAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-
+        if(!(entity instanceof ServerPlayer player)) return;
         List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
                 .stream()
-                .filter(nearbyEntity -> {
-                    return !VisionaryHandler.shouldStayInvisible(AbilityUtil.getSeqWithArt(entity, this), nearbyEntity);
-                })
+                .filter(nearbyEntity -> !VisionaryHandler.shouldStayInvisible(AbilityUtil.getSeqWithArt(entity, this), nearbyEntity))
                 .toList();
 
         for (LivingEntity nearbyEntity : nearbyEntities) {
-            setGlowingForPlayer(nearbyEntity, (ServerPlayer) entity, true);
+            setGlowingForPlayer(nearbyEntity, player, true);
         }
 
         glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));

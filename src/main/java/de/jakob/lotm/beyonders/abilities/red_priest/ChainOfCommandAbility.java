@@ -5,7 +5,6 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.gui.custom.cohort.CohortMenuProvider;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CohortUtil;
@@ -213,67 +212,66 @@ public class ChainOfCommandAbility extends SelectableAbility {
 
             SubordinateUtils.turnEntityIntoSubordinate(target, player);
             ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
+
+
         }
         BeyonderData.reduceSpirituality(entity, INVITE_COST);
+}
+
+
+
+
+
+@SubscribeEvent
+public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+    LivingEntity entity = event.getEntity();
+
+    if(!instance.canUse(entity)) {
+        return;
     }
 
+    if(!(entity.level() instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
+    if(CohortUtil.isAlleviation(player)) {
+        if(!player.getData(ModAttachments.TEAM_COMPONENT.get()).isLeader(player)) return;
+        HashMap<String, List<String[]>> all = CohortUtil.getAllMembersGrouped(entity);
+        List<String[]> members = all.get("players").stream().filter(e -> e.length > 2).toList();
 
+        List<LivingEntity> subordinates = CohortUtil.getAllSubordinates(entity);
+        if(members.isEmpty() && subordinates.isEmpty()) return;
+        float count = (subordinates.size()+members.size() + 1);
+        float damageForEach = event.getAmount() / count;
+        event.setAmount(damageForEach);
+        subordinates.stream().filter(e -> !instance.canUse(e)).forEach(e -> e.hurt(event.getSource(), damageForEach));
+        for(String[] member : members) {
+            if(player.getServer().getPlayerList().getPlayer(UUID.fromString(member[0])) instanceof ServerPlayer serverPlayer) {
+                serverPlayer.hurt(event.getSource(), damageForEach);
 
-
-
-    @SubscribeEvent
-    public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
-        LivingEntity entity = event.getEntity();
-
-        if(!instance.canUse(entity)) {
-            return;
-        }
-
-        if(!(entity.level() instanceof ServerLevel) || !(entity instanceof ServerPlayer player)) return;
-        if(CohortUtil.isAlleviation(player)) {
-            if(!player.getData(ModAttachments.TEAM_COMPONENT.get()).isLeader(player)) return;
-            HashMap<String, List<String[]>> all = CohortUtil.getAllMembersGrouped(entity);
-            List<String[]> members = all.get("players").stream().filter(e -> e.length > 2).toList();
-            StringBuilder msg = new StringBuilder();
-            msg.append("Original damage + ").append(event.getAmount());
-            List<LivingEntity> subordinates = CohortUtil.getAllSubordinates(entity);
-            if(members.isEmpty() && subordinates.isEmpty()) return;
-            float count = (subordinates.size()+members.size() + 1);
-            float damageForEach = event.getAmount() / count;
-            event.setAmount(damageForEach);
-            subordinates.stream().filter(e -> !instance.canUse(e)).forEach(e -> e.hurt(event.getSource(), damageForEach));
-            msg.append(" distrubted into ").append(damageForEach);
-            msg.append(" among ").append(count).append(" players");
-            for(String[] member : members) {
-                if(player.getServer().getPlayerList().getPlayer(UUID.fromString(member[0])) instanceof ServerPlayer serverPlayer) {
-                    serverPlayer.hurt(event.getSource(), damageForEach);
-
-                }
             }
+        }
 //            player.sendSystemMessage(Component.literal(msg.toString()).withStyle(ChatFormatting.GREEN));
-        }
-
-
     }
 
-    @SubscribeEvent
-    public static void onAttacking(LivingIncomingDamageEvent event) {
-        if(!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
-        if(!instance.canUse(player)) return;
-        if(CohortUtil.isFocus(player)) {
-            if(CohortUtil.getLeaderUUID(player) == null) return;
-            if(Objects.equals(CohortUtil.getLeaderUUID(player), player.getUUID().toString())) {
-                event.setAmount(event.getAmount()*2.0f);
-            } else {
-                if (!(event.getSource().getEntity() instanceof LivingEntity ent)) return;
 
-                int count = CohortUtil.getALlPlayers(ent).size();
-                if (count < 1) count = 1;
+}
 
-                float multiplier = 1.0f - 0.5f / count;
-                event.setAmount(event.getAmount() * multiplier);
-            }
+@SubscribeEvent
+public static void onAttacking(LivingIncomingDamageEvent event) {
+    if(!(event.getSource().getEntity() instanceof ServerPlayer player)) return;
+    if(!instance.canUse(player)) return;
+    if(CohortUtil.isFocus(player)) {
+        if(CohortUtil.getLeaderUUID(player) == null) return;
+        if(Objects.equals(CohortUtil.getLeaderUUID(player), player.getUUID().toString())) {
+            event.setAmount(event.getAmount()*2.0f);
+        } else {
+            if (!(event.getSource().getEntity() instanceof LivingEntity ent)) return;
+
+            int count = CohortUtil.getALlPlayers(ent).size();
+            if (count < 1) count = 1;
+
+            float multiplier = 1.0f - 0.5f / count;
+            event.setAmount(event.getAmount() * multiplier);
         }
     }
+}
 
 }
