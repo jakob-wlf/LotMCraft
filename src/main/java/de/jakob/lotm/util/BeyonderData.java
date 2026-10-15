@@ -317,7 +317,7 @@ public class BeyonderData {
     }
 
     public static boolean hasRitual(int seq){
-        return seq < 6 && seq >= 0;
+        return false;
     }
 
     public static int getMaxWormAmount(int sequence) {

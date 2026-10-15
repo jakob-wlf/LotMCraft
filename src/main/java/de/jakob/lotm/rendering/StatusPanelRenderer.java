@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ClientPuppetTimerCache;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.ClientLuckPerceptionCache;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -29,12 +30,15 @@ public class StatusPanelRenderer {
 
     private static final ResourceLocation GRIEFING_ICON =
             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/griefing_icon.png");
-    private static final int GRIEFING_RING_COLOR = 0xFFC0392B;
+    private static final ResourceLocation DANGER_PREMONITION_ICON =
+            ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/gui/danger_premonition.png");
 
     public static final HashSet<String> activeToggleAbilities = new HashSet<>();
+    public static final HashSet<UUID> activeDangerPremonition = new HashSet<>();
 
     private static float smoothSpirit = -1f;
     private static float smoothSanity = -1f;
+    private static float smoothLuckAlpha = 0f;
 
 
     private static final int ORIGIN_X = 6;
@@ -75,6 +79,7 @@ public class StatusPanelRenderer {
         if (!ClientBeyonderCache.isBeyonder(id)) {
             smoothSpirit = -1f;
             smoothSanity = -1f;
+            smoothLuckAlpha = 0f;
             ClientPuppetTimerCache.clear();
             return;
         }
@@ -132,10 +137,19 @@ public class StatusPanelRenderer {
             renderPuppetTimer(g, mc, ORIGIN_X + 2, rowY, time, dt.getGameTimeDeltaPartialTick(false));
             rowY += PUPPET_ROW_SPACE;
         }
-        renderToggles(g, ORIGIN_X, rowY, color, time);
+
+        smoothLuckAlpha += ((ClientLuckPerceptionCache.isActive() ? 1f : 0f) - smoothLuckAlpha) * smooth;
+        if (smoothLuckAlpha < 0.01f) smoothLuckAlpha = 0f;
+        if (smoothLuckAlpha > 0f) {
+            HudWidgets.drawLuckChip(g, mc.font, ORIGIN_X + 2, rowY,
+                    ClientLuckPerceptionCache.getSelfLuck(), time, smoothLuckAlpha);
+            rowY += Math.round((HudWidgets.LUCK_CHIP_H + 3) * smoothLuckAlpha);
+        }
+
+        boolean dangerPremonition = activeDangerPremonition.contains(id);
+        renderToggles(g, ORIGIN_X, rowY, color, time, dangerPremonition);
     }
 
-    /** Marionette binding timer: a purple tube that fills as the puppeteering completes, with the time left beside it. */
     private static void renderPuppetTimer(GuiGraphics g, Minecraft mc, int x, int y, float time, float partial) {
         float[] data = ClientPuppetTimerCache.getLongest();
         if (data == null) return;
@@ -197,14 +211,20 @@ public class StatusPanelRenderer {
         }
     }
 
-    private static void renderToggles(GuiGraphics g, int startX, int y, int ringColor, float time) {
-        if (activeToggleAbilities.isEmpty()) return;
+    private static void renderToggles(GuiGraphics g, int startX, int y, int ringColor, float time,
+                                      boolean dangerPremonition) {
+        if (activeToggleAbilities.isEmpty() && !dangerPremonition) return;
 
+        int x = startX;
+
+        if (dangerPremonition) {
+            renderDangerPremonition(g, x, y, time);
+            x += SOCKET_STEP;
+        }
 
         List<String> ids = new ArrayList<>(activeToggleAbilities);
         ids.sort(String::compareTo);
 
-        int x = startX;
         for (String abilityId : ids) {
             Ability ability = LOTMCraft.abilityHandler.getById(abilityId);
             if (ability == null) continue;
@@ -214,10 +234,17 @@ public class StatusPanelRenderer {
         }
     }
 
+    private static void renderDangerPremonition(GuiGraphics g, int x, int y, float time) {
+        HudWidgets.drawIcon(g, DANGER_PREMONITION_ICON, x, y, SOCKET_SIZE);
+    }
+
     public static void clearCache() {
         activeToggleAbilities.clear();
+        activeDangerPremonition.clear();
         ClientPuppetTimerCache.clear();
+        ClientLuckPerceptionCache.clear();
         smoothSpirit = -1f;
         smoothSanity = -1f;
+        smoothLuckAlpha = 0f;
     }
 }
