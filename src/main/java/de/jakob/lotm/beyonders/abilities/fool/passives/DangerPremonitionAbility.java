@@ -1,11 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.*;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.AbilityWheelOpenEvent;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
@@ -115,12 +114,29 @@ public class DangerPremonitionAbility extends PassiveAbility {
                 ))
             return;
 
+        if(!event.getSource().is(ModDamageTypes.PHYSICAL)) return;
+
         int sequence = BeyonderData.getSequence(entity);
         if(sequence < 0 || sequence > 9) return;
         if(entity.level().random.nextFloat() <= dodgeChanceForSequence[sequence]) {
-            event.setCanceled(true);
-            entity.playSound(SoundEvents.ARMOR_STAND_BREAK, 1, 1);
-            AbilityUtil.sendActionBar(entity, Component.translatable("lotm.dodged_attack").withColor(getColorForPathway("fool")));
+            boolean hasActiveGrafting = false;
+            if (damager instanceof LivingEntity source) {
+                for (Ability var : ToggleAbility.getActiveAbilitiesForEntity(source)){
+                    if (var == LOTMCraft.abilityHandler.getById("grafting_abilities_ability")) {
+                        hasActiveGrafting = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!hasActiveGrafting) {
+                if (damager instanceof LivingEntity source) {
+                    BeyonderData.reduceSpirituality(source, 100);
+                }
+                event.setCanceled(true);
+                entity.playSound(SoundEvents.ARMOR_STAND_BREAK, 1, 1);
+                AbilityUtil.sendActionBar(entity, Component.translatable("lotm.dodged_attack").withColor(getColorForPathway("fool")));
+            }
         }
 
     }

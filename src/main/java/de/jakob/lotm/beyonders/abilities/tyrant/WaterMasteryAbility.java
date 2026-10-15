@@ -2,12 +2,12 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -37,6 +37,14 @@ public class WaterMasteryAbility extends SelectableAbility {
         super(id, 5f, "water", "water_strong");
         interactionRadius = 30;
         interactionCacheTicks = 20 * 30;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 800f, 500f, 480f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 2, 3, 4));
+
+        baseDamage = 3f;
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -141,6 +149,8 @@ public class WaterMasteryAbility extends SelectableAbility {
                 (ServerLevel) level, targetPos, 128
         );
 
+        double damage = baseDamage;
+
         ServerScheduler.scheduleForDuration(0, 7, (int) (20 * 30), () -> {
             if(random.nextInt(10) == 0)
                 level.playSound(null, targetPos.x, targetPos.y, targetPos.z, SoundEvents.GENERIC_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
@@ -160,7 +170,7 @@ public class WaterMasteryAbility extends SelectableAbility {
                         }
                     }
 
-                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, DamageLookup.lookupDamage(4, .35) * multiplier(entity), pos, true, false, false, 15);
+                    AbilityUtil.damageNearbyEntities(level, isFrozen.get() ? null : entity, 1.2f, damage, pos, true, false, false, 15);
 
                     for(LivingEntity target : AbilityUtil.getNearbyEntities(isFrozen.get() ? null : entity, level, pos, 1f)) {
                         Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(1.4f);

@@ -2,11 +2,13 @@ package de.jakob.lotm.util.helper;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
@@ -153,6 +155,23 @@ public class AdvancementUtil {
     // onSuccessPreSet runs before setBeyonder if non-null.
     private static void executeAdvancement(LivingEntity entity, String pathway, int sequence,
                                            double failureChance, Runnable onSuccessPreSet) {
+
+
+        if(entity instanceof ServerPlayer player) {
+            if (hasRitual(sequence)) {
+                var component = player.getData(ModAttachments.RITUALS.get());
+
+                if(entity.level() instanceof ServerLevel level) {
+                    if(level.getGameRules().getBoolean(ModGameRules.APPLY_RITUALS)) {
+                        if (!component.isCompleted())
+                            failureChance = 100.0;
+                    }
+                }
+
+                RitualEffectHandlerEvent.removeRitual(player);
+            }
+        }
+
         int duration = calculateAdvancementDuration(sequence);
         StartAdvanceSequencePathwayEvent event = postAdvancementEvent(entity, sequence, pathway, failureChance, duration);
 
@@ -175,6 +194,9 @@ public class AdvancementUtil {
             if (onSuccessPreSet != null) onSuccessPreSet.run();
             setBeyonder(entity, finalPathway, finalSequence);
             sendThirdPersonPacket(entity);
+
+            entity.resetFallDistance();
+            entity.fallDistance = 0;
         });
     }
 

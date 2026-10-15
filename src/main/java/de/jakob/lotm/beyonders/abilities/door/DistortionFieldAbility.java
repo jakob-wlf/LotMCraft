@@ -1,8 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,10 +16,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DistortionFieldAbility extends Ability {
     public DistortionFieldAbility(String id) {
@@ -29,6 +24,12 @@ public class DistortionFieldAbility extends Ability {
         canBeCopied = false;
         autoClear = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 25));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 15000f, 10000f));
     }
 
     @Override
@@ -64,11 +65,13 @@ public class DistortionFieldAbility extends Ability {
         barrierBlocks.removeIf(b -> !serverLevel.getBlockState(b).isAir());
         barrierBlocks.removeIf(b -> random.nextInt(2) != 0);
 
-        DistortionFieldEntity distortionFieldEntity = new DistortionFieldEntity(ModEntities.DISTORTION_FIELD.get(), level, 20 * 40, entity.getUUID(), false);
+        int duration = 20 * 10;
+
+        DistortionFieldEntity distortionFieldEntity = new DistortionFieldEntity(ModEntities.DISTORTION_FIELD.get(), level, duration, entity.getUUID(), false);
         distortionFieldEntity.setPos(startPos);
         serverLevel.addFreshEntity(distortionFieldEntity);
 
-        ServerScheduler.scheduleForDuration(0, 6, (int) (20 * 20*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 6, duration, () -> {
             if(entity.level() != serverLevel) {
                 return;
             }
@@ -88,7 +91,7 @@ public class DistortionFieldAbility extends Ability {
             });
 
             // Replace area near caster with air
-            AbilityUtil.getBlocksInSphereRadius(serverLevel, entity.position(), 4.5*multiplier(entity), true).forEach(b -> {
+            AbilityUtil.getBlocksInSphereRadius(serverLevel, entity.position(), 4.5, true).forEach(b -> {
                 if(serverLevel.getBlockState(b).getBlock() != Blocks.BARRIER) {
                     return;
                 }
@@ -99,8 +102,7 @@ public class DistortionFieldAbility extends Ability {
             // Randomly teleport entities around and disable ability use
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 40).forEach(e -> {
                 if(random.nextInt(15) == 0 && AbilityUtil.getSeqWithArt(entity, this) <= BeyonderData.getSequence(e)) {
-                    DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("distortion_field", 20 * 4, e);
+                    AbilityUtil.sealAllTargetAbilities(entity, e, "distortion_field", 20 * 2);
                 }
 
                 e.teleportTo(e.getX() + random.nextDouble(-8, 8), e.getY() + random.nextDouble(-1, 2), e.getZ() + random.nextDouble(-8, 8));

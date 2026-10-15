@@ -1,13 +1,14 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.DreamMazeData;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.DreamMazeData;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.dimension.DreamMazeEventHandler;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.effect.ModEffects;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,7 @@ public class DreamMazeAbility extends SelectableAbility {
     private static final int FLOOR_Y_OFFSET = 0;
     private static final int CEILING_Y_OFFSET = MAZE_HEIGHT + 1;
     private static final int DOOR_COUNT = 15;
-    private static final int SURROUNDING_RADIUS = 25;
+    private static final int SURROUNDING_RADIUS = 50;
 
     private static final Map<UUID, List<BlockPos>> DOOR_POSITIONS = new HashMap<>();
     private boolean[][] removedHorizWalls;
@@ -51,6 +52,12 @@ public class DreamMazeAbility extends SelectableAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 3, 4));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 2500f));
     }
 
     @Override
@@ -83,8 +90,8 @@ public class DreamMazeAbility extends SelectableAbility {
         if (!(entity instanceof ServerPlayer player)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -113,8 +120,8 @@ public class DreamMazeAbility extends SelectableAbility {
         if (!(entity instanceof ServerPlayer caster)) return;
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -173,7 +180,7 @@ public class DreamMazeAbility extends SelectableAbility {
                     spawnPos.getX() + 0.5,
                     spawnPos.getY(),
                     spawnPos.getZ() + 0.5,
-                    java.util.Set.of(),
+                    Set.of(),
                     target.getYRot(),
                     target.getXRot());
         }
@@ -345,33 +352,5 @@ public class DreamMazeAbility extends SelectableAbility {
         }
 
         event.setCanceled(true);
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        if (!(entity instanceof ServerPlayer)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        if (serverLevel.dimension().equals(ModDimensions.DREAM_MAZE_DIMENSION_KEY)) {
-            return true;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), SURROUNDING_RADIUS, false, true)
-                .stream()
-                .anyMatch(t -> t.hasEffect(ModEffects.ASLEEP) && !t.getUUID().equals(entity.getUUID()));
     }
 }

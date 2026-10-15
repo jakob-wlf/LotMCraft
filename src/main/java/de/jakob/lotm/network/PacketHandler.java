@@ -604,6 +604,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                UseCopiedAbilityPacket.TYPE,
+                UseCopiedAbilityPacket.STREAM_CODEC,
+                UseCopiedAbilityPacket::handle
+        );
+
+        registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
                 RequestSefirotSyncPacket.STREAM_CODEC,
                 RequestSefirotSyncPacket::handle

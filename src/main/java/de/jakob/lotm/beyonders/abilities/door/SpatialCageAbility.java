@@ -3,21 +3,21 @@ package de.jakob.lotm.beyonders.abilities.door;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.client.telemetry.events.WorldUnloadEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -32,7 +32,13 @@ public class SpatialCageAbility extends SelectableAbility {
     private static final HashMap<UUID, HashSet<SpatialCage>> activeCages = new HashMap<>();
 
     public SpatialCageAbility(String id) {
-        super(id, 20);
+        super(id, 35);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 25, 30));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f, 5000f));
     }
 
     @Override
@@ -47,14 +53,17 @@ public class SpatialCageAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.spatial_cage.surround", "ability.lotmcraft.spatial_cage.open_front"};
+        return new String[]{
+                "ability.lotmcraft.spatial_cage.surround",
+                "ability.lotmcraft.spatial_cage.open_front"
+        };
     }
 
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         if(level.isClientSide) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 35, 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
         Direction frontDirection = entity.getDirection().getOpposite();
         createSpatialCage(entity, level, targetLoc, selectedAbility != 0, frontDirection);
     }
@@ -64,7 +73,7 @@ public class SpatialCageAbility extends SelectableAbility {
         cage.createCage();
         activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>()).add(cage);
 
-        ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 60 * 2, () -> {
+        ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 10, () -> {
             cage.updateCage();
             cage.addParticles();
             cage.addSlownessToEntities();
@@ -76,6 +85,12 @@ public class SpatialCageAbility extends SelectableAbility {
             List<BlockPos> barrierBlocks = new ArrayList<>();
 
             BlockPos center = BlockPos.containing(position);
+            var livingOwner = (LivingEntity) level.getEntity(owner);
+            boolean griefing = false;
+
+            if(livingOwner != null){
+                griefing = BeyonderData.isGriefingEnabled(livingOwner);
+            }
 
             for (int x = -radius; x <= radius; x++) {
                 for (int y = -radius; y <= radius; y++) {
@@ -86,6 +101,12 @@ public class SpatialCageAbility extends SelectableAbility {
 
                         if (distSq <= outerRadius * outerRadius && distSq > innerRadius * innerRadius) {
                             BlockPos blockPos = center.offset(x, y, z);
+
+                            BlockState state = level.getBlockState(blockPos);
+
+                            if (!griefing && !state.canBeReplaced()) {
+                                continue;
+                            }
 
                             if (isFrontOpen) {
                                 Vec3 blockVec = new Vec3(x, y, z).normalize();

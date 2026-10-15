@@ -2,15 +2,15 @@ package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
-import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class BloomingAreaAbility extends Ability {
@@ -19,6 +19,12 @@ public class BloomingAreaAbility extends Ability {
 
         canBeUsedByNPC = false;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(4, 8, 14));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7500f, 4000f, 3400f));
     }
 
     @Override
@@ -34,13 +40,6 @@ public class BloomingAreaAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide()) return;
-
-        if(!BeyonderData.isGriefingEnabled(entity)) {
-            if(entity instanceof Player player) {
-                player.displayClientMessage(Component.translatable("lotm.griefing_required").withColor(0xed716b), false);
-            }
-            return;
-        }
 
         BloomingAreaEntity previousEntity = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 30)
                 .stream()

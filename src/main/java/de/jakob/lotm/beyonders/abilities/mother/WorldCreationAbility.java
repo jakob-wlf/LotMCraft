@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.WorldCreationData;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.ReturnFromNatureEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -15,6 +15,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class WorldCreationAbility extends Ability {
@@ -27,6 +29,12 @@ public class WorldCreationAbility extends Ability {
         canBeShared = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
+
+        hasDynamicCooldown =  true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(32500f, 12500f));
     }
 
     @Override

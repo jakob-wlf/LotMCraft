@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -17,6 +17,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class SpiritualBaptismAbility extends SelectableAbility {
     public SpiritualBaptismAbility(String id) {
         super(id, 5, "cleansing");
         canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(7000f, 3500f, 2300f, 1750f));
     }
 
     @Override
@@ -95,7 +99,7 @@ public class SpiritualBaptismAbility extends SelectableAbility {
 
         LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT);
         if(luckComponent.getLuck() < 0) {
-            luckComponent.setLuck(0);
+            AbilityUtil.setTargetLuck(caster, target, 0);
         }
 
         SanityComponent sanityComponent = target.getData(ModAttachments.SANITY_COMPONENT);

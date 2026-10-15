@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.PocketDimensionData;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.ReturnPortalEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,8 @@ public class PocketDimensionAbility extends Ability {
         canBeReplicated = false;
         canBeShared = false;
 
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(100000f, 45000f, 25000f));
     }
 
     @Override
