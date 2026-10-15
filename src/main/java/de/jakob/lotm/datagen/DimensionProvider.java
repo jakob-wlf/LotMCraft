@@ -14,6 +14,8 @@ import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.biome.*;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -553,7 +555,7 @@ public class DimensionProvider {
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "underworld"),
                                             1.0f,
-                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
+                                            new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 15), 0)));
 
                                     bootstrap.register(ModDimensions.CONCEALMENT_WORLD_TYPE_KEY, new DimensionType(
                                             OptionalLong.of(6000), true, false, false, false,
@@ -713,7 +715,10 @@ public class DimensionProvider {
                 .hasPrecipitation(false)
                 .temperature(temperature).downfall(0.0f)
                 .specialEffects(fx.build())
-                .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                .mobSpawnSettings(new MobSpawnSettings.Builder()
+                        .addSpawn(MobCategory.MONSTER,
+                                new MobSpawnSettings.SpawnerData(EntityType.SKELETON, 100, 2, 4))
+                        .build())
                 .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                 .build();
     }

@@ -34,6 +34,7 @@ public class AbilityHandler {
         // COMMON
         abilities.add(new CogitationAbility("cogitation_ability"));
         abilities.add(new DivinationAbility("divination_ability"));
+        abilities.add(new DangerPremonitionDivinationAbility("danger_premonition_divination_ability"));
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));

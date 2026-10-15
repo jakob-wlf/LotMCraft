@@ -1,7 +1,7 @@
 package de.jakob.lotm.network.packets.toClient;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.rendering.DangerPremonitionOverlayRenderer;
+import de.jakob.lotm.rendering.StatusPanelRenderer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -30,9 +30,9 @@ public record SyncDangerPremonitionAbilityPacket(boolean active) implements Cust
         context.enqueueWork(() -> {
             if (context.flow().getReceptionSide().isClient()) {
                 if(packet.active()) {
-                    DangerPremonitionOverlayRenderer.playersWithDangerPremonitionActivated.add(context.player().getUUID());
+                    StatusPanelRenderer.activeDangerPremonition.add(context.player().getUUID());
                 } else {
-                    DangerPremonitionOverlayRenderer.playersWithDangerPremonitionActivated.remove(context.player().getUUID());
+                    StatusPanelRenderer.activeDangerPremonition.remove(context.player().getUUID());
                 }
             }
         });

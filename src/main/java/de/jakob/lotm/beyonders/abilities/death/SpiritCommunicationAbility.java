@@ -1,5 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.death;
 
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.common.DangerPremonitionDivinationAbility;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
@@ -34,6 +36,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SpiritCommunicationAbility extends SelectableAbility {
+
+    private DangerPremonitionDivinationAbility divinationAbility;
 
     public SpiritCommunicationAbility(String id) {
         super(id, 7f);
@@ -80,32 +84,13 @@ public class SpiritCommunicationAbility extends SelectableAbility {
     // --- Divination sub-modes (copied from DivinationAbility) ---
 
     private void dangerPremonition(Level level, LivingEntity entity) {
-        if (level.isClientSide) return;
+        if(level.isClientSide) return;
+        if(divinationAbility == null)
+            divinationAbility = (DangerPremonitionDivinationAbility) LOTMCraft.abilityHandler.getById("danger_premonition_divination_ability");
 
-        if (DivinationAbility.dangerPremonitionActive.contains(entity.getUUID())) {
-            DivinationAbility.dangerPremonitionActive.remove(entity.getUUID());
-            return;
-        }
+        if(divinationAbility == null) return;
 
-        if (!(entity instanceof ServerPlayer player)) return;
-
-        DivinationAbility.dangerPremonitionActive.add(entity.getUUID());
-        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(true));
-
-        AtomicBoolean stop = new AtomicBoolean(false);
-        ServerScheduler.scheduleUntil((ServerLevel) level, () -> {
-            if (!DivinationAbility.dangerPremonitionActive.contains(entity.getUUID())) {
-                stop.set(true);
-            }
-            if (BeyonderData.getSpirituality(player) < 2) {
-                DivinationAbility.dangerPremonitionActive.remove(entity.getUUID());
-                stop.set(true);
-            }
-            if (stop.get()) {
-                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(false));
-            }
-            BeyonderData.reduceSpirituality(player, .5f);
-        }, 2, null, stop);
+        divinationAbility.useAbility((ServerLevel) level, entity);
     }
 
     private void playerDivination(Level level, LivingEntity entity) {

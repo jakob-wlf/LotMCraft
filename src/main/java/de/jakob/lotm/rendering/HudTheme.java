@@ -20,9 +20,10 @@ import java.util.Map;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)
 public final class HudTheme {
 
-    private HudTheme() {}
+    private HudTheme() {
+    }
 
-    
+
     public static final int BRASS = 0xFFB8893B;
     public static final int IRON = 0xFF1B1A1F;
     public static final int PARCHMENT = 0xFFE8DCC0;
@@ -30,10 +31,9 @@ public final class HudTheme {
     public static final int EMBER = 0xFFD9381E;
     public static final int EMBER_BRIGHT = 0xFFFF9A3C;
     public static final int MARIONETTE_ACCENT = 0xFFA742F5;
-    public static final int KEYCAP_TEXT = PARCHMENT; 
+    public static final int KEYCAP_TEXT = PARCHMENT;
 
-    
-    
+
     private static final String HUD_DIR = "textures/gui/hud/";
 
     public static ResourceLocation tex(String name) {
@@ -56,20 +56,20 @@ public final class HudTheme {
     public static final ResourceLocation JAR_GLASS = tex("jar_glass");
     public static final ResourceLocation COUNTER_PLATE = tex("counter_plate");
     public static final ResourceLocation KEYCAP = tex("keycap");
+    public static final ResourceLocation LUCK_CLOVER = tex("luck_clover");
 
-    
-    
+
     public static final int TUBE_INSET_X = 3;
     public static final int TUBE_INSET_Y = 2;
 
-    
+
     public static final float NEEDLE_ANGLE_EMPTY = -70f;
     public static final float NEEDLE_ANGLE_FULL = 70f;
 
-    
+
     private static final Map<ResourceLocation, int[]> SIZE_CACHE = new HashMap<>();
 
-    
+
     public static int[] size(ResourceLocation tex) {
         int[] cached = SIZE_CACHE.get(tex);
         if (cached != null) return cached;
@@ -90,21 +90,20 @@ public final class HudTheme {
         event.registerReloadListener((ResourceManagerReloadListener) manager -> SIZE_CACHE.clear());
     }
 
-    
-    
+
     public static float time(Minecraft mc, DeltaTracker dt) {
         if (mc.level == null) return 0f;
         return mc.level.getGameTime() + dt.getGameTimeDeltaPartialTick(false);
     }
 
-    
+
     public static int pathwayColor(String pathway) {
         var info = BeyonderData.pathwayInfos.get(pathway);
         if (info == null) return BRASS;
         return info.color() | 0xFF000000;
     }
 
-    
+
     public static float clamp01(float v) {
         return v < 0f ? 0f : Math.min(v, 1f);
     }
@@ -118,7 +117,7 @@ public final class HudTheme {
         return t * t * (3f - 2f * t);
     }
 
-    
+
     public static float pulse(float time, float speed) {
         return 0.5f + 0.5f * (float) Math.sin(time * speed);
     }
@@ -127,12 +126,12 @@ public final class HudTheme {
         return v - (float) Math.floor(v);
     }
 
-    
+
     public static float smoothFactor(float realtimeDeltaTicks, float perTickKeep) {
         return 1f - (float) Math.pow(perTickKeep, Math.max(realtimeDeltaTicks, 0.01f));
     }
 
-    
+
     public static int withAlpha(int argb, float alpha) {
         int a = (int) (clamp01(alpha) * 255f);
         return (a << 24) | (argb & 0xFFFFFF);
@@ -160,7 +159,18 @@ public final class HudTheme {
         return (a << 24) | (r << 16) | (g << 8) | b;
     }
 
-    
+
+    public static int luckColor(double luck) {
+        if (luck > 0) return 0xFF7CFC9A;
+        if (luck < 0) return 0xFFE0505A;
+        return PARCHMENT;
+    }
+
+    public static String formatLuck(double luck) {
+        String s = (luck == Math.rint(luck)) ? String.valueOf((long) luck) : String.format("%.1f", luck);
+        return luck > 0 ? "+" + s : s;
+    }
+
     public static int healthColor(float fill) {
         if (fill > 0.6f) return 0xFF3DDC84;
         if (fill > 0.3f) return 0xFFF5A623;

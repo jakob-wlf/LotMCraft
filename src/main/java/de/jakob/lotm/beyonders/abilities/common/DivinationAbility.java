@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.common;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
@@ -27,11 +28,11 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class DivinationAbility extends SelectableAbility {
-    public static final Set<UUID> dangerPremonitionActive = new HashSet<>();
     public static final Set<UUID> DIVINATION_IMMUNE = Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+    private DangerPremonitionDivinationAbility divinationAbility;
+
 
     public DivinationAbility(String id) {
         super(id, 1);
@@ -43,7 +44,7 @@ public class DivinationAbility extends SelectableAbility {
     }
 
     @Override
-    public Map<String, Integer> getRequirements() {
+    public Map<String, Integer> getRequirements() { // Remember to also update Danger Premonitions Requirements when making changes here
         Map<String, Integer> reqs = new HashMap(
                 Map.of(
                         "fool", 9,
@@ -92,37 +93,13 @@ public class DivinationAbility extends SelectableAbility {
     }
 
     private void dangerPremonition(Level level, LivingEntity entity) {
-        if(level.isClientSide)
-            return;
+        if(level.isClientSide) return;
+        if(divinationAbility == null)
+            divinationAbility = (DangerPremonitionDivinationAbility) LOTMCraft.abilityHandler.getById("danger_premonition_divination_ability");
 
-        if(dangerPremonitionActive.contains(entity.getUUID())) {
-            dangerPremonitionActive.remove(entity.getUUID());
-            return;
-        }
+        if(divinationAbility == null) return;
 
-        if(!(entity instanceof ServerPlayer player))
-            return;
-
-        dangerPremonitionActive.add(entity.getUUID());
-
-        PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(true));
-
-        AtomicBoolean stop = new AtomicBoolean(false);
-        ServerScheduler.scheduleUntil((ServerLevel) level,  () -> {
-            if(!dangerPremonitionActive.contains(entity.getUUID())) {
-                stop.set(true);
-            }
-
-            if(BeyonderData.getSpirituality(player) < 2) {
-                dangerPremonitionActive.remove(entity.getUUID());
-                stop.set(true);
-            }
-
-            if(stop.get()) {
-                PacketHandler.sendToPlayer(player, new SyncDangerPremonitionAbilityPacket(false));
-            }
-            BeyonderData.reduceSpirituality(player, .5f);
-        }, 2, null, stop);
+        divinationAbility.useAbility((ServerLevel) level, entity);
 
     }
 
