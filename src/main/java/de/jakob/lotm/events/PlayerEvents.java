@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.common.DangerPremonitionDivinationAbility;
 import de.jakob.lotm.beyonders.abilities.common.DivinationAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
@@ -168,7 +169,7 @@ public class PlayerEvents {
 
         if (!(damager instanceof LivingEntity source)) return;
 
-        if(DivinationAbility.dangerPremonitionActive.contains(event.getEntity().getUUID()) && random.nextFloat() < .1) {
+        if(((DangerPremonitionDivinationAbility) LOTMCraft.abilityHandler.getById("danger_premonition_divination_ability")).isActiveForEntity(event.getEntity()) && random.nextFloat() < .1) {
             if(BeyonderData.getSequence(source) - BeyonderData.getSequence(event.getEntity()) >= -2) {
                 if(event.getSource().is(ModDamageTypes.PHYSICAL)) {
                     boolean hasActiveGrafting = false;

@@ -3,6 +3,8 @@ package de.jakob.lotm.events;
 import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gamerule.ClientGameruleCache;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toServer.RequestAbilityBarPacket;
 import de.jakob.lotm.util.helper.FxWarmup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
@@ -19,6 +21,7 @@ public class FxPreloader {
     @SubscribeEvent
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) rm -> {
+            PacketHandler.sendToServer(new RequestAbilityBarPacket());
             if(!ClientGameruleCache.isPreLoadEffectsEnabled) return;
 
             int loaded = 0;

@@ -1,5 +1,6 @@
 package de.jakob.lotm.rendering;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import de.jakob.lotm.LOTMCraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -114,7 +115,8 @@ public class DangerArrowsOverlay {
             case NONE -> {}
         }
 
-        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.5F);
+        RenderSystem.enableBlend();
+        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 0.75F);
 
         guiGraphics.blit(
                 texture,
@@ -129,6 +131,7 @@ public class DangerArrowsOverlay {
         );
 
         guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
 
     }
 }
