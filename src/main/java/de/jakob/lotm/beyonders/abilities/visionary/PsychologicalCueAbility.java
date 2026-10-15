@@ -1,13 +1,13 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerHelper;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -48,11 +48,16 @@ public class PsychologicalCueAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide) return;
 
-        map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
-
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
+
+        map.put(entity.getUUID(), entitySeq);
+
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -69,8 +74,12 @@ public class PsychologicalCueAbility extends ToggleAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -84,9 +93,10 @@ public class PsychologicalCueAbility extends ToggleAbility {
 
         if(StoryWritingAbility.writingMap.containsKey(entity.getUUID())){
             cancel((ServerLevel) level, entity);
+            return;
         }
 
-        map.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+        map.put(entity.getUUID(), entitySeq);
     }
 
     @Override

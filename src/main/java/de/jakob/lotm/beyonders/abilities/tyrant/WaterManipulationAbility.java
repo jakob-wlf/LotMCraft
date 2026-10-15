@@ -3,7 +3,7 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.projectiles.WaterBoltEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
@@ -17,7 +17,10 @@ import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -31,10 +34,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -45,6 +45,14 @@ public class WaterManipulationAbility extends SelectableAbility {
 
     public WaterManipulationAbility(String id) {
         super(id, 1.25f, "water");
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 1500f, 1000f, 650f, 650f, 380f, 300f, 260f));
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 1, 2, 2, 3));
+
+        baseDamage = 3f;
     }
 
     private final DustParticleOptions dustOptions = new DustParticleOptions(
@@ -100,6 +108,18 @@ public class WaterManipulationAbility extends SelectableAbility {
         if(level.isClientSide) return;
 
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.PLAYER_SPLASH, entity.getSoundSource(), 1.0f, 1.0f);
+
+        if (entity.level().dimension().equals(Level.NETHER)) {
+            return;
+        }
+
+        if(!BeyonderData.isGriefingEnabled(entity)) {
+            if(entity instanceof ServerPlayer serverPlayer) {
+                ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(Component.translatable("lotmcraft.griefing_enabled_required").withColor(0x456bd6));
+                serverPlayer.connection.send(packet);
+            }
+            return;
+        }
 
         ItemStack handItem = entity.getMainHandItem();
         boolean wasOffHand = false;
@@ -185,7 +205,8 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH_HIGH_SPEED, entity.getSoundSource(), 1.0f, 1.0f);
 
-        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, DamageLookup.lookupDamage(7, .875) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0));
+        float damage = baseDamage;
+        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.WATER ,damage, entity.position().add(0, .2, 0), true, false, true, 0));
 
         AtomicDouble i = new AtomicDouble(0.6);
         ServerScheduler.scheduleForDuration(0, 1, 24, () -> {
@@ -225,9 +246,9 @@ public class WaterManipulationAbility extends SelectableAbility {
             level.playSound(null, rainPos.x, rainPos.y, rainPos.z, SoundEvents.WEATHER_RAIN, SoundSource.WEATHER, 2, 1);
         }, () -> castingCorrosiveRain.remove(entity.getUUID()), (ServerLevel) level);
 
-        double multiplier = multiplier(entity);
+        float damage = baseDamage/3;
         ServerScheduler.scheduleForDuration(0, 10, 20 * 15, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, DamageLookup.lookupDps(7, .775, 10, 20* (int) Math.max(multiplier(entity)/6,1)) * multiplier(entity), startPos, true, false, true, 0);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5, ModDamageTypes.WATER, damage, startPos, true, false, true, 0);
         }, (ServerLevel) level);
     }
 
@@ -240,7 +261,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.PLAYER_SPLASH, entity.getSoundSource(), 2.0f, 1.0f);
 
-        WaterBoltEntity waterBolt = new WaterBoltEntity(level, entity, DamageLookup.lookupDamage(7, .825) * multiplier(entity) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        WaterBoltEntity waterBolt = new WaterBoltEntity(level, entity, baseDamage, BeyonderData.isGriefingEnabled(entity));
         waterBolt.setPos(startPos.x, startPos.y, startPos.z);
         waterBolt.shoot(direction.x, direction.y, direction.z, 2.7f, 0);
         level.addFreshEntity(waterBolt);

@@ -1,18 +1,17 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.events.ProhibitionHandler;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSelectedMarionettePacket;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CycleOfFateHelper;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.TickTask;
@@ -115,6 +114,10 @@ public class MarionetteControllingAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player))
+            return;
+
+        var comp = player.getData(ModAttachments.DISCERNMENT_DATA.get());
+        if(abilityIndex == 0 && comp.isDiscerning())
             return;
 
         switch (abilityIndex) {
@@ -350,7 +353,6 @@ public class MarionetteControllingAbility extends SelectableAbility {
         }
 
         LivingEntity target = getSelectedMarionette(player);
-
         if (target != null) {
             ControllingUtils.startControlling(player, target, target.getData(ModAttachments.MARIONETTE_COMPONENT.get()).hasWorm(), true);
         }

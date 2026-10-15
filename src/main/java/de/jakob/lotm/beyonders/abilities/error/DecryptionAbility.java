@@ -22,6 +22,8 @@ public class DecryptionAbility extends ToggleAbility {
 
         canBeUsedByNPC = false;
         autoClear = false;
+        doesNotIncreaseDigestion = true;
+        canBeShared = false;
     }
 
     @Override
@@ -41,7 +43,7 @@ public class DecryptionAbility extends ToggleAbility {
         if(!(entity instanceof ServerPlayer player) || level.isClientSide)
             return;
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, (int) (40* multiplier(entity)), 1.2f, true,true,true);
+        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, 40, 1.2f, true, true,true,false);
 
         if(lookedAt != null) {
             if(VisionaryHandler.shouldStayInvisible(AbilityUtil.getSeqWithArt(entity, this), lookedAt))

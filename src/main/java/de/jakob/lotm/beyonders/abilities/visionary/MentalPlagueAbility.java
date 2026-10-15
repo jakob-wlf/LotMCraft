@@ -2,12 +2,12 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
+import de.jakob.lotm.attachments.MentalPlagueComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
-import de.jakob.lotm.attachments.MentalPlagueComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -27,15 +27,19 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MentalPlagueAbility extends SelectableAbility {
     public MentalPlagueAbility(String id) {
         super(id, 10, "plague");
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 3, 5, 7, 10, 10, 10, 10, 10, 10));
     }
 
     @Override
@@ -66,8 +70,8 @@ public class MentalPlagueAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -85,7 +89,16 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void place(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (30* multiplier(entity)), 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;
@@ -98,10 +111,8 @@ public class MentalPlagueAbility extends SelectableAbility {
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
             return;
         }
-
-        if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, targetSeq)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.target_too_strong").withColor(0xf5ca7f));
-            return;
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
         }
 
         Location targetLoc = new Location(target.position(), level);
@@ -116,7 +127,16 @@ public class MentalPlagueAbility extends SelectableAbility {
     private void activateSight(LivingEntity entity, Level level){
         if(level.isClientSide) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, 30* (int) Math.max(multiplier(entity)/4,1), 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
+
         if(target == null) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.mental_plague.no_target").withColor(0xf5ca7f));
             return;

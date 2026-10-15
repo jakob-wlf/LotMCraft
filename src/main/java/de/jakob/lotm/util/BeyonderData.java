@@ -35,9 +35,10 @@ import net.minecraft.world.entity.player.Player;
 import java.util.*;
 
 public class BeyonderData {
-    private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180, 50};
-    private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .65, .75, .88, 1.0, 1.0, 1.0};
+    private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
+    //private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
+    private static final double[] multiplier = {1, 1, 1, 1, 1, 1, 1, 1, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .2, .3, .4, 1.0, 1.0};
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -113,6 +114,17 @@ public class BeyonderData {
         };
     }
 
+    public static boolean hasUniqueness(ServerPlayer player){
+        var dataOp = playerMap.get(player.getUUID());
+
+        if(dataOp.isEmpty()) return false;
+
+        boolean has = player.getData(ModAttachments.UNIQUENESS_COMPONENT.get()).hasUniqueness();
+        boolean isSeq0 = getSequence(player) == 0;
+
+        return isSeq0 || has;
+    }
+
     public static String getSequenceName(String pathway, int sequence) {
         if(!pathwayInfos.containsKey(pathway))
             return "Unknown";
@@ -157,6 +169,15 @@ public class BeyonderData {
         pathwayInfos.put("placeholder", new PathwayInfos("placeholder", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
         pathwayInfos.put("none", new PathwayInfos("none", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
         pathwayInfos.put("", new PathwayInfos("", 0xFFfcd99f, new String[]{"", "", "", "", "", "", "", "", "", "",}, new String[]{}));
+    }
+
+    public static boolean isEvilPathway(LivingEntity entity){
+        return isEvilPathway(BeyonderData.getPathway(entity));
+    }
+
+    public static boolean isEvilPathway(String path){
+        return path.equals("abyss") || path.equals("hanged_man") || path.equals("darkness")
+                || path.equals("death") || path.equals("demoness") || path.equals("chained");
     }
 
     public static void setBeyonder(LivingEntity entity, String pathway, int sequence) {
@@ -292,6 +313,14 @@ public class BeyonderData {
             }
         }
 
+    }
+
+    public static boolean hasRitual(LivingEntity entity){
+        return hasRitual(getSequence(entity) - 1);
+    }
+
+    public static boolean hasRitual(int seq){
+        return seq < 6 && seq >= 0;
     }
 
     public static int getMaxWormAmount(int sequence) {
@@ -850,8 +879,8 @@ public class BeyonderData {
             case 6 -> 1.0105f;
             case 5 -> 1.015f;
             case 4 -> 1.03f;
-            case 3 -> 1.15f;
-            case 2 -> 1.25f;
+            case 3 -> 1.075f;
+            case 2 -> 1.1f;
             case 1 -> 1.0f + (float) stacks/7 ;
             default -> 0.0f;
         };

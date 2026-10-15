@@ -35,6 +35,9 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> SEQ_7_AMOUNT;
     public static GameRules.Key<GameRules.IntegerValue> SEQ_8_AMOUNT;
 
+    public static GameRules.Key<GameRules.IntegerValue> AFTER_DEATH_REGRESSION_INVULNERABILITY;
+    public static GameRules.Key<GameRules.BooleanValue> APPLY_RITUALS;
+
     public static void register() {
         ALLOW_GRIEFING = GameRules.register(
             "allowAbilityGriefing",
@@ -64,6 +67,23 @@ public class ModGameRules {
                         ActingCapHelper.syncToClient(player);
                     }
                 })
+        );
+
+        AFTER_DEATH_REGRESSION_INVULNERABILITY = GameRules.register(
+                "afterDeathRegressionInvulnerability",
+                GameRules.Category.MISC,
+                GameRules.IntegerValue.create(60,
+                        (server, value) -> {
+                            if (value.get() < 0) {
+                                value.set(0, server);
+                            }
+                        })
+        );
+
+        APPLY_RITUALS = GameRules.register(
+                "applyRituals",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
         );
 
         ALLOW_BEYONDER_SPAWNING = GameRules.register(

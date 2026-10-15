@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -104,6 +105,7 @@ public class CompressionAbility extends SelectableAbility {
         if(!ArrayUtils.contains(LIMITS, CHARGES)) {
             FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(7, 0.8) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
             fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+            fireball.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
             fireball.shoot(direction.x, direction.y, direction.z, 1.85f*multiplier(entity), 0);
             level.addFreshEntity(fireball);
             CHARGES--;
@@ -111,6 +113,8 @@ public class CompressionAbility extends SelectableAbility {
             int Scale = ArrayUtils.indexOf(LIMITS, CHARGES)+1;
             FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(7, Scale*3.2) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), Scale*5.5f);
             fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+            fireball.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
+
             fireball.shoot(direction.x, direction.y, direction.z, 2.35f * multiplier(entity), 0);
             level.addFreshEntity(fireball);
 //            if (CHARGES == MAX) {

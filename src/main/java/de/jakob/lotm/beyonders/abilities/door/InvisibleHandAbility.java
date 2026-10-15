@@ -14,11 +14,19 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class InvisibleHandAbility extends SelectableAbility {
     public InvisibleHandAbility(String id) {
         super(id, 1.5f);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 2, 2));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(6000f, 2400f, 1500f, 1000f, 975f, 815f));
     }
 
     @Override
@@ -33,7 +41,10 @@ public class InvisibleHandAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.invisible_hand.push", "ability.lotmcraft.invisible_hand.pull"};
+        return new String[]{
+                "ability.lotmcraft.invisible_hand.push",
+                "ability.lotmcraft.invisible_hand.pull"
+        };
     }
 
     @Override
@@ -41,9 +52,9 @@ public class InvisibleHandAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (15*multiplier(entity)), 3);
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
         if(target == null) {
-            Vec3 failureParticleLoc = AbilityUtil.getTargetLocation(entity, (int) (12*multiplier(entity)), 3);
+            Vec3 failureParticleLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 3);
             spawnFailureParticles((ServerLevel) level, failureParticleLoc);
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.invisible_hand.no_target").withColor(BeyonderData.pathwayInfos.get("door").color()));
             return;

@@ -1,13 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -20,11 +19,21 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class FrenzyAbility extends Ability {
     public FrenzyAbility(String id) {
         super(id, 5f, "corruption");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3, 3, 4, 5, 5, 6, 10, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2500f, 1000f, 750f, 360f, 280f, 200f, 150f, 100f, 40f, 40f));
+
+        baseDamage = 5f;
     }
 
     @Override
@@ -47,15 +56,23 @@ public class FrenzyAbility extends Ability {
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
             return;
         }
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * Math.max(multiplier(entity), 1)), 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
 
         if (level.isClientSide) {
             if(target != null)
@@ -71,9 +88,7 @@ public class FrenzyAbility extends Ability {
             return;
         }
 
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
-            return;
-        }
+        VisionaryHandler.shouldTrigger(entitySeq, entity, target, this);
 
         VisionaryLoosingControlHandler.applyEffect(entity, target, this);
 
@@ -82,27 +97,9 @@ public class FrenzyAbility extends Ability {
                 BattleHypnosisAbility.performRandomEffect((ServerLevel) level, entity, target, entitySeq);
         }
 
-        target.hurt(entity.damageSources().source(ModDamageTypes.LOOSING_CONTROL), (float) (DamageLookup.lookupDamage(7, .85) * (int) Math.max(multiplier(entity)/4,1)));
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity), baseDamage);
 
-        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.0065f * (int) Math.max(multiplier(entity)/4,1)), target, entitySeq, BeyonderData.getSequence(target));
-    }
+        target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference((0.05f), target, entitySeq, BeyonderData.getSequence(target));
 
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * Math.max(multiplier(entity), 1)), 2);
-        return target != null;
     }
 }

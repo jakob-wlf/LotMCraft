@@ -5,6 +5,10 @@ import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBlo
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.ShadowShifter.BloodlineShadowShiftAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
 import de.jakob.lotm.beyonders.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
@@ -70,7 +74,6 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new PhysicalEnhancementsVisionaryAbility("physical_enhancements_visionary_ability"));
         passiveAbilities.add(new PhysicalEnhancementsWheelOfFortuneAbility("physical_enhancements_wheel_of_fortune_ability"));
         passiveAbilities.add(new PhysicalEnhancementsJusticiarAbility("physical_enhancements_justiciar_ability"));
-        passiveAbilities.add(new PhysicalEnhancementsBlackEmperorAbility("physical_enhancements_black_emperor_ability"));
         passiveAbilities.add(new PhysicalEnhancementsDeathAbility("physical_enhancements_death_ability"));
 
         // Justiciar

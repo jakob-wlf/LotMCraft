@@ -15,9 +15,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class WaypointAbility extends SelectableAbility {
     public WaypointAbility(String id) {
@@ -27,6 +27,10 @@ public class WaypointAbility extends SelectableAbility {
         canBeReplicated = false;
         canBeShared = false;
         cannotBeStolen = true;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 15000f, 10000f, 7500f));
+
     }
 
     @Override

@@ -85,6 +85,7 @@ public class AbilityHandler {
         abilities.add(new CullAbility("cull_ability"));
         abilities.add(new FlameMasteryAbility("flame_mastery_ability"));
         abilities.add(new SteelMasteryAbility("steel_mastery_ability"));
+        abilities.add(new SteelSkinAbility("steel_skin"));
         abilities.add(new ChainOfCommandAbility("chain_of_command_ability"));
         abilities.add(new WarCryAbility("war_cry_ability"));
         abilities.add(new WarSongAbility("war_song_ability"));
@@ -95,7 +96,6 @@ public class AbilityHandler {
         abilities.add(new WeatherManipulationAbility("weather_manipulation_ability"));
         abilities.add(new ConqueringAbility("conquering_ability"));
         abilities.add(new FlameAuthorityAbility("flame_authority_ability"));
-//        abilities.add(new FlameClonesAbility("puppet_soldier_creation_ability"));
 
         // TYRANT PATHWAY
         abilities.add(new IllusoryScalesAbility("illusory_scales_ability"));
@@ -174,6 +174,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
+        abilities.add(new GraftingAbilitiesAbility("grafting_abilities_ability"));
         abilities.add(new FoolingAbility("fooling_ability"));
 
         // DARKNESS PATHWAY

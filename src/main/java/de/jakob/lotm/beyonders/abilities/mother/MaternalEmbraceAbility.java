@@ -1,9 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -16,11 +15,19 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class MaternalEmbraceAbility extends Ability {
     public MaternalEmbraceAbility(String id) {
         super(id, 20);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 8, 10, 15));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4500f, 3300f, 2500f));
     }
 
     @Override
@@ -39,7 +46,7 @@ public class MaternalEmbraceAbility extends Ability {
             return;
         }
 
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, 20, 2);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity == null) {
             CoffinEntity coffinEntity = new CoffinEntity(serverLevel, AbilityUtil.getTargetLocation(entity, 20, 2).add(0, 1, 0));
             serverLevel.addFreshEntity(coffinEntity);
@@ -53,31 +60,36 @@ public class MaternalEmbraceAbility extends Ability {
         int targetEntitySeq = BeyonderData.getSequence(targetEntity);
 
         if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, targetEntitySeq) || (
-                BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(targetEntity) && targetEntitySeq <= entitySeq)) {
+                BeyonderData.isBeyonder(entity) && BeyonderData.isBeyonder(targetEntity) && targetEntitySeq < entitySeq)) {
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.maternal_embrace.too_strong").withColor(0x8abd93));
             coffinEntity.discard();
             return;
+        }
+
+        int duration = 20 * 2;
+
+        if(BeyonderData.getPathway(targetEntity).equals("death")){
+            duration = 20 * 15;
         }
 
         TransformationComponent component = targetEntity.getData(ModAttachments.TRANSFORMATION_COMPONENT);
         component.setTransformedAndSync(true, targetEntity);
         component.setTransformationIndexAndSync(TransformationComponent.TransformationType.COFFIN, targetEntity);
 
-        DisabledAbilitiesComponent disabledAbilitiesComponent = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        disabledAbilitiesComponent.disableAbilityUsageForTime("maternal_embrace", (int) (20 * 30*multiplier(entity)), targetEntity);
+        AbilityUtil.sealAllTargetAbilities(entity, targetEntity, "maternal_embrace", duration);
 
-        targetEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, (int) (20 * 30*multiplier(entity)), 20, false, false, false));
-        targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, (int) (20 * 30*multiplier(entity)), 20, false, false, false));
-        targetEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, (int) (20 * 30*multiplier(entity)), 20, false, false, false));
+        targetEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 20, false, false, false));
+        targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 20, false, false, false));
+        targetEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS,duration, 20, false, false, false));
 
-        ServerScheduler.scheduleForDuration(0, 1, (int) (20 * 30*multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
             if(!targetEntity.isAlive()) {
                 return;
             }
             targetEntity.setPos(coffinEntity.getX(), coffinEntity.getY(), coffinEntity.getZ());
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(targetEntity, new de.jakob.lotm.util.data.Location(coffinEntity.position(), serverLevel)));
 
-        ServerScheduler.scheduleDelayed((int) (20 * 30*multiplier(entity)), () -> {
+        ServerScheduler.scheduleDelayed(duration, () -> {
             component.setTransformedAndSync(false, targetEntity);
             component.setTransformationIndexAndSync(0, targetEntity);
             coffinEntity.discard();

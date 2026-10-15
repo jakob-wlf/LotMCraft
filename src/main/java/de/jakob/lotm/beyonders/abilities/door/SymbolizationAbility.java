@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.DisabledFlightComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -14,6 +14,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class SymbolizationAbility extends ToggleAbility {
@@ -22,6 +24,9 @@ public class SymbolizationAbility extends ToggleAbility {
         canBeCopied = false;
         canBeReplicated = false;
         canBeUsedInArtifact = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(190f, 165f, 100f));
     }
 
     @Override

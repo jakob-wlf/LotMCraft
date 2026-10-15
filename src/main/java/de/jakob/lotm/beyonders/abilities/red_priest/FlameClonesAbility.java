@@ -1,9 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.server.level.ServerLevel;
@@ -59,7 +61,7 @@ public class FlameClonesAbility extends Ability {
         for(int i = 0; i < npcCount; i++) {
             Vec3 spawnPos = entity.position().add(random.nextDouble(-3, 3), 0, random.nextDouble(-3, 3));
 
-            BeyonderNPCEntity flameClone = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "flame_clone", "red_priest", 9, false, false);
+            BeyonderNPCEntity flameClone = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "flame_clone"+BeyonderData.getSequence(entity), "red_priest", 9, false, false);
             BeyonderData.clearBeyonderData(flameClone);
             flameClone.setPos(spawnPos);
             flameClone.setPuppetWarrior(true);
@@ -67,10 +69,12 @@ public class FlameClonesAbility extends Ability {
             flameClone.setMaxLifetimeIfPuppet(200);
             flameClone.getPersistentData().putBoolean("PuppetSummoned", true);
             flameClone.getPersistentData().putUUID("PuppetSummonOwner", entity.getUUID());
+            SubordinateComponent component = flameClone.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            component.setShouldAttack(true);
             clones.add(flameClone);
             serverLevel.addFreshEntity(flameClone);
             flameClone.getAttribute(Attributes.MAX_HEALTH).setBaseValue(4D);
-            SubordinateUtils.turnEntityIntoSubordinate(flameClone, entity, true);
+            SubordinateUtils.turnEntityIntoSubordinate(flameClone, entity, false);
 
             BeyonderData.addModifier(flameClone, "puppet_soldier", 0.3f);
         }

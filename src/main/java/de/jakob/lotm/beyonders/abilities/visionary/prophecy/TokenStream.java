@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TokenStream {
     private final String[] tokens;
@@ -8,6 +10,10 @@ public class TokenStream {
 
     public TokenStream(String input) {
         this.tokens = input.trim().split("\\s+");
+    }
+
+    public TokenStream(ArrayList<String> list){
+        this.tokens = list.toArray(new String[0]);
     }
 
     public @Nullable String peek() {
@@ -27,6 +33,13 @@ public class TokenStream {
     }
 
     public int getTotalSize() { return tokens.length; }
+
+    public TokenStream add(int indexV, String value){
+        var list = new ArrayList<String>(Arrays.stream(tokens).toList());
+        list.add(indexV, value);
+
+        return new TokenStream(list);
+    }
 
     @Override
     public String toString(){
