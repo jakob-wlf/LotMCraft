@@ -96,6 +96,7 @@ import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.cohort.CohortScreen;
 import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
@@ -406,6 +407,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.BEYONDER_TRADE_MENU.get(), BeyonderTradeScreen::new);
             event.register(ModMenuTypes.HONORIFIC_NAMES_MENU.get(), HonorificNamesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
+            event.register(ModMenuTypes.COHORT_MENU.get(), CohortScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
             event.register(ModMenuTypes.RITUAL_MENU.get(), RitualScreen::new);
             event.register(ModMenuTypes.SEFIRAH_MENU.get(), SefirahScreen::new);

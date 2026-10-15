@@ -2,6 +2,7 @@ package de.jakob.lotm.gui;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelMenu;
+import de.jakob.lotm.gui.custom.cohort.CohortMenu;
 import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaMenu;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpMenu;
@@ -70,6 +71,10 @@ public class ModMenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<RecipeMenu>> RECIPE_MENU =
             MENU_TYPES.register("recipe_menu", () ->
                     IMenuTypeExtension.create(RecipeMenu::new));
+
+    public static final DeferredHolder<MenuType<?>, MenuType<CohortMenu>> COHORT_MENU =
+            MENU_TYPES.register("cohort_menu", () ->
+                    IMenuTypeExtension.create(CohortMenu::new));
 
     public static final DeferredHolder<MenuType<?>, MenuType<BrewingCauldronMenu>> BREWING_CAULDRON_MENU =
             MENU_TYPES.register("brewing_cauldron_menu", () ->

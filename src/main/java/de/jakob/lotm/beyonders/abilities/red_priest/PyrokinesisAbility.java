@@ -5,13 +5,18 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
-import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.VectorUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -21,10 +26,15 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -79,21 +89,25 @@ public class PyrokinesisAbility extends SelectableAbility {
     }
 
     private void flamingSpear(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide || !(entity instanceof ServerPlayer player))
             return;
 
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
         Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-
-        float damage = baseDamage;
-
-        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity));
+        boolean ride = player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5;
+        if(player.isPassenger()) ride = false;
+        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 2.0f, ride);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
-        spear.shoot(direction.x, direction.y, direction.z, 3f, 0);
+        spear.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
+        spear.shoot(direction.x, direction.y, direction.z, 2f*multiplier(entity), 0);
         level.addFreshEntity(spear);
-
+        if(player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5) {
+            if(player.getVehicle() instanceof FlamingSpearProjectileEntity) return;
+            spear.setRide(true);
+            player.startRiding(spear, true);
+        }
     }
 
     private void fireRavens(Level level, LivingEntity entity) {
@@ -198,4 +212,18 @@ public class PyrokinesisAbility extends SelectableAbility {
                 (ServerLevel) level, pos, 128
         );
     }
+//
+//
+//        @SubscribeEvent
+//        public static void onEntityDismount(EntityMountEvent event) {
+//            if (event.getEntityMounting() instanceof ServerPlayer player) {
+//                if (event.isDismounting()) {
+//                    if (event.getEntityBeingMounted() instanceof FlamingSpearProjectileEntity spear) {
+//                        if(spear.isRide()) event.setCanceled(true);
+//                    }
+//                }
+//            }
+//        }
+
+
 }

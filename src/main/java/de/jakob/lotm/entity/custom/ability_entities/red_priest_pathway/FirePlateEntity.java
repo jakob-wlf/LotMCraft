@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -34,6 +35,8 @@ public class FirePlateEntity extends Entity {
     private static final EntityDataAccessor<Optional<UUID>> OWNER =
             SynchedEntityData.defineId(FirePlateEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(FirePlateEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> VARIANT_ID = SynchedEntityData.defineId(FirePlateEntity.class, EntityDataSerializers.INT);
+
     private float orbitAngle = 0.0f;
 
     // Configuration values
@@ -139,6 +142,7 @@ public class FirePlateEntity extends Entity {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         builder.define(OWNER, Optional.empty());
         builder.define(SIZE, 0.3f);
+        builder.define(VARIANT_ID, PriestFlameVariants.DEFAULT.getId());
     }
 
     @Override
@@ -149,8 +153,17 @@ public class FirePlateEntity extends Entity {
             setCasterUUID(null);
         }
         this.setSize(compoundTag.getFloat("Size"));
+        if (compoundTag.contains("Variant", 3)) {
+            this.setVariant(PriestFlameVariants.byId(compoundTag.getInt("Variant")));
+        }
+    }
+    public void setVariant(PriestFlameVariants variant) {
+        this.entityData.set(VARIANT_ID, variant.getId());
     }
 
+    public PriestFlameVariants getVariant() {
+        return PriestFlameVariants.byId(this.entityData.get(VARIANT_ID));
+    }
     @Override
     protected void addAdditionalSaveData(CompoundTag compoundTag) {
         if (getCasterUUID() != null) {
@@ -158,6 +171,7 @@ public class FirePlateEntity extends Entity {
 
         }
         compoundTag.putFloat("Size", this.getSize());
+        compoundTag.putInt("Variant", this.getVariant().getId());
     }
 
     public void setSize(float size) {

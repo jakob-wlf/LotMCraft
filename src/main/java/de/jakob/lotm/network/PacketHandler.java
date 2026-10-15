@@ -597,6 +597,7 @@ public class PacketHandler {
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
+
         registrar.playToServer(
                 WhipSlashPayload.TYPE,
                 WhipSlashPayload.STREAM_CODEC,
@@ -831,6 +832,7 @@ public class PacketHandler {
                 OpenRecipeMenuPacket.STREAM_CODEC,
                 OpenRecipeMenuPacket::handle
         );
+
 
         registrar.playToServer(
                 TeleportToSefirotPacket.TYPE,

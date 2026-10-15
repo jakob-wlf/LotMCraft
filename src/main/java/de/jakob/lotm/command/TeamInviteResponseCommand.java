@@ -2,6 +2,7 @@ package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import de.jakob.lotm.util.helper.CohortUtil;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +22,7 @@ public class TeamInviteResponseCommand {
                             try {
                                 UUID leaderUUID = UUID.fromString(StringArgumentType.getString(context, "uuid"));
                                 ServerPlayer player = context.getSource().getPlayerOrException();
-                                TeamCommand.acceptInvite(player, leaderUUID);
+                                CohortUtil.acceptInvite(player, leaderUUID);
                                 return 1;
                             } catch (IllegalArgumentException e) {
                                 return 0;
@@ -36,7 +37,7 @@ public class TeamInviteResponseCommand {
                             try {
                                 UUID leaderUUID = UUID.fromString(StringArgumentType.getString(context, "uuid"));
                                 ServerPlayer player = context.getSource().getPlayerOrException();
-                                TeamCommand.declineInvite(player, leaderUUID);
+                                CohortUtil.declineInvite(player, leaderUUID);
                                 return 1;
                             } catch (IllegalArgumentException e) {
                                 return 0;

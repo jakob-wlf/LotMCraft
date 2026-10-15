@@ -11,6 +11,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -42,6 +43,7 @@ public class FireballEntity extends AbstractArrow {
     private final boolean griefing;
 
     private static final EntityDataAccessor<Float> SIZE = SynchedEntityData.defineId(FireballEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> VARIANT_ID = SynchedEntityData.defineId(FireballEntity.class, EntityDataSerializers.INT);
 
     Vec3 lastPos = null;
     Double blocksPerTick = null;
@@ -181,8 +183,16 @@ public class FireballEntity extends AbstractArrow {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SIZE, 1.0f);
+        builder.define(VARIANT_ID, PriestFlameVariants.DEFAULT.getId());
     }
 
+    public void setVariant(PriestFlameVariants variant) {
+        this.entityData.set(VARIANT_ID, variant.getId());
+    }
+
+    public PriestFlameVariants getVariant() {
+        return PriestFlameVariants.byId(this.entityData.get(VARIANT_ID));
+    }
     public void setSize(float size) {
         this.entityData.set(SIZE, size);
     }
@@ -205,11 +215,16 @@ public class FireballEntity extends AbstractArrow {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Size", this.getSize());
+        compound.putInt("Variant", this.getVariant().getId());
+
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.setSize(compound.getFloat("Size"));
+        if (compound.contains("Variant", 3)) {
+            this.setVariant(PriestFlameVariants.byId(compound.getInt("Variant")));
+        }
     }
 }
