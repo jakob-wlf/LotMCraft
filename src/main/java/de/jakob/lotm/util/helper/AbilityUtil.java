@@ -1454,5 +1454,13 @@ public class AbilityUtil {
         setTargetLuck(source, target, proposedLuck);
     }
 
+    public static void refund(Player player, Ability ability) {
+        refund(player, ability, true, true);
+    }
+
+    public static void refund(Player player, Ability ability, boolean cd, boolean sp) {
+        player.getData(ModAttachments.COOLDOWN_COMPONENT).setCooldown(ability.getId(), 0);
+        BeyonderData.incrementSpirituality(player, ability.spiritualityCost(BeyonderData.getSequence(player)));
+    }
 
 }
