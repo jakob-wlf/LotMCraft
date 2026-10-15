@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.abyss.passives.*;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.ShadowShifter.BloodlineShadowShiftAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
-import de.jakob.lotm.beyonders.abilities.black_emperor.passives.PhysicalEnhancementsBlackEmperorAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;

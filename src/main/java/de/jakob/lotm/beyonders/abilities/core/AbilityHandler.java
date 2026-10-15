@@ -131,6 +131,7 @@ public class AbilityHandler {
         abilities.add(new ToxicSmokeAbility("toxic_smoke_ability"));
         abilities.add(new PoisonousFlameAbility("poisonous_flame_ability"));
         abilities.add(new DemonicAttributeAbility("demonic_attribute_ability"));
+        abilities.add(new DevilWorshipAbility("devil_worship_ability"));
         abilities.add(new FlameSpellsAbility("flame_spells_ability"));
         abilities.add(new LanguageOfFoulnessAbility("language_of_foulness_ability"));
         abilities.add(new DevilTransformationAbility("devil_transformation_ability"));

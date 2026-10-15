@@ -1,9 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.ParasitationComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
@@ -151,9 +148,6 @@ public class DreamTraversalAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = BeyonderData.getSequence(entity);
-        // Mind Rotter: whoever connects to a Mind Rotter's mind gets poisoned
-        BloodlineMindRotterAbility.onMindInvasion(entitySeq, entity, target);
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
         if (VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)) {
             return;
         }
@@ -266,74 +260,15 @@ public class DreamTraversalAbility extends SelectableAbility {
 //            comp.setParasitingUUID(null);
 //        }
 //
-////        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
-////        if(scaleAttribute != null) {
-////            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-////                    "dream_hide"));
-////        }
+    ////        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
+    ////        if(scaleAttribute != null) {
+    ////            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+    ////                    "dream_hide"));
+    ////        }
 //
 //        PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
 //        entity.stopRiding();
 //    }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (40 * multiplier(entity)), 1.5f);
-
-        if (target == null) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.no_target").withColor(0xFFff124d));
-            return;
-        }
-
-
-        if(VisionaryHandler.shouldFailAndTrigger(BeyonderData.getSequence(entity), entity, target, this)){
-            return;
-        }
-
-        if (checkAsleep(entity, target)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.must_be_asleep").withColor(0xFFff124d));
-            return;
-        }
-
-        hideMap.put(entity.getUUID(), target.getUUID());
-        // Store sequence at cast time for artifact stuff
-        hideSeqMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
-
-        ParasitationComponent parasitationComponent = target.getData(ModAttachments.PARASITE_COMPONENT);
-        parasitationComponent.setParasited(true);
-        parasitationComponent.setParasiteUUID(entity.getUUID());
-
-        player.setBoundingBox(new AABB(
-                player.getX(), player.getY(), player.getZ(),
-                player.getX(), player.getY(), player.getZ()
-        ));
-        player.onUpdateAbilities();
-        player.hurtMarked = true;
-
-        PsychologicalInvisibilityAbility.addInvisFromOtherSkills(entity, hideSeqMap.get(entity.getUUID()));
-    }
-
-    public static void cancelHide(ServerLevel serverLevel, LivingEntity entity) {
-        if (!hideMap.containsKey(entity.getUUID())) return;
-
-        Entity hostEntity = serverLevel.getEntity(hideMap.get(entity.getUUID()));
-        if (hostEntity instanceof LivingEntity host) {
-            ParasitationComponent parasitationComponent = host.getData(ModAttachments.PARASITE_COMPONENT);
-            parasitationComponent.setParasited(false);
-            parasitationComponent.setParasiteUUID(null);
-        }
-
-        hideMap.remove(entity.getUUID());
-        hideSeqMap.remove(entity.getUUID());
-
-        if (entity instanceof Player player) {
-            player.setBoundingBox(player.getDimensions(player.getPose()).makeBoundingBox(
-                    player.getX(), player.getY(), player.getZ()
-            ));
-            player.onUpdateAbilities();
-            player.hurtMarked = true;
-        }
-
-        PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
-    }
 
     public static int getRangeBySeq(int seq) {
         return switch (seq) {
@@ -375,14 +310,14 @@ public class DreamTraversalAbility extends SelectableAbility {
 //        comp.setParasiting(true);
 //        comp.setParasitingUUID(target.getUUID());
 //
-////        AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
-////        if(scaleAttribute != null) {
-////            scaleAttribute.addTransientModifier(new AttributeModifier
-////                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-////                            "dream_hide"),
-////                            -1.0,
-////                            AttributeModifier.Operation.ADD_VALUE));
-////        }
+    ////        AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
+    ////        if(scaleAttribute != null) {
+    ////            scaleAttribute.addTransientModifier(new AttributeModifier
+    ////                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+    ////                            "dream_hide"),
+    ////                            -1.0,
+    ////                            AttributeModifier.Operation.ADD_VALUE));
+    ////        }
 //
 //        PsychologicalInvisibilityAbility.addInvisFromOtherSkills(player, hideSeqMap.get(player.getUUID()));
 //    }

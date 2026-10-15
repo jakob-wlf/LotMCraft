@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
@@ -91,7 +92,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
                 return;
             }
 
-            AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage*getPoisonDamageMultiplier(entity), swampCenter, true, false);
+            AbilityUtil.damageNearbyEntities(level, entity, swampRadius, damage*getPoisonDamageMultiplier(entity), swampCenter, true, false, ModDamageTypes.source(level, ModDamageTypes.CORROSION, entity));
 
             AbilityUtil.getNearbyEntities(entity, level, swampCenter, swampRadius)
                     .stream()
@@ -202,7 +203,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
                 }
             }
 
-            AbilityUtil.damageNearbyEntities(level, entity, wallRadius - 2, wallRadius + 2, damage, center, true, false, true, 0, 60);
+            AbilityUtil.damageNearbyEntities(level, entity, wallRadius - 2, wallRadius + 2, damage, center, true, false, true, 0, 60, ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, entity));
         }, level);
 
         ServerScheduler.scheduleDelayed(20 * 8 + 1, () -> {

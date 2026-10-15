@@ -2,7 +2,6 @@ package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Phantom.BloodlinePhantomAbility;
-import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
@@ -299,13 +298,6 @@ public abstract class Ability {
         if (!(this instanceof BloodlinePhantomAbility) && BloodlinePhantomAbility.blocksAbilities(entity)) {
             if (entity instanceof ServerPlayer player) {
                 AbilityUtil.sendActionBar(player, Component.literal("You can't use abilities in Phantom form.").withColor(0xBFA7FF));
-            }
-            return false;
-        }
-        if (MausoleumDomainAbility.isInsideMausoleumDomain(entity.getUUID())) {
-            if (entity instanceof ServerPlayer player) {
-                AbilityUtil.sendActionBar(player,
-                        Component.literal("Your abilities are sealed.").withColor(0xFF5555));
             }
             return false;
         }

@@ -132,7 +132,7 @@ public class DemonicAttributeAbility extends SelectableAbility {
             Location smokeLoc = new Location(pos, level);
             int seq = AbilityUtil.getSeqWithArt(entity, this);
             if (InteractionHandler.isInteractionPossible(smokeLoc, "burning", seq)) {
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, null, 9, DamageLookup.lookupDamage(8, 1.2) * multiplier(entity), pos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity));
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, null, 9, DamageLookup.lookupDamage(8, 1.2) * multiplier(entity), pos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION_EMITTER, pos, 50, 7, .02);
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.LARGE_SMOKE, pos, 175, 7, .02);
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, pos, 250, 7, .02);
@@ -144,7 +144,7 @@ public class DemonicAttributeAbility extends SelectableAbility {
                 if (taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
                 return;
             }
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 6.5 * multiplier(entity), DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity)*getPoisonDamageMultiplier(entity), pos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 6.5 * multiplier(entity), DamageLookup.lookupDps(8, .8, 6, 20) * multiplier(entity)*getPoisonDamageMultiplier(entity), pos, true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.TOXIC_SMOKE.get(), pos, 25, 3, .01);
             ParticleUtil.spawnParticles((ServerLevel) level, SMOKE_DUST, pos, 25, 3, .01);
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, pos, 25, 3, .01);
@@ -170,7 +170,7 @@ public class DemonicAttributeAbility extends SelectableAbility {
         Location flameLoc = new Location(startPos, level);
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         boolean purified = InteractionHandler.isInteractionPossible(flameLoc, "purification", seq);
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75 * multiplier(entity), DamageLookup.lookupDamage(8, .9) * multiplier(entity)*getPoisonDamageMultiplier(entity), startPos, true, false, true, 0, 20 * 3, ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity));
+        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.75 * multiplier(entity), DamageLookup.lookupDamage(8, .9) * multiplier(entity)*getPoisonDamageMultiplier(entity), startPos, true, false, true, 0, 20 * 3, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
         if (!purified) {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 3, startPos, new MobEffectInstance(MobEffects.POISON, 20 * 8 * (int) Math.max(multiplier(entity) / 2, 1), 2, false, true));
         }
@@ -204,7 +204,7 @@ public class DemonicAttributeAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 1, drainDuration, () -> {
             for (LivingEntity e : targets) {
                 if (tickCounter.get() % 10 == 0) {
-                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) dps);
+                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.PHYSICAL_BASED, entity), (float) dps);
                     serverLevel.playSound(null, BlockPos.containing(e.position()), SoundEvents.WITHER_SHOOT, e.getSoundSource(), .5f, .5f);
                     if (tickCounter.get() % 20 == 0) {
                         // Original pulled -.001 per 20 ticks (10 pulls, ~negligible). This pulls -.1 per 20 ticks

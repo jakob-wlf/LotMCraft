@@ -95,7 +95,7 @@ public class BloodlineCurselingAbility extends Ability {
         // Cursing someone much stronger backfires
         if (AbilityUtil.isTargetSignificantlyStronger(entitySeq, livingTargetSeq)) {
             entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, 20 * 5, 3));
-            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.DEMONESS_GENERIC), 10);
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.CURSE), 10);
             return;
         }
         AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.curse.cursed_target").withColor(0x6d32a8));

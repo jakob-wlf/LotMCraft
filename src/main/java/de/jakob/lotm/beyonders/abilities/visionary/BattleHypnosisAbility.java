@@ -113,7 +113,6 @@ public class BattleHypnosisAbility extends SelectableAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         BloodlineMindRotterAbility.onMindInvasion(entitySeq, entity, target);
-        if(VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)){
         if (VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this)) {
             return;
         }

@@ -117,7 +117,7 @@ public class DefilingSeedAbility extends Ability {
                 () -> {
                     switch (random.nextInt(22)) {
                         case 0, 2, 3 -> target.hurt(
-                                ModDamageTypes.source(level, ModDamageTypes.LOOSING_CONTROL, entity),
+                                ModDamageTypes.source(level, ModDamageTypes.CORRUPTION, entity),
                                 2 * damageMultiplier);
                         case 1 -> target.addEffect(new MobEffectInstance(
                                 ModEffects.LOOSING_CONTROL, 20 * 3, random.nextInt(3)));

@@ -79,7 +79,7 @@ public class FlameSpellsAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 5).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(6, .875) *
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, entity), (float) (DamageLookup.lookupDamage(6, .875) *
                     multiplier(entity)));
             e.setRemainingFireTicks(20 * 3);
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(.5);

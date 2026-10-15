@@ -5,6 +5,7 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.rendering.effectRendering.EffectParams;
@@ -84,7 +85,7 @@ public class FearAuraAbility extends Ability {
                 int targetSeq = BeyonderData.getSequence(e);
 
                 if (AbilityUtil.isTargetSignificantlyWeaker(entitySeq, targetSeq) && ticks.get() % 10 == 0) {
-                    e.hurt(e.damageSources().mobAttack(entity), (float) (DamageLookup.lookupDps(3, 0.6, 10, 20) *
+                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.HORROR, entity), (float) (DamageLookup.lookupDps(3, 0.6, 10, 20) *
                            multiplier(entity)));
                 }
 

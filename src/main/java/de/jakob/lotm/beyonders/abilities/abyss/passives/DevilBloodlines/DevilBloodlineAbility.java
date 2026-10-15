@@ -95,7 +95,7 @@ public class DevilBloodlineAbility extends PassiveAbility {
     /*
      * Design notes for the bloodline abilities that still need their own classes:
      *
-     * WRAITH / Phantom:
+     * Phantom / Wraith:
      *   Base: toggleable ghost form (wall-phase, no ability use, no world interaction, damageable only
      *   by beyonder damage). Needs its own ToggleAbility.
      *   Upgrade: can use abilities in ghost form, invisible to normal spirit vision but seen by

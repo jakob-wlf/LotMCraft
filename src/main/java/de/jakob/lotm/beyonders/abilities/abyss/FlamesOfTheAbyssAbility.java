@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
@@ -141,7 +142,7 @@ public class FlamesOfTheAbyssAbility extends SelectableAbility {
             }, serverLevel);
 
             ServerScheduler.scheduleForDuration(delay, 4, 20 * 7, () -> {
-                AbilityUtil.damageNearbyEntities(serverLevel, entity, 9, damage, pos, true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, entity, 9, damage, pos, true, false, ModDamageTypes.source(level, ModDamageTypes.ABYSS, entity));
                 AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 1.5).forEach(e -> {
                     e.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 20, 4));
                     e.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * 6, 1));

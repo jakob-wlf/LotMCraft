@@ -85,7 +85,7 @@ public class FlameCageAbility extends Ability {
             AbilityUtil.damageNearbyEntities(serverLevel, entity,
                     radius - 0.5, dps, cageCenter, true, false,
                     true, 0,
-                    ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity));
+                    ModDamageTypes.source(serverLevel, ModDamageTypes.FIRE, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, cageCenter, radius + 1.5)
                     .stream()

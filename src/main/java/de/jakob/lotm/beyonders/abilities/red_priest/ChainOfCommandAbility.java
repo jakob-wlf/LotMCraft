@@ -214,8 +214,6 @@ public class ChainOfCommandAbility extends SelectableAbility {
             SubordinateUtils.turnEntityIntoSubordinate(target, player);
             ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
         }
-
-        }
         BeyonderData.reduceSpirituality(entity, INVITE_COST);
     }
 

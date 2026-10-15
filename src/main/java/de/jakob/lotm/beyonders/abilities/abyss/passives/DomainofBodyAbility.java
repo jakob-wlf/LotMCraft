@@ -61,10 +61,8 @@ public class DomainOfBodyAbility extends PassiveAbility {
         if (level.isClientSide()) return;
         if (event.getNewDamage() <= 0) return;
         if (!event.getSource().is(ModDamageTypes.PURIFICATION)) return;
-        System.out.println("PURIFICATION");
         PassiveAbility ability = PassiveAbilityHandler.getById("domain_of_body_ability");
         if (ability == null || !ability.shouldApplyTo(entity)) return;
-        System.out.println("Healing disabled");
         regenBlockedUntil.put(entity.getUUID(), level.getGameTime() + REGEN_BLOCK_TICKS);
     }
 

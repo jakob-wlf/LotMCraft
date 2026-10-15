@@ -100,7 +100,7 @@ public class BloodlineCorroderAbility extends SelectableAbility {
         ParticleUtil.drawParticleLine(level, corrodingDust, startPos, look, 2, .5, 23, .4);
         // Purification neutralizes the wither effect
         boolean purified = InteractionHandler.isInteractionPossible(new Location(startPos, level), "purification", seq);
-        AbilityUtil.damageNearbyEntities(level, entity, 2.75 * multiplier(entity), DamageLookup.lookupDamage(6, .9) * multiplier(entity), startPos, true, false, true, 0, 20 * 3, ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity));
+        AbilityUtil.damageNearbyEntities(level, entity, 2.75 * multiplier(entity), DamageLookup.lookupDamage(6, .9) * multiplier(entity), startPos, true, false, true, 0, 20 * 3, ModDamageTypes.source(level, ModDamageTypes.CORROSION, entity));
         // Heavy durability damage to the armor of everything hit
         AbilityUtil.getNearbyEntities(entity, level, startPos, 2.75 * multiplier(entity)).forEach(hit -> {
             if (hit == entity) return;
@@ -133,7 +133,7 @@ public class BloodlineCorroderAbility extends SelectableAbility {
                 dissolvedUntil.put(target.getUUID(), gameTime + MIST_LINGER_TICKS);
                 corrodeArmor(target, MIST_ARMOR_DAMAGE);
             });
-            AbilityUtil.damageNearbyEntities(serverLevel, entity, MIST_RADIUS, (float) DamageLookup.lookupDps(6, .2, 35, 20)*getPoisonDamageMultiplier(entity), entity.position(), true, false, true, 0, ModDamageTypes.source(serverLevel, ModDamageTypes.DEMONESS_GENERIC, entity));}, () -> clearArtifactScaling(entity), level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+            AbilityUtil.damageNearbyEntities(serverLevel, entity, MIST_RADIUS, (float) DamageLookup.lookupDps(6, .2, 35, 20)*getPoisonDamageMultiplier(entity), entity.position(), true, false, true, 0, ModDamageTypes.source(serverLevel, ModDamageTypes.CORROSION, entity));}, () -> clearArtifactScaling(entity), level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
     private static void corrodeArmor(LivingEntity target, float fractionOfMaxDurability) {
         for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
