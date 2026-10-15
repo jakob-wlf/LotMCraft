@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncDiscernmentDataPacket;
-import jdk.jfr.Frequency;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -12,18 +11,17 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
-import org.joml.sampling.BestCandidateSampling;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class DiscernmentComponent {
     private boolean isDiscerning = false;
     private int previosSeq = 2;
     private int seq = LOTMCraft.NON_BEYONDER_SEQ;
     private String pathway = "none";
+
+    private boolean hasUniquness = false;
 
     private AbilityWheelComponent previousWheel ;
     private AbilityBarComponent previousBar;
@@ -176,6 +174,9 @@ public class DiscernmentComponent {
                                 Pair.of(wheel, bar)
                         ));
                     }
+
+                    component.hasUniquness = tag.getBoolean("has");
+
                     return component;
                 }
 
@@ -212,6 +213,8 @@ public class DiscernmentComponent {
 
                     tag.put(NBT_SAVED, entries);
 
+                    tag.putBoolean("has", component.hasUniquness);
+
                     return tag;
                 }
             };
@@ -230,5 +233,13 @@ public class DiscernmentComponent {
 
     public void setPreviousBar(AbilityBarComponent previousBar) {
         this.previousBar = previousBar;
+    }
+
+    public void setHasUniqueness(boolean value){
+        hasUniquness = value;
+    }
+
+    public boolean getUniqueness(){
+        return hasUniquness;
     }
 }

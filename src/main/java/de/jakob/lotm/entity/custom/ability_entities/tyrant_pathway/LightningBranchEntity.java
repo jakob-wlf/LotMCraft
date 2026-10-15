@@ -231,8 +231,8 @@ public class LightningBranchEntity extends Entity {
             float damageMultiplier = (float)Math.pow(0.7, branchDepth);
 
             DamageSource dmg = (source != null)
-                    ? ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING, source)
-                    : ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING);
+                    ? ModDamageTypes.source(entity.level(), ModDamageTypes.LIGHTNING, source)
+                    : ModDamageTypes.source(entity.level(), ModDamageTypes.LIGHTNING);
 
             entity.hurt(dmg, (float)(damage * damageMultiplier));
         }

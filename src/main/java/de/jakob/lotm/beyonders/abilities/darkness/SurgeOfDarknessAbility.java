@@ -2,15 +2,11 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -30,6 +26,14 @@ public class SurgeOfDarknessAbility extends Ability {
         interactionRadius = 45;
         interactionCacheTicks = 20 * 15;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 7, 9, 12));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(18500f, 8000f, 4500f, 3850f));
+
+        baseDamage = 8;
     }
 
     @Override
@@ -48,7 +52,8 @@ public class SurgeOfDarknessAbility extends Ability {
             Vec3 center = entity.position();
             float multiplier = multiplier(entity);
             // Affect entities
-            ServerScheduler.scheduleForDuration(0, 4, 20 * 15, () -> {
+
+            ServerScheduler.scheduleForDuration(0, 4, 20 * 5, () -> {
                 // Surge of Darkness is weakened by light_strong
                 Location currentLoc = new Location(center, level);
                 int seq = AbilityUtil.getSeqWithArt(entity, this);
@@ -58,15 +63,10 @@ public class SurgeOfDarknessAbility extends Ability {
                 AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) level, entity, 45,
                         center, new MobEffectInstance(MobEffects.BLINDNESS, purified ? 20 * 2 : 20 * 10, purified ? 1 : 5, false, false, false));
 
-                AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, center, 45).forEach(e -> {
-                    SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
-                    sanityComponent.decreaseSanityWithSequenceDifference(0.0525f*(int) Math.max(multiplier/2,1), e, AbilityUtil.getSeqWithArt(entity, this), BeyonderData.getSequence(e));
-                });
-
-                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 45*(int) Math.max(multiplier/2,1), DamageLookup.lookupDps(3, .5, 4, 20) * multiplier(entity) * damageMult, center, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS_GENERIC, entity));
+                AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 45, baseDamage * damageMult, center, true, false, ModDamageTypes.source(level, ModDamageTypes.DARKNESS, entity));
             }, () -> clearArtifactScaling(entity), (ServerLevel) level);
 
-            List<BlockPos> affectedBlocks = AbilityUtil.getBlocksInEllipsoid((ServerLevel) level, center, 45*(int) Math.max(multiplier/2,1), 18*(int) Math.max(multiplier/2,1), true, false, true)
+            List<BlockPos> affectedBlocks = AbilityUtil.getBlocksInEllipsoid((ServerLevel) level, center, 45, 18, true, false, true)
                     .stream().filter(blockPos -> !level.getBlockState(blockPos).isAir()).toList();
 
             // Sort blocks by distance from center for spreading effect
@@ -102,7 +102,7 @@ public class SurgeOfDarknessAbility extends Ability {
             // Calculate total spread time based on number of waves
             int totalSpreadTime = waveNumber;
 
-            int restorationTime = (20 * 10) + totalSpreadTime;
+            int restorationTime = (20 * 5) + totalSpreadTime;
 
             ServerScheduler.scheduleDelayed(restorationTime, () -> {
                 // Send restoration packet to clients
@@ -114,8 +114,6 @@ public class SurgeOfDarknessAbility extends Ability {
                     level.sendBlockUpdated(b, level.getBlockState(b), level.getBlockState(b), Block.UPDATE_ALL);
                 });
             }, (ServerLevel) level);
-
-
 
         }
     }

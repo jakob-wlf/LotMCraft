@@ -67,7 +67,7 @@ public class CalamityAction extends ActionBase {
         switch (stream.peek()){
             case "meteor", "meteors" -> spawnMeteorShower(serverLevel,center,multiplier,griefing,entity);
             case "tornado" -> createTornados(serverLevel, entity, multiplier, center);
-            case "earthquake" -> new Earthquake().spawnCalamity(serverLevel, center, multiplier, griefing, 65, (float) DamageLookup.lookupDps(4, .925, 8, 20) * multiplier, entity, true);
+            case "earthquake" -> new Earthquake().spawnCalamity(serverLevel, center, griefing, 65, (float) DamageLookup.lookupDps(4, .925, 8, 20) * multiplier, entity, true);
             case "plague" -> createPlague(serverLevel, entity, multiplier);
         }
 
@@ -128,9 +128,9 @@ public class CalamityAction extends ActionBase {
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, entity.position(), new MobEffectInstance(MobEffects.WITHER, 20, 3, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, entity.position(), new MobEffectInstance(MobEffects.BLINDNESS, 20, 4, false, false, false));
             AbilityUtil.addPotionEffectToNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, entity.position(), new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2, false, false, false));
-            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+            AbilityUtil.damageNearbyEntities((ServerLevel) entity.level(), entity, 45*multiplier, DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult, entity.position(), true, false, true, 0, ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity));
 
-            entity.hurt(ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, null), (float) (DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult));
+            entity.hurt(ModDamageTypes.source(level, ModDamageTypes.PLAGUE, null), (float) (DamageLookup.lookupDps(4, .3, 35, 20) *(int) Math.max(multiplier/6,1) * damageMult));
         });
     }
 }

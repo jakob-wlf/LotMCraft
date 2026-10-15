@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -38,9 +40,11 @@ public class MiracleCreationAbility extends SelectableAbility {
     public MiracleCreationAbility(String id) {
         super(id, 5);
         canBeShared = false;
-        canBeCopied = false;
-        canBeReplicated = false;
-        cannotBeStolen = true;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8750f, 7000f));
+
+        baseDamage = 1; //needed only to hook into multiplier
     }
 
     @Override

@@ -12,11 +12,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class HealingAbility extends SelectableAbility {
     public HealingAbility(String id) {
         super(id, 10);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 4, 5, 7, 8, 9, 10));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1700f, 1100f, 625f, 550f, 310f, 240f, 190f, 66f));
+
     }
 
     @Override
@@ -51,10 +60,11 @@ public class HealingAbility extends SelectableAbility {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
-        float restoredHealth = 10 * multiplier(entity) * multiplier(entity);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        float restoredHealth = getAmount(entitySeq);
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
-            e.setHealth(Math.max(e.getMaxHealth(), e.getHealth() + restoredHealth));
+            e.setHealth(Math.min(e.getMaxHealth(), e.getHealth() + restoredHealth));
             ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), e.getEyePosition().subtract(0, .3, 0), 35, .9);
         }
     }
@@ -65,10 +75,27 @@ public class HealingAbility extends SelectableAbility {
 
         level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
 
-        float restoredHealth = 10 * multiplier(entity) * multiplier(entity);
-        entity.setHealth(Math.max(entity.getMaxHealth(), entity.getHealth() + restoredHealth));
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        float restoredHealth = getAmount(entitySeq);
+
+        entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + restoredHealth));
 
         ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), entity.getEyePosition().subtract(0, .3, 0), 35, .9);
+    }
+
+    private static int getAmount(int seq){
+        return switch (seq){
+            case 8 -> 10;
+            case 7 -> 15;
+            case 6 -> 20;
+            case 5 -> 25;
+            case 4 -> 30;
+            case 3 -> 35;
+            case 2 -> 40;
+            case 1 -> 45;
+            case 0 -> 55;
+            default -> 0;
+        };
     }
 
 }

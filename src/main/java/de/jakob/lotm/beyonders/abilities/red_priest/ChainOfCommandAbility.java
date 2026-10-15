@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TeamComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.gui.custom.cohort.CohortMenuProvider;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.CohortUtil;
@@ -38,6 +39,12 @@ public class ChainOfCommandAbility extends SelectableAbility {
         instance = this;
 
         canBeUsedByNPC = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 4, 4, 5, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 1600f, 890f, 570f, 624f));
     }
 
     @Override
@@ -203,6 +210,11 @@ public class ChainOfCommandAbility extends SelectableAbility {
                     serverPlayer.connection.send(packet);
                 }
             }
+
+            SubordinateUtils.turnEntityIntoSubordinate(target, player);
+            ParticleUtil.spawnParticles(serverLevel, dust, target.position().add(0, target.getEyeHeight() / 2, 0), 95, .5, target.getEyeHeight() / 2, .5, 0);
+        }
+
         }
         BeyonderData.reduceSpirituality(entity, INVITE_COST);
     }

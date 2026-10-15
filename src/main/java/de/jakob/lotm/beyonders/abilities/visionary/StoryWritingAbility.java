@@ -3,7 +3,6 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerHelper;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -20,7 +19,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.UUID;
 
 //if <trigger> then <action>
 
@@ -46,8 +48,12 @@ public class StoryWritingAbility extends ToggleAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -55,7 +61,7 @@ public class StoryWritingAbility extends ToggleAbility {
             return;
         }
 
-        writingMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+        writingMap.put(entity.getUUID(), entitySeq);
     }
 
     @Override
@@ -72,8 +78,12 @@ public class StoryWritingAbility extends ToggleAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if(!BeyonderData.getPathway(entity).equals("visionary")){
+            entitySeq++;
+        }
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -82,9 +92,10 @@ public class StoryWritingAbility extends ToggleAbility {
 
         if (PsychologicalCueAbility.map.containsKey(entity.getUUID())) {
             cancel((ServerLevel) level, entity);
+            return;
         }
 
-        writingMap.put(entity.getUUID(), AbilityUtil.getSeqWithArt(entity, this));
+        writingMap.put(entity.getUUID(), entitySeq);
     }
 
     @Override
@@ -162,6 +173,56 @@ public class StoryWritingAbility extends ToggleAbility {
             BeyonderData.playerMap.setProphecies(player.getUUID(), prophecies);
         }
     }
+
+//    @SubscribeEvent
+//    public static void onRightClick(PlayerInteractEvent.RightClickItem event) {
+//        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+//
+//        if (!writingMap.containsKey(player.getUUID())) return;
+//
+//        ItemStack stack = event.getItemStack();
+//
+//        if (!stack.is(Items.WRITTEN_BOOK)) {
+//            return;
+//        }
+//
+//        WrittenBookContent content =
+//                stack.get(DataComponents.WRITTEN_BOOK_CONTENT);
+//
+//        if (content == null) {
+//            return;
+//        }
+//
+//        String globalName = "";
+//        for (var page : content.pages()) {
+//            String[] lines = page.raw().getString().split(";", -1);
+//
+//            for (String line : lines) {
+//                var stream = new TokenStream(line);
+//
+//                if(stream.peek() == null) continue;
+//
+//                if(stream.peek().equals("name")){
+//                    stream.next();
+//                    globalName = stream.peek();
+//                }
+//                else if(stream.peek().equals("if")){
+//                    stream.next();
+//                    if(stream.peek() == null) continue;
+//
+//                    if(TriggerHelper.getType(stream.peek()) != null){
+//                        stream = stream.add(1, globalName);
+//                    }
+//
+//                    String cue = stream.toString();
+//
+//                    Component component = Component.literal(cue);
+//                    ServerChatEvent cueEvent = new ServerChatEvent(player, cue, component);
+//                    NeoForge.EVENT_BUS.post(cueEvent);
+//                }
+//            }
+//        }
+//    }
 
 //    private static final Map<UUID, UUID> AUTHOR_TARGET = new HashMap<>();
 //    private static final Map<UUID, GuidanceData> ACTIVE_GUIDANCE = new HashMap<>();

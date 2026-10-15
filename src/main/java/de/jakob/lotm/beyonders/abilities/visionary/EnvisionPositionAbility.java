@@ -5,9 +5,8 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.PendingTeleportRequests;
 import de.jakob.lotm.network.packets.handlers.TeleportUse;
 import de.jakob.lotm.network.packets.toClient.OpenEnvisionLocationScreenPacket;
-import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,13 +58,13 @@ public class EnvisionPositionAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 1000;
+        return 4000;
     }
 
     private void onSight(Level level, LivingEntity entity){
         if(!(level instanceof ServerLevel serverLevel)) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, getDistancePerSeq(BeyonderData.getSequence(entity)), true).getCenter().add(0, 1, 0);
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, baseDistance, true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         var validatedPos = TeleportationUtil.clampToBorder(serverLevel, targetLoc);

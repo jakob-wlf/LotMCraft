@@ -3,7 +3,6 @@ package de.jakob.lotm.beyonders.abilities.sun;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.JusticeSwordEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -12,6 +11,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class SwordOfJusticeAbility extends Ability {
@@ -19,6 +20,14 @@ public class SwordOfJusticeAbility extends Ability {
         super(id, 6f, "purification", "purification_holy", "light_source", "light_strong", "light_weak");
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3, 5));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 1000f));
+
+        baseDamage = 15f;
     }
 
     @Override
@@ -37,12 +46,13 @@ public class SwordOfJusticeAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, (int) (20 * multiplier(entity)), 2).add(0, 15, 0);
-        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2).add(0, 15, 0);
+        LivingEntity targetEntity = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
         if(targetEntity != null) {
             targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 4, false, false, false));
         }
-        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, (float) (DamageLookup.lookupDamage(3, 1) * multiplier(entity)), entity, this);
+
+        JusticeSwordEntity swordEntity = new JusticeSwordEntity(level, targetLoc, baseDamage, entity, this);
         level.addFreshEntity(swordEntity);
     }
 }

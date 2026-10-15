@@ -29,11 +29,16 @@ import java.util.Random;
  *  - Dropped cosmetic distance-sort (O(n log n) for potentially 100k+ blocks)
  *  - Fire placement samples rather than iterating all blocks a third time
  *  - Chunk existence pre-check avoids touching unloaded chunks
+ *
+ * Entity handling:
+ *  - By default entities are damaged and knocked back.
+ *  - Use {@link #blocksOnly} (or pass damageEntities = false) to destroy blocks
+ *    while leaving entities completely unaffected.
  */
 public class PerformantExplosion {
 
     // ---------- tuning ----------
-    private static final float JAGGEDNESS       = 0.15f;
+    private static final float JAGGEDNESS        = 0.15f;
     private static final float RESISTANCE_FACTOR = 0.3f;
     private static final float DAMAGE_CAP        = 40.0f;
     private static final float DAMAGE_CAP_START  = 10.0f;
@@ -45,6 +50,7 @@ public class PerformantExplosion {
     private final float  radius;
     private final boolean fire;
     private final Explosion.BlockInteraction interaction;
+    private final boolean damageEntities;
     private final Explosion vanillaExplosion;
 
     // precomputed
@@ -53,11 +59,18 @@ public class PerformantExplosion {
 
     public PerformantExplosion(Level level, Entity source, Vec3 center, float radius,
                                boolean fire, Explosion.BlockInteraction interaction) {
-        this.level       = level;
-        this.source      = source;
-        this.radius      = radius;
-        this.fire        = fire;
-        this.interaction = interaction;
+        this(level, source, center, radius, fire, interaction, true);
+    }
+
+    public PerformantExplosion(Level level, Entity source, Vec3 center, float radius,
+                               boolean fire, Explosion.BlockInteraction interaction,
+                               boolean damageEntities) {
+        this.level          = level;
+        this.source         = source;
+        this.radius         = radius;
+        this.fire           = fire;
+        this.interaction    = interaction;
+        this.damageEntities = damageEntities;
 
         this.cx       = center.x;
         this.cy       = center.y;
@@ -82,20 +95,33 @@ public class PerformantExplosion {
             }
         }
 
-        damageEntities();
+        if (damageEntities) {
+            damageEntities();
+        }
 
         if (level instanceof ServerLevel sl) {
             vanillaExplosion.finalizeExplosion(true); // particles + sound packet
         }
     }
 
+    /** Standard explosion: destroys blocks and damages entities. */
     public static void create(Level level, Vec3 pos, float power) {
         create(level, null, pos, power, false, Explosion.BlockInteraction.DESTROY);
     }
 
     public static void create(Level level, Entity source, Vec3 pos, float power,
                               boolean fire, Explosion.BlockInteraction interaction) {
-        new PerformantExplosion(level, source, pos, power, fire, interaction).explode();
+        new PerformantExplosion(level, source, pos, power, fire, interaction, true).explode();
+    }
+
+    /** Destroys blocks only; entities are neither damaged nor knocked back. */
+    public static void blocksOnly(Level level, Vec3 pos, float power) {
+        blocksOnly(level, null, pos, power, false, Explosion.BlockInteraction.DESTROY);
+    }
+
+    public static void blocksOnly(Level level, Entity source, Vec3 pos, float power,
+                                  boolean fire, Explosion.BlockInteraction interaction) {
+        new PerformantExplosion(level, source, pos, power, fire, interaction, false).explode();
     }
 
     // -------------------------------------------------------------------------
@@ -247,7 +273,7 @@ public class PerformantExplosion {
     }
 
     // -------------------------------------------------------------------------
-    // Entity damage — unchanged logic, minor cleanup
+    // Entity damage — skipped entirely when damageEntities == false
     // -------------------------------------------------------------------------
 
     private void damageEntities() {

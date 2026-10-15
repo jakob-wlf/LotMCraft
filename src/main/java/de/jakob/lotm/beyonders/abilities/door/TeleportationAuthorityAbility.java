@@ -2,7 +2,6 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.MysticalDoorEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenCoordinateScreenPacket;
@@ -26,12 +25,12 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,11 +38,22 @@ import java.util.Set;
 public class TeleportationAuthorityAbility extends SelectableAbility {
     public TeleportationAuthorityAbility(String id) {
         super(id, 8);
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 6));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 15000f, 10000f));
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.teleportation_authority.self", "ability.lotmcraft.teleportation_authority.self_and_nearby", "ability.lotmcraft.teleportation_authority.targets", "ability.lotmcraft.teleportation_authority.banish"};
+        return new String[]{
+                "ability.lotmcraft.teleportation_authority.self",
+                "ability.lotmcraft.teleportation_authority.self_and_nearby",
+                "ability.lotmcraft.teleportation_authority.targets"
+                //"ability.lotmcraft.teleportation_authority.banish"
+        };
     }
 
     @Override
@@ -58,12 +68,12 @@ public class TeleportationAuthorityAbility extends SelectableAbility {
             case 0 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_self"));
             case 1 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_self_and_nearby"));
             case 2 -> PacketHandler.sendToPlayer((ServerPlayer) entity, new OpenCoordinateScreenPacket("teleportation_authority_targets"));
-            case 3 -> banishTargets((ServerLevel) level, entity);
+            //case 3 -> banishTargets((ServerLevel) level, entity);
         }
     }
 
     private void banishTargets(ServerLevel level, LivingEntity entity) {
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 30, 2, true, true);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2, true, true);
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, level, targetLoc, 14);
 
         ParticleUtil.spawnParticles(level, ModParticles.STAR.get(), targetLoc, 900, 8, .2, 8, .075);
