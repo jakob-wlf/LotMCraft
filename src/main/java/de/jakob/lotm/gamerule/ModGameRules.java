@@ -22,6 +22,7 @@ public class ModGameRules {
     public static GameRules.Key<GameRules.IntegerValue> CHARSTACK_REQUIRED_FOR_APOTHEOSIS;
     public static GameRules.Key<GameRules.BooleanValue> SEQUENCE_DIMENSION_LOCK;
     public static GameRules.Key<GameRules.BooleanValue> PRE_LOAD_EFFECTS;
+    public static GameRules.Key<GameRules.BooleanValue> ANGEL_DAMAGE_IMMUNITY;
 
     public static GameRules.Key<GameRules.IntegerValue> MAX_ALLY_COUNT;
 
@@ -43,6 +44,12 @@ public class ModGameRules {
             "allowAbilityGriefing",
             GameRules.Category.MISC,
             GameRules.BooleanValue.create(true)
+        );
+
+        ANGEL_DAMAGE_IMMUNITY = GameRules.register(
+                "angelDamageImmunity",
+                GameRules.Category.MISC,
+                GameRules.BooleanValue.create(true)
         );
 
         DISABLE_FLIGHT_IN_COMBAT = GameRules.register(
