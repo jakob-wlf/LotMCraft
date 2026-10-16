@@ -135,9 +135,9 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static void drain(LivingEntity target) {
         if (target.level().isClientSide()) return;
         float amount = switch (BeyonderData.getSequence(target)) {
-            case 0 -> 5000f;
-            case 1 -> 3000f;
-            case 2 -> 1500f;
+            case 0 -> 3000f;
+            case 1 -> 2000f;
+            case 2 -> 1000f;
             default -> 0f;
         };
         if (amount <= 0f) return;
