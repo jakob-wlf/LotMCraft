@@ -81,7 +81,7 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 2, () -> {
             if(random.nextInt(8) == 0) {
-                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDps(6, .8, 8, 8) * multiplier(entity)*foulness(entity)));
+                target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.FILTH, entity), (float) (DamageLookup.lookupDps(6, .8, 8, 8) * multiplier(entity)*foulness(entity)));
             }
             target.addEffect(new MobEffectInstance(MobEffects.WITHER, 8*20*foulness(entity), 3*foulness(entity), false, false, false));
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));

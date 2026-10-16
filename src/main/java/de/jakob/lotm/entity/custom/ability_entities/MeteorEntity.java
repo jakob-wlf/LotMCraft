@@ -5,6 +5,7 @@ import com.lowdragmc.photon.client.fx.FX;
 import com.lowdragmc.photon.client.fx.FXHelper;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
@@ -237,7 +238,12 @@ public class MeteorEntity extends Entity {
         moveTo(position().add(direction.normalize().scale(getSpeed())));
 
         if(!level().getBlockState(BlockPos.containing(position())).isAir()) {
-            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
+            LivingEntity casterLiving = getCaster() instanceof LivingEntity l ? l : null;
+            if (isAbyssImpact()) {
+                AbilityUtil.damageNearbyEntities(serverLevel, casterLiving, getRadius(), getDamage(), position(), true, false,ModDamageTypes.source(serverLevel, ModDamageTypes.FILTH, casterLiving));
+            } else {
+                AbilityUtil.damageNearbyEntities(serverLevel, casterLiving, getRadius(), getDamage(), position(), true, false);
+            }
             ServerScheduler.scheduleDelayed(2, () -> {
                 PacketHandler.sendToNearbyPlayers(
                         new PlayPhotonBlockEffectPacket("explosion", BlockPos.containing(position()), 0, 0, 0, Math.max(1, getExplosionSize() * 0.15), null, -1, false, true, null),

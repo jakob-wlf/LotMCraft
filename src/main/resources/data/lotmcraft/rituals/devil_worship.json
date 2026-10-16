@@ -1,0 +1,25 @@
+{
+  "id": "lotm:abyss_devil_worship",
+  "discovered_from": "",
+  "candle": "minecraft:black_candle",
+  "sacrifices": [
+    { "item": "minecraft:redstone", "count": 4 },
+    { "item": "minecraft:crying_obsidian", "count": 1 },
+    { "item": "minecraft:bone", "count": 5 }
+  ],
+  "honorific": {
+    "lines": [
+      "Demons of filth who feast upon soul",
+      "Who Temp the foolish into the Abyss",
+      "Lend me a shadow of yourselves and answer my call"
+    ]
+  },
+  "conditions": { "min_sequence": 7 },
+  "particle_color": { "r": 0.6, "g": 0.0, "b": 0.1 },
+  "book_color": "DARK_RED",
+  "duration_ticks": 300,
+  "result": {
+    "type": "devil_worship",
+    "params": {}
+  }
+}

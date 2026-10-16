@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway;
 
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.tyrant.WaterMasteryAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -17,8 +18,10 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -305,14 +308,14 @@ public class GiantLightningEntity extends Entity {
             boolean inWater = isNearWater(pos);
             float waterMultiplier = inWater ? 2.0f : 1.0f;
 
-            entity.hurt(source.damageSources().mobAttack(source), (float) damage * waterMultiplier);
+            hurtSplit(entity, (float) damage * waterMultiplier);
 
             // Damage nearby entities as well
             List<Entity> nearbyEntities = level().getEntities(this,
                     new AABB(pos.add(-5, -5, -5), pos.add(5, 5, 5)));
             for (Entity nearby : nearbyEntities) {
                 if (nearby != entity && !(nearby instanceof GiantLightningEntity) && !nearby.isSpectator()) {
-                    nearby.hurt(source.damageSources().mobAttack(source), (float) (damage * 0.3));
+                    hurtSplit(nearby, (float) (damage * 0.3));
                 }
             }
 
@@ -391,7 +394,7 @@ public class GiantLightningEntity extends Entity {
         ServerLevel serverLevel = (ServerLevel) level();
         AbilityUtil.getNearbyEntities(source, serverLevel, pos, 20).forEach(e -> {
             if(e.isInWater() || isNearWater(e.position())) {
-                e.hurt(source.damageSources().mobAttack(source), (float) (damage * 1.5));
+                hurtSplit(e, (float) (damage * 1.5));
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, e.position(), 20, .5, 0);
             }
         });
@@ -412,7 +415,7 @@ public class GiantLightningEntity extends Entity {
             if(distToWallLine < 5 && Math.abs(alongWall) < wall.halfWidth()) {
                 for(int j = -wall.halfWidth(); j <= wall.halfWidth(); j += 3) {
                     Vec3 wallPoint = wallPos.add(perp.scale(j));
-                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, (float) (damage * 1.5), wallPoint, true, false, true, 0);
+                    AbilityUtil.getNearbyEntities(source, serverLevel, wallPoint, 3).forEach(e -> hurtSplit(e, (float) (damage * 1.5)));
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, wallPoint, 10, 1, 0);
                 }
                 break;
@@ -485,5 +488,18 @@ public class GiantLightningEntity extends Entity {
 
     public int getColor() {
         return entityData.get(COLOR);
+    }
+
+    private void hurtSplit(Entity target, float amount) {
+        float part = amount / 3f;
+        hurtAs(target, ModDamageTypes.LIGHTNING, part);
+        hurtAs(target, ModDamageTypes.INFORMATION_DESTRUCTION, part);
+        hurtAs(target, ModDamageTypes.PURIFICATION, amount - part * 2f); // remainder, so rounding never loses damage
+    }
+
+    private void hurtAs(Entity target, ResourceKey<DamageType> type, float amount) {
+        target.hurt(ModDamageTypes.source(level(), type, source), amount);
+        // Vanilla i-frames would swallow the next hit, so clear them between the three
+        if (target instanceof LivingEntity living) living.invulnerableTime = 0;
     }
 }

@@ -135,9 +135,9 @@ public class WaterBoltEntity extends AbstractArrow {
 
         // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.WATER, livingOwner), (float) damage);
         } else {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.WATER), (float) damage);
         }
     }
 

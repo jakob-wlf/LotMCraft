@@ -203,7 +203,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
                 }
             }
 
-            AbilityUtil.damageNearbyEntities(level, entity, wallRadius - 2, wallRadius + 2, damage, center, true, false, true, 0, 60, ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, entity));
+            AbilityUtil.damageNearbyEntities(level, entity, wallRadius - 2, wallRadius + 2, damage, center, true, false, true, 0, 60, ModDamageTypes.source(level, ModDamageTypes.FIRE, entity));
         }, level);
 
         ServerScheduler.scheduleDelayed(20 * 8 + 1, () -> {

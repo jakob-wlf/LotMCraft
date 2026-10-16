@@ -100,6 +100,7 @@ public class ModDamageTypes {
     public static final ResourceKey<DamageType> FILTH = key("filth");
     public static final ResourceKey<DamageType> CORROSION = key("corrosion");
     public static final ResourceKey<DamageType> ABYSS = key("abyss");
+    public static final ResourceKey<DamageType> DEGENERATION = key("degeneration");
 
     // -------------------------------------------------------------------------
     // Utility

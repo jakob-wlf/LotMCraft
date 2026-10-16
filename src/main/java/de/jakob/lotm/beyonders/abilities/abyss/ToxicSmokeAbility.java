@@ -71,7 +71,7 @@ public class ToxicSmokeAbility extends Ability {
                         false,
                         true,
                         0,
-                        ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity)
+                        ModDamageTypes.source(level, ModDamageTypes.PLAGUE, entity)
                 );
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION_EMITTER, pos, 50, 7, .02);
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.LARGE_SMOKE, pos, 175, 7, .02);
