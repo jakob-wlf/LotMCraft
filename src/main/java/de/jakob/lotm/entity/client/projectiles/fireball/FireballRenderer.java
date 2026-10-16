@@ -31,10 +31,12 @@ public class FireballRenderer extends EntityRenderer<FireballEntity> {
         boolean petrified = entity.getTags().contains("petrified");
 
         poseStack.pushPose();
+
         float scale = (float) Math.clamp(entity.getSize() * .5, 1.5, 5);
         poseStack.scale(scale, scale, scale);
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
+
+        poseStack.scale(-1.0F, -1.0F, 1.0F);
+        poseStack.translate(0.0D, -1.625D, 0.0D);
 
         RenderType renderType = petrified ? this.model.renderType(LOTMCraft.STONE_TEXTURE) :
                 this.model.renderType(this.getTextureLocation(entity));
