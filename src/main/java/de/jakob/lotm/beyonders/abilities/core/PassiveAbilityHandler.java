@@ -4,6 +4,8 @@ import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbili
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
+import de.jakob.lotm.beyonders.abilities.black_emperor.passives.MentalResistanceEmperor;
+import de.jakob.lotm.beyonders.abilities.black_emperor.passives.PhysicalEnhancementsEmperorAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
@@ -69,11 +71,16 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new PhysicalEnhancementsWheelOfFortuneAbility("physical_enhancements_wheel_of_fortune_ability"));
         passiveAbilities.add(new PhysicalEnhancementsJusticiarAbility("physical_enhancements_justiciar_ability"));
         passiveAbilities.add(new PhysicalEnhancementsDeathAbility("physical_enhancements_death_ability"));
+        passiveAbilities.add(new PhysicalEnhancementsEmperorAbility("physical_enhancements_black_emperor_ability"));
+
 
         // Justiciar
         passiveAbilities.add(new OrderJusticiarAbility("order_justiciar_ability"));
         passiveAbilities.add(new EnhancedMentalAttributesAbility("enhanced_mental_attributes_justiciar_ability"));
         passiveAbilities.add(new ChaosHuntingAbility("chaos_hunting_justiciar_ability"));
+
+        // Black Emperor
+        passiveAbilities.add(new MentalResistanceEmperor("mental_resistance_emperor_ability"));
 
         // Red priest
         passiveAbilities.add(new FlamingHitAbility("flaming_hit_ability"));

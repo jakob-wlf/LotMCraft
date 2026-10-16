@@ -1431,6 +1431,9 @@
   "lotmcraft.commanding_presence_ability.description" : "People bow to you.",
   "lotmcraft.commanding_presence_ability": "Commanding Presence",
 
+  "ability.lotmcraft.mental_resistance_emperor_ability":"Mental Resistance",
+  "ability.lotmcraft.mental_resistance_emperor_ability.description":"Your mind has become strong enough to withstand mental changes.",
+
   "ability.lotmcraft.undead_ignorance_ability": "Undead Ignorance",
   "ability.lotmcraft.undead_ignorance_ability.description": "Undead mobs no longer perceive you as a target",
 
