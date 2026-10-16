@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "lotmcraft:purification",
+    "lotmcraft:light",
+    "lotmcraft:faith",
+    "lotmcraft:information_destruction"
+  ]
+}
