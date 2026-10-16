@@ -7,15 +7,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
@@ -111,9 +107,9 @@ public class EloquenceAbility extends ToggleAbility {
         return Math.min(1.0, score);
     }
 
-    private static boolean containsAny(String msg, List<String> words) {
+    private static boolean containsAny(String msg) {
         String lower = msg.toLowerCase(Locale.ROOT);
-        for (String w : words) {
+        for (String w : EloquenceAbility.COMMANDING_WORDS) {
             if (lower.contains(w)) return true;
         }
         return false;
@@ -169,7 +165,7 @@ public class EloquenceAbility extends ToggleAbility {
         CHAT_COOLDOWN.put(speaker.getUUID(), now);
 
         // 1. Villager discount
-        if (target instanceof Villager villager) {
+        if (target instanceof Villager) {
             double discountChance = 0.30 + persuasiveness * 0.50;
             if (RANDOM.nextDouble() < discountChance) {
                 applyVillagerDiscount(speaker, Math.min(3, (int) Math.round(persuasiveness * 3)));
@@ -186,7 +182,7 @@ public class EloquenceAbility extends ToggleAbility {
 
         // 3. Disarm
         double disarmChance = 0.01 + persuasiveness * 0.06;
-        if (containsAny(message, COMMANDING_WORDS)) {
+        if (containsAny(message)) {
             disarmChance += 0.18;
         }
         speaker.sendSystemMessage(Component.literal(String.valueOf(disarmChance)));
