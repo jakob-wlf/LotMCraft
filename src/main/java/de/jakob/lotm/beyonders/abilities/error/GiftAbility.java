@@ -34,7 +34,6 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import java.util.*;
 
 public class GiftAbility extends SelectableAbility {
-    private static final int AGE = 5;
 
     public GiftAbility(String id) {
         super(id, 1f);
@@ -91,7 +90,7 @@ public class GiftAbility extends SelectableAbility {
                 || (entitySeq > 1 && selectedAbility >= 3)){
             selectedAbility = 0;
         }
-        if (BeyonderData.getSequence(entity) > 0 && selectedAbility == AGE) selectedAbility = 0;
+        if (BeyonderData.getSequence(entity) > 0 && selectedAbility == 5) selectedAbility = 0;
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));
@@ -117,7 +116,7 @@ public class GiftAbility extends SelectableAbility {
                 || (entitySeq > 1 && selectedAbility >= 3)){
             selectedAbility = 0;
         }
-        if (BeyonderData.getSequence(entity) > 0 && selectedAbility == AGE) selectedAbility = AGE - 1;
+        if (BeyonderData.getSequence(entity) > 0 && selectedAbility == 5) selectedAbility = 5 - 1;
 
         selectedAbilities.put(entity.getUUID(), selectedAbility);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selectedAbility));

@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 public class ConceptualTheftAbility extends SelectableAbility {
-    private static final int AGE = 5;
 
     public ConceptualTheftAbility(String id) {
         super(id, 10);
@@ -81,7 +80,7 @@ public class ConceptualTheftAbility extends SelectableAbility {
         int count = getAbilityNames().length;
         if (selected >= count) selected = 0;
         if (selected < 0) selected = count - 1;
-        if (BeyonderData.getSequence(entity) > 0 && selected == AGE) selected = direction > 0 ? 0 : AGE - 1;
+        if (BeyonderData.getSequence(entity) > 0 && selected == 5) selected = direction > 0 ? 0 : 5 - 1;
         selectedAbilities.put(entity.getUUID(), selected);
         PacketHandler.sendToServer(new AbilitySelectionPacket(getId(), selected));
     }
@@ -98,9 +97,9 @@ public class ConceptualTheftAbility extends SelectableAbility {
             default -> spiritualityCost = 7500;
         }
 
-        if (abilityIndex == AGE && BeyonderData.getSequence(entity) > 0) return;
+        if (abilityIndex == 5 && BeyonderData.getSequence(entity) > 0) return;
 
-        if(abilityIndex == 0 || abilityIndex == 1 || abilityIndex == 2 || abilityIndex == 4 || abilityIndex == AGE) {
+        if(abilityIndex == 0 || abilityIndex == 1 || abilityIndex == 2 || abilityIndex == 4 || abilityIndex == 5) {
             if(BeyonderData.getSpirituality(entity) < spiritualityCost) return;
             BeyonderData.reduceSpirituality(entity, spiritualityCost);
         }
