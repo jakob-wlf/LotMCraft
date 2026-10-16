@@ -61,10 +61,10 @@ public class ProhibitionAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.prohibition.beyonder_abilities",
-                "ability.lotmcraft.prohibition.combat",
+                // "ability.lotmcraft.prohibition.combat",
                 "ability.lotmcraft.prohibition.flying",
                 "ability.lotmcraft.prohibition.item_use",
-                "ability.lotmcraft.prohibition.players",
+                // "ability.lotmcraft.prohibition.players",
                 "ability.lotmcraft.prohibition.outside_world",
                 "ability.lotmcraft.prohibition.stand_ins",
                 "ability.lotmcraft.prohibition.marionette_interchange",

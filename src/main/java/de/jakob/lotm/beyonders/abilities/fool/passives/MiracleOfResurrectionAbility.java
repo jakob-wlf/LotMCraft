@@ -91,7 +91,10 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
 
                     ToggleAbility.cleanUp(serverLevel, serverPlayer);
                     BeyonderData.setSpirituality(serverPlayer, BeyonderData.getMaxSpirituality(serverPlayer));
-                    LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").useAbility(serverLevel, serverPlayer, false, false, false, false);
+                    var hidingAbility = LOTMCraft.abilityHandler.getById("historical_void_hiding_ability");
+                    if(hidingAbility != null) {
+                        hidingAbility.useAbility(serverLevel, serverPlayer, false, false, false, false);
+                    }
                 }
 
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());

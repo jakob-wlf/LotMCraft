@@ -3,8 +3,6 @@ package de.jakob.lotm.beyonders.abilities.death.passives;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
@@ -35,7 +33,6 @@ import net.minecraft.util.RandomSource;
 public class ReincarnationAbility extends PassiveAbility {
 
     public static final String NBT_COOLDOWN_TIME = "reincarnation_cooldown_until";
-    public static final String SEAL_CAUSE = "reincarnation_debuff";
 
     /** 5 minutes of invisibility in ticks */
     private static final int CONCEALMENT_TICKS = 20 * 60 * 5;
@@ -46,18 +43,11 @@ public class ReincarnationAbility extends PassiveAbility {
         return 24L * 60 * 60 * 1000;                    // 24 hours (seq 4+)
     }
 
-    /** Seal duration in ticks by sequence */
-    private static int getSealDurationTicks(int sequence) {
-        if (sequence <= 3) return 20 * 60 * 15; // 15 minutes
-        return 20 * 60 * 30;                    // 30 minutes (seq 4+)
-    }
-
     public ReincarnationAbility(String id) {
         super(id);
     }
 
-    /** Clears the real-time reincarnation cooldown. The post-reincarnation ability seal
-     * is lifted generically wherever all sealed abilities get unsealed (e.g. DisabledAbilitiesComponent.enableAllAbilities()). */
+    /** Clears the real-time reincarnation cooldown. */
     public static void clearCooldown(ServerPlayer player) {
         player.getPersistentData().remove(NBT_COOLDOWN_TIME);
     }
@@ -89,7 +79,6 @@ public class ReincarnationAbility extends PassiveAbility {
 
         int sequence = BeyonderData.getSequence(player);
         long cooldownMs = getCooldownMs(sequence);
-        int sealTicks = getSealDurationTicks(sequence);
 
         // Cooldown check (real-world time so it survives restarts)
         long now = System.currentTimeMillis();
@@ -138,29 +127,12 @@ public class ReincarnationAbility extends PassiveAbility {
             }
         }
 
-        // Seal all current-sequence abilities (Reincarnation Debuff)
-        DisabledAbilitiesComponent disabledAbilities = player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        disabledAbilities.disableAbilityUsageForTime(SEAL_CAUSE, sealTicks, player);
-
-        // Also seal each current-sequence ability individually for clarity
-        if (BeyonderData.isBeyonder(player)) {
-            String pathway = BeyonderData.getPathway(player);
-            LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).forEach(ability -> {
-                if (!ability.canAlwaysBeUsed) {
-                    disabledAbilities.disableSpecificAbilityForTime(ability.getId(), SEAL_CAUSE, sealTicks);
-                }
-            });
-        }
-
         // Grant 5 minutes of concealment
         player.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT,
                 CONCEALMENT_TICKS, 0, false, false, false));
 
-        int sealMinutes = sealTicks / (20 * 60);
         player.sendSystemMessage(Component.translatable("ability.lotmcraft.reincarnation.triggered")
                 .withStyle(ChatFormatting.DARK_AQUA));
-        player.sendSystemMessage(Component.translatable("ability.lotmcraft.reincarnation.debuff_applied", sealMinutes)
-                .withStyle(ChatFormatting.DARK_RED));
     }
 
     private static final int MIN_DISTANCE = 500;

@@ -187,7 +187,12 @@ public class HistoricalVoidSummonSelfAbility extends Ability {
                 return;
             }
 
-            LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").useAbility(player.serverLevel(), player, false, false, false, false);
+            var hidingAbility = LOTMCraft.abilityHandler.getById("historical_void_hiding_ability");
+            if(hidingAbility == null) {
+                return;
+            }
+
+            hidingAbility.useAbility(player.serverLevel(), player, false, false, false, false);
             player.playSound(SoundEvents.ENDER_CHEST_OPEN);
         }
     }

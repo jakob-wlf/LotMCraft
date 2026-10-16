@@ -157,7 +157,7 @@ public class AbilityHandler {
         abilities.add(new HistoricalVoidSummoningAbility("historical_void_summoning_ability"));
         abilities.add(new HistoricalVoidSummonSelfAbility("historical_void_summon_self_ability"));
         abilities.add(new HistoricalVoidBorrowingAbility("historical_void_borrowing_ability"));
-        abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
+        // abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
         abilities.add(new FoolingAbility("fooling_ability"));
@@ -220,7 +220,7 @@ public class AbilityHandler {
         // DOOR PATHWAY
         abilities.add(new DoorOpeningAbility("door_opening_ability"));
         abilities.add(new SpellsAbility("spells_ability"));
-        //abilities.add(new RecordingAbility("recording_ability"));
+        abilities.add(new RecordingAbility("recording_ability"));
         abilities.add(new BlinkAbility("blink_ability"));
         abilities.add(new TravelersDoorAbility("travelers_door_ability"));
         abilities.add(new InvisibleHandAbility("invisible_hand_ability"));
@@ -230,7 +230,7 @@ public class AbilityHandler {
         abilities.add(new BlinkAfterimageAbility("blink_afterimage_ability"));
         abilities.add(new ExileAbility("exile_ability"));
         abilities.add(new DoorSubstitutionAbility("door_substitution_ability"));
-        abilities.add(new WanderingAbility("wandering_ability"));
+        // abilities.add(new WanderingAbility("wandering_ability"));
         abilities.add(new SymbolizationAbility("symbolization_ability"));
         abilities.add(new SealingAbility("sealing_ability"));
         abilities.add(new SpatialCageAbility("spatial_cage_ability"));
@@ -320,7 +320,7 @@ public class AbilityHandler {
         abilities.add(new MentalDisruptionAbility("mental_disruption_ability"));
         abilities.add(new DecryptionAbility("decryption_ability"));
         abilities.add(new GiftAbility("gift_ability"));
-        //abilities.add(new AbilityTheftAbility("ability_theft_ability"));
+        abilities.add(new AbilityTheftAbility("ability_theft_ability"));
         abilities.add(new MundaneConceptualTheft("mundane_conceptual_theft_ability"));
         abilities.add(new ParasitationAbility("parasitation_ability"));
         abilities.add(new HostControllingAbility("host_controlling_ability"));

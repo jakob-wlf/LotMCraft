@@ -83,7 +83,6 @@ public class AdvancementUtil {
 
         int difference = Math.abs(prevSequence - sequence);
         double failureChance = difference >= 2? 1.0f : calculateFailureChance(difference, sanity);
-        if (BeyonderData.hasSwitchedPathway(entity)) failureChance = Math.min(1.0, failureChance + 0.1);
 
         if(prevSequence == sequence) {
             advanceSameSequence(entity, pathway, sequence, failureChance);

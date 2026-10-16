@@ -134,16 +134,22 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
 
     @SubscribeEvent
     public static void onPlayerLogout(PlayerInteractEvent.PlayerLoggedOutEvent event) {
-        if(((ToggleAbility) LOTMCraft.abilityHandler.getById("historical_void_hiding_ability")).isActiveForEntity(event.getEntity())) {
+        if(isActive(event.getEntity())) {
             returnEntity(event.getEntity());
         }
     }
 
     @SubscribeEvent
     public static void onPlayerDeath(LivingDeathEvent event) {
-        if(((ToggleAbility) LOTMCraft.abilityHandler.getById("historical_void_hiding_ability")).isActiveForEntity(event.getEntity())) {
+        if(isActive(event.getEntity())) {
             returnEntity(event.getEntity());
         }
+    }
+
+    // The ability may be unregistered in AbilityHandler while these static listeners stay subscribed
+    private static boolean isActive(LivingEntity entity) {
+        return LOTMCraft.abilityHandler.getById("historical_void_hiding_ability") instanceof ToggleAbility ability
+                && ability.isActiveForEntity(entity);
     }
 
     public static void addReturnPosition(LivingEntity entity, Location location) {

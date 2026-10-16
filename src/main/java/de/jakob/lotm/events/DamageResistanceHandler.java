@@ -91,8 +91,7 @@ public class DamageResistanceHandler {
             float mult = 1.0f;
             switch (seq){
                 case 4 -> mult = 0.75f;
-                case 3 -> mult = 0.5f;
-                case 0,1,2 -> mult = 0f;
+                case 0,1,2,3 -> mult = 0.5f;
             }
 
             if(!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE/2)){

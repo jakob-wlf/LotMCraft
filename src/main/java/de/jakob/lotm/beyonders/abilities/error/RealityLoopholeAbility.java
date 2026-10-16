@@ -57,7 +57,7 @@ public class RealityLoopholeAbility extends ToggleAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 75;
+        return 2000;
     }
 
     @Override
