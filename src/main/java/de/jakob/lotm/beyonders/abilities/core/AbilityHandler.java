@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
+import de.jakob.lotm.beyonders.abilities.black_emperor.*;
 import de.jakob.lotm.beyonders.abilities.common.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.*;
 import de.jakob.lotm.beyonders.abilities.darkness.*;
@@ -327,7 +328,7 @@ public class AbilityHandler {
         abilities.add(new TimeManipulationAbility("time_manipulation_ability"));
 
         // BLACK EMPEROR PATHWAY
-//        abilities.add(new Eloquence("eloquence_ability"));
+        abilities.add(new EloquenceAbility("eloquence_ability"));
 //        abilities.add(new MausoleumDomainAbility("mausoleum_domain_ability"));
 //        abilities.add(new BriberAbility("briber_ability"));
 //        abilities.add(new WeaknessDetectionAbility("weakness_detection_ability"));

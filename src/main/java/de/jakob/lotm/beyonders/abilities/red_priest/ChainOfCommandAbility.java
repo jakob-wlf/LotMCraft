@@ -58,7 +58,6 @@ public class ChainOfCommandAbility extends SelectableAbility {
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(.2f, .1f, .1f), 2);
 
-    private final int INVITE_COST = 30;
     private final int FOCUS_COST = 20;
     private final int ALLEVIATION_COST = 20;
 
@@ -88,16 +87,7 @@ public class ChainOfCommandAbility extends SelectableAbility {
 
     private void damageAlleviation(Level level, LivingEntity entity) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player)) return;
-        TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
-        if(CohortUtil.getAllMembers(player).isEmpty()) {
-            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Cohort").withStyle(ChatFormatting.RED));
-            return;
-        }
-        player.sendSystemMessage(Component.literal(team.leaderUUID()));
-        if(!team.leaderUUID().equals(player.getStringUUID())) {
-            player.sendSystemMessage(Component.literal("you are not the leader of this team").withStyle(ChatFormatting.RED));
-            return;
-        }
+        if(isNotAllowed(player, false)) return;
         AtomicBoolean done = new AtomicBoolean(false);
         if(!CohortUtil.isAlleviation(player)) {
             CohortUtil.setAlleviation(player, true);
@@ -105,7 +95,7 @@ public class ChainOfCommandAbility extends SelectableAbility {
             done.set(false);
         } else {
             CohortUtil.setAlleviation(player, false);
-            player.sendSystemMessage(Component.literal("Dammage Alleviation has been deactivated").withStyle(ChatFormatting.RED));
+            player.sendSystemMessage(Component.literal("Damage Alleviation has been deactivated").withStyle(ChatFormatting.RED));
             done.set(true);
         }
 
@@ -123,15 +113,7 @@ public class ChainOfCommandAbility extends SelectableAbility {
 
     private void damageBoost(Level level, LivingEntity entity) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player)) return;
-        TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
-        if(CohortUtil.getALlPlayers(player).isEmpty()) {
-            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Team").withStyle(ChatFormatting.RED));
-            return;
-        }
-        if(!team.leaderUUID().equals(player.getStringUUID())) {
-            player.sendSystemMessage(Component.literal("you are not the leader of this team").withStyle(ChatFormatting.RED));
-            return;
-        }
+        if(isNotAllowed(player, true)) return;
         AtomicBoolean done = new AtomicBoolean(false);
         if(!CohortUtil.isFocus(player)) {
             CohortUtil.setFocus(player, true);
@@ -156,15 +138,7 @@ public class ChainOfCommandAbility extends SelectableAbility {
 
     private void manage(Level level, LivingEntity entity) {
         if(level.isClientSide || !(entity instanceof ServerPlayer player)) return;
-        TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
-        if(CohortUtil.getAllMembers(player).isEmpty()) {
-            player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Cohort").withStyle(ChatFormatting.RED));
-            return;
-        }
-        else if(!CohortUtil.getALlPlayers(player).isEmpty() && !team.leaderUUID().equals(player.getStringUUID())) {
-            player.sendSystemMessage(Component.literal("you are not the leader of this team").withStyle(ChatFormatting.RED));
-            return;
-        }
+        if(isNotAllowed(player, false)) return;
         HashMap<String, List<String[]>> members = CohortUtil.getAllMembersGrouped(entity);
         player.openMenu(new CohortMenuProvider(members));
     }
@@ -215,8 +189,7 @@ public class ChainOfCommandAbility extends SelectableAbility {
 
 
         }
-        BeyonderData.reduceSpirituality(entity, INVITE_COST);
-}
+    }
 
 
 
@@ -248,7 +221,6 @@ public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
 
             }
         }
-//            player.sendSystemMessage(Component.literal(msg.toString()).withStyle(ChatFormatting.GREEN));
     }
 
 
@@ -273,5 +245,33 @@ public static void onAttacking(LivingIncomingDamageEvent event) {
         }
     }
 }
+
+    private boolean isNotAllowed(ServerPlayer player, boolean both) {
+        TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
+        if(both) {
+            if (CohortUtil.getALlPlayers(player).isEmpty()) {
+                player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Team").withStyle(ChatFormatting.RED));
+                AbilityUtil.refund(player, this);
+                return true;
+            }
+            if (!team.leaderUUID().equals(player.getStringUUID())) {
+                player.sendSystemMessage(Component.literal("you are not the leader of this team").withStyle(ChatFormatting.RED));
+                AbilityUtil.refund(player, this);
+                return true;
+            }
+        } else {
+            if (CohortUtil.getAllMembers(player).isEmpty()) {
+                player.sendSystemMessage(Component.literal("You are not a part of a Red Priest Cohort").withStyle(ChatFormatting.RED));
+                AbilityUtil.refund(player, this);
+                return true;
+            } else if (!CohortUtil.getALlPlayers(player).isEmpty() && !team.leaderUUID().equals(player.getStringUUID())) {
+                player.sendSystemMessage(Component.literal("you are not the leader of this team").withStyle(ChatFormatting.RED));
+                AbilityUtil.refund(player, this);
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }
