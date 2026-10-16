@@ -1,14 +1,21 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.gossip.GossipContainer;
+import net.minecraft.world.entity.ai.gossip.GossipType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -16,11 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber
@@ -49,6 +52,8 @@ public class EloquenceAbility extends ToggleAbility {
 
     public EloquenceAbility(String id) {
         super(id);
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(200f,100f,75f,35f,25f,11.5f,8f,4.5f,2f, 0.9f));
     }
 
     @Override
@@ -59,7 +64,7 @@ public class EloquenceAbility extends ToggleAbility {
     @Override
     public float getSpiritualityCost() {
 
-        return 3.0f;
+        return 0;
     }
 
     @Override
@@ -68,7 +73,9 @@ public class EloquenceAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         if (entity instanceof ServerPlayer player) {
+            ACTIVE_USERS.remove(player.getUUID());
             ACTIVE_USERS.add(player.getUUID());
+            level.playSound(null, player.getOnPos(), SoundEvents.WITCH_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
         }
     }
 
@@ -109,13 +116,13 @@ public class EloquenceAbility extends ToggleAbility {
 
     private static boolean containsAny(String msg) {
         String lower = msg.toLowerCase(Locale.ROOT);
-        for (String w : EloquenceAbility.COMMANDING_WORDS) {
+        for (String w : COMMANDING_WORDS) {
             if (lower.contains(w)) return true;
         }
         return false;
     }
     
-    private static void forcefullyAlly(LivingEntity target, double persuasiveness) {
+    private static void forcefullyAlly(LivingEntity target, LivingEntity caster, double persuasiveness) {
         if (target instanceof Mob mob) {
             mob.setTarget(null);
         }
@@ -123,19 +130,25 @@ public class EloquenceAbility extends ToggleAbility {
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration, 1));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 1));
         target.addEffect(new MobEffectInstance(MobEffects.GLOWING, duration, 1));
+        target.sendSystemMessage(Component.literal("You are experiencing hesitation with the magic of " + caster.getDisplayName().getString() + "'s words").withStyle(ChatFormatting.DARK_GRAY));
+        caster.sendSystemMessage(Component.literal("Your words caused "+target.getDisplayName().getString() + " to tremble").withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    private static void applyVillagerDiscount(LivingEntity villager, int amplifier) {
-        villager.addEffect(new MobEffectInstance(
-                MobEffects.HERO_OF_THE_VILLAGE, EFFECT_DURATION, amplifier));
+    private static void applyVillagerDiscount(Villager villager, LivingEntity player, int amplifier) {
+        GossipContainer gossip = villager.getGossips();
+        gossip.add(player.getUUID(), GossipType.MAJOR_POSITIVE, 5*(amplifier+1));
+        ServerScheduler.scheduleDelayed(10*20, () -> gossip.remove(player.getUUID(), GossipType.MAJOR_POSITIVE));
+        player.sendSystemMessage(Component.literal("You successfully persuaded the villager to give you a discount").withStyle(ChatFormatting.DARK_GRAY));
     }
 
-    private static void attemptDisarm(LivingEntity target) {
+    private static void attemptDisarm(LivingEntity caster, LivingEntity target) {
         ItemStack mainHand = target.getMainHandItem();
         if (mainHand.isEmpty()) return;
         ItemStack toDrop = mainHand.copy();
         target.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
         target.spawnAtLocation(toDrop, 1.0f);
+        target.sendSystemMessage(Component.literal("You were influenced by "+caster.getDisplayName().getString() + " and dropped your stuff").withStyle(ChatFormatting.DARK_GRAY));
+        caster.sendSystemMessage(Component.literal("You successfully persuaded " + target.getDisplayName().getString() + " to drop his stuff").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @SubscribeEvent
@@ -155,40 +168,67 @@ public class EloquenceAbility extends ToggleAbility {
 
         LivingEntity target = AbilityUtil.getTargetEntity(speaker, (int) RANGE, (float) RANGE/2);
         if (target == null || !target.isAlive()) return;
-        speaker.sendSystemMessage(Component.literal(String.valueOf(target)));
 
         double persuasiveness = analyzeMessage(message);
         if (persuasiveness <= 0.0) return;
-        speaker.sendSystemMessage(Component.literal(String.valueOf(persuasiveness)));
 
         // Consume the cooldown only on an actual attempt
         CHAT_COOLDOWN.put(speaker.getUUID(), now);
 
         // 1. Villager discount
-        if (target instanceof Villager) {
+        if (target instanceof Villager villager) {
             double discountChance = 0.30 + persuasiveness * 0.50;
             if (RANDOM.nextDouble() < discountChance) {
-                applyVillagerDiscount(speaker, Math.min(3, (int) Math.round(persuasiveness * 3)));
+
+                applyVillagerDiscount(villager, speaker, Math.min(3, (int) Math.round(persuasiveness * 3)));
             }
             return;
         }
-        // 2. Force-ally
-        double allyChance = 0.15 + persuasiveness * 0.35;
-        if (RANDOM.nextDouble() < allyChance) {
-            forcefullyAlly(target, persuasiveness);
-        }
 
+        int casterSeq = BeyonderData.getSequence(speaker);
+        int targetSeq = BeyonderData.getSequence(target);
+
+        double multiplier = calculateMultiplier(casterSeq, targetSeq);
+
+        // 2. Force-ally
+        double allyChance = (0.15 + persuasiveness * 0.35) * multiplier;
+        if (RANDOM.nextDouble() < allyChance) {
+            forcefullyAlly(target, speaker, persuasiveness);
+        }
 
 
         // 3. Disarm
-        double disarmChance = 0.01 + persuasiveness * 0.06;
+        double disarmChance = (0.01 + persuasiveness * 0.06) * multiplier;
         if (containsAny(message)) {
             disarmChance += 0.18;
         }
-        speaker.sendSystemMessage(Component.literal(String.valueOf(disarmChance)));
 
         if (RANDOM.nextDouble() < disarmChance) {
-            attemptDisarm(target);
+            attemptDisarm(speaker, target);
         }
+    }
+
+    private static double calculateMultiplier(int casterSeq, int targetSeq) {
+        int diff = AbilityUtil.getSequenceDifference(
+                AbilityUtil.getSequenceCategory(casterSeq),
+                AbilityUtil.getSequenceCategory(targetSeq)
+        );
+
+        double tierMultiplier;
+        if (diff >= 4) {
+            tierMultiplier = 0.0;      // seq 9-5 vs seq 0 no chance
+        } else if (diff == 3) {
+            tierMultiplier = 0.03;     // seq 9-5 vs seq 1 or seq 3-4 vs seq 0 near immune
+        } else if (diff == 2) {
+            tierMultiplier = 0.09;     // 9-5 vs 2 or 3-4 vs 1 or 2 vs 0 strong resistance
+        } else if (diff == 1) {
+            tierMultiplier = 0.30;     // 9-5 vs 3-4 or 3-4 vs 2 or 2 vs 1 or 1 vs 0 mid resistance
+        } else if (diff == 0) {
+            if((targetSeq <= 7 && targetSeq >= 5) && (casterSeq >= 8)) tierMultiplier = 0.3; // 9-8 vs 7-5
+            else tierMultiplier = 1.0;      // full effect
+        } else {
+            tierMultiplier = 1.0 + Math.min(0.5, -diff * 0.15); // Bonus effect
+        }
+        return tierMultiplier;
     }
 }

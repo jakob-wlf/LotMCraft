@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
+import de.jakob.lotm.beyonders.abilities.black_emperor.*;
 import de.jakob.lotm.beyonders.abilities.common.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.*;
 import de.jakob.lotm.beyonders.abilities.darkness.*;
@@ -344,6 +345,8 @@ public class AbilityHandler {
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
 
+        // BLACK EMPEROR
+        abilities.add(new EloquenceAbility("eloquence_ability"));
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }
 
