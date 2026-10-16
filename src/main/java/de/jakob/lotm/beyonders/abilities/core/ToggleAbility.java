@@ -1,12 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
-import de.jakob.lotm.beyonders.abilities.black_emperor.EntropySubAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncToggleAbilityPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -74,6 +74,11 @@ public abstract class ToggleAbility extends Ability {
             }
 
             BeyonderData.reduceSpirituality(entity, cost);
+        }
+
+        if(!level.isClientSide && entity instanceof Mob mob && mob.getTarget() ==null) {
+            cancel((ServerLevel) level, entity);
+            return;
         }
 
         tick(level, entity);

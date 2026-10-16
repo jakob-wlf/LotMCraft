@@ -41,7 +41,7 @@ public class EvilDetectionAbility extends ToggleAbility {
 
         List<LivingEntity> nearby = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 50)
                 .stream()
-                .filter(AbilityUtil::isUndead)
+                .filter(AbilityUtil::isUndeadOrEvil)
                 .toList();
 
         HashSet<LivingEntity> currentlyGlowing = glowingEntities.getOrDefault(player.getUUID(), new HashSet<>());

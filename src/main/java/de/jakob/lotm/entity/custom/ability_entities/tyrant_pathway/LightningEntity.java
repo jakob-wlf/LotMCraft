@@ -275,7 +275,7 @@ public class LightningEntity extends Entity {
             boolean inWater = isNearWater(pos);
             float waterMultiplier = inWater ? 2.0f : 1.0f;
 
-            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.SAILOR_LIGHTNING, source), (float) damage * waterMultiplier);
+            entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LIGHTNING, source), (float) damage * waterMultiplier);
 
             // If in water, deal AoE damage to entities in water
             if(inWater) {

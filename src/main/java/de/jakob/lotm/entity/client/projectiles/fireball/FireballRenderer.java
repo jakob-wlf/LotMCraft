@@ -31,9 +31,12 @@ public class FireballRenderer extends EntityRenderer<FireballEntity> {
         boolean petrified = entity.getTags().contains("petrified");
 
         poseStack.pushPose();
-        poseStack.scale(entity.getSize(), entity.getSize(), entity.getSize());
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
+
+        float scale = (float) Math.clamp(entity.getSize() * .5, 1.5, 5);
+        poseStack.scale(scale, scale, scale);
+
+        poseStack.scale(-1.0F, -1.0F, 1.0F);
+        poseStack.translate(0.0D, -1.65D, 0.0D);
 
         RenderType renderType = petrified ? this.model.renderType(LOTMCraft.STONE_TEXTURE) :
                 this.model.renderType(this.getTextureLocation(entity));
@@ -55,6 +58,17 @@ public class FireballRenderer extends EntityRenderer<FireballEntity> {
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull FireballEntity flamingSpearProjectileEntity) {
-        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball.png");
+        return switch (flamingSpearProjectileEntity.getVariant()) {
+            case DEFAULT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball.png");
+            case CRIMSON -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball7.png");
+            case WHITISH_RED -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball6.png");
+            case WHITE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball5.png");
+            case WHITISH_BLUE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball4.png");
+            case AZURE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball3.png");
+            case AZURE_VIOLENT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball2.png");
+            case VIOLENT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball1.png");
+            case DARK -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/fireball/fireball0.png");
+        };
+
     }
 }

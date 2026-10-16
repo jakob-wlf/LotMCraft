@@ -4,9 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -17,16 +15,21 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StructuralCollapseAbility extends Ability {
     public StructuralCollapseAbility(String id) {
         super(id, 15, "destruction");
         interactionRadius = 35;
         canBeShared = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(7, 13, 15));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(15000f, 6700f, 5000f));
+
+        baseDamage = 34f;
     }
 
     @Override
@@ -45,14 +48,18 @@ public class StructuralCollapseAbility extends Ability {
             return;
         }
 
-        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, 20, 3);
+        Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 3);
 
-        boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        if(griefing) {
-            collapseArea(serverLevel, targetLoc);
-        }
+        // Collapse the area
+//        boolean griefing = BeyonderData.isGriefingEnabled(entity);
+//        if(griefing) {
+//            collapseArea(serverLevel, targetLoc);
+//        }
 
-        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35*multiplier(entity), DamageLookup.lookupDamage(2, .8) *multiplier(entity), targetLoc, true, true, ModDamageTypes.source(level, ModDamageTypes.DEMONESS_GENERIC, entity));
+        // Damage entities
+        AbilityUtil.damageNearbyEntities(serverLevel, entity, 35,
+                baseDamage, targetLoc, true, true,
+                ModDamageTypes.source(level, ModDamageTypes.CHAOS, entity));
 
         EffectManager.playEffect(EffectIds.COLLAPSE, targetLoc.x, targetLoc.y - 1.5, targetLoc.z, serverLevel, entity);
     }

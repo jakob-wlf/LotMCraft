@@ -26,15 +26,19 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PetrificationAbility extends SelectableAbility {
     public PetrificationAbility(String id) {
         super(id, 60);
         autoClear = false;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(5, 10, 15, 25));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(10000f, 4000f, 2500f, 1700f));
     }
 
     @Override
@@ -49,7 +53,10 @@ public class PetrificationAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.petrification.target", "ability.lotmcraft.petrification.area"};
+        return new String[]{
+                "ability.lotmcraft.petrification.target",
+                "ability.lotmcraft.petrification.area"
+        };
     }
 
     @Override
@@ -78,7 +85,7 @@ public class PetrificationAbility extends SelectableAbility {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
         final UUID[] taskIdHolder = new UUID[1];
-        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 1, 120, () -> {
+        taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 1, 20 * 4, () -> {
             Location petrifyLoc = new Location(startPos, serverLevel);
 
             if(InteractionHandler.isInteractionPossible(petrifyLoc, "explosion", entitySeq)) {
@@ -96,14 +103,14 @@ public class PetrificationAbility extends SelectableAbility {
                     int livingSeq = BeyonderData.getSequence(living);
 
                     if (AbilityUtil.isTargetSignificantlyWeaker(entitySeq, livingSeq)) {
-                        living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 60 * 10, 9));
+                        living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 40, 9));
                         return;
                     } else if (AbilityUtil.isTargetSignificantlyStronger(entitySeq, livingSeq)) {
                         living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20, 9));
                         return;
                     }
 
-                    living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 45, 9));
+                    living.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, 20 * 6, 9));
                 }
                 else {
                     target.getTags().add("petrified");
@@ -123,12 +130,12 @@ public class PetrificationAbility extends SelectableAbility {
                     int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
                     int livingTargetSeq = BeyonderData.getSequence(livingTarget);
 
-                    int duration = 20 * 60 * 2;
+                    int duration = 20 * 7;
                     if(AbilityUtil.isTargetSignificantlyStronger(entitySeq, livingTargetSeq)) {
                         duration = 20 * 2;
                     }
                     if(AbilityUtil.isTargetSignificantlyWeaker(entitySeq, livingTargetSeq)) {
-                        duration = 20 * 60 * 10;
+                        duration = 20 * 50;
                     }
                     livingTarget.addEffect(new MobEffectInstance(ModEffects.PETRIFICATION, duration, 9, false, false));
                 }

@@ -10,9 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 
 public final class HudWidgets {
 
-    private HudWidgets() {}
+    private HudWidgets() {
+    }
 
-    
 
     public static void setTint(GuiGraphics g, int argb) {
         float a = ((argb >>> 24) & 0xFF) / 255f;
@@ -26,7 +26,7 @@ public final class HudWidgets {
         g.setColor(1f, 1f, 1f, 1f);
     }
 
-    
+
     public static void blitFull(GuiGraphics g, ResourceLocation tex, int x, int y, int w, int h) {
         int[] s = HudTheme.size(tex);
         RenderSystem.enableBlend();
@@ -39,7 +39,7 @@ public final class HudWidgets {
         resetTint(g);
     }
 
-    
+
     public static void blitRotated(GuiGraphics g, ResourceLocation tex, int x, int y, int w, int h,
                                    float degrees, int argb) {
         g.pose().pushPose();
@@ -50,14 +50,12 @@ public final class HudWidgets {
         g.pose().popPose();
     }
 
-    
+
     public static void drawIcon(GuiGraphics g, ResourceLocation tex, int x, int y, int size) {
         blitFull(g, tex, x, y, size, size);
     }
 
-    
 
-    
     public static void drawNineSlice(GuiGraphics g, ResourceLocation tex, int x, int y, int w, int h,
                                      int srcBorder, int drawBorder) {
         int[] s = HudTheme.size(tex);
@@ -67,17 +65,17 @@ public final class HudWidgets {
         int ch = th - 2 * srcBorder;
         RenderSystem.enableBlend();
 
-        
+
         part(g, tex, x, y, b, b, 0, 0, srcBorder, srcBorder, tw, th);
         part(g, tex, x + w - b, y, b, b, tw - srcBorder, 0, srcBorder, srcBorder, tw, th);
         part(g, tex, x, y + h - b, b, b, 0, th - srcBorder, srcBorder, srcBorder, tw, th);
         part(g, tex, x + w - b, y + h - b, b, b, tw - srcBorder, th - srcBorder, srcBorder, srcBorder, tw, th);
-        
+
         part(g, tex, x + b, y, w - 2 * b, b, srcBorder, 0, cw, srcBorder, tw, th);
         part(g, tex, x + b, y + h - b, w - 2 * b, b, srcBorder, th - srcBorder, cw, srcBorder, tw, th);
         part(g, tex, x, y + b, b, h - 2 * b, 0, srcBorder, srcBorder, ch, tw, th);
         part(g, tex, x + w - b, y + b, b, h - 2 * b, tw - srcBorder, srcBorder, srcBorder, ch, tw, th);
-        
+
         part(g, tex, x + b, y + b, w - 2 * b, h - 2 * b, srcBorder, srcBorder, cw, ch, tw, th);
     }
 
@@ -87,11 +85,11 @@ public final class HudWidgets {
         g.blit(tex, dx, dy, dw, dh, (float) u, (float) v, uw, vh, tw, th);
     }
 
-    
+
     public static void drawFrame(GuiGraphics g, int x, int y, int w, int h) {
         int[] s = HudTheme.size(HudTheme.FRAME);
-        int srcBorder = Math.min(s[0], s[1]) / 4;       
-        int drawBorder = Math.max(3, srcBorder / 2);    
+        int srcBorder = Math.min(s[0], s[1]) / 4;
+        int drawBorder = Math.max(3, srcBorder / 2);
         drawNineSlice(g, HudTheme.FRAME, x, y, w, h, srcBorder, drawBorder);
 
         int ix = x + drawBorder, iy = y + drawBorder;
@@ -101,12 +99,11 @@ public final class HudWidgets {
         int[] t = HudTheme.size(HudTheme.GLYPH_TILE);
         g.setColor(1f, 1f, 1f, 0.35f);
         RenderSystem.enableBlend();
-        
+
         g.blit(HudTheme.GLYPH_TILE, ix, iy, iw, ih, 0f, 0f, iw, ih, t[0], t[1]);
         resetTint(g);
     }
 
-    
 
     public static void drawGradientV(GuiGraphics g, int x, int y, int w, int h, int top, int bottom) {
         for (int i = 0; i < h; i++) {
@@ -122,9 +119,7 @@ public final class HudWidgets {
         }
     }
 
-    
 
-    
     public static void drawTube(GuiGraphics g, int x, int y, int w, int h, float fill, int color,
                                 float time, boolean flicker) {
         int ix = x + HudTheme.TUBE_INSET_X;
@@ -134,7 +129,7 @@ public final class HudWidgets {
         fill = HudTheme.clamp01(fill);
 
         g.fill(ix, iy, ix + iw, iy + ih, 0xCC0B0A0D);
-        
+
         blitFull(g, HudTheme.TUBE_FRAME, x, y, w, h);
 
         int fw = Math.round(iw * fill);
@@ -149,12 +144,12 @@ public final class HudWidgets {
             int bottom = HudTheme.scaleAlpha(HudTheme.darken(color, 0.40f), a);
             drawGradientV(g, ix, iy, fw, ih, top, bottom);
 
-            
+
             g.fill(ix, iy, ix + fw, iy + 1, HudTheme.withAlpha(0xFFFFFFFF, 0.25f * a));
-            
+
             g.fill(ix + fw - 1, iy, ix + fw, iy + ih, HudTheme.withAlpha(HudTheme.lighten(color, 0.75f), a));
 
-            
+
             if (fw > 4) {
                 for (int i = 0; i < 5; i++) {
                     float px = HudTheme.frac(time * 0.004f * (0.6f + 0.12f * i) + i * 0.21f);
@@ -167,7 +162,7 @@ public final class HudWidgets {
             }
         }
 
-        
+
         for (int t = 1; t <= 3; t++) {
             int tx = ix + iw * t / 4;
             g.fill(tx, iy, tx + 1, iy + 2, 0x55FFFFFF);
@@ -177,9 +172,7 @@ public final class HudWidgets {
         blitFull(g, HudTheme.TUBE_GLASS, x, y, w, h);
     }
 
-    
 
-    
     public static void drawSocket(GuiGraphics g, int x, int y, int size, ResourceLocation icon,
                                   int ringColor, float time) {
         blitFull(g, HudTheme.SOCKET, x, y, size, size);
@@ -189,9 +182,7 @@ public final class HudWidgets {
         blitRotated(g, HudTheme.SOCKET_RING, x, y, size, size, time * 1.5f, ringColor | 0xFF000000);
     }
 
-    
 
-    
     public static void drawDial(GuiGraphics g, int x, int y, int size, float value, float time, float alpha) {
         if (alpha <= 0.01f) return;
         int tint = HudTheme.withAlpha(0xFFFFFFFF, alpha);
@@ -208,9 +199,37 @@ public final class HudWidgets {
         blitTinted(g, HudTheme.DIAL_GLASS, x, y, size, size, tint);
     }
 
-    
 
-    
+    public static final int LUCK_CHIP_H = 14;
+
+    public static int drawLuckChip(GuiGraphics g, Font font, int x, int y, double luck, float time, float alpha) {
+        if (alpha <= 0.02f) return 0;
+        String text = HudTheme.formatLuck(luck);
+        int textW = font.width(text);
+        int icon = 10;
+        int w = 4 + icon + 3 + textW + 5;
+        int h = LUCK_CHIP_H;
+
+        int rim = HudTheme.withAlpha(HudTheme.BRASS, alpha);
+        int rimDim = HudTheme.withAlpha(HudTheme.darken(HudTheme.BRASS, 0.45f), alpha);
+        g.fill(x, y, x + w, y + h, rimDim);
+        g.fill(x + 1, y + 1, x + w - 1, y + h - 1, HudTheme.withAlpha(0xFF0B0A0D, 0.85f * alpha));
+        g.fill(x + 1, y, x + w - 1, y + 1, rim);
+        g.fill(x + 1, y + h - 1, x + w - 1, y + h, rim);
+        g.fill(x, y + 1, x + 1, y + h - 1, rim);
+        g.fill(x + w - 1, y + 1, x + w, y + h - 1, rim);
+
+        int bob = Math.round((float) Math.sin(time * 0.12f));
+        blitTinted(g, HudTheme.LUCK_CLOVER, x + 3, y + (h - icon) / 2 + bob, icon, icon,
+                HudTheme.withAlpha(0xFFFFFFFF, alpha));
+
+        int color = HudTheme.withAlpha(HudTheme.luckColor(luck), alpha);
+        if (alpha > 0.1f) {
+            g.drawString(font, text, x + 4 + icon + 3, y + (h - font.lineHeight) / 2 + 1, color, true);
+        }
+        return w;
+    }
+
     public static int drawKeycap(GuiGraphics g, Font font, int cx, int y, Component key) {
         int textW = font.width(key);
         int w = Math.max(16, textW + 10);

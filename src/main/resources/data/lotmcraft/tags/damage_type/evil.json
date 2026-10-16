@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "lotmcraft:plague",
+    "lotmcraft:black_flame",
+    "lotmcraft:chaos",
+    "lotmcraft:curse",
+    "lotmcraft:thread",
+    "lotmcraft:corruption",
+    "lotmcraft:abyss",
+    "lotmcraft:filth",
+    "lotmcraft:degeneration"
+  ]
+}

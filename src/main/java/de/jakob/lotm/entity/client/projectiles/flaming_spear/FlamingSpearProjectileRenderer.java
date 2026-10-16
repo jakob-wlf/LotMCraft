@@ -32,6 +32,7 @@ public class FlamingSpearProjectileRenderer extends EntityRenderer<FlamingSpearP
         boolean petrified = entity.getTags().contains("petrified");
 
         poseStack.pushPose();
+        poseStack.scale(entity.getSize(), entity.getSize(), entity.getSize());
         poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F));
         poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F));
 
@@ -51,6 +52,16 @@ public class FlamingSpearProjectileRenderer extends EntityRenderer<FlamingSpearP
 
     @Override
     public @NotNull ResourceLocation getTextureLocation(@NotNull FlamingSpearProjectileEntity entity) {
-        return ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear.png");
+        return switch (entity.getVariant()) {
+            case DEFAULT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear.png");
+            case CRIMSON -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear7.png");
+            case WHITISH_RED -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear6.png");
+            case WHITE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear5.png");
+            case WHITISH_BLUE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear4.png");
+            case AZURE -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear3.png");
+            case AZURE_VIOLENT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear2.png");
+            case VIOLENT -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear1.png");
+            case DARK -> ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "textures/entity/flaming_spear/flaming_spear0.png");
+        };
     }
 }

@@ -2,7 +2,12 @@ package de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers;
 
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsHelper;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextBase;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.ActionContextEnum;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.implementations.EmptyAction;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextEnum;
 import de.jakob.lotm.util.BeyonderData;
@@ -15,7 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class TriggerHelper {
-    private static @Nullable TriggerEnum getType(String str){
+    public static @Nullable TriggerEnum getType(String str){
         return switch (str){
             case "on" -> TriggerEnum.POSITION;
             case "has" -> TriggerEnum.PICK_UP;
@@ -31,6 +36,7 @@ public class TriggerHelper {
             case "pathway" -> TriggerEnum.PATHWAY;
             case "light" -> TriggerEnum.LIGHT;
             case "asleep" -> TriggerEnum.ASLEEP;
+            case "chain" -> TriggerEnum.CHAIN;
             default -> null;
         };
     }
@@ -51,6 +57,7 @@ public class TriggerHelper {
             case PATHWAY -> TriggerContextEnum.STRING;
             case LIGHT -> TriggerContextEnum.NUMBER;
             case ASLEEP -> TriggerContextEnum.EMPTY;
+            case CHAIN -> TriggerContextEnum.CHAIN;
         };
     }
 
@@ -71,6 +78,36 @@ public class TriggerHelper {
 
         String nick = stream.peek();
         return BeyonderData.playerMap.getKeyByName(nick);
+    }
+
+    public static @Nullable TriggerBase deduceWithoutAction(String str, int casterSeq){
+        TokenStream stream = new TokenStream(str);
+
+        String nick = stream.peek();
+        UUID id = BeyonderData.playerMap.getKeyByName(nick);
+
+        if(id == null) return null;
+
+        var data = BeyonderData.playerMap.get(id).get();
+        if(casterSeq > data.sequence() && data.pathway().equals("visionary")){
+            return null;
+        }
+
+        stream.next();
+        var type = getType(Objects.requireNonNull(stream.peek()));
+
+        if(type == null) return null;
+
+        var contextType = getContextType(type);
+        if(contextType == null) return null;
+
+        var context = TriggerContextBase.create(contextType, id);
+        context.fillFromStream(stream);
+
+        EmptyAction emptyAction = (EmptyAction) ActionBase.create(ActionsEnum.EMPTY,
+                ActionContextBase.create(ActionContextEnum.EMPTY, id));
+
+        return TriggerBase.create(type, emptyAction, context);
     }
 
     public static @Nullable TriggerBase deduceWithContext(String str, int casterSeq, ServerPlayer caster){
@@ -131,8 +168,8 @@ public class TriggerHelper {
             case 6,5 -> 10;
             case 4,3 -> 15;
             case 2 -> 25;
-            case 1 -> 40;
-            case 0 -> 80;
+            case 1 -> 60;
+            case 0 -> 200;
             case -1 -> 9999999;
             default -> 1;
         };
@@ -145,7 +182,7 @@ public class TriggerHelper {
             case 4,3 -> 4;
             case 2 -> 5;
             case 1 -> 7;
-            case 0 -> 9;
+            case 0 -> 15;
             case -1 -> 99999999;
             default -> 0;
         };

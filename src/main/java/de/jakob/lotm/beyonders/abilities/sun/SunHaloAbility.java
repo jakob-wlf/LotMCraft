@@ -1,9 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toClient.CancelPhotonEntityEffectPacket;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -16,16 +13,18 @@ import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class SunHaloAbility extends ToggleAbility {
-    private static final HashMap<UUID, UUID> activeEffects = new HashMap<>(); // first ios the entity uuid, second the effect uuids
     public SunHaloAbility(String id) {
         super(id, "morale_boost");
         canBeCopied = false;
         canBeReplicated = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 30f, 25f, 20f, 15f, 10f, 5f));
     }
 
     @Override
@@ -40,22 +39,25 @@ public class SunHaloAbility extends ToggleAbility {
 
     @Override
     public void start(Level level, LivingEntity entity) {
-        if(level.isClientSide)
-            return;
 
-        UUID effectUUID = UUID.randomUUID();
-        activeEffects.put(entity.getUUID(), effectUUID);
-        PacketHandler.sendToAllPlayersInSameLevel(
-                new PlayPhotonEntityEffectPacket("sun_halo", entity.getId(), 0, .3, 0, .5, null,true, false, effectUUID, false),
-                (ServerLevel) level
-        );
     }
+
+    DustParticleOptions dustOptions = new DustParticleOptions(
+            new Vector3f(255 / 255f, 180 / 255f, 66 / 255f),
+            2f
+    );
+
+    DustParticleOptions dustOptions2 = new DustParticleOptions(
+            new Vector3f(255 / 255f, 180 / 255f, 66 / 255f),
+            1f
+    );
 
     @Override
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
+        ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions2, entity.getEyePosition().add(0, .4, 0), .75,  20);
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 1, false, false, false));
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 0, false, false, false));
@@ -64,17 +66,12 @@ public class SunHaloAbility extends ToggleAbility {
             if(AllyUtil.areAllies(entity, e) && entity != e) {
                 e.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 20, 0, false, false, false));
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 20, 1, false, false, false));
-                e.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20, 0, false, false, false));
             }
         });
     }
 
     @Override
     public void stop(Level level, LivingEntity entity) {
-        UUID effectUUID = activeEffects.remove(entity.getUUID());
-        PacketHandler.sendToAllPlayersInSameLevel(
-                new CancelPhotonEntityEffectPacket(effectUUID),
-                (ServerLevel) level
-        );
+
     }
 }

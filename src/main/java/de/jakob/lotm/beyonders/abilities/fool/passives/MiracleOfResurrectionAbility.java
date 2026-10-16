@@ -1,14 +1,15 @@
 package de.jakob.lotm.beyonders.abilities.fool.passives;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.EntityControllingComponent;
+import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.MiracleOfResurrectionComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -60,6 +61,9 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
 
             if (!(event.getAmount() >= serverPlayer.getHealth())) return;
 
+            EntityControllingComponent controllingDataComponent = serverPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
+            if (controllingDataComponent.isControlling()) return;
+
             if (LawAbility.SOLACE_KILLED.contains(entity.getUUID())) return;
             MiracleOfResurrectionComponent data = serverPlayer.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             if (data.getResurrectionAttempts() > 0) {
@@ -92,13 +96,13 @@ public class MiracleOfResurrectionAbility extends PassiveAbility {
                     BeyonderData.setSpirituality(serverPlayer, BeyonderData.getMaxSpirituality(serverPlayer));
                     LOTMCraft.abilityHandler.getById("historical_void_hiding_ability").useAbility(serverLevel, serverPlayer, false, false, false, false);
                 }
-
+                serverPlayer.getData(ModAttachments.SANITY_COMPONENT).setSanity(1);
+                serverPlayer.getData(ModAttachments.LUCK_COMPONENT).setLuck(0);
                 serverPlayer.setHealth(serverPlayer.getMaxHealth());
 
                 serverPlayer.removeAllEffects();
 
-                DisabledAbilitiesComponent disabledComponent = serverPlayer.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                disabledComponent.disableAbilityUsageForTime("miracle_of_resurrection_" + entity.getUUID(), 10 * 60 * 20, serverPlayer);
+                AbilityUtil.sealAllTargetAbilities(serverPlayer, serverPlayer, "miracle_of_resurrection", 10 * 60 * 20);
             }
         }
     }

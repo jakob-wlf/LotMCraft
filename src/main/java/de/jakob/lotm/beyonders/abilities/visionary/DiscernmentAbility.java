@@ -1,7 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseTracker;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -13,7 +12,6 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -22,12 +20,7 @@ import java.util.*;
 import static de.jakob.lotm.beyonders.abilities.visionary.TelepathyAbility.performTelepathy;
 
 public class DiscernmentAbility extends ToggleAbility {
-    private final HashMap<UUID, Set<Entity>> glowingEntities = new HashMap<>();
-    private static final Map<UUID, String> ENTITY_TEAM_MAP = new HashMap<>();
-    private static final Map<UUID, Set<String>> SENT_TEAMS = new HashMap<>();
-
-    private static final int COOLDOWN = 20 * 2;
-    private static final Map<UUID, Integer> cooldown = new HashMap<>();
+    public static Set<UUID> discerning = new HashSet<>();
 
     public DiscernmentAbility(String id) {
         super(id);
@@ -35,6 +28,9 @@ public class DiscernmentAbility extends ToggleAbility {
         canBeShared = false;
         canBeUsedInArtifact = false;
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
     }
 
     @Override
@@ -57,8 +53,9 @@ public class DiscernmentAbility extends ToggleAbility {
 
         int seq = BeyonderData.getSequence(entity);
         int range = getRange(seq);
+        String path = BeyonderData.getPathway(entity);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -66,9 +63,19 @@ public class DiscernmentAbility extends ToggleAbility {
             return;
         }
 
-        LivingEntity lookedAt = AbilityUtil.getTargetEntity(entity, range, 1.2f, false, true);
+        LivingEntity lookedAt = null;
+
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 1.3f, true,
+                    true, false, true);
+        }
+        else{
+            lookedAt = AbilityUtil.getTargetEntity(entity, baseDistance, 1.3f, true, true);
+        }
+
         if(lookedAt != null) {
-            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+            if (VisionaryHandler.shouldStayInvisibleVisOnly(seq, lookedAt)){
                 return;
             }
             else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){
@@ -109,14 +116,6 @@ public class DiscernmentAbility extends ToggleAbility {
 //            if (cooldown.get(entity.getUUID()) >= COOLDOWN)
 //                cooldown.remove(entity.getUUID());
 //        }
-
-        int entitySeq = BeyonderData.getSequence(entity);
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
-            AbilityUtil.sendActionBar(entity,
-                    Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
-                            .withColor(0xFFff124d));
-            stop(level, entity);
-        }
     }
 
     @Override
@@ -124,7 +123,8 @@ public class DiscernmentAbility extends ToggleAbility {
         if(!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = BeyonderData.getSequence(entity);
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -133,6 +133,8 @@ public class DiscernmentAbility extends ToggleAbility {
 
         if(entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(true, getRange(BeyonderData.getSequence(entity))));
+
+        discerning.add(entity.getUUID());
     }
 
     @Override
@@ -145,6 +147,8 @@ public class DiscernmentAbility extends ToggleAbility {
         PacketHandler.sendToPlayer(player, new StartStopDiscernmentPacket(false, getRange(BeyonderData.getSequence(entity))));
         PacketHandler.sendToPlayer(player, new SyncSpectatingAbilityPacket(false, -1));
         AbilityUtil.sendActionBar(entity, Component.literal(""));
+
+        discerning.remove(player.getUUID());
     }
 
     private static int getRange(int seq){

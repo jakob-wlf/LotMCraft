@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.attachments.DoorAuthorityData;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -38,12 +38,15 @@ public class DoorAuthorityAbility extends SelectableAbility {
 
     @Override
     protected float getSpiritualityCost() {
-        return 10000;
+        return 60000;
     }
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.door_authority.malfunction", "ability.lotmcraft.door_authority.strengthen"};
+        return new String[]{
+                "ability.lotmcraft.door_authority.malfunction",
+                "ability.lotmcraft.door_authority.strengthen"
+        };
     }
 
     @Override

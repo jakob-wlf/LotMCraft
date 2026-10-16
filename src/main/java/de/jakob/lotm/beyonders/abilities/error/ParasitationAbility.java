@@ -60,7 +60,7 @@ public class ParasitationAbility extends SelectableAbility {
 
     @Override
     public float getSpiritualityCost() {
-        return 4000;
+        return 2500;
     }
 
     @Override

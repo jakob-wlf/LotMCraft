@@ -1,35 +1,42 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
-import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.entity.custom.projectiles.FlamingSpearProjectileEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PyrokinesisAbility extends SelectableAbility {
 
     public PyrokinesisAbility(String id) {
         super(id, 1.25f, "burning");
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 1, 2, 2, 3, 3));
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2400f, 1000f, 800f, 450f, 390f, 250f, 225f, 208f));
+
+        baseDamage = 10f;
     }
 
     @Override
@@ -65,36 +72,46 @@ public class PyrokinesisAbility extends SelectableAbility {
     }
 
     private void flamingSpear(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide || !(entity instanceof ServerPlayer player))
             return;
 
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
-        Vec3 direction = AbilityUtil.getTargetLocation(entity, (int) (50* multiplier(entity)), 1.4f).subtract(startPos).normalize();
+        Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-
-        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+        boolean ride = player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5;
+        if(player.isPassenger()) ride = false;
+        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 2.0f, ride);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+        spear.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
         spear.shoot(direction.x, direction.y, direction.z, 2f*multiplier(entity), 0);
         level.addFreshEntity(spear);
-
+        if(player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5) {
+            if(player.getVehicle() instanceof FlamingSpearProjectileEntity) return;
+            spear.setRide(true);
+            player.startRiding(spear, true);
+        }
     }
 
     private void fireRavens(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
 
-        for(int i = 0; i < 8; i++) {
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        float damage = baseDamage/2;
+
+        for(int i = 0; i < 7 - entitySeq; i++) {
             Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), random.nextDouble(.5, 11f), random.nextDouble(-10.5, 10.5), random.nextDouble(.1, 9));
 
-            LivingEntity target = AbilityUtil.getTargetEntity(entity, 40, 1.4f);
+            LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.4f);
             FireRavenEntity fireRaven;
+
             if(target == null) {
-                Vec3 targetPos = AbilityUtil.getTargetLocation(entity, 40, 1.4f);
-                fireRaven = new FireRavenEntity(level, targetPos, entity, DamageLookup.lookupDamage(7, .5) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+                Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
+                fireRaven = new FireRavenEntity(level, targetPos, entity, damage, BeyonderData.isGriefingEnabled(entity));
             }
             else {
-                fireRaven = new FireRavenEntity(level, target, entity, DamageLookup.lookupDamage(7, .5) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
+                fireRaven = new FireRavenEntity(level, target, entity, damage, BeyonderData.isGriefingEnabled(entity));
             }
 
             fireRaven.setInvulnerable(true);
@@ -113,12 +130,12 @@ public class PyrokinesisAbility extends SelectableAbility {
         Vec3 lookAngle = new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z).normalize();
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(lookAngle).normalize();
 
-        Vec3 pos = targetPos.add(0, 1, 0);
-        BlockPos blockPos = BlockPos.containing(pos);
+        Vec3 flamePos = targetPos.add(0, 1, 0);
+        BlockPos blockPos = BlockPos.containing(flamePos);
 
-        double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .6;
-        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+        double offsetX = flamePos.x - (blockPos.getX() + 0.5);
+        double offsetY = flamePos.y - (blockPos.getY() + 0.5) + .6;
+        double offsetZ = flamePos.z - (blockPos.getZ() + 0.5);
 
         Quaternionf rotation = new Quaternionf().rotateTo(
                 new Vector3f(0, 0, 1),
@@ -127,8 +144,10 @@ public class PyrokinesisAbility extends SelectableAbility {
 
         PacketHandler.sendToNearbyPlayers(
                 new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true, null),
-                (ServerLevel) level, pos, 128
+                (ServerLevel) level, flamePos, 128
         );
+
+        float damage = baseDamage/6;
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 20, () -> {
             if(random.nextInt(10) == 0)
@@ -136,12 +155,12 @@ public class PyrokinesisAbility extends SelectableAbility {
 
             for(int i = -1; i < 6; i++) {
                 for(int j = -7; j < 8; j++) {
-                    Vec3 currentPos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
+                    Vec3 pos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
 
-                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1f, DamageLookup.lookupDamage(7, .4) * multiplier(entity), currentPos, true, false, false, 15, 20 * 4);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1f, ModDamageTypes.FIRE ,damage, pos, true, false);
 
-                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, currentPos, 1f)) {
-                        Vec3 knockback = target.position().subtract(currentPos).normalize().add(0, .2, 0).scale(0.8f);
+                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, pos, 1f)) {
+                        Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(0.8f);
                         target.setDeltaMovement(knockback);
                     }
                 }
@@ -149,16 +168,21 @@ public class PyrokinesisAbility extends SelectableAbility {
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(targetPos, level)));
     }
 
-    //TODO: Place flame blocks on griefing
+    //TODO: PLace flame blocks on griefing
     private void flameWave(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return;
 
         Vec3 startPos = entity.getEyePosition().add(0, .5, 0);
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
-        ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 6, DamageLookup.lookupDamage(7, 1.2) * multiplier(entity), entity.position().add(0, .2, 0), true, false, true, 0, 20 * 5));
+        float damage = baseDamage;
+
+        ServerScheduler.scheduleDelayed(18, () -> {
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.SOUL_FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
+        });
 
         Vec3 pos = entity.position();
         BlockPos blockPos = BlockPos.containing(pos);
@@ -172,5 +196,6 @@ public class PyrokinesisAbility extends SelectableAbility {
                 (ServerLevel) level, pos, 128
         );
     }
+
 
 }

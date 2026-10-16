@@ -13,22 +13,20 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
+import net.neoforged.neoforge.event.entity.living.EffectParticleModificationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
@@ -38,7 +36,10 @@ import java.util.*;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PsychologicalInvisibilityAbility extends ToggleAbility {
     public static final HashMap<UUID, Integer> invisiblePlayers = new HashMap<>();
+
     public static HashMap<UUID, Integer> invisiblePlayersClient = new HashMap<>();
+    private static Set<UUID> toRemoveClient = new HashSet<>();
+
     public static final HashMap<UUID, Integer> hits = new HashMap<>();
 
     public static final HashMap<UUID, Integer> finalInvisiblePlayers = new HashMap<>();
@@ -49,6 +50,10 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
+        canBeShared = false;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(30f, 25f, 17f, 13f, 10f, 7f, 5f));
     }
 
     @Override
@@ -66,12 +71,16 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
             cancel(serverLevel, entity);
+        }
+
+        if(entity.getRemainingFireTicks() > 0 && entity.hasEffect(MobEffects.FIRE_RESISTANCE)){
+            entity.setRemainingFireTicks(0);
         }
 
         if (entity instanceof ServerPlayer) {
@@ -86,8 +95,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -96,7 +105,12 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
         if (entity instanceof ServerPlayer) {
             if (!invisiblePlayers.containsKey(entity.getUUID())) {
-                add(entity, AbilityUtil.getSeqWithArt(entity, this));
+                int seq = AbilityUtil.getSeqWithArt(entity, this);
+                if(!path.equals("visionary")){
+                    seq -= 1;
+                }
+
+                add(entity, seq);
             }
         }
     }
@@ -110,48 +124,11 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         clearArtifactScaling(entity);
     }
 
-    private static void removeOrAddName(LivingEntity entity) {
-        if (entity instanceof ServerPlayer targetPlayer) {
-            AttributeInstance attribute = targetPlayer.getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
-            if (attribute != null) {
-                if (attribute.getValue() == 0) {
-                    attribute.setBaseValue(64);
-
-                    if (targetPlayer.getServer() != null) {
-                        targetPlayer.getServer().getPlayerList().broadcastAll(
-                                new ClientboundPlayerInfoUpdatePacket(
-                                        EnumSet.of(
-                                                ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
-                                                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
-                                                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY,
-                                                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE,
-                                                ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME
-                                        ),
-                                        List.of(targetPlayer)
-                                )
-                        );
-                    }
-                } else {
-                    attribute.setBaseValue(0);
-
-                    if (targetPlayer.getServer() != null) {
-                        targetPlayer.getServer().getPlayerList().broadcastAll(
-                                new ClientboundPlayerInfoRemovePacket(List.of(targetPlayer.getUUID()))
-                        );
-                    }
-
-                }
-            }
-        }
-    }
-
     private static void add(LivingEntity entity, int seq) {
         invisiblePlayers.put(entity.getUUID(), seq);
         hits.put(entity.getUUID(), 0);
 
         finalInvisiblePlayers.putAll(invisiblePlayers);
-
-        removeOrAddName(entity);
 
         PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
         entity.setInvisible(true);
@@ -162,8 +139,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         hits.remove(entity.getUUID());
 
         finalInvisiblePlayers.remove(entity.getUUID());
-
-        removeOrAddName(entity);
 
         PacketHandler.sendToAllPlayers(new SyncPsychologicalInvisibilityPacket(finalInvisiblePlayers));
         entity.setInvisible(false);
@@ -191,13 +166,33 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         return switch (seq) {
             case 6 -> 1;
             case 5 -> 2;
-            case 4 -> 10;
-            case 3 -> 15;
-            case 2 -> 25;
-            case 1 -> 40;
-            case 0 -> 80;
+            case 4 -> 4;
+            case 3 -> 5;
+            case 2 -> 7;
+            case 1 -> 9;
+            case 0 -> 12;
             default -> 1;
         };
+    }
+
+    @SubscribeEvent
+    public static void onEffectParticleModification(EffectParticleModificationEvent event) {
+        LivingEntity entity = event.getEntity();
+
+        if (VisionaryHandler.isInvisible(entity)) {
+            event.setVisible(false);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLivingDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+
+        if(invisiblePlayers.containsKey(player.getUUID())){
+            remove(player);
+        }
     }
 
     @SubscribeEvent
@@ -247,7 +242,7 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (event.getSource().getEntity() instanceof LivingEntity player) {
             var source = event.getSource();
 
-            if (!(source.is(ModDamageTypes.LOOSING_CONTROL))) {
+            if (!(source.is(ModDamageTypes.MIND))) {
                 if (invisiblePlayers.containsKey(player.getUUID())) {
                     remove(player);
                 }
@@ -267,6 +262,10 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     @SubscribeEvent
     public static void onRenderPlayer(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
+
+        if(!invisiblePlayersClient.containsKey(player.getUUID()) && toRemoveClient.contains(player.getUUID())){
+            player.setInvisible(false);
+        }
 
         if (invisiblePlayersClient.containsKey(player.getUUID())) {
             var clientPlayer = ClientHandler.getPlayer();
@@ -291,6 +290,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
             player.setInvisible(!shouldFail);
             player.setGlowingTag(shouldFail);
             event.setCanceled(!shouldFail);
+
+            toRemoveClient.add(player.getUUID());
         }
     }
 
@@ -343,16 +344,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        return !VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq);
     }
 
 }

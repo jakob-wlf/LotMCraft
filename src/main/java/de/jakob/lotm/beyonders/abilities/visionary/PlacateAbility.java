@@ -1,24 +1,24 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.VirtualPersonaComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.Prophecy;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.VirtualPersonaComponent;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.RingEffectManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class PlacateAbility extends SelectableAbility {
     public PlacateAbility(String id) {
@@ -26,6 +26,9 @@ public class PlacateAbility extends SelectableAbility {
         interactionRadius = 18;
         interactionCacheTicks = 20 * 5;
         canAlwaysBeUsed = true;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1200f, 800f, 470f, 280f, 260f, 160f, 134f, 100f));
     }
 
     @Override
@@ -54,8 +57,9 @@ public class PlacateAbility extends SelectableAbility {
             abilityIndex = 0;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        String path = BeyonderData.getPathway(entity);
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -75,9 +79,10 @@ public class PlacateAbility extends SelectableAbility {
             return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this) +
+                (BeyonderData.getPathway(entity).equals("visionary")? 0 : 2);
 
-        var targetPlayer = AbilityUtil.getTargetEntity(entity, (int) (40* multiplier(entity)),
+        var targetPlayer = AbilityUtil.getTargetEntity(entity, baseDistance,
                 1f, true, true) == null ?
                 entity :  AbilityUtil.getTargetEntity(
                         entity, 40, 1f, true, true);
@@ -149,12 +154,11 @@ public class PlacateAbility extends SelectableAbility {
             return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        var target = AbilityUtil.getTargetEntity(entity, 40, 1f, true, true);
+        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1f, true, true);
 
-        if(target != null)
-            RingEffectManager.createRingForPlayer(target.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) entity.level(), player);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this) +
+                (BeyonderData.getPathway(entity).equals("visionary")? 0 : 2);
 
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         List<Prophecy> list;
         if(target instanceof ServerPlayer targetPlayer){
             list = BeyonderData.playerMap.get(targetPlayer).get().prophecies().stream().filter(obj -> {
@@ -196,8 +200,6 @@ public class PlacateAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 18 , false, true)) {
             placateEntity(entity, e);
         }
@@ -207,15 +209,12 @@ public class PlacateAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
-        level.playSound(null, entity.position().x, entity.position().y, entity.position().z, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1, 1);
-
         placateEntity(entity, entity);
     }
 
     private void placateEntity(LivingEntity caster, LivingEntity entity) {
-        int entitySeq = AbilityUtil.getSeqWithArt(caster, this);
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this) +
+                (BeyonderData.getPathway(entity).equals("visionary")? 0 : 2);
 
         if(VisionaryHandler.shouldFailAndTrigger(entitySeq, caster, entity, this)){
             return;
@@ -247,8 +246,8 @@ public class PlacateAbility extends SelectableAbility {
                     (ServerLevel) targetPlayer.level(), targetPlayer.getName().getString(), entitySeq);
         }
 
-        if(caster instanceof ServerPlayer player)
-            RingEffectManager.createRingForPlayer(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) caster.level(), player);
+//        if(caster instanceof ServerPlayer player)
+//            RingEffectManager.createRingForPlayer(entity.getEyePosition().subtract(0, .4, 0), 2, 60, 255 / 255f, 211 / 255f, 92 / 255f, 1, .5f, .75f, (ServerLevel) caster.level(), player);
     }
 
     @Override

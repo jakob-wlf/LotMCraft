@@ -578,6 +578,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                LuckPerceptionPacket.TYPE,
+                LuckPerceptionPacket.STREAM_CODEC,
+                LuckPerceptionPacket::handle
+        );
+
+        registrar.playToClient(
                 IsPlayerModelPacket.TYPE,
                 IsPlayerModelPacket.STREAM_CODEC,
                 IsPlayerModelPacket::handle
@@ -597,10 +603,17 @@ public class PacketHandler {
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
+
         registrar.playToServer(
                 WhipSlashPayload.TYPE,
                 WhipSlashPayload.STREAM_CODEC,
                 WhipSlashPayload::handle
+        );
+
+        registrar.playToServer(
+                UseCopiedAbilityPacket.TYPE,
+                UseCopiedAbilityPacket.STREAM_CODEC,
+                UseCopiedAbilityPacket::handle
         );
 
         registrar.playToServer(
@@ -826,6 +839,7 @@ public class PacketHandler {
                 OpenRecipeMenuPacket::handle
         );
 
+
         registrar.playToServer(
                 TeleportToSefirotPacket.TYPE,
                 TeleportToSefirotPacket.STREAM_CODEC,
@@ -926,6 +940,11 @@ public class PacketHandler {
                 OpenArtifactWheelPacket::handle);
 
         registrar.playToServer(
+                RequestGameruleSyncPacket.TYPE,
+                RequestGameruleSyncPacket.STREAM_CODEC,
+                RequestGameruleSyncPacket::handle);
+
+        registrar.playToServer(
                 RequestOpenMarionetteMenuPacket.TYPE,
                 RequestOpenMarionetteMenuPacket.STREAM_CODEC,
                 RequestOpenMarionetteMenuPacket::handle);
@@ -974,6 +993,7 @@ public class PacketHandler {
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
+        if(Minecraft.getInstance().getConnection() == null) return;
         Minecraft.getInstance().getConnection().send(packet);
     }
 

@@ -10,11 +10,15 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -91,6 +95,19 @@ public class ClientEvents {
         event.register(LOTMCraft.previousSharedAbilityKey);
         event.register(LOTMCraft.openMarionetteMenuKey);
         event.register(LOTMCraft.nextMarionetteKey);
+    }
+
+    @SubscribeEvent
+    public static void onInit(ScreenEvent.Init.Post event) {
+        if (!(event.getScreen() instanceof TitleScreen screen)) return;
+
+        var font = screen.getMinecraft().font;
+        var widget = new StringWidget(
+                0, 4, screen.width, 10,
+                Component.translatable("lotmcraft.epilepsy_warning").withStyle(ChatFormatting.RED),
+                font
+        );
+        event.addListener(widget);
     }
 
     @SubscribeEvent

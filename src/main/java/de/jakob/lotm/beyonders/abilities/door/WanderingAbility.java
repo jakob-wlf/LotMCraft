@@ -12,6 +12,7 @@ import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.StreamSupport;
@@ -25,6 +26,10 @@ public class WanderingAbility extends Ability {
         canBeReplicated = false;
         canBeShared = false;
         cannotBeStolen = true;
+
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 15000f, 10000f, 7500f));
+
     }
 
     @Override
@@ -47,7 +52,7 @@ public class WanderingAbility extends Ability {
                 .filter(s -> !s.dimension().equals(ModDimensions.BROOD_HIVE_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(ModDimensions.DREAM_MAZE_DIMENSION_KEY))
-                .filter(s -> !s.dimension().equals(ModDimensions.SPACE_DIMENSION_KEY))
+                //.filter(s -> !s.dimension().equals(ModDimensions.SPACE_DIMENSION_KEY))
                 .filter(s -> !s.dimension().equals(serverLevel.dimension()))
                 .map(s -> s.dimension().location().toString())
                 .toList();
