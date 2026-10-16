@@ -184,15 +184,22 @@ public class PyrokinesisAbility extends SelectableAbility {
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.SOUL_FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
         });
 
+        String path = switch(PriestFlameVariants.byId(BeyonderData.getSequence(entity))) {
+            case WHITE -> "flame_wave_white";
+            case WHITISH_BLUE, AZURE -> "flame_wave_blue";
+            case VIOLENT, AZURE_VIOLENT, DARK -> "flame_wave_purple";
+            default -> "flame_wave_red";
+        };
+
         Vec3 pos = entity.position();
         BlockPos blockPos = BlockPos.containing(pos);
 
         double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetY = .3;
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
+                new PlayPhotonBlockEffectPacket(path, blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
     }

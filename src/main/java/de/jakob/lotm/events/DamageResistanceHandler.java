@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.Holder;
@@ -87,7 +88,11 @@ public class DamageResistanceHandler {
                 case 0, 1, 2 -> mult = 0f;
             }
 
-            if (!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE / 2)) {
+            if(mult == 0f && !entity.level().getGameRules().getBoolean(ModGameRules.ANGEL_DAMAGE_IMMUNITY)) {
+                mult = 0.4f;
+            }
+
+            if (!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE / 2) && (!(sourceEntity instanceof LivingEntity livingSource) || !BeyonderData.isBeyonder(livingSource) || BeyonderData.getSequence(livingSource) > seq)) {
                 damage *= mult;
             }
 

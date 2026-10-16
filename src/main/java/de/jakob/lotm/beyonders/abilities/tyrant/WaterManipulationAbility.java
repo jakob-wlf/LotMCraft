@@ -208,15 +208,17 @@ public class WaterManipulationAbility extends SelectableAbility {
         float damage = baseDamage;
         ServerScheduler.scheduleDelayed(18, () -> AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.WATER ,damage, entity.position().add(0, .2, 0), true, false, true, 0));
 
-        AtomicDouble i = new AtomicDouble(0.6);
-        ServerScheduler.scheduleForDuration(0, 1, 24, () -> {
-            double ySubtraction = 2 * ((1/((10 * i.get()) - 9)) - 1);
-            Vec3 currentPos = startPos.add(0, ySubtraction, 0);
-            double radius = i.get() < .71 ? i.get() : i.get() * 2;
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, dustOptions, currentPos, radius, (int) (radius * 16));
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, ParticleTypes.FALLING_WATER, currentPos, radius, (int) (radius * 16));
-            i.set(i.get() + .1);
-        }, (ServerLevel) level);
+        Vec3 pos = entity.position();
+        BlockPos blockPos = BlockPos.containing(pos);
+
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + 1.7;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("water_surge", blockPos, offsetX, offsetY, offsetZ, 1.5, null, -1, false, true, null),
+                (ServerLevel) level, pos, 128
+        );
     }
 
     private void corrosiveRain(Level level, LivingEntity entity) {
@@ -263,7 +265,7 @@ public class WaterManipulationAbility extends SelectableAbility {
 
         WaterBoltEntity waterBolt = new WaterBoltEntity(level, entity, baseDamage, BeyonderData.isGriefingEnabled(entity));
         waterBolt.setPos(startPos.x, startPos.y, startPos.z);
-        waterBolt.shoot(direction.x, direction.y, direction.z, 2.7f, 0);
+        waterBolt.shoot(direction.x, direction.y, direction.z, 3.2f, 0);
         level.addFreshEntity(waterBolt);
     }
 
