@@ -1,51 +1,198 @@
 package de.jakob.lotm.beyonders.abilities.black_emperor;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.ServerChatEvent;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
-public class EloquenceAbility extends Ability {
+@EventBusSubscriber
+public class EloquenceAbility extends ToggleAbility {
 
+    private static final RandomSource RANDOM = RandomSource.create();
+
+    private static final Set<UUID> ACTIVE_USERS = ConcurrentHashMap.newKeySet();
+    private static final Map<UUID, Long> CHAT_COOLDOWN = new ConcurrentHashMap<>();
+
+    private static final long CHAT_COOLDOWN_MS = 2500L;
+    private static final double RANGE = 16.0;
+    private static final int EFFECT_DURATION = 200;
+
+    private static final List<String> PERSUASIVE_WORDS = List.of(
+            "please", "trust", "believe", "friend", "ally", "help",
+            "listen", "understand", "reasonable", "sensible", "surely",
+            "obviously", "of course", "come on", "think", "suppose",
+            "agree", "together", "share", "surely you"
+    );
+
+    private static final List<String> COMMANDING_WORDS = List.of(
+            "drop", "drop it", "give", "hand over", "release",
+            "yield", "surrender", "obey", "let go"
+    );
 
     public EloquenceAbility(String id) {
-        super(id, 5.5f);
+        super(id);
     }
-
 
     @Override
     public Map<String, Integer> getRequirements() {
         return Map.of("black_emperor", 9);
     }
 
-
     @Override
     public float getSpiritualityCost() {
-        return 50;
+
+        return 3.0f;
     }
 
+    @Override
+    public void tick(Level level, LivingEntity entity) {}
 
     @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
-        if (level.isClientSide) return;
-
-        for (LivingEntity target : level.getEntitiesOfClass(
-                LivingEntity.class,
-                entity.getBoundingBox().inflate(5))) {
-
-            if (target != entity) {
-                target.addEffect(new MobEffectInstance(
-                        MobEffects.WEAKNESS,
-                        200,
-                        0
-                ));
-            }
+    public void start(Level level, LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {
+            ACTIVE_USERS.add(player.getUUID());
         }
     }
 
+    @Override
+    public void stop(Level level, LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {
+            ACTIVE_USERS.remove(player.getUUID());
+            CHAT_COOLDOWN.remove(player.getUUID());
+        }
+    }
+
+    public static boolean isEloquenceActive(ServerPlayer player) {
+        return ACTIVE_USERS.contains(player.getUUID());
+    }
+
+    //   HELPERS
+    private static double analyzeMessage(String raw) {
+        String msg = raw.toLowerCase(Locale.ROOT).trim();
+        double score = 0.0;
+        if (msg.length() < 4) return score;
+
+        // Length contribution (up to 0.3), effort counts for something
+        score += Math.min(0.3, msg.length() / 100.0);
+
+        // Keyword contribution
+        int keywordHits = 0;
+        for (String word : PERSUASIVE_WORDS) {
+            if (msg.contains(word)) keywordHits++;
+        }
+        score += Math.min(0.6, keywordHits * 0.2);
+
+        // Punctuation signals: exclamation or question marks
+        if (msg.contains("!")) score += 0.05;
+        if (msg.contains("?")) score += 0.05;
+
+        return Math.min(1.0, score);
+    }
+
+    private static boolean containsAny(String msg, List<String> words) {
+        String lower = msg.toLowerCase(Locale.ROOT);
+        for (String w : words) {
+            if (lower.contains(w)) return true;
+        }
+        return false;
+    }
+    
+    private static void forcefullyAlly(LivingEntity target, double persuasiveness) {
+        if (target instanceof Mob mob) {
+            mob.setTarget(null);
+        }
+        int duration = (int) (EFFECT_DURATION * (0.5 + persuasiveness));
+        target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration, 1));
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 1));
+        target.addEffect(new MobEffectInstance(MobEffects.GLOWING, duration, 1));
+    }
+
+    private static void applyVillagerDiscount(LivingEntity villager, int amplifier) {
+        villager.addEffect(new MobEffectInstance(
+                MobEffects.HERO_OF_THE_VILLAGE, EFFECT_DURATION, amplifier));
+    }
+
+    private static void attemptDisarm(LivingEntity target) {
+        ItemStack mainHand = target.getMainHandItem();
+        if (mainHand.isEmpty()) return;
+        ItemStack toDrop = mainHand.copy();
+        target.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+        target.spawnAtLocation(toDrop, 1.0f);
+    }
+
+    @SubscribeEvent
+    public static void chat(ServerChatEvent event) {
+        ServerPlayer speaker = event.getPlayer();
+        String message = event.getRawText();
+
+        if (!isEloquenceActive(speaker)) return;
+        if (message.isBlank()) return;
+
+        long now = System.currentTimeMillis();
+        Long last = CHAT_COOLDOWN.get(speaker.getUUID());
+        if (last != null && now - last < CHAT_COOLDOWN_MS) return;
+
+        Level level = speaker.level();
+        if (level.isClientSide()) return;
+
+        LivingEntity target = AbilityUtil.getTargetEntity(speaker, (int) RANGE, (float) RANGE/2);
+        if (target == null || !target.isAlive()) return;
+        speaker.sendSystemMessage(Component.literal(String.valueOf(target)));
+
+        double persuasiveness = analyzeMessage(message);
+        if (persuasiveness <= 0.0) return;
+        speaker.sendSystemMessage(Component.literal(String.valueOf(persuasiveness)));
+
+        // Consume the cooldown only on an actual attempt
+        CHAT_COOLDOWN.put(speaker.getUUID(), now);
+
+        // 1. Villager discount
+        if (target instanceof Villager villager) {
+            double discountChance = 0.30 + persuasiveness * 0.50;
+            if (RANDOM.nextDouble() < discountChance) {
+                applyVillagerDiscount(speaker, Math.min(3, (int) Math.round(persuasiveness * 3)));
+            }
+            return;
+        }
+        // 2. Force-ally
+        double allyChance = 0.15 + persuasiveness * 0.35;
+        if (RANDOM.nextDouble() < allyChance) {
+            forcefullyAlly(target, persuasiveness);
+        }
 
 
+
+        // 3. Disarm
+        double disarmChance = 0.01 + persuasiveness * 0.06;
+        if (containsAny(message, COMMANDING_WORDS)) {
+            disarmChance += 0.18;
+        }
+        speaker.sendSystemMessage(Component.literal(String.valueOf(disarmChance)));
+
+        if (RANDOM.nextDouble() < disarmChance) {
+            attemptDisarm(target);
+        }
+    }
 }
