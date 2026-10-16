@@ -50,8 +50,8 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static final double SWORD_REACH_BONUS = 12.0D;
     private static final double SWORD_REACH_BONUS_S1 = 8.0D;
     private static final double SWORD_REACH_BONUS_S2 = 4.0D;
-    private static final double SWORD_DAMAGE = 12.0D;
-    private static final double SWORD_DAMAGE_S1 = 10.0D;
+    private static final double SWORD_DAMAGE = 15.0D;
+    private static final double SWORD_DAMAGE_S1 = 12.0D;
     private static final double SWORD_DAMAGE_S2 = 8.0D;
     private static final double SWORD_SPEED = -3.0D;
     private static final int BLINK_RANGE = (int) Math.pow(20, 5);
@@ -65,7 +65,7 @@ public class TwilightSwordAbility extends ToggleAbility {
     private static final double STRIKE_WIDTH = 8.0D;
     private static final double STRIKE_HIT_RADIUS = 2.5D;
     private static final int STRIKE_TICKS = 12;
-    private static final int STRIKE_DAMAGE = 30;
+    private static final int STRIKE_DAMAGE = 10;
     private static final float UPKEEP = 80f;
 
     private static final Map<UUID, Charge> charges = new HashMap<>();

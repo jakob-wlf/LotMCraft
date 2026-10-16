@@ -5,16 +5,21 @@ import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItem;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.goals.AbilityUseGoal;
 import de.jakob.lotm.entity.goals.RangedCombatGoal;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.config.ModConfigEvent;
@@ -22,6 +27,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,6 +91,18 @@ public final class BeyonderMobData {
         if (mob instanceof BeyonderNPCEntity || !mob.getPersistentData().getBoolean("lotmcraft_beyonder_mob_rolled") || !BeyonderData.isBeyonder(mob)) return;
         allowBeyonderAbilities(mob);
         if (!event.loadedFromDisk() && mob.tickCount == 0) mob.setHealth(mob.getMaxHealth());
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void onAttack(LivingIncomingDamageEvent event) {
+        DamageSource source = event.getSource();
+        if (!(source.getEntity() instanceof Mob attacker) || source.getDirectEntity() != attacker) return;
+        if (!source.is(DamageTypes.MOB_ATTACK)) return;
+        if (!(attacker.level() instanceof ServerLevel level)) return;
+        if (attacker instanceof BeyonderNPCEntity || !attacker.getPersistentData().getBoolean("lotmcraft_beyonder_mob_rolled") || !BeyonderData.isBeyonder(attacker)) return;
+        float amount = event.getAmount();
+        event.setCanceled(true);
+        event.getEntity().hurt(ModDamageTypes.source(level, ModDamageTypes.PHYSICAL_BASED, attacker), amount);
     }
 
     @SubscribeEvent

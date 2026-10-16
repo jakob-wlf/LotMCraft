@@ -143,7 +143,7 @@ public class AuthorityResistanceManager {
         resistances.put("death", death);
 
         Map<ResourceKey<DamageType>, List<Float>> twilight = new HashMap<>();
-        death.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f, 0.7f, 0.9f));
+        twilight.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f, 0.7f, 0.9f));
         resistances.put("twilight_giant", twilight);
     }
 
@@ -153,32 +153,28 @@ public class AuthorityResistanceManager {
             return 1f;
         }
 
-        boolean twilightAttack = source.getEntity() instanceof LivingEntity attacker
-                && "twilight_giant".equals(BeyonderData.getPathway(attacker));
-        var listRes = pathRes.get(twilightAttack ? ModDamageTypes.PHYSICAL_BASED : source.typeHolder().unwrapKey().orElseThrow());
+        var listRes = pathRes.get(source.typeHolder().unwrapKey().orElseThrow());
         if(listRes == null){
-            if (!twilightAttack) {
-                if (source.is(ModDamageTypes.MIND)) {
-                    listRes = pathRes.get(ModDamageTypes.MIND_BASED);
-                } else if (source.is(ModDamageTypes.PHYSICAL)) {
-                    listRes = pathRes.get(ModDamageTypes.PHYSICAL_BASED);
-                } else if (source.is(ModDamageTypes.SOUL)) {
-                    listRes = pathRes.get(ModDamageTypes.SOUL_BASED);
-                }
-
-                List<Float> buff = null;
-
-                if (source.is(ModDamageTypes.HOLY)) {
-                   buff = pathRes.get(ModDamageTypes.HOLY_BASED);
-                } else if (source.is(ModDamageTypes.EVIL)) {
-                    buff = pathRes.get(ModDamageTypes.EVIL_BASED);
-                }else if(source.is(ModDamageTypes.NATURE)){
-                    buff = pathRes.get(ModDamageTypes.NATURE_BASED);
-                }
-
-                if(listRes == null)
-                    listRes = buff;
+            if (source.is(ModDamageTypes.MIND)) {
+                listRes = pathRes.get(ModDamageTypes.MIND_BASED);
+            } else if (source.is(ModDamageTypes.PHYSICAL)) {
+                listRes = pathRes.get(ModDamageTypes.PHYSICAL_BASED);
+            } else if (source.is(ModDamageTypes.SOUL)) {
+                listRes = pathRes.get(ModDamageTypes.SOUL_BASED);
             }
+
+            List<Float> buff = null;
+
+            if (source.is(ModDamageTypes.HOLY)) {
+               buff = pathRes.get(ModDamageTypes.HOLY_BASED);
+            } else if (source.is(ModDamageTypes.EVIL)) {
+                buff = pathRes.get(ModDamageTypes.EVIL_BASED);
+            }else if(source.is(ModDamageTypes.NATURE)){
+                buff = pathRes.get(ModDamageTypes.NATURE_BASED);
+            }
+
+            if(listRes == null)
+                listRes = buff;
 
             if(listRes == null){
                 return 1f;
