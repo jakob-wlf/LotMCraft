@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed.MaliceSeedAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
@@ -264,6 +265,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         }
         else {
             personas.placeBy(player, targetPlayer);
+            MaliceSeedAbility.copyInfectionsToPersonaRecipient(player, targetPlayer);
         }
     }
 
@@ -342,6 +344,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
                 "visionary",
                 avatarSequence
         );
+        MaliceSeedAbility.registerManifestation(MaliceSeedAbility.getMaliceIdentity(entity), avatar);
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         avatar.setPersistenceRequired();
 

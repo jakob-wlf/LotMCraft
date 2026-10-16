@@ -204,7 +204,7 @@ public class DemonicAttributeAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 1, drainDuration, () -> {
             for (LivingEntity e : targets) {
                 if (tickCounter.get() % 10 == 0) {
-                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.PHYSICAL_BASED, entity), (float) dps);
+                    e.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.RETURN_TO_EARTH, entity), (float) dps);
                     serverLevel.playSound(null, BlockPos.containing(e.position()), SoundEvents.WITHER_SHOOT, e.getSoundSource(), .5f, .5f);
                     if (tickCounter.get() % 20 == 0) {
                         // Original pulled -.001 per 20 ticks (10 pulls, ~negligible). This pulls -.1 per 20 ticks

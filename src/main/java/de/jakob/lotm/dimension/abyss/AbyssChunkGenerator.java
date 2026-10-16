@@ -2,6 +2,7 @@ package de.jakob.lotm.dimension.abyss;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import de.jakob.lotm.dimension.abyss.Flith.ModFilth;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.util.RandomSource;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.RandomState;
 import net.minecraft.world.level.levelgen.blending.Blender;
 import net.minecraft.world.level.levelgen.synth.PerlinSimplexNoise;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -34,14 +36,14 @@ public class AbyssChunkGenerator extends ChunkGenerator {
     private static final double PEAK_SCALE = 0.013;       // bigger = smaller islands
     private static final double BASE_THRESHOLD = 0.16;    // higher = fewer / smaller islands
     private static final double FULL_EXCESS = 0.20;       // noise strength above threshold that counts as "fully peaked"
-    private static final double PEAK_HEIGHT = 140.0;      // height of a full peak above the water
+    private static final double PEAK_HEIGHT = 100.0;      // height of a full peak above the water
     private static final double SLOPE_SHAPE = 1.5;        // higher = flatter shores, steeper peak
     private static final double RIDGE_HEIGHT = 35.0;      // sharp ridgelines running along the mountain
     private static final double CRAG_HEIGHT = 14.0;       // rough bumps on the faces
     private static final double WARP_SCALE = 0.01;        // size of the wobble in island outlines
     private static final double WARP_AMOUNT = 25.0;       // how wobbly the outlines are
 
-    private static final double ROOT_DEPTH = 80.0;        // how far below the water the deepest part reaches (80 -> about Y=0, deepslate level)
+    private static final double ROOT_DEPTH = 80.0;        // how far below the water the deepest part reaches
     private static final double BOTTOM_ROUGHNESS = 10.0;  // how uneven the underside is
     //NOISE
     private final PerlinSimplexNoise peakNoise;
@@ -59,7 +61,7 @@ public class AbyssChunkGenerator extends ChunkGenerator {
         this.ridgeNoise = new PerlinSimplexNoise(RandomSource.create(731942L), List.of(-1, 0, 1, 2));
     }
     @Override
-    protected MapCodec<? extends ChunkGenerator> codec() {return CODEC;}
+    protected @NotNull MapCodec<? extends ChunkGenerator> codec() {return CODEC;}
     //SHAPE
     private int[] rockColumn(int x, int z) {
         double wx = x + warpXNoise.getValue(x * WARP_SCALE, z * WARP_SCALE, false) * WARP_AMOUNT;
@@ -83,11 +85,11 @@ public class AbyssChunkGenerator extends ChunkGenerator {
     }
     //TERRAIN GENERATION
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState randomState, StructureManager structureManager, ChunkAccess chunk) {return CompletableFuture.completedFuture(generateTerrain(chunk));}
+    public @NotNull CompletableFuture<ChunkAccess> fillFromNoise(@NotNull Blender blender, @NotNull RandomState randomState, @NotNull StructureManager structureManager, @NotNull ChunkAccess chunk) {return CompletableFuture.completedFuture(generateTerrain(chunk));}
     private ChunkAccess generateTerrain(ChunkAccess chunk) {
         int minY = chunk.getMinBuildHeight();
         int maxY = chunk.getMaxBuildHeight();
-        BlockState water = Blocks.WATER.defaultBlockState();
+        BlockState water = ModFilth.BLOCK.get().defaultBlockState();
         BlockState air = Blocks.AIR.defaultBlockState();
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         for (int localX = 0; localX < 16; localX++) {
@@ -97,13 +99,9 @@ public class AbyssChunkGenerator extends ChunkGenerator {
                 int[] rock = rockColumn(worldX, worldZ);
                 for (int y = minY; y < maxY; y++) {
                     BlockState state;
-                    if (rock != null && y >= rock[0] && y <= rock[1]) {
-                        state = getTowerBlock(worldX, y, worldZ);
-                    } else if (y <= OCEAN_LEVEL) {
-                        state = water;
-                    } else {
-                        state = air;
-                    }
+                    if (rock != null && y >= rock[0] && y <= rock[1]) {state = getTowerBlock(worldX, y, worldZ);} 
+                    else if (y <= OCEAN_LEVEL) {state = water;} 
+                    else {state = air;}
                     pos.set(worldX, y, worldZ);
                     chunk.setBlockState(pos, state, false);
                 }
@@ -126,46 +124,34 @@ public class AbyssChunkGenerator extends ChunkGenerator {
         if (roll < 96) return Blocks.POLISHED_BASALT.defaultBlockState();
         return Blocks.CRYING_OBSIDIAN.defaultBlockState();
     }
-    //SURFACE / CARVERS / MOBS
-
     @Override
-    public void buildSurface(WorldGenRegion region, StructureManager structureManager, RandomState randomState, ChunkAccess chunk) {
-    }
+    public void buildSurface(@NotNull WorldGenRegion region, @NotNull StructureManager structureManager, @NotNull RandomState randomState, @NotNull ChunkAccess chunk) {}
     @Override
-    public void applyCarvers(WorldGenRegion level, long seed, RandomState randomState, BiomeManager biomeManager, StructureManager structureManager, ChunkAccess chunk, GenerationStep.Carving carving) {
-    }
+    public void applyCarvers(@NotNull WorldGenRegion level, long seed, @NotNull RandomState randomState, @NotNull BiomeManager biomeManager, @NotNull StructureManager structureManager, @NotNull ChunkAccess chunk, GenerationStep.@NotNull Carving carving) {}
     @Override
-    public void spawnOriginalMobs(WorldGenRegion region) {
-    }
+    public void spawnOriginalMobs(@NotNull WorldGenRegion region) {}
     @Override
-    public int getBaseHeight(int x, int z, Heightmap.Types heightmapType, LevelHeightAccessor level, RandomState randomState) {
+    public int getBaseHeight(int x, int z, Heightmap.@NotNull Types heightmapType, @NotNull LevelHeightAccessor level, @NotNull RandomState randomState) {
         int[] rock = rockColumn(x, z);
         return (rock != null && rock[1] > OCEAN_LEVEL) ? rock[1] + 1 : OCEAN_LEVEL + 1;
     }
     @Override
-    public NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, RandomState randomState) {
+    public @NotNull NoiseColumn getBaseColumn(int x, int z, LevelHeightAccessor level, @NotNull RandomState randomState) {
         int minY = level.getMinBuildHeight();
         int maxY = level.getMaxBuildHeight();
         int[] rock = rockColumn(x, z);
         BlockState[] states = new BlockState[maxY - minY];
         for (int y = minY; y < maxY; y++) {
             BlockState state;
-            if (rock != null && y >= rock[0] && y <= rock[1]) {
-                state = getTowerBlock(x, y, z);
-            } else if (y <= OCEAN_LEVEL) {
-                state = Blocks.WATER.defaultBlockState();
-            } else {
-                state = Blocks.AIR.defaultBlockState();
-            }
+            if (rock != null && y >= rock[0] && y <= rock[1]) {state = getTowerBlock(x, y, z);}
+            else if (y <= OCEAN_LEVEL) {state = ModFilth.BLOCK.get().defaultBlockState();}
+            else {state = Blocks.AIR.defaultBlockState();}
             states[y - minY] = state;
         }
         return new NoiseColumn(minY, states);
     }
-
     @Override
-    public void addDebugScreenInfo(List<String> list, RandomState randomState, BlockPos blockPos) {
-    }
-
+    public void addDebugScreenInfo(@NotNull List<String> list, @NotNull RandomState randomState, @NotNull BlockPos blockPos) {}
     @Override
     public int getMinY() {return MIN_Y;}
     @Override

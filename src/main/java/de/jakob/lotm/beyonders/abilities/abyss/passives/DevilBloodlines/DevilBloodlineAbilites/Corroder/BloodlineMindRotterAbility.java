@@ -40,28 +40,20 @@ public class BloodlineMindRotterAbility extends PassiveAbility {
         return hasCorroderBloodline(entity);
     }
     private static boolean hasCorroderBloodline(LivingEntity entity) {
-        // Shadow clones never have a bloodline
+        // clones never have a bloodline
         if (entity instanceof AvatarEntity) return false;
         return DevilBloodlineAbility.hasBloodline(entity, DevilBloodlineAbility.Bloodline.CORRODER);
     }
     @Override
     public void tick(Level level, LivingEntity entity) {
-        // Intentionally empty other abilities call the static hooks below.
     }
     public static boolean isMindRotter(LivingEntity entity) {
         if (BeyonderData.getSequence(entity) > 5) return false;
         return hasCorroderBloodline(entity);
     }
-    public static boolean protects(LivingEntity victim, int invaderSeq) {
-        return isMindRotter(victim) && invaderSeq >= BeyonderData.getSequence(victim);
-    }
-    public static boolean isPlagueImmune(LivingEntity victim, int plagueOwnerSeq) {
-        return protects(victim, plagueOwnerSeq);
-    }
-    public static float getPoisonDamageMultiplier(LivingEntity user) {
-        return isMindRotter(user) ? POISON_DAMAGE_MULTIPLIER : 1.0F;
-    }
-
+    public static boolean protects(LivingEntity victim, int invaderSeq) {return isMindRotter(victim) && invaderSeq >= BeyonderData.getSequence(victim);}
+    public static boolean isPlagueImmune(LivingEntity victim, int plagueOwnerSeq) {return protects(victim, plagueOwnerSeq);}
+    public static float getPoisonDamageMultiplier(LivingEntity user) {return isMindRotter(user) ? POISON_DAMAGE_MULTIPLIER : 1.0F;}
     //Retaliation
     public static void onMindInvasion(int invaderSeq, LivingEntity invader, LivingEntity victim) {
         if (!(victim.level() instanceof ServerLevel level)) return;
@@ -74,7 +66,7 @@ public class BloodlineMindRotterAbility extends PassiveAbility {
         if (now - last < RETALIATION_COOLDOWN_TICKS) return;
         lastRetaliation.put(invader.getUUID(), now);
         float damage = (float) (DamageLookup.lookupDamage(5, RETALIATION_DAMAGE_SCALE) * POISON_DAMAGE_MULTIPLIER);
-        invader.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, victim), damage);
+        invader.hurt(ModDamageTypes.source(level, ModDamageTypes.CORROSION, victim), damage);
         invader.addEffect(new MobEffectInstance(MobEffects.POISON, RETALIATION_POISON_TICKS, 1));
         ParticleUtil.spawnParticles(level, ROT_DUST, invader.getEyePosition(), 60, .5, .02);
         AbilityUtil.sendActionBar(invader, Component.literal("Their mind is rotting, and it spreads to yours.").withColor(0x2f6b2f));

@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed.MaliceSeedAbility;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -73,6 +74,7 @@ public class AvatarCreationAbility extends Ability {
         }
 
         AvatarEntity avatar = new AvatarEntity(ModEntities.AVATAR.get(), level, entity.getUUID(), "error", sequence);
+        MaliceSeedAbility.registerManifestation(MaliceSeedAbility.getMaliceIdentity(entity), avatar);
         avatar.setPos(entity.getX(), entity.getY(), entity.getZ());
         level.addFreshEntity(avatar);
         avatar.setPersistenceRequired();

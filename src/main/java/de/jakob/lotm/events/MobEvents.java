@@ -44,6 +44,8 @@ public class MobEvents {
 
         if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
 
+        if (npc.getPersistentData().getBoolean("lotm_degen_clone")) return;
+
         BlockPos pos = npc.getOnPos();
 
         if(!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())){

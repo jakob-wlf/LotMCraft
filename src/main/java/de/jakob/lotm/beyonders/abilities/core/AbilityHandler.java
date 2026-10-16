@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed.MaliceSeedAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.contract.ContractAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Curseling.BloodlineBloodDropAbility;
@@ -157,6 +158,7 @@ public class AbilityHandler {
         abilities.add(new BloodSovereignAbility("blood_sovereign_ability"));
         abilities.add(new FearAuraAbility("fear_aura_ability"));
         abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
+        abilities.add(new DegenerationAbility("degeneration"));
 
 
         // FOOL PATHWAY

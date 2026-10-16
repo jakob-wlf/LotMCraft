@@ -11,6 +11,6 @@ public class RitualMagicDevilWorship implements RitualResultHandler {
 
     @Override
     public void perform(Map<String, Object> params, ServerPlayer player, BlockPos ritualCenter) {
-        DevilWorshipAbility.Ritual.perform(player);
+        DevilWorshipAbility.perform(player);
     }
 }

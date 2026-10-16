@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.abyss.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -25,9 +26,10 @@ public class DomainOfBodyAbility extends PassiveAbility {
     private static final float CORROSION_RADIUS = 16.0F;
     private static final float CORROSION_DAMAGE = 3.0F;
     private static final float SANITY_DAMAGE = 1.5F;
-    private static final long REGEN_BLOCK_TICKS = 20L * 10L;
+    private static final float MAX_SANITY_LOSS = 0.15f;
+    private static final long REGEN_BLOCK_TICKS = 20L * 40L;
     private static final Map<UUID, Long> regenBlockedUntil = new ConcurrentHashMap<>();
-    private static final long RETALIATION_COOLDOWN_TICKS = 20L * 10L;
+    private static final long RETALIATION_COOLDOWN_TICKS = 20L * 20L;
     private static final Map<UUID, Long> retaliationCooldowns = new ConcurrentHashMap<>();
     private static boolean retaliating = false;
 
@@ -92,8 +94,14 @@ public class DomainOfBodyAbility extends PassiveAbility {
         try {
             int entitySeq = BeyonderData.getSequence(entity);
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(CORROSION_RADIUS), t -> t != entity && t.isAlive())) {
+                float hpBefore = target.getHealth();
+                float sanityBefore = target.getData(ModAttachments.SANITY_COMPONENT).getSanity();
                 target.hurt(level.damageSources().generic(), CORROSION_DAMAGE);
-                target.getData(ModAttachments.SANITY_COMPONENT).decreaseSanityWithSequenceDifference(SANITY_DAMAGE, target, entitySeq, BeyonderData.getSequence(target));
+                SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
+                float before = sanity.getSanity();
+                sanity.decreaseSanityWithSequenceDifference(SANITY_DAMAGE, target, entitySeq, BeyonderData.getSequence(target));
+                float floor = Math.max(0f, before - MAX_SANITY_LOSS);
+                if (sanity.getSanity() < floor) sanity.increaseSanityAndSync(floor - sanity.getSanity(), target);
             }
         } finally {
             retaliating = false;

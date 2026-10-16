@@ -1,6 +1,6 @@
 package de.jakob.lotm.gui.custom.malice_seed;
 
-import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeedAbility.SeedInfo;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed.MaliceSeedAbility.SeedInfo;
 import de.jakob.lotm.gui.ModMenuTypes;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

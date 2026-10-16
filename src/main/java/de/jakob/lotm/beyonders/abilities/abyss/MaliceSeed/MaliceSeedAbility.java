@@ -1,4 +1,4 @@
-package de.jakob.lotm.beyonders.abilities.abyss;
+package de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.EntityControllingComponent;
@@ -15,12 +15,16 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.gui.custom.malice_seed.MaliceSeedMenu;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -49,27 +53,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MaliceSeedAbility extends SelectableAbility {
 
     private static final String SEEDS_KEY = "lotm_malice_seeds";
-    private static final int SCAN_INTERVAL_TICKS = 100;          // seeds are processed every 5s
-    private static final int TICKS_PER_PHASE = 20 * 2 * 2;     // 10 minutes per phase
+    private static final String MALICE_IDENTITY_KEY = "lotm_malice_identity";
+    private static final int SCAN_INTERVAL_TICKS = 29;          // seeds are processed every 1s
+    private static final int TICKS_PER_PHASE = 20 * 60 * 10;     // 10 minutes per phase
     public record SeedInfo(UUID hostUUID, String hostName, int phase, int progressPercent, String dimension,boolean isPlayer) {}
-
     private static final Set<String> PURIFICATION_PATHWAYS = Set.of("tyrant", "sun", "twilight_giant", "abyss");
     private static final Set<String> SEED_SIGHT_PATHWAYS = Set.of("sun", "visionary","twilight_giant");
     private static final Map<UUID, UUID> whisperTarget = new ConcurrentHashMap<>(); // caster -> host
     private static final Map<UUID, UUID> speakAsTarget = new ConcurrentHashMap<>(); // caster -> host
     private static final Map<UUID, UUID> possessingHost = new ConcurrentHashMap<>(); // caster -> host, while taken over
     private static final Set<UUID> detonatingSeed = ConcurrentHashMap.newKeySet();
-
-
     private static final DustParticleOptions maliceDust = new DustParticleOptions(new Vector3f(0.4f, 0f, 0.1f), 2f);
-
-    // Runtime caches only. The real data lives in each host's persistent NBT.
     private static final Set<UUID> knownCasters = ConcurrentHashMap.newKeySet();
     private static final Map<UUID, Integer> hostPhaseCache = new ConcurrentHashMap<>();
     private static int scanCounter = 0;
-
     public MaliceSeedAbility(String id) {
-        super(id, 120); // cooldown placeholder (was 400s when this was a single-action ability)
+        super(id, 100);
         this.canBeCopied = false;
         this.canBeReplicated = false;
         this.canBeUsedInArtifact = false;
@@ -108,8 +107,7 @@ public class MaliceSeedAbility extends SelectableAbility {
             return;
         }
         if (BeyonderData.isBeyonder(target) && "sun".equals(BeyonderData.getPathway(target)) && BeyonderData.getSequence(target) <= 4) {
-            AbilityUtil.sendActionBar(entity, Component.literal("ability.lotmcraft.malice_seed.sun").withColor(0xFFFF124D)
-            );
+            AbilityUtil.sendActionBar(entity, Component.literal("ability.lotmcraft.malice_seed.sun").withColor(0xFFFF124D));
             return;
         }
         if (AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
@@ -120,34 +118,44 @@ public class MaliceSeedAbility extends SelectableAbility {
         int casterSeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.isBeyonder(target) ? BeyonderData.getSequence(target) : 10;
         if (random.nextFloat() >= getInfectionChance(casterSeq, targetSeq, target)) {AbilityUtil.sendActionBar(entity, Component.literal("The seed found no purchase.").withColor(0xFFff124d));return;}
+        UUID identity = getMaliceIdentity(target);
+        MinecraftServer server = serverLevel.getServer();
+        CompoundTag seeds = findSeedsForIdentity(server, identity);
+        String casterKey = entity.getUUID().toString();
+        // One seed per caster per target identity.
+        if (seeds.contains(casterKey)) {
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.malice_seed.no_target").withColor(0xFFff124d));
+            return;
+        }
         CompoundTag seed = new CompoundTag();
         seed.putInt("phase", 1);
         seed.putInt("progress", 0);
         seed.putInt("casterSeq", casterSeq);
-        CompoundTag seeds = getSeeds(target);
-        seeds.put(entity.getUUID().toString(), seed);
-        target.getPersistentData().put(SEEDS_KEY, seeds);
+        seeds.put(casterKey, seed);
+        synchronizeIdentitySeeds(server, identity, seeds);
         knownCasters.add(entity.getUUID());
-        hostPhaseCache.merge(target.getUUID(), 1, Math::max);
         ParticleUtil.spawnParticles(serverLevel, maliceDust, target.getEyePosition(), 40, .75, 0);
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ITEM_BREAK, SoundSource.BLOCKS, 1, 1);
     }
     private static float getInfectionChance(int casterSeq, int targetSeq, LivingEntity target) {
         float chance = Math.clamp(0.25f + (targetSeq - casterSeq) * 0.25f, 0f, 1f);
         String pathway = BeyonderData.isBeyonder(target) ? BeyonderData.getPathway(target) : null;
-        if (pathway != null && PURIFICATION_PATHWAYS.contains(pathway)) {
-            chance *= 0.5f;
-        }
+        if (pathway != null && PURIFICATION_PATHWAYS.contains(pathway)) chance *= 0.5f;
         return chance;
     }
-    private static CompoundTag getSeeds(LivingEntity host) {return host.getPersistentData().getCompound(SEEDS_KEY);}
+    private static CompoundTag getSeeds(LivingEntity host) {
+        if (host == null) return new CompoundTag();
+        MinecraftServer server = host.getServer();
+        if (server != null) {
+            UUID identity = getMaliceIdentity(host);
+            return findSeedsForIdentity(server, identity);
+        }
+        return host.getPersistentData().getCompound(SEEDS_KEY).copy();
+    }
     private void openSeedMenu(LivingEntity entity) {
         if (!(entity instanceof ServerPlayer player)) return;
         List<SeedInfo> seeds = collectSeeds(player);
-        player.openMenu(new SimpleMenuProvider(
-                (id, inv, p) -> new MaliceSeedMenu(id, inv, seeds),
-                Component.translatable("gui.lotm.malice_seed.title")
-        ), buf -> MaliceSeedMenu.writeSeeds(buf, seeds));
+        player.openMenu(new SimpleMenuProvider((id, inv, p) -> new MaliceSeedMenu(id, inv, seeds), Component.translatable("gui.lotm.malice_seed.title")), buf -> MaliceSeedMenu.writeSeeds(buf, seeds));
     }
     //Phase progression
     @SubscribeEvent
@@ -158,17 +166,24 @@ public class MaliceSeedAbility extends SelectableAbility {
             for (Entity entity : level.getAllEntities()) {
                 if (!(entity instanceof LivingEntity caster)) continue;
                 if (!knownCasters.contains(caster.getUUID())) continue;
-                if (BeyonderData.isBeyonder(caster) && BeyonderData.getSequence(caster) > 2) {
-                    removeAllSeedsFromCaster(caster.getUUID(), event.getServer()
-                    );
-                }
+                if (BeyonderData.isBeyonder(caster) && BeyonderData.getSequence(caster) > 2) removeAllSeedsFromCaster(caster.getUUID(), event.getServer());
             }
         }
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            for (Entity e : level.getAllEntities()) {
-                if (!(e instanceof LivingEntity host) || !host.isAlive()) continue;
+        Set<UUID> processedIdentities = new HashSet<>();
+        MinecraftServer server = event.getServer();
+        for (ServerLevel level : server.getAllLevels()) {
+            for (Entity entity : level.getAllEntities()) {
+                if (!(entity instanceof LivingEntity host) || !host.isAlive()) continue;
                 if (!host.getPersistentData().contains(SEEDS_KEY)) continue;
-                tickSeeds(level, host);
+                UUID identity = getMaliceIdentity(host);
+                // A shared infection must advance only once per scan.
+                if (!processedIdentities.add(identity)) continue;
+                // Prefer the original body for sanity and phase calculations.
+                LivingEntity canonicalHost = findLivingEntity(server, identity);
+                if (canonicalHost == null || !canonicalHost.getPersistentData().contains(SEEDS_KEY)) canonicalHost = host;
+                tickSeeds((ServerLevel) canonicalHost.level(), canonicalHost);
+                CompoundTag updatedSeeds = getSeeds(canonicalHost);
+                synchronizeIdentitySeeds(server, identity, updatedSeeds.copy());
             }
         }
     }
@@ -188,7 +203,7 @@ public class MaliceSeedAbility extends SelectableAbility {
                 continue;
             }
             int phase = seed.getInt("phase");
-            int maxPhase = casterSeq <= 1 ? 4 : 3; // phase 4 is a seq 1 caster only
+            int maxPhase = casterSeq <= 0 ? 4 : 3; // phase 4 is a seq 0 caster only
             if (phase < maxPhase) {
                 int progress = seed.getInt("progress") + gained;
                 if (progress >= TICKS_PER_PHASE) {
@@ -222,6 +237,7 @@ public class MaliceSeedAbility extends SelectableAbility {
             return;
         }
         if (!(caster.level() instanceof ServerLevel serverLevel)) return;
+        MinecraftServer server = serverLevel.getServer();
         if (!knownCasters.contains(caster.getUUID())) return;
         if (!BeyonderData.isBeyonder(caster) || !"abyss".equals(BeyonderData.getPathway(caster))) {//|| !"chained".equals(BeyonderData.getPathway(caster)))
             AbilityUtil.sendActionBar(caster, Component.literal("Your Malice Falls Short.").withColor(0xFFff124d));
@@ -233,7 +249,9 @@ public class MaliceSeedAbility extends SelectableAbility {
         for (ServerLevel level : serverLevel.getServer().getAllLevels()) {
             for (Entity e : level.getAllEntities()) {
                 if (!(e instanceof LivingEntity host) || host == caster || !host.isAlive()) {continue;}
-                if (!getSeeds(host).contains(casterKey)) {continue;}
+                UUID hostIdentity = getMaliceIdentity(host);
+                CompoundTag hostSeeds = findSeedsForIdentity(server, hostIdentity);
+                if (!hostSeeds.contains(casterKey)) continue;
                 double dist = level == serverLevel ? host.distanceToSqr(caster) : Double.MAX_VALUE / 2;
                 if (dist < best) {
                     best = dist;
@@ -245,8 +263,9 @@ public class MaliceSeedAbility extends SelectableAbility {
             knownCasters.remove(caster.getUUID());
             return;
         }
-        CompoundTag seeds = getSeeds(nearest);
-        CompoundTag seed = seeds.getCompound(casterKey);
+        UUID identity = getMaliceIdentity(nearest);
+        CompoundTag seeds = findSeedsForIdentity(server, identity);
+        CompoundTag seed = seeds.getCompound(casterKey).copy();
         float damage = calculateSeedDamage(caster, nearest, seed);
         event.setCanceled(true);
         caster.setHealth(caster.getMaxHealth() * 0.5f);
@@ -256,10 +275,9 @@ public class MaliceSeedAbility extends SelectableAbility {
             ModDamageTypes.trueDamage(nearest, damage, serverLevel, caster);
             ParticleUtil.spawnParticles(hostLevel, new DustParticleOptions(new Vector3f(0.4f, 0f, 0.1f), 2.5f), nearest.getEyePosition(), 60, 2.0, 0);
         }
-        // Only the seed that was used is consumed.
         seeds.remove(casterKey);
-        if (seeds.isEmpty()) {nearest.getPersistentData().remove(SEEDS_KEY);hostPhaseCache.remove(nearest.getUUID());}
-        else {nearest.getPersistentData().put(SEEDS_KEY, seeds);}
+        synchronizeIdentitySeeds(server, identity, seeds);
+        if (seeds.isEmpty()) {knownCasters.remove(caster.getUUID());}
     }
     private static float calculateSeedDamage(LivingEntity ignoredCaster, LivingEntity host, CompoundTag seed) {
         int phase = seed.getInt("phase");
@@ -280,10 +298,14 @@ public class MaliceSeedAbility extends SelectableAbility {
     public static void onHostDeath(LivingDeathEvent event) {
         if (event.isCanceled()) return;
         LivingEntity host = event.getEntity();
-        hostPhaseCache.remove(host.getUUID());
+        if (!(host.level() instanceof ServerLevel level)) return;
+        UUID identity = getMaliceIdentity(host);
+        // Remove only this body's local copy.
         host.getPersistentData().remove(SEEDS_KEY);
+        hostPhaseCache.remove(host.getUUID());
+        CompoundTag remaining = findSeedsForIdentity(level.getServer(), identity);
+        if (!remaining.isEmpty()) synchronizeIdentitySeeds(level.getServer(), identity, remaining);
     }
-
     public static boolean hasSeed(UUID targetUUID) {return hostPhaseCache.containsKey(targetUUID);}
     public static int getGrowth(UUID targetUUID) {return hostPhaseCache.getOrDefault(targetUUID, 0);}
     public static List<SeedInfo> collectSeeds(ServerPlayer caster) {
@@ -307,9 +329,7 @@ public class MaliceSeedAbility extends SelectableAbility {
         boolean wasWhispering = whisperTarget.containsKey(casterUUID);
         whisperTarget.remove(casterUUID);
         speakAsTarget.remove(casterUUID);
-        if (wasWhispering && mode != 1) {
-            AbilityUtil.sendActionBar(caster, Component.literal("Whispering: OFF").withColor(0x9932cc));
-        }
+        if (wasWhispering && mode != 1) AbilityUtil.sendActionBar(caster, Component.literal("Whispering: OFF").withColor(0x9932cc));
         boolean switchingHost = mode == 2 && wasSpeakingAs && !hostUUID.equals(previousSpeakAsHost);
         if (mode == 0) return;
         LivingEntity host = findHostEntity(caster, hostUUID);
@@ -400,7 +420,6 @@ public class MaliceSeedAbility extends SelectableAbility {
         int casterSeq = seed.getInt("casterSeq");
         int maxPhase = casterSeq <= 1 ? 4 : 3;
         if (phase >= maxPhase) return;
-        // Literal reading of the spec: 0.01% of the phase's total time, per char, times the phase number
         double reductionFraction = 0.0001 * phase * charCount;
         int reductionTicks = (int) Math.round(TICKS_PER_PHASE * reductionFraction);
         int progress = seed.getInt("progress") + reductionTicks;
@@ -408,8 +427,7 @@ public class MaliceSeedAbility extends SelectableAbility {
         seed.putInt("progress", progress);
         CompoundTag seeds = getSeeds(host);
         seeds.put(caster.getUUID().toString(), seed);
-        host.getPersistentData().put(SEEDS_KEY, seeds);
-        hostPhaseCache.merge(host.getUUID(), phase, Math::max);
+        if (host.level() instanceof ServerLevel level) {synchronizeIdentitySeeds(level.getServer(), getMaliceIdentity(host), seeds.copy());}
     }
     private static LivingEntity findHostEntity(ServerPlayer caster, UUID hostUUID) {
         for (ServerLevel level : caster.server.getAllLevels()) {
@@ -440,9 +458,7 @@ public class MaliceSeedAbility extends SelectableAbility {
     public static void cleanupOnLogout(ServerPlayer player) {
         UUID playerUUID = player.getUUID();
         whisperTarget.remove(playerUUID);
-        if (speakAsTarget.remove(playerUUID) != null) {
-            ControllingUtils.endSpiritProjection(player);
-        }
+        if (speakAsTarget.remove(playerUUID) != null) ControllingUtils.endSpiritProjection(player);
         possessingHost.remove(playerUUID);
         detonatingSeed.remove(playerUUID);
     }
@@ -483,10 +499,7 @@ public class MaliceSeedAbility extends SelectableAbility {
         caster.teleportTo(hostLevel, explosionPos.x, explosionPos.y, explosionPos.z, Set.of(), caster.getYRot(), caster.getXRot());
         ParticleUtil.spawnParticles(hostLevel, ParticleTypes.SOUL, explosionPos, 80, 1.0, 1.0);
         hostLevel.playSound(null, BlockPos.containing(explosionPos), SoundEvents.WARDEN_TENDRIL_CLICKS, SoundSource.PLAYERS, 2f, 0.6f);
-        AbilityUtil.getNearbyEntities(caster, hostLevel, explosionPos, 6).forEach(e -> {
-            SanityComponent sanity = e.getData(ModAttachments.SANITY_COMPONENT);
-            sanity.increaseSanityAndSync(-0.05f, e);
-        });
+        AbilityUtil.getNearbyEntities(caster, hostLevel, explosionPos, 6).forEach(e -> {SanityComponent sanity = e.getData(ModAttachments.SANITY_COMPONENT);sanity.increaseSanityAndSync(-0.05f, e);});
     }
     public static boolean isSpeakAsHost(UUID casterUUID, UUID entityUUID) {
         UUID host = speakAsTarget.get(casterUUID);
@@ -496,26 +509,17 @@ public class MaliceSeedAbility extends SelectableAbility {
         UUID playerUUID = player.getUUID();
         UUID hostUUID = possessingHost.remove(playerUUID);
         if (hostUUID == null) return;
-        if (!detonatingSeed.contains(playerUUID)) {
-            return;
-        }
+        if (!detonatingSeed.contains(playerUUID)) return;
         LivingEntity host = findHostEntity(player, hostUUID);
-        if (host != null && host.isAlive()) {
-            removeSpecificSeed(host, playerUUID);
-        }
+        if (host != null && host.isAlive()) removeSpecificSeed(host, playerUUID);
     }
     private static void removeSpecificSeed(LivingEntity host, UUID casterUUID) {
-        CompoundTag seeds = getSeeds(host);
+        MinecraftServer server = host.getServer();
+        if (server == null) return;
+        UUID identity = getMaliceIdentity(host);
+        CompoundTag seeds = findSeedsForIdentity(server, identity);
         seeds.remove(casterUUID.toString());
-        if (seeds.isEmpty()) {
-            host.getPersistentData().remove(SEEDS_KEY);
-            hostPhaseCache.remove(host.getUUID());
-        } else {
-            host.getPersistentData().put(SEEDS_KEY, seeds);
-            int highest = 0;
-            for (String k : seeds.getAllKeys()) highest = Math.max(highest, seeds.getCompound(k).getInt("phase"));
-            hostPhaseCache.put(host.getUUID(), highest);
-        }
+        synchronizeIdentitySeeds(server, identity, seeds);
     }
     @SubscribeEvent
     public static void onPurificationUsed(AbilityUsedEvent event) {
@@ -551,23 +555,13 @@ public class MaliceSeedAbility extends SelectableAbility {
                         seeds.put(casterKey, seed);
                         notifyCaster(casterKey, "lowered");
                     }
-                } else {
-                    anyFailedAttempt = true;
-                }
+                } else {anyFailedAttempt = true;}
             }
             if (anyFailedAttempt) {
                 SanityComponent sanity = host.getData(ModAttachments.SANITY_COMPONENT);
-                sanity.increaseSanityAndSync(-0.10f, host); // 10% of total, not current
+                sanity.increaseSanityAndSync(-0.10f, host);
             }
-            if (seeds.isEmpty()) {
-                host.getPersistentData().remove(SEEDS_KEY);
-                hostPhaseCache.remove(host.getUUID());
-            } else {
-                host.getPersistentData().put(SEEDS_KEY, seeds);
-                int highest = 0;
-                for (String k : seeds.getAllKeys()) highest = Math.max(highest, seeds.getCompound(k).getInt("phase"));
-                hostPhaseCache.put(host.getUUID(), highest);
-            }
+            synchronizeIdentitySeeds(level.getServer(), getMaliceIdentity(host), seeds.copy());
         }
     }
     private static void notifyCaster(String casterKey, String outcome) {
@@ -640,5 +634,92 @@ public class MaliceSeedAbility extends SelectableAbility {
             if (observerSeq <= casterSeq + leniency) return true;
         }
         return false;
+    }
+    public static UUID getMaliceIdentity(LivingEntity entity) {
+        if (entity instanceof AvatarEntity avatar) {
+            UUID owner = avatar.getOriginalOwner();
+            if (owner != null) return owner;
+        }
+        if (MarionetteUtils.isMarionette(entity)) {
+            MarionetteComponent component = entity.getData(ModAttachments.MARIONETTE_COMPONENT);
+            try {
+                UUID owner = UUID.fromString(component.getControllerUUID());
+                MinecraftServer server = entity.getServer();
+                if (server != null) {
+                    LivingEntity controller = findLivingEntity(server, owner);
+                    if (controller != null && controller != entity) return getMaliceIdentity(controller);
+                }
+                return owner;
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        CompoundTag data = entity.getPersistentData();
+        if (data.hasUUID(MALICE_IDENTITY_KEY)) return data.getUUID(MALICE_IDENTITY_KEY);
+        UUID identity = entity.getUUID();
+        data.putUUID(MALICE_IDENTITY_KEY, identity);
+        return identity;
+    }
+    public static void registerManifestation(UUID identity, LivingEntity manifestation) {
+        if (identity == null || manifestation == null) return;
+        manifestation.getPersistentData().putUUID(MALICE_IDENTITY_KEY, identity);
+        MinecraftServer server = manifestation.getServer();
+        if (server == null) {return;}
+        CompoundTag seeds = findSeedsForIdentity(server, identity);
+        if (seeds.isEmpty()) {
+            manifestation.getPersistentData().remove(SEEDS_KEY);
+            hostPhaseCache.remove(manifestation.getUUID());
+            return;
+        }
+        manifestation.getPersistentData().put(SEEDS_KEY, seeds.copy());
+        int highest = 0;
+        for (String key : seeds.getAllKeys()) {highest = Math.max(highest, seeds.getCompound(key).getInt("phase"));}
+        hostPhaseCache.put(manifestation.getUUID(), highest);
+    }
+    private static LivingEntity findLivingEntity(MinecraftServer server, UUID uuid) {
+        for (ServerLevel level : server.getAllLevels()) {
+            Entity entity = level.getEntity(uuid);
+            if (entity instanceof LivingEntity living) {return living;}
+        }
+        return null;
+    }
+    private static CompoundTag findSeedsForIdentity(MinecraftServer server, UUID identity) {
+        if (server == null || identity == null) {return new CompoundTag();}
+        return MaliceSeedData.get(server).getSeeds(identity);
+    }
+    private static void synchronizeIdentitySeeds(MinecraftServer server, UUID identity, CompoundTag seeds) {
+        if (server == null || identity == null) {return;}
+        CompoundTag authoritativeSeeds = seeds.copy();
+        MaliceSeedData.get(server).setSeeds(identity, authoritativeSeeds);
+        int highest = 0;
+        for (String key : authoritativeSeeds.getAllKeys()) {highest = Math.max(highest, authoritativeSeeds.getCompound(key).getInt("phase"));}
+        // Synchronize every loaded puppet, avatar, and connected person.
+        for (ServerLevel level : server.getAllLevels()) {
+            for (Entity entity : level.getAllEntities()) {
+                if (!(entity instanceof LivingEntity living)) {continue;}
+                if (!getMaliceIdentity(living).equals(identity)) {continue;}
+                CompoundTag persistentData = living.getPersistentData();
+                if (authoritativeSeeds.isEmpty()) {
+                    persistentData.remove(SEEDS_KEY);
+                    hostPhaseCache.remove(living.getUUID());
+                } else {
+                    persistentData.put(SEEDS_KEY, authoritativeSeeds.copy());
+                    hostPhaseCache.put(living.getUUID(), highest);
+                }
+            }
+        }
+    }
+    public static void copyInfectionsToPersonaRecipient(LivingEntity owner, LivingEntity recipient) {
+        if (owner == null || recipient == null || owner == recipient) {return;}
+        MinecraftServer server = owner.getServer();
+        if (server == null || recipient.getServer() != server) {return;}
+        UUID ownerIdentity = getMaliceIdentity(owner);
+        UUID recipientIdentity = getMaliceIdentity(recipient);
+        if (ownerIdentity.equals(recipientIdentity)) {return;}
+        CompoundTag ownerSeeds = findSeedsForIdentity(server, ownerIdentity);
+        if (ownerSeeds.isEmpty()) {return;}
+        CompoundTag recipientSeeds = findSeedsForIdentity(server, recipientIdentity);
+        // Copy each infection independently
+        for (String casterKey : ownerSeeds.getAllKeys()) {if (!recipientSeeds.contains(casterKey)) {recipientSeeds.put(casterKey, ownerSeeds.getCompound(casterKey).copy());}}
+        synchronizeIdentitySeeds(server, recipientIdentity, recipientSeeds);
     }
 }
