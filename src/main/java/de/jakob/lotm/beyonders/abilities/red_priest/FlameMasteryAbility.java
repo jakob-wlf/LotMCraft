@@ -203,12 +203,16 @@ public class FlameMasteryAbility extends SelectableAbility {
     }
 
     private void fireballBarrage(ServerLevel level, LivingEntity entity) {
-        double shots = 15;
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
+        double shots = 25;
         Vec3 pos = entity.getEyePosition();
-        Vec3 dir = entity.getLookAngle();
+
         for (int i = 0; i < shots; i++) {
-            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
+            ServerScheduler.scheduleDelayed(i * 3, () -> {
+                Vec3 pos2 = entity.getEyePosition();
+                Vec3 dir = entity.getLookAngle();
+                Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
+                fireball(level, entity, pos2, dir, targetPos);
+            }, level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
         }
     }
 

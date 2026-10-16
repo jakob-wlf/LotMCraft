@@ -4,6 +4,8 @@ import com.jcraft.jorbis.Block;
 import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
 import com.lowdragmc.photon.client.fx.FX;
 import com.lowdragmc.photon.client.fx.FXHelper;
+import com.lowdragmc.photon.client.gameobject.IFXObject;
+import com.lowdragmc.photon.client.gameobject.emitter.aratrail.AraTrailEmitter;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -92,17 +94,27 @@ public class FireballEntity extends AbstractArrow {
             case DARK, VIOLENT, AZURE_VIOLENT -> "_purple";
             default -> "_red";
         };
-        String path = prefix + "fireball" + color;
+        String path = prefix + "fireball" + color + "_trail";
 
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, path);
         FX fx = FXHelper.getFX(id);
 
         EntityEffectExecutor executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
         executor.setForcedDeath(false);
-        executor.setScale(Math.clamp(getSize() * 1.5, 1.2, 3), Math.clamp(getSize() * 1.5, 1.2, 3), Math.clamp(getSize() * 1.5, 1.2, 3));
+        executor.setScale(Math.clamp(getSize() * 1.2, 1, 4), Math.clamp(getSize() * 1.2, 1.5, 4), Math.clamp(getSize() * 1.2, 1, 4));
 
         try {
             executor.start();
+
+            var runtime = executor.getRuntime();
+            if (runtime != null) {
+                for (IFXObject obj : runtime.findObjects("ara_trail_emitter")) {
+                    if (obj instanceof AraTrailEmitter ara) {
+                        var values = ara.runtime();
+                        values.thickness.set((float) (values.thickness.get() * Math.clamp(getSize() * 1.5, 1.25, 2.5)));
+                    }
+                }
+            }
         } catch (ConcurrentModificationException | NullPointerException ignored) {
 
         }
@@ -142,11 +154,11 @@ public class FireballEntity extends AbstractArrow {
         }
 
         if(lastPos != null) {
-            float size = getSize();
-            if(size < 1.5)
-                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, lastPos, Math.round(4 * size), .2 * size, .02);
-            else
-                ParticleUtil.spawnParticles((ServerLevel) level, dust, lastPos, Math.round(3 * size), .2 * size, .02);
+//            float size = getSize();
+//            if(size < 1.5)
+//                ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SMOKE, lastPos, Math.round(4 * size), .2 * size, .02);
+//            else
+//                ParticleUtil.spawnParticles((ServerLevel) level, dust, lastPos, Math.round(3 * size), .2 * size, .02);
         }
 
         blocksPerTick = lastPos != null ? lastPos.distanceTo(position()) : null;

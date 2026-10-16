@@ -3,6 +3,8 @@ package de.jakob.lotm.entity.custom.projectiles;
 import com.lowdragmc.photon.client.fx.EntityEffectExecutor;
 import com.lowdragmc.photon.client.fx.FX;
 import com.lowdragmc.photon.client.fx.FXHelper;
+import com.lowdragmc.photon.client.gameobject.IFXObject;
+import com.lowdragmc.photon.client.gameobject.emitter.aratrail.AraTrailEmitter;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -102,11 +104,21 @@ public class WaterBoltEntity extends AbstractArrow {
 
         executor = new EntityEffectExecutor(fx, level(), this, EntityEffectExecutor.AutoRotate.NONE);
         executor.setForcedDeath(true);
-        executor.setScale(1, 1, 1);
+        executor.setScale(.55, .55, .55);
 
         try {
             executor.start();
-        } catch (ConcurrentModificationException ignored) {
+
+            var runtime = executor.getRuntime();
+            if (runtime != null) {
+                for (IFXObject obj : runtime.findObjects("ara_trail_emitter")) {
+                    if (obj instanceof AraTrailEmitter ara) {
+                        var values = ara.runtime();
+                        values.thickness.set((float) (values.thickness.get() * .55));
+                    }
+                }
+            }
+        } catch (ConcurrentModificationException | NullPointerException ignored) {
 
         }
     }

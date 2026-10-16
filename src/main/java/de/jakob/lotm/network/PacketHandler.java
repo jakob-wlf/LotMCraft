@@ -40,6 +40,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                RecognitionSyncPacket.TYPE,
+                RecognitionSyncPacket.STREAM_CODEC,
+                RecognitionSyncPacket::handle
+        );
+
+
+        registrar.playToClient(
                 CancelPhotonEntityEffectPacket.TYPE,
                 CancelPhotonEntityEffectPacket.STREAM_CODEC,
                 CancelPhotonEntityEffectPacket::handle
