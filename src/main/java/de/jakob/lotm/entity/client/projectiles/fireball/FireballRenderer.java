@@ -36,7 +36,7 @@ public class FireballRenderer extends EntityRenderer<FireballEntity> {
         poseStack.scale(scale, scale, scale);
 
         poseStack.scale(-1.0F, -1.0F, 1.0F);
-        poseStack.translate(0.0D, -1.625D, 0.0D);
+        poseStack.translate(0.0D, -1.65D, 0.0D);
 
         RenderType renderType = petrified ? this.model.renderType(LOTMCraft.STONE_TEXTURE) :
                 this.model.renderType(this.getTextureLocation(entity));
