@@ -32,6 +32,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import de.jakob.lotm.rendering.MiniatureCreatureRenderer;
+import de.jakob.lotm.rendering.SpiritTokenRenderer;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
@@ -121,6 +122,12 @@ public class ClientEvents {
                 return MiniatureCreatureRenderer.instance();
             }
         }, ModItems.MINIATURE_CREATURE.get());
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return SpiritTokenRenderer.instance();
+            }
+        }, ModItems.SPIRIT_TOKEN.get());
     }
 
     @SubscribeEvent

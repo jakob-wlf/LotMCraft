@@ -75,6 +75,9 @@ public class ModItems {
                     .stacksTo(1)
             )
     );
+    public static final Supplier<Item> SPIRIT_TOKEN = ITEMS.register("spirit_token",
+            () -> new Item(new Item.Properties().stacksTo(1))
+    );
     public static final Supplier<Item> SUN_ITEM = ITEMS.register("sun",
             () -> new SunItem(new Item.Properties()
                     .stacksTo(1)

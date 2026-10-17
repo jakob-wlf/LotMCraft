@@ -912,6 +912,7 @@
   "ability.lotmcraft.area_miniaturization.broke_free": "%s was too strong and broke free",
   "ability.lotmcraft.area_miniaturization.stored": "Miniaturized %s",
   "item.lotmcraft.miniature_creature": "Miniature Creature",
+  "item.lotmcraft.spirit_token": "Spirit",
   "item.lotmcraft.miniature_creature.named": "Miniature %s",
   "item.lotmcraft.miniature_creature.held": "Right-click to release %s",
   "lotmcraft.space_distortion_ability": "Space Distortion",

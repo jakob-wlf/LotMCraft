@@ -9,6 +9,7 @@ import de.jakob.lotm.beyonders.abilities.death.EyeOfDeathAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.gui.custom.spirit_command.SpiritCommandMenu;
 import de.jakob.lotm.gui.custom.spirit_housing.SpiritManageMenu;
+import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -27,7 +28,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -87,7 +87,7 @@ public class SpiritCommandingAbility extends SelectableAbility {
     }
 
     public static ItemStack token(String typeId) {
-        ItemStack stack = new ItemStack(Items.PAPER);
+        ItemStack stack = new ItemStack(ModItems.SPIRIT_TOKEN.get());
         CompoundTag tag = new CompoundTag();
         tag.putString("Spirit", typeId);
         stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
