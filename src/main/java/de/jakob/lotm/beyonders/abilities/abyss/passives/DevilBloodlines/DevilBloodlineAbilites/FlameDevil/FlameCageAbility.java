@@ -1,9 +1,10 @@
-package de.jakob.lotm.beyonders.abilities.abyss;
+package de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
-import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
@@ -23,9 +24,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -47,6 +46,13 @@ public class FlameCageAbility extends Ability {
         return new HashMap<>(Map.of("abyss", 6));
     }
 
+    public boolean meetsBloodlineRequirement(LivingEntity entity) {
+        return hasFlameDevilBloodline(entity);
+    }
+    private static boolean hasFlameDevilBloodline(LivingEntity entity) {
+        if (entity instanceof AvatarEntity) return false;
+        return DevilBloodlineAbility.hasBloodline(entity, DevilBloodlineAbility.Bloodline.FLAME_DEVIL);
+    }
     @Override
     public float getSpiritualityCost() {
         return 150;
@@ -79,7 +85,7 @@ public class FlameCageAbility extends Ability {
             AbilityUtil.damageNearbyEntities(serverLevel, entity,
                     radius - 0.5, dps, cageCenter, true, false,
                     true, 0,
-                    ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, entity));
+                    ModDamageTypes.source(serverLevel, ModDamageTypes.FIRE, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, cageCenter, radius + 1.5)
                     .stream()

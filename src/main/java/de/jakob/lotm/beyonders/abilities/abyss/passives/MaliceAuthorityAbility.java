@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.abyss.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
@@ -21,23 +22,14 @@ public class MaliceAuthorityAbility extends PassiveAbility {
     public Map<String, Integer> getRequirements() {return new HashMap<>(Map.of("abyss", 2));}
     @Override
     public void tick(Level level, LivingEntity entity) {
-        // Reduce LOOSING_CONTROL duration once per 1 second
-        if (entity.tickCount % 20 != 0) return;
-        MobEffectInstance loosingControl = entity.getEffect(ModEffects.LOOSING_CONTROL);
-        if (loosingControl != null) {
-            int remaining = loosingControl.getDuration();
-            if (remaining <= 20) {
-                entity.removeEffect(ModEffects.LOOSING_CONTROL);
-            } else {
-                entity.addEffect(new MobEffectInstance(ModEffects.LOOSING_CONTROL, remaining - 20, loosingControl.getAmplifier(), loosingControl.isAmbient(), loosingControl.isVisible(), loosingControl.showIcon()
-                ));
-            }
-        }
     }
     @SubscribeEvent
     public static void onEntityDamage(LivingDamageEvent.Pre event) {
         if (!event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) return;
         LivingEntity entity = event.getEntity();
+        PassiveAbility ability = PassiveAbilityHandler.getById("malice_authority_ability");
+        assert ability != null;
+        if (!ability.shouldApplyTo(entity)) return;
         int entitySeq = BeyonderData.getSequence(entity);
         if (entitySeq >= 3) {
             event.setNewDamage(0);
@@ -51,5 +43,9 @@ public class MaliceAuthorityAbility extends PassiveAbility {
             event.setNewDamage(event.getNewDamage() * 0.75F);
             return;
         }
+    }
+    public static boolean isActiveFor(LivingEntity entity) {
+        PassiveAbility ability = PassiveAbilityHandler.getById("malice_authority_ability");
+        return ability != null && ability.shouldApplyTo(entity);
     }
 }

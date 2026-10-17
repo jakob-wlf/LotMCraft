@@ -172,7 +172,7 @@ public class FireballEntity extends AbstractArrow {
             return;
 
         // check if the owner exists before - to not crash
-        if(owner != null){
+        if (this.getOwner() instanceof LivingEntity livingOwner) {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, owner), (float) damage/2);
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, owner), (float) damage/2);
         } else {

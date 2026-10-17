@@ -281,15 +281,13 @@ public class StrongLightningEntity extends Entity {
             boolean inWater = isNearWater(pos);
             float waterMultiplier = inWater ? 1.8f : 1.0f;
 
-            entity.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source),
-                    (float) damage * waterMultiplier);
+            entity.hurt(ModDamageTypes.source(level(), ModDamageTypes.LIGHTNING, source), (float) (damage * waterMultiplier));
 
             List<Entity> nearbyEntities = level().getEntities(this,
                     new AABB(pos.add(-4, -4, -4), pos.add(4, 4, 4)));
             for (Entity nearby : nearbyEntities) {
                 if (nearby != entity && !(nearby instanceof StrongLightningEntity) && !nearby.isSpectator()) {
-                    nearby.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source),
-                            (float) (damage * 0.3));
+                    nearby.hurt(ModDamageTypes.source(level(), ModDamageTypes.LIGHTNING, source), (float) (damage * 0.3));
                 }
             }
 
@@ -351,8 +349,7 @@ public class StrongLightningEntity extends Entity {
         ServerLevel serverLevel = (ServerLevel) level();
         AbilityUtil.getNearbyEntities(source, serverLevel, pos, 15).forEach(e -> {
             if(e.isInWater() || isNearWater(e.position())) {
-                e.hurt(ModDamageTypes.source(this.level(), ModDamageTypes.LIGHTNING, source)
-                        , (float) (damage * 1.5));
+                e.hurt(ModDamageTypes.source(level(), ModDamageTypes.LIGHTNING, source), (float) (damage * 1.5f));
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, e.position(), 20, .5, 0);
             }
         });
@@ -373,7 +370,7 @@ public class StrongLightningEntity extends Entity {
             if(distToWallLine < 5 && Math.abs(alongWall) < wall.halfWidth()) {
                 for(int j = -wall.halfWidth(); j <= wall.halfWidth(); j += 3) {
                     Vec3 wallPoint = wallPos.add(perp.scale(j));
-                    AbilityUtil.damageNearbyEntities(serverLevel, source, 3, ModDamageTypes.LIGHTNING , (float) (damage * 1.5), wallPoint, true, false, true, 0);
+                    AbilityUtil.getNearbyEntities(source, serverLevel, wallPoint, 3).forEach(e -> e.hurt(ModDamageTypes.source(level(), ModDamageTypes.LIGHTNING, source), (float) (damage * 1.5)));
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.ELECTRIC_SPARK, wallPoint, 10, 1, 0);
                 }
                 break;

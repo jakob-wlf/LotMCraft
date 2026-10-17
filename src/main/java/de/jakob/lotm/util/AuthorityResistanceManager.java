@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.fml.common.Mod;
 
 import java.util.HashMap;
 import java.util.List;
@@ -145,6 +146,21 @@ public class AuthorityResistanceManager {
         Map<ResourceKey<DamageType>, List<Float>> twilight = new HashMap<>();
         twilight.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.3f, 0.5f, 0.7f, 0.9f));
         resistances.put("twilight_giant", twilight);
+        Map<ResourceKey<DamageType>, List<Float>> abyss = new HashMap<>();
+        abyss.put(ModDamageTypes.MIND_BASED, List.of(0.7f, 0.7f, 0.7f, 0.7f, 0.7f,0.7f,0.7f,0.7f));
+        abyss.put(ModDamageTypes.ABYSS, List.of(0.0f, 0.5f, 0.9f));
+        abyss.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.5f, 0.5f, 0.5f));
+        abyss.put(ModDamageTypes.HOLY_BASED, List.of(3f, 2.6f, 2.4f, 2.25f, 2.1f, 2.0f, 1.5f, 1.25f, 1.1f));
+        abyss.put(ModDamageTypes.LIGHTNING, List.of(2.0f, 1.9f, 1.8f, 1.7f, 1.6f, 1.5f, 1.25f, 1.1f));
+        abyss.put(ModDamageTypes.CORROSION, List.of(0.5f, 0.6f, 0.7f, 0.8f, 0.9f));
+        abyss.put(ModDamageTypes.CORRUPTION, List.of(0.25f, 0.5f, 0.7f, 0.8f, 0.8f,1.0f,1.5f,1.8f,2.0f));
+        abyss.put(ModDamageTypes.EVIL_BASED, List.of(0.4f, 0.6f, 0.7f, 0.8f, 0.9f));
+        abyss.put(ModDamageTypes.FILTH, List.of(0.0f,0.5f,0.9f));
+        abyss.put(ModDamageTypes.PLAGUE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f));
+        abyss.put(ModDamageTypes.FIRE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f)); //Modified in passive ability
+        abyss.put(ModDamageTypes.CURSE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f)); //Modified in passive ability
+        abyss.put(ModDamageTypes.DEGENERATION, List.of(0.5f, 0.7f, 0.9f));
+        resistances.put("abyss", abyss);
     }
 
     public static float getResistance(DamageSource source, String path, int seq){

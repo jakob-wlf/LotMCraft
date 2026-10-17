@@ -1,8 +1,10 @@
-package de.jakob.lotm.beyonders.abilities.abyss;
+package de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.FlameDevil;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -42,7 +44,14 @@ public class FlameSpellsAbility extends SelectableAbility {
     protected float getSpiritualityCost() {
         return 30;
     }
-
+    @Override
+    public boolean meetsBloodlineRequirement(LivingEntity entity) {
+        return hasFlameDevilBloodline(entity);
+    }
+    private static boolean hasFlameDevilBloodline(LivingEntity entity) {
+        if (entity instanceof AvatarEntity) return false;
+        return DevilBloodlineAbility.hasBloodline(entity, DevilBloodlineAbility.Bloodline.FLAME_DEVIL);
+    }
     @Override
     protected String[] getAbilityNames() {
         return new String[]{
@@ -70,7 +79,7 @@ public class FlameSpellsAbility extends SelectableAbility {
         level.playSound(null, BlockPos.containing(startPos), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3, 1);
 
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, startPos, 5).forEach(e -> {
-            e.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), (float) (DamageLookup.lookupDamage(6, .875) *
+            e.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, entity), (float) (DamageLookup.lookupDamage(6, .875) *
                     multiplier(entity)));
             e.setRemainingFireTicks(20 * 3);
             Vec3 knockBack = new Vec3(e.position().subtract(startPos).normalize().x, .75, e.position().subtract(startPos).normalize().z).normalize().scale(.5);

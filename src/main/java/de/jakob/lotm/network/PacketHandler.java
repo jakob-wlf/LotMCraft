@@ -1,6 +1,7 @@
 package de.jakob.lotm.network;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.contract.builder.ContractBuilderScreen;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
@@ -652,6 +653,11 @@ public class PacketHandler {
                 PlayPhotonEntityEffectPacket.STREAM_CODEC,
                 PlayPhotonEntityEffectPacket::handle
         );
+        registrar.playToClient(
+                SyncMaliceSeedsToClient.TYPE,
+                SyncMaliceSeedsToClient.STREAM_CODEC,
+                SyncMaliceSeedsToClient::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -1048,6 +1054,27 @@ public class PacketHandler {
                 UseCopiedAbilityPacket.STREAM_CODEC,
                 UseCopiedAbilityPacket::handle
         );
+        registrar.playToServer(
+                SetMaliceChannelPacket.TYPE,
+                SetMaliceChannelPacket.STREAM_CODEC,
+                SetMaliceChannelPacket::handle
+        );
+        registrar.playToServer(
+                RequestMaliceSeedSyncPacket.TYPE,
+                RequestMaliceSeedSyncPacket.STREAM_CODEC,
+                RequestMaliceSeedSyncPacket::handle
+        );
+        registrar.playToServer(
+                TakeOverMaliceHostPacket.TYPE,
+                TakeOverMaliceHostPacket.STREAM_CODEC,
+                TakeOverMaliceHostPacket::handle
+        );
+        registrar.playToServer(
+                SubmitContractBuilderPacket.TYPE,
+                SubmitContractBuilderPacket.STREAM_CODEC,
+                SubmitContractBuilderPacket::handle
+        );
+
     }
 
     public static void sendToServer(CustomPacketPayload packet) {

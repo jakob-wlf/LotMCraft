@@ -248,6 +248,8 @@ public class MeteorEntity extends Entity {
             if (isEnvisioned) {
                 AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), ModDamageTypes.IMAGINATION, getDamage() / 2, position(), true, false);
                 AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), getDamage() / 2, position(), true, false);
+            } else if (isAbyssImpact()) {
+                AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), getDamage(), position(), true, false, ModDamageTypes.source(serverLevel, ModDamageTypes.FILTH, caster));
             } else {
                 AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), getDamage(), position(), true, false);
             }

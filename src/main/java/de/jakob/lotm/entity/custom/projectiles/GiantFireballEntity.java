@@ -119,9 +119,11 @@ public class GiantFireballEntity extends AbstractArrow {
         level.explode(owner, target.position().x, target.position().y, target.position().z, 10.5f, griefing, Level.ExplosionInteraction.NONE);
         // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, owner), (float) damage/2);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, owner), (float) damage/2);
         } else {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE), (float) damage/2);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE), (float) damage/2);
         }
         target.setRemainingFireTicks(target.getRemainingFireTicks() + 20 * 6);
         if(!level.isClientSide)

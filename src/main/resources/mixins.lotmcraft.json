@@ -6,7 +6,9 @@
     "EntityAccessor",
     "MixinIngredient",
     "LivingEntitySetHealthMixin",
-    "MercuryPushMixin"
+    "MercuryPushMixin",
+    "PlayerPhantomMixin",
+    "EntityPhantomMixin"
   ],
   "client": [
     "EntityGlowMixin"

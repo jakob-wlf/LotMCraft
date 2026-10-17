@@ -264,11 +264,11 @@ public class DreamTraversalAbility extends SelectableAbility {
 //            comp.setParasitingUUID(null);
 //        }
 //
-////        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
-////        if(scaleAttribute != null) {
-////            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-////                    "dream_hide"));
-////        }
+    ////        AttributeInstance scaleAttribute = entity.getAttribute(Attributes.SCALE);
+    ////        if(scaleAttribute != null) {
+    ////            scaleAttribute.removeModifier(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+    ////                    "dream_hide"));
+    ////        }
 //
 //        PsychologicalInvisibilityAbility.removeInvisFromOtherSkills(entity);
 //        entity.stopRiding();
@@ -314,14 +314,14 @@ public class DreamTraversalAbility extends SelectableAbility {
 //        comp.setParasiting(true);
 //        comp.setParasitingUUID(target.getUUID());
 //
-////        AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
-////        if(scaleAttribute != null) {
-////            scaleAttribute.addTransientModifier(new AttributeModifier
-////                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
-////                            "dream_hide"),
-////                            -1.0,
-////                            AttributeModifier.Operation.ADD_VALUE));
-////        }
+    ////        AttributeInstance scaleAttribute = player.getAttribute(Attributes.SCALE);
+    ////        if(scaleAttribute != null) {
+    ////            scaleAttribute.addTransientModifier(new AttributeModifier
+    ////                    (ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID,
+    ////                            "dream_hide"),
+    ////                            -1.0,
+    ////                            AttributeModifier.Operation.ADD_VALUE));
+    ////        }
 //
 //        PsychologicalInvisibilityAbility.addInvisFromOtherSkills(player, hideSeqMap.get(player.getUUID()));
 //    }

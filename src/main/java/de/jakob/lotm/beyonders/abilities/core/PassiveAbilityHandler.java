@@ -1,10 +1,13 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.*;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.ShadowShifter.BloodlineShadowShiftAbility;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.CriminalProficiencyAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.FireResistanceAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.PhysicalEnhancementsAbyssAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.WordImmunityAbility;
-import de.jakob.lotm.beyonders.abilities.abyss.passives.*;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.DarknessRevivalAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.NocturnalityAbility;
 import de.jakob.lotm.beyonders.abilities.darkness.passives.PhysicalEnhancementsDarknessAbility;
@@ -25,6 +28,7 @@ import de.jakob.lotm.beyonders.abilities.error.passives.PhysicalEnhancementsErro
 import de.jakob.lotm.beyonders.abilities.fool.passives.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.passives.OrderJusticiarAbility;
 
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
 import de.jakob.lotm.beyonders.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
@@ -76,6 +80,7 @@ public class PassiveAbilityHandler {
 
         // Justiciar
         passiveAbilities.add(new EnhancedMentalAttributesAbility("enhanced_mental_attributes_justiciar_ability"));
+        passiveAbilities.add(new OrderJusticiarAbility("order_justiciar_ability"));
         passiveAbilities.add(new ChaosHuntingAbility("chaos_hunting_justiciar_ability"));
 
         // Red priest
@@ -87,10 +92,13 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new FireResistanceAbyssAbility("fire_resistance_abyss_ability"));
         passiveAbilities.add(new PoisonResistanceAbility("poison_resistance_ability"));
         passiveAbilities.add(new CurseResistanceAbility("curse_resistance_ability"));
-        passiveAbilities.add(new MentalResistanceAbility("mental_resistane_ability"));
-        passiveAbilities.add(new DemonofTheBodyAbility("demon_of_the_body_ability"));
+        passiveAbilities.add(new DevilBloodlineAbility("devil_bloodline_ability"));
+        passiveAbilities.add(new BloodlineShadowShiftAbility("bloodline_shadowshift_ability"));
+        passiveAbilities.add(new BloodlineMindRotterAbility("bloodline_mind_rotter_ability"));
+        passiveAbilities.add(new MentalResistanceAbility("mental_resistance_ability"));
+        passiveAbilities.add(new DemonOfTheBodyAbility("demon_of_the_body_ability"));
         passiveAbilities.add(new WordImmunityAbility("word_immunity_abyss_ability"));
-        passiveAbilities.add(new DomainofBodyAbility("domain_of_body_ability"));
+        passiveAbilities.add(new DomainOfBodyAbility("domain_of_body_ability"));
         passiveAbilities.add(new MaliceAuthorityAbility("malice_authority_ability"));
         passiveAbilities.add(new SinLordAbility("sin_lord_ability"));
 

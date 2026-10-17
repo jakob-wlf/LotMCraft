@@ -1,5 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
+import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineMindRotterAbility;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
@@ -66,6 +69,7 @@ public class TelepathyAbility extends ToggleAbility {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        BloodlineMindRotterAbility.onMindInvasion(entitySeq, entity, target);
 
         if (VisionaryHandler.shouldStayInvisibleVisOnly(entitySeq, target)) return;
         if (VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this, false)) return;

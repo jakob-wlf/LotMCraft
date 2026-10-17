@@ -10,6 +10,7 @@ import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMaxDis
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMovementGoal;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteTargetGoal;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.NonBeyonderMarionetteUseAbilityGoal;
+import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed.MaliceSeedAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -104,6 +105,9 @@ public class MarionetteUtils {
 
         component.setMarionette(true);
         component.setControllerUUID(controller.getStringUUID());
+        if (controller instanceof LivingEntity livingController) {
+            MaliceSeedAbility.registerManifestation(MaliceSeedAbility.getMaliceIdentity(controller), entity);
+        }
         component.setCurrentMode(MarionetteComponent.MarionetteMode.FOLLOW);
         component.setShouldAttack(true);
 
@@ -212,5 +216,11 @@ public class MarionetteUtils {
         if (newEffect.getEffect().value() == ModEffects.MENTAL_PLAGUE || newEffect.getEffect().value() == ModEffects.LOOSING_CONTROL || newEffect.getEffect().value() == ModEffects.ASLEEP) {
             event.setResult(MobEffectEvent.Applicable.Result.DO_NOT_APPLY);
         }
+    }
+    public static void linkMarionetteToController(LivingEntity controller, LivingEntity marionette) {
+        if (!isMarionette(marionette)) return;
+        String ownerUUID = marionette.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
+        if (!controller.getStringUUID().equals(ownerUUID)) return;
+        MaliceSeedAbility.registerManifestation(MaliceSeedAbility.getMaliceIdentity(controller), marionette);
     }
 }

@@ -111,7 +111,7 @@ public class ParasitationAbility extends SelectableAbility {
 
     private void attemptControl(ServerLevel serverLevel, ServerPlayer player, LivingEntity target) {
         // 0.05 heart to trigger substitutes/swaps
-        target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.BEYONDER_GENERIC, player), 0.1f);
+        target.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.SPIRITUAL, player), 0.1f);
 
         if (!target.isAlive() || target.isRemoved()) {
             AbilityUtil.sendActionBar(player, Component.literal("§cTarget evaded!"));

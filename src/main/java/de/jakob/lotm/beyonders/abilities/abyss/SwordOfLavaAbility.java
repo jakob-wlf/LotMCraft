@@ -166,7 +166,7 @@ public class SwordOfLavaAbility extends Ability {
                 .forEach(t -> {
                     if (AbilityUtil.isTargetSignificantlyStronger(seq, BeyonderData.getSequence(t)))
                         return;
-                    t.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity),
+                    t.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, entity),
                             (float) baseDamage);
                     if (griefing || !(t instanceof net.minecraft.world.entity.player.Player))
                         t.setRemainingFireTicks(20 * 5);
