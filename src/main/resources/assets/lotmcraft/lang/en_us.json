@@ -1476,7 +1476,7 @@
   "lotmcraft.light_concealment_ability.description": "Slip into the nearest light and hide inside it. Sneak to take allies with you.",
   "ability.lotmcraft.light_concealment.no_light": "No light source nearby",
   "ability.lotmcraft.light_concealment.unshadowed": "The Unshadowed Domain leaves no light to hide in",
-  "ability.lotmcraft.light_concealment.hidden": "You hide in the light",
+  "ability.lotmcraft.light_concealment.hidden": "You hide in the light. Press P to leave",
   "lotmcraft.silver_armor_ability": "Silver Armor",
   "lotmcraft.silver_armor_ability.description": "Full silver plate, heavier than netherite, turns the first blows of stronger Beyonders.",
   "lotmcraft.hurricane_of_light_ability": "Hurricane of Light",

@@ -1,8 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.twilight_giant;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.sun.UnshadowedDomainAbility;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -72,7 +74,6 @@ public class LightConcealmentAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer player)) return;
         if (hidden.containsKey(player.getUUID())) {
-            leave(player);
             BeyonderData.incrementSpirituality(player, getSpiritualityCost());
             return;
         }
@@ -100,6 +101,7 @@ public class LightConcealmentAbility extends Ability {
     }
 
     public static void leave(ServerPlayer player) {
+        player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAbilityUsage("light_concealment");
         Hidden state = hidden.remove(player.getUUID());
         for (AttributeInstance attribute : new AttributeInstance[]{player.getAttribute(Attributes.MOVEMENT_SPEED), player.getAttribute(Attributes.JUMP_STRENGTH)}) {
             if (attribute != null) attribute.removeModifier(HIDDEN_ID);
@@ -167,6 +169,8 @@ public class LightConcealmentAbility extends Ability {
         }
         player.setNoGravity(true);
         player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40, 0, false, false));
+        player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).disableAbilityUsage("light_concealment");
+        ToggleAbility.cleanUp(level, player);
         place(level, light);
         level.playSound(null, light, SoundEvents.BEACON_POWER_SELECT, player.getSoundSource(), 1f, 1.8f);
         AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.light_concealment.hidden").withColor(0xFFFFF3D6));
