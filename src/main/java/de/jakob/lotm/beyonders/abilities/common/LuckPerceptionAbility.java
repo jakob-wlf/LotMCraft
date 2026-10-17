@@ -1,6 +1,5 @@
-package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
+package de.jakob.lotm.beyonders.abilities.common;
 
-import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
@@ -88,7 +87,7 @@ public class LuckPerceptionAbility extends ToggleAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("wheel_of_fortune", 8));
+        return new HashMap<>(Map.of("wheel_of_fortune", 8, "darkness", 4));
     }
 
     @Override

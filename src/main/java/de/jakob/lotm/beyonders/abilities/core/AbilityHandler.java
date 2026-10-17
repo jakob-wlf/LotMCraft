@@ -39,6 +39,7 @@ public class AbilityHandler {
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
         abilities.add(new AngelFlightAbility("angel_authority_flight"));
         abilities.add(new MythicalCreatureFormAbility("mythical_creature_form_ability"));
+        abilities.add(new LuckPerceptionAbility("luck_perception_ability"));
 
         // SUN PATHWAY
         abilities.add(new HolySongAbility("holy_song_ability"));
@@ -277,7 +278,6 @@ public class AbilityHandler {
         abilities.add(new PsycheStormAbility("psyche_storm_ability"));
         abilities.add(new CalamityAttractionAbility("calamity_attraction_ability"));
         abilities.add(new LuckReleaseAbility("luck_release_ability"));
-        abilities.add(new LuckPerceptionAbility("luck_perception_ability"));
         abilities.add(new MisfortuneGiftingAbility("misfortune_gifting_ability"));
         abilities.add(new MisfortuneFieldAbility("misfortune_field_ability"));
         abilities.add(new BlessingAbility("blessing_ability"));
