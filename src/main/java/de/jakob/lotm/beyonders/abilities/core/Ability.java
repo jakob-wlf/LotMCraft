@@ -12,6 +12,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityCooldownPacket;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -158,6 +159,9 @@ public abstract class Ability {
 
         int inflatedCooldown = getCooldown(seq);
         component.setCooldown(id, inflatedCooldown);
+        if(newUser instanceof ServerPlayer serverPlayer) {
+            PacketHandler.sendToPlayer(serverPlayer, new SyncAbilityCooldownPacket(id, inflatedCooldown));
+        }
 
         // Use ability client and server sided
         final float damageBackup = baseDamage;

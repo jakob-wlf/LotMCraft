@@ -9,8 +9,10 @@ import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.ClientBeyonderCache;
+import de.jakob.lotm.util.data.AbilityHotbarClientState;
 import de.jakob.lotm.util.data.AbilityWheelClientData;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -212,37 +214,18 @@ public class KeyInputHandler {
             holdAbilityWheelCooldownTicks--;
         }
 
-        if(LOTMCraft.useAbilityBarAbility1 != null && LOTMCraft.useAbilityBarAbility1.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(0));
-        }
-        if(LOTMCraft.useAbilityBarAbility2 != null && LOTMCraft.useAbilityBarAbility2.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(1));
-        }
-        if(LOTMCraft.useAbilityBarAbility3 != null && LOTMCraft.useAbilityBarAbility3.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(2));
-        }
-        if(LOTMCraft.useAbilityBarAbility4 != null && LOTMCraft.useAbilityBarAbility4.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(3));
-        }
-        if(LOTMCraft.useAbilityBarAbility5 != null && LOTMCraft.useAbilityBarAbility5.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(4));
-        }
-        if(LOTMCraft.useAbilityBarAbility6 != null && LOTMCraft.useAbilityBarAbility6.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(5));
-        }
-        if(LOTMCraft.useAbilityBarAbility7 != null && LOTMCraft.useAbilityBarAbility7.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(6));
-        }
-        if(LOTMCraft.useAbilityBarAbility8 != null && LOTMCraft.useAbilityBarAbility8.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(7));
-        }
-        if(LOTMCraft.useAbilityBarAbility9 != null && LOTMCraft.useAbilityBarAbility9.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(8));
-        }
-        if(LOTMCraft.useAbilityBarAbility0 != null && LOTMCraft.useAbilityBarAbility0.consumeClick()) {
-            PacketHandler.sendToServer(new UseKeyboundAbilityPacket(9));
+        if (LOTMCraft.toggleAbilityHotbarKey != null && LOTMCraft.toggleAbilityHotbarKey.consumeClick()) {
+            AbilityHotbarClientState.toggle();
         }
 
+        // Ability bar keys only cast while the ability hotbar is shown; otherwise the number keys switch item slots
+        boolean abilityHotbarActive = AbilityHotbarClientState.isActive();
+        for (int i = 0; i < LOTMCraft.useAbilityBarKeys.length; i++) {
+            KeyMapping keyMapping = LOTMCraft.useAbilityBarKeys[i];
+            if (keyMapping != null && keyMapping.consumeClick() && abilityHotbarActive) {
+                PacketHandler.sendToServer(new UseKeyboundAbilityPacket(i));
+            }
+        }
 
         if (LOTMCraft.returnToMainBody != null && LOTMCraft.returnToMainBody.consumeClick()) {
             PacketHandler.sendToServer(new ReturnToMainBodyPacket());
@@ -259,6 +242,24 @@ public class KeyInputHandler {
         }
         if(LOTMCraft.nextMarionetteKey != null && LOTMCraft.nextMarionetteKey.consumeClick()) {
             PacketHandler.sendToServer(new NextMarionettePacket());
+        }
+    }
+
+    // Runs before vanilla handleKeybinds, so draining the hotbar clicks here stops the item slot from changing
+    @SubscribeEvent
+    public static void onClientTickPre(ClientTickEvent.Pre event) {
+        if (!AbilityHotbarClientState.isActive()) return;
+        for (KeyMapping hotbarKey : Minecraft.getInstance().options.keyHotbarSlots) {
+            while (hotbarKey.consumeClick()) {
+                // discard
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+        if (AbilityHotbarClientState.isActive() && Minecraft.getInstance().screen == null) {
+            event.setCanceled(true);
         }
     }
 
