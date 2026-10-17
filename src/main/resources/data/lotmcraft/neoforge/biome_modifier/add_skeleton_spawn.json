@@ -1,0 +1,16 @@
+{
+  "type": "neoforge:add_spawns",
+  "biomes": [
+    "lotmcraft:underworld_styx_chasm",
+    "lotmcraft:underworld_pale_white_nation"
+  ],
+  "spawners": [
+    {
+      "type": "minecraft:skeleton",
+      "weight": 60,
+      "minCount": 1,
+      "maxCount": 3,
+      "category": "creature"
+    }
+  ]
+}

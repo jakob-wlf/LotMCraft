@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.ModDimensions;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -65,6 +66,13 @@ public class IngredientDrops {
         if (out.isEmpty()) return;
         if (!p.getInventory().add(out)) p.drop(out, false);
     }
+
+    private static final ResourceKey<Level> SPIRIT_WORLD_DIM = ModDimensions.SPIRIT_WORLD_DIMENSION_KEY;
+    private static final ResourceKey<Biome> SPIRIT_WORLD_PATCH = ResourceKey.create(
+            Registries.BIOME, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_world_patch"));
+
+    private static final BlockCheck IN_SPIRIT_WORLD = (l, p, s) ->
+            l.dimension().equals(SPIRIT_WORLD_DIM) || l.getBiome(p).is(SPIRIT_WORLD_PATCH);
 
     private static boolean isNight(Level l) { long t = l.getDayTime() % 24000L; return t >= 13000L && t < 23000L; }
 
@@ -157,7 +165,8 @@ public class IngredientDrops {
 
     private static final List<BlockDrop> BLOCK_DROPS = List.of(
         bd("ancient_wraith_dust",              0.08f, ANY,    true,  NONE, Blocks.ANCIENT_DEBRIS),
-        bd("spirit_world_contaminated_soil",   0.10f, SHOVEL, true,  NONE, Blocks.SOUL_SOIL),
+        bd("spirit_world_contaminated_soil",   0.002f, SHOVEL, true,  NONE, Blocks.SOUL_SOIL),
+            bd("spirit_world_contaminated_soil",   0.40f, ANY,    false, IN_SPIRIT_WORLD, Blocks.DIRT),
         bd("midnight_beauty_flower",           0.35f, ANY,    true,  NONE, Blocks.SCULK_CATALYST),
         bd("feynapotter_fly_powder",           0.20f, ANY,    true,  NONE, Blocks.BEE_NEST),
         bd("wild_rose",                        0.30f, SHEARS, false, biomeTag(BiomeTags.IS_FOREST), Blocks.ROSE_BUSH),

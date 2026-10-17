@@ -290,9 +290,7 @@ public class DivinationUtil {
     // get dimension
     private static int getConcealmentDimension(ServerPlayer serverPlayer){
         int addedValue = 0;
-        if (serverPlayer.level().dimension().location().equals(ModDimensions.SPACE_TYPE_KEY.location())) {
-            addedValue += 99;
-        } else if (serverPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY)) {
+        if (serverPlayer.level().dimension().equals(ModDimensions.CONCEALMENT_WORLD_DIMENSION_KEY)) {
             addedValue += 99;
         } else if (serverPlayer.level().dimension().location().equals(ModDimensions.WORLD_CREATION_LEVEL_KEY.location())) {
             addedValue += 99;
