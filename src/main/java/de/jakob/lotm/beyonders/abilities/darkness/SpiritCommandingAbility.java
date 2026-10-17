@@ -101,6 +101,21 @@ public class SpiritCommandingAbility extends SelectableAbility {
         return data.copyTag().getString("Spirit");
     }
 
+    public static int capacity(LivingEntity entity) {
+        return BeyonderData.getSequence(entity) <= 4 ? 15 : 3;
+    }
+
+    public static void trim(LivingEntity entity) {
+        SpiritHousingComponent housing = entity.getData(ModAttachments.SPIRIT_HOUSING);
+        int limit = capacity(entity);
+        while (housing.count() > limit && !housing.stored.isEmpty()) {
+            housing.stored.remove(housing.stored.size() - 1);
+        }
+        for (int i = housing.slots.length - 1; i >= 0 && housing.count() > limit; i--) {
+            housing.slots[i] = "";
+        }
+    }
+
     public static boolean allows(String typeId, int slot) {
         if (slot >= 6) return true;
         boolean arms = slot == 2 || slot == 3;
@@ -118,6 +133,7 @@ public class SpiritCommandingAbility extends SelectableAbility {
     }
 
     public static void castPower(ServerPlayer player, int index) {
+        trim(player);
         SpiritHousingComponent housing = player.getData(ModAttachments.SPIRIT_HOUSING);
         List<String> powers = housing.powers();
         if (index < 0 || index >= powers.size()) return;
@@ -162,8 +178,9 @@ public class SpiritCommandingAbility extends SelectableAbility {
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.spirit_commanding.need_sooth").withColor(0xff124d));
             return;
         }
+        trim(player);
         SpiritHousingComponent housing = player.getData(ModAttachments.SPIRIT_HOUSING);
-        if (housing.count() >= 15) {
+        if (housing.count() >= capacity(player)) {
             refund(player);
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.spirit_commanding.full").withColor(0xff124d));
             return;
@@ -182,11 +199,13 @@ public class SpiritCommandingAbility extends SelectableAbility {
     }
 
     private void manage(ServerPlayer player) {
+        trim(player);
         player.openMenu(new SimpleMenuProvider((id, inventory, ignored) -> new SpiritManageMenu(id, inventory),
                 Component.translatable("ability.lotmcraft.spirit_commanding.manage")));
     }
 
     private void command(ServerPlayer player) {
+        trim(player);
         List<String> powers = player.getData(ModAttachments.SPIRIT_HOUSING).powers();
         if (powers.isEmpty()) {
             refund(player);
@@ -201,6 +220,7 @@ public class SpiritCommandingAbility extends SelectableAbility {
     }
 
     private void release(ServerLevel level, ServerPlayer player) {
+        trim(player);
         if (recall(level, player)) return;
         boolean fromSlots = player.isShiftKeyDown();
         LivingEntity looked = AbilityUtil.getTargetEntity(player, 24, 1.5f, true);
@@ -283,9 +303,10 @@ public class SpiritCommandingAbility extends SelectableAbility {
             }
             String typeId = entry.substring(first + 1, last);
             int slot = Integer.parseInt(entry.substring(last + 1));
-            if (slot >= 0 && slot < housing.slots.length && housing.slots[slot].isEmpty()) {
+            boolean room = housing.count() < capacity(player);
+            if (room && slot >= 0 && slot < housing.slots.length && housing.slots[slot].isEmpty()) {
                 housing.slots[slot] = typeId;
-            } else if (housing.stored.size() < 9 && housing.count() < 15) {
+            } else if (room && housing.stored.size() < 9) {
                 housing.stored.add(typeId);
             } else {
                 mob.teleportTo(player.getX(), player.getY(), player.getZ());

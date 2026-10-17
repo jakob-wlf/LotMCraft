@@ -16,9 +16,11 @@ public class SpiritManageMenu extends AbstractContainerMenu {
     private static final int BODY = 6;
     private static final int BIN = 15;
     private final SimpleContainer spirits = new SimpleContainer(16);
+    private final Player owner;
 
     public SpiritManageMenu(int containerId, Inventory inventory) {
         super(ModMenuTypes.SPIRIT_MANAGE_MENU.get(), containerId);
+        owner = inventory.player;
         int slotX = 48;
         addSlot(new SpiritSlot(spirits, 0, slotX, 18));
         addSlot(new SpiritSlot(spirits, 1, slotX, 38));
@@ -57,16 +59,20 @@ public class SpiritManageMenu extends AbstractContainerMenu {
         SpiritHousingComponent housing = player.getData(ModAttachments.SPIRIT_HOUSING);
         housing.stored.clear();
         for (int i = 0; i < BODY; i++) housing.slots[i] = "";
+        int kept = 0;
+        int limit = SpiritCommandingAbility.capacity(player);
         for (int i = 0; i < BIN; i++) {
             String type = SpiritCommandingAbility.typeOf(spirits.getItem(i));
-            if (type.isEmpty()) continue;
+            if (type.isEmpty() || kept >= limit) continue;
             if (i < BODY && SpiritCommandingAbility.allows(type, i)) housing.slots[i] = type;
             else if (housing.stored.size() < 9) housing.stored.add(type);
+            else continue;
+            kept++;
         }
         setCarried(ItemStack.EMPTY);
     }
 
-    private static final class SpiritSlot extends Slot {
+    private final class SpiritSlot extends Slot {
         private SpiritSlot(SimpleContainer container, int index, int x, int y) {
             super(container, index, x, y);
         }
@@ -76,7 +82,11 @@ public class SpiritManageMenu extends AbstractContainerMenu {
             String type = SpiritCommandingAbility.typeOf(stack);
             if (type.isEmpty()) return false;
             if (getContainerSlot() == BIN) return true;
-            return getContainerSlot() >= BODY || SpiritCommandingAbility.allows(type, getContainerSlot());
+            if (getContainerSlot() < BODY && !SpiritCommandingAbility.allows(type, getContainerSlot())) return false;
+            if (!getItem().isEmpty()) return true;
+            int occupied = 0;
+            for (int i = 0; i < BIN; i++) if (!container.getItem(i).isEmpty()) occupied++;
+            return occupied < SpiritCommandingAbility.capacity(owner);
         }
 
         @Override
