@@ -1,0 +1,6 @@
+{
+  "trigger": "dimension",
+  "target": "lotmcraft:brood_hive",
+  "title": { "text": "Brood Hive", "color": "red", "bold": true },
+  "frequency": "once"
+}

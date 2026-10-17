@@ -1,11 +1,13 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.monster.Skeleton;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -19,21 +21,26 @@ public class MobEvents {
         var level = event.getLevel();
         if(!(level instanceof ServerLevel serverLevel)) return;
 
-        if(!(event.getEntity() instanceof BeyonderNPCEntity npc)) return;
+        if((event.getEntity() instanceof BeyonderNPCEntity npc)) {
 
-        BlockPos pos = npc.getOnPos();
+            BlockPos pos = npc.getOnPos();
 
-        var biomeKey = level.getBiome(pos).unwrapKey();
+            var biomeKey = level.getBiome(pos).unwrapKey();
 
-        if (biomeKey.isPresent()){
-            for(var biom : Config.biomes){
-             if(biom.equals(biomeKey.get().location()))
-                 event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
+            if (biomeKey.isPresent()) {
+                for (var biom : Config.biomes) {
+                    if (biom.equals(biomeKey.get().location()))
+                        event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
+                }
+            } else if (!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())) {
+                event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
             }
+        } else if(event.getEntity() instanceof Skeleton skeleton) {
+            var biomeKey = level.getBiome(skeleton.getOnPos()).unwrapKey();
+            if(biomeKey.isPresent() && biomeKey.get().equals(ModDimensions.BIOME_STYX_CHASM))
+                event.setResult(MobSpawnEvent.PositionCheck.Result.SUCCEED);
         }
-        else if(!BeyonderData.playerMap.check(npc.getPathway(), npc.get_sequence())){
-            event.setResult(MobSpawnEvent.PositionCheck.Result.FAIL);
-        }
+
 
     }
 

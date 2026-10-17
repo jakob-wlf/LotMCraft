@@ -1,0 +1,10 @@
+{
+  "trigger": "structure",
+  "target": "lotmcraft:victorian_city",
+  "title": { "text": "Victorian City", "color": "blue", "bold": true },
+  "subtitle": { "text": "This city hides some secrets", "color": "gray", "italic": true },
+  "frequency": "once",
+  "fade_in": 5,
+  "stay": 15,
+  "fade_out": 10
+}

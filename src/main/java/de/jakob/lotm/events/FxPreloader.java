@@ -21,7 +21,8 @@ public class FxPreloader {
     @SubscribeEvent
     public static void onRegisterReloadListeners(RegisterClientReloadListenersEvent event) {
         event.registerReloadListener((ResourceManagerReloadListener) rm -> {
-            PacketHandler.sendToServer(new RequestAbilityBarPacket());
+            if(!PacketHandler.sendToServer(new RequestAbilityBarPacket()))
+                return;
             if(!ClientGameruleCache.isPreLoadEffectsEnabled) return;
 
             int loaded = 0;

@@ -10,11 +10,11 @@
   "infiniburn": "#minecraft:infiniburn_overworld",
   "logical_height": 320,
   "min_y": 0,
-  "monster_spawn_block_light_limit": 0,
+  "monster_spawn_block_light_limit": 15,
   "monster_spawn_light_level": {
     "type": "minecraft:uniform",
-    "max_inclusive": 0,
-    "min_inclusive": 0
+    "max_inclusive": 15,
+    "min_inclusive": 15
   },
   "natural": false,
   "piglin_safe": false,

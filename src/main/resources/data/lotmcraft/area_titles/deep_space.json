@@ -1,0 +1,6 @@
+{
+  "trigger": "dimension",
+  "target": "lotmcraft:deep_space",
+  "title": { "text": "Deep Space", "color": "blue", "bold": true },
+  "frequency": "once"
+}

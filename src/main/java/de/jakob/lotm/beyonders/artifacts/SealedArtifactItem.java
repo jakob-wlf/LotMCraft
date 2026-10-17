@@ -92,6 +92,7 @@ public class SealedArtifactItem extends Item {
         if (data == null) return;
 
         int selectedIndex = stack.getOrDefault(ModDataComponents.SEALED_ARTIFACT_SELECTED, 0);
+        if(selectedIndex >= data.abilities().size()) return;
         Ability selectedAbility = data.abilities().get(selectedIndex);
         int pathwayColor = BeyonderData.pathwayInfos.get(data.pathway()).color();
 

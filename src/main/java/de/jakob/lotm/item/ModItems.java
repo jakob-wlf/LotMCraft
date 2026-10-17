@@ -75,6 +75,11 @@ public class ModItems {
                     .stacksTo(1)
             )
     );
+    public static final Supplier<Item> MINIATURE_CREATURE = ITEMS.register("miniature_creature",
+            () -> new MiniatureCreatureItem(new Item.Properties()
+                    .stacksTo(1)
+            )
+    );
     public static final Supplier<Item> SUN_ITEM = ITEMS.register("sun",
             () -> new SunItem(new Item.Properties()
                     .stacksTo(1)

@@ -23,7 +23,14 @@
     "axolotls": [],
     "creature": [],
     "misc": [],
-    "monster": [],
+    "monster": [
+      {
+        "type": "minecraft:skeleton",
+        "maxCount": 4,
+        "minCount": 2,
+        "weight": 100
+      }
+    ],
     "underground_water_creature": [],
     "water_ambient": [],
     "water_creature": []
