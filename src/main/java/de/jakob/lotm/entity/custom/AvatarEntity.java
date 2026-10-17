@@ -27,6 +27,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class AvatarEntity extends PathfinderMob {
@@ -37,6 +41,10 @@ public class AvatarEntity extends PathfinderMob {
     private static final EntityDataAccessor<String> PATHWAY =
             SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> SEQUENCE =
+            SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> SECONDARY_PATHWAY =
+            SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<Integer> SECONDARY_SEQUENCE =
             SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Optional<UUID>> ORIGINAL =
             SynchedEntityData.defineId(AvatarEntity.class, EntityDataSerializers.OPTIONAL_UUID);
@@ -50,8 +58,14 @@ public class AvatarEntity extends PathfinderMob {
 
     public AvatarEntity(EntityType<? extends PathfinderMob> entityType, Level level,
                         UUID owner, String pathway, int sequence) {
+        this(entityType, level, owner, pathway, sequence, "none", LOTMCraft.NON_BEYONDER_SEQ);
+    }
+
+    public AvatarEntity(EntityType<? extends PathfinderMob> entityType, Level level,
+                        UUID owner, String pathway, int sequence, String secondaryPathway, int secondarySequence) {
         super(entityType, level);
         setOriginalOwner(owner);
+        setSecondaryPathway(secondaryPathway, secondarySequence);
 
         if (!level.isClientSide && !pathway.equalsIgnoreCase("none") && !pathway.isEmpty()) {
             this.pathway = pathway;
@@ -68,6 +82,8 @@ public class AvatarEntity extends PathfinderMob {
         super.defineSynchedData(builder);
         builder.define(PATHWAY, "none");
         builder.define(SEQUENCE, 5);
+        builder.define(SECONDARY_PATHWAY, "none");
+        builder.define(SECONDARY_SEQUENCE, LOTMCraft.NON_BEYONDER_SEQ);
         builder.define(ORIGINAL, Optional.empty());
     }
 
@@ -82,8 +98,20 @@ public class AvatarEntity extends PathfinderMob {
                 this.entityData.set(SEQUENCE, this.sequence);
                 this.entityData.set(ORIGINAL, Optional.ofNullable(getOriginalOwner()));
             }
+            addPathAbilitiesToWheel(getPathway(), getSequence());
+            if (hasSecondaryPathway()) {
+                addPathAbilitiesToWheel(getSecondaryPathway(), getSecondarySequence());
+            }
             updateGoals();
         }
+    }
+
+    private void addPathAbilitiesToWheel(String pathway, int sequence) {
+        Set<String> abilities = new LinkedHashSet<>(getData(ModAttachments.ABILITY_WHEEL_COMPONENT).getAbilities());
+        LOTMCraft.abilityHandler.getByPathwayAndSequence(pathway, sequence).stream()
+                .sorted(Comparator.comparing(ability -> ability.getId()))
+                .forEach(ability -> abilities.add(ability.getId() + ":-1"));
+        getData(ModAttachments.ABILITY_WHEEL_COMPONENT).setAbilities(new ArrayList<>(abilities));
     }
 
     @Override
@@ -184,6 +212,8 @@ public class AvatarEntity extends PathfinderMob {
         super.addAdditionalSaveData(compound);
         compound.putString("Pathway", getPathway());
         compound.putInt("Sequence", getSequence());
+        compound.putString("SecondaryPathway", getSecondaryPathway());
+        compound.putInt("SecondarySequence", getSecondarySequence());
         UUID owner = getOriginalOwner();
         compound.putUUID("OriginalOwner", owner != null ? owner : NULL_UUID);
     }
@@ -195,6 +225,7 @@ public class AvatarEntity extends PathfinderMob {
         if (compound.contains("Pathway") && compound.contains("Sequence")) {
             this.pathway = compound.getString("Pathway");
             this.sequence = compound.getInt("Sequence");
+            setSecondaryPathway(compound.getString("SecondaryPathway"), compound.getInt("SecondarySequence"));
             UUID originalOwner = compound.getUUID("OriginalOwner");
 
             if (!this.level().isClientSide) {
@@ -230,6 +261,25 @@ public class AvatarEntity extends PathfinderMob {
 
     public int getSequence() {
         return this.level().isClientSide ? this.entityData.get(SEQUENCE) : BeyonderData.getSequence(this);
+    }
+
+    public void setSecondaryPathway(String pathway, int sequence) {
+        String safePathway = pathway == null || pathway.isBlank() ? "none" : pathway;
+        this.entityData.set(SECONDARY_PATHWAY, safePathway);
+        this.entityData.set(SECONDARY_SEQUENCE, sequence);
+    }
+
+    public String getSecondaryPathway() {
+        return this.entityData.get(SECONDARY_PATHWAY);
+    }
+
+    public int getSecondarySequence() {
+        return this.entityData.get(SECONDARY_SEQUENCE);
+    }
+
+    public boolean hasSecondaryPathway() {
+        return !"none".equalsIgnoreCase(getSecondaryPathway())
+                && getSecondarySequence() < LOTMCraft.NON_BEYONDER_SEQ;
     }
 
     public void setOriginalOwner(UUID ownerUUID) {

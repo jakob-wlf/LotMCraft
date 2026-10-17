@@ -155,6 +155,8 @@ public class ControllingUtils {
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
 
         if(!component.isControlling()) {
+            de.jakob.lotm.beyonders.abilities.error.ParasitationAbility
+                    .onExternalControlCancelled(player, component.getControlledEntity());
             return;
         }
 
@@ -168,7 +170,7 @@ public class ControllingUtils {
                 controlled.unsetRemoved();
                 controlled.setPos(player.position());
                 level.addFreshEntity(controlled);
-                controlled.setHealth(Math.clamp(player.getHealth(), 1, controlled.getHealth()));
+                controlled.setHealth(Math.min(player.getHealth(), controlled.getHealth()));
                 if(killPreviousEntity) {
                     controlled.hurt(controlled.damageSources().generic(), Float.MAX_VALUE);
                 }
@@ -209,6 +211,12 @@ public class ControllingUtils {
 
         component.getActiveToggles().forEach(toggle -> toggle.useAbility(level, player));
 
+        // Parasitation owns additional state for a controlled NPC. If another
+        // system cancels control and the NPC could not be restored, release its
+        // Time Worm now rather than leaving it stranded until a player tick.
+        de.jakob.lotm.beyonders.abilities.error.ParasitationAbility
+                .onExternalControlCancelled(player, component.getControlledEntity());
+
         component.reset();
     }
 
@@ -233,8 +241,26 @@ public class ControllingUtils {
         EntityControllingComponent controllingComponent = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(!controllingComponent.isControlling()) return;
 
+        ServerLevel level = player.serverLevel();
+        PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
+        BeyonderDataTickHandler.invalidateCache(player);
         controllingComponent.restoreAttributesTo(player);
-        controllingComponent.setControlling(false);
+        de.jakob.lotm.beyonders.abilities.error.ParasitationAbility
+                .onControlRejoined(player, controllingComponent.getControlledEntity());
+
+        ShapeShiftingUtil.resetShape(player);
+        AbilityBarHelper.setAbilities(player, controllingComponent.getAbilityBarAbilities());
+        AbilityWheelHelper.setAbilities(player, controllingComponent.getAbilityWheelAbilities());
+        AbilityWheelHelper.setSelectedAbility(player, controllingComponent.getSelectedAbilityInWheel());
+        controllingComponent.getActiveToggles().forEach(toggle -> toggle.useAbility(level, player));
+
+        ControlBodyDouble bodyDouble = controllingComponent.getBodyDouble();
+        if (bodyDouble != null) {
+            AllyUtil.removeAllies(player, bodyDouble, false);
+            if (bodyDouble.isAlive()) bodyDouble.discard();
+        }
+
+        controllingComponent.reset();
     }
 
     public record PathwayData(@NonNull String pathway, int sequence) {}
@@ -280,9 +306,10 @@ public class ControllingUtils {
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        int maxDistance = getManipulationDistance(BeyonderData.getSequence(player, false, true));
-        if (maxDistance < 0) return;
-        if(player.distanceTo(component.bodyDouble) > maxDistance * 5) {
+        int controllerSequence = de.jakob.lotm.beyonders.abilities.error.ParasitationAbility.isControlling(player.getUUID())
+                ? BeyonderData.getSequence(player, false, true)
+                : BeyonderData.getSequence(player);
+        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(controllerSequence) * 5) {
             cancel(player, 0, true, false);
         }
     }
