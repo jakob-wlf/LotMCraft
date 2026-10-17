@@ -155,9 +155,9 @@ public class ConvergenceEvent {
 
     private static int getTime(int seq){
         return switch (seq){
-            case 9,8,7 -> 60 * 60 * 4;
-            case 6,5 -> 60 * 60 * 3;
-            case 4,3,2,1,0 -> 60 * 60 * 2;
+            case 9,8,7 -> 60 * 35;
+            case 6,5 -> 60 * 55 ;
+            case 4,3,2,1,0 -> 60 * 90;
             default -> 0;
         };
     }

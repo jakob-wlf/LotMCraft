@@ -999,9 +999,10 @@ public class PacketHandler {
         );
     }
 
-    public static void sendToServer(CustomPacketPayload packet) {
-        if(Minecraft.getInstance().getConnection() == null) return;
+    public static boolean sendToServer(CustomPacketPayload packet) {
+        if(Minecraft.getInstance().getConnection() == null) return false;
         Minecraft.getInstance().getConnection().send(packet);
+        return true;
     }
 
     public static void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {

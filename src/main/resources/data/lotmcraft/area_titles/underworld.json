@@ -1,0 +1,7 @@
+{
+  "trigger": "dimension",
+  "target": "lotmcraft:underworld",
+  "title": { "text": "The Underworld", "color": "white", "bold": true },
+  "subtitle": { "text": "The Resting Place", "color": "gray", "italic": true },
+  "frequency": "every_time"
+}
