@@ -1,0 +1,6 @@
+{
+  "trigger": "dimension",
+  "target": "lotmcraft:sefirah_castle",
+  "title": { "text": "Sefirah Castle", "color": "white", "bold": true },
+  "frequency": "once"
+}

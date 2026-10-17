@@ -95,27 +95,6 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "dream_maze_biome"));
 
-
-    // =========================================================================
-    // SPACE dimension
-    // =========================================================================
-
-    public static final ResourceKey<LevelStem> SPACE_LEVEL_KEY =
-            ResourceKey.create(Registries.LEVEL_STEM,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
-
-    public static final ResourceKey<Level> SPACE_DIMENSION_KEY =
-            ResourceKey.create(Registries.DIMENSION,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
-
-    public static final ResourceKey<DimensionType> SPACE_TYPE_KEY =
-            ResourceKey.create(Registries.DIMENSION_TYPE,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space"));
-
-    public static final ResourceKey<Biome> SPACE_BIOME_KEY =
-            ResourceKey.create(Registries.BIOME,
-                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_biome"));
-
     // =========================================================================
     // SPACE dimension
     // =========================================================================

@@ -16,12 +16,6 @@
     "lotmcraft:underworld_styx_chasm"
   ],
   "spawners": [
-    {
-      "type": "lotmcraft:spirit_ghost",
-      "weight": 45,
-      "minCount": 1,
-      "maxCount": 5,
-      "category": "creature"
-    }
+    { "type": "lotmcraft:spirit_ghost", "weight": 45, "minCount": 1, "maxCount": 5 }
   ]
 }
