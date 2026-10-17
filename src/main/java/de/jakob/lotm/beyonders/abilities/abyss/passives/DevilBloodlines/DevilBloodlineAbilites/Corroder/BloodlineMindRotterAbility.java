@@ -1,3 +1,4 @@
+
 package de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder;
 
 import de.jakob.lotm.attachments.ModAttachments;
@@ -25,11 +26,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class BloodlineMindRotterAbility extends PassiveAbility {
     public static final float POISON_DAMAGE_MULTIPLIER = 1.25F;
-    private static final double RETALIATION_DAMAGE_SCALE = .5;
-    private static final int RETALIATION_POISON_TICKS = 20 * 6;
+    private static final double RETALIATION_DAMAGE_SCALE = 0.5;
+    private static final int RETALIATION_NAUSEA_TICKS = 20 * 6;
     private static final long RETALIATION_COOLDOWN_TICKS = 20L;
     private static final Map<UUID, Long> lastRetaliation = new ConcurrentHashMap<>();
-    private static final DustParticleOptions ROT_DUST = new DustParticleOptions(new Vector3f(0.12F, 0.3F, 0.12F), 1.6F);
+    private static final DustParticleOptions ROT_DUST =
+            new DustParticleOptions(new Vector3f(0.12F, 0.3F, 0.12F), 1.6F);
     public BloodlineMindRotterAbility(String id) {
         super(id);
     }
@@ -40,7 +42,6 @@ public class BloodlineMindRotterAbility extends PassiveAbility {
         return hasCorroderBloodline(entity);
     }
     private static boolean hasCorroderBloodline(LivingEntity entity) {
-        // clones never have a bloodline
         if (entity instanceof AvatarEntity) return false;
         return DevilBloodlineAbility.hasBloodline(entity, DevilBloodlineAbility.Bloodline.CORRODER);
     }
@@ -66,9 +67,11 @@ public class BloodlineMindRotterAbility extends PassiveAbility {
         if (now - last < RETALIATION_COOLDOWN_TICKS) return;
         lastRetaliation.put(invader.getUUID(), now);
         float damage = (float) (DamageLookup.lookupDamage(5, RETALIATION_DAMAGE_SCALE) * POISON_DAMAGE_MULTIPLIER);
+        // Deal corrosion damage.
         invader.hurt(ModDamageTypes.source(level, ModDamageTypes.CORROSION, victim), damage);
-        invader.addEffect(new MobEffectInstance(MobEffects.POISON, RETALIATION_POISON_TICKS, 1));
-        ParticleUtil.spawnParticles(level, ROT_DUST, invader.getEyePosition(), 60, .5, .02);
+        // Apply Nausea IV for 6 seconds.
+        invader.addEffect(new MobEffectInstance(MobEffects.CONFUSION, RETALIATION_NAUSEA_TICKS, 3));
+        ParticleUtil.spawnParticles(level, ROT_DUST,invader.getEyePosition(), 60, 0.5, 0.02);
         AbilityUtil.sendActionBar(invader, Component.literal("Their mind is rotting, and it spreads to yours.").withColor(0x2f6b2f));
     }
 }

@@ -18,7 +18,7 @@ public class DevilWorshipMenus {
                 .line("the more the Devils are pleased. When they are fully pleased,", TextColorHelper.DARK_GREEN)
                 .line("perform the ritual to call a projection of a Devil.", TextColorHelper.DARK_GREEN)
                 .spacing()
-                .header("The Ritual (a riddle)", TextColorHelper.DARK_RED)
+                .header("The Ritual", TextColorHelper.DARK_RED)
                 .line("A flame wrapped in black wax lights the way down.", TextColorHelper.DARK_GREEN)
                 .line("On the Right 4 pinches of the Earths Blood.", TextColorHelper.DARK_GREEN)
                 .line("On the Left 5 bones of those who no longer run ", TextColorHelper.DARK_GREEN)
