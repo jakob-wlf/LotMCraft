@@ -190,7 +190,7 @@ public class BeyonderEventHandler {
         }
         if (player.getServer() == null) return;
 
-        DreamTraversalAbility.cancelHide((ServerLevel) player.level(), player);
+        //DreamTraversalAbility.cancelHide((ServerLevel) player.level(), player);
 
         TeamComponent team = player.getData(ModAttachments.TEAM_COMPONENT.get());
 
@@ -435,7 +435,7 @@ public class BeyonderEventHandler {
 
         // Indirect = ticking AoEs (PURIFICATION_INDIRECT). Everything else — melee, projectiles,
         // spawned entities — counts as direct (PURIFICATION or any other damage type).
-        boolean isDirect = !event.getSource().is(ModDamageTypes.PURIFICATION_INDIRECT);
+        boolean isDirect = !event.getSource().is(ModDamageTypes.PURIFICATION);
 
         // seqDiff > 0 means attacker is stronger (lower seq number), < 0 means weaker
 

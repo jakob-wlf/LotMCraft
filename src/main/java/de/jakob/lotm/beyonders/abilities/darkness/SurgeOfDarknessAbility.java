@@ -2,15 +2,11 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -35,9 +31,9 @@ public class SurgeOfDarknessAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(5, 7, 9, 12));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+        dynamicSpirituality = new LinkedList<>(List.of(18500f, 8000f, 4500f, 3850f));
 
-        baseDamage = 6;
+        baseDamage = 8;
     }
 
     @Override

@@ -2,15 +2,12 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -35,9 +32,10 @@ public class NightDomainAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(10, 13, 15, 20, 25));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f, 5850f));
+        dynamicSpirituality = new LinkedList<>(List.of(15000f, 5500f, 3000f, 2150f, 1800f));
 
-        baseDamage = 2;
+
+        baseDamage = 3;
     }
 
     @Override
@@ -91,8 +89,8 @@ public class NightDomainAbility extends Ability {
                     ModDamageTypes.source(level, ModDamageTypes.DARKNESS, entity));
 
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 35).forEach(e -> {
-                LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT);
-                luckComponent.addLuckWithMin(-60, purified ? -240 : -960);
+                AbilityUtil.addTargetLuckWithMin(entity, e, -60, purified ? -240 : -960);
+
                 BeyonderData.addModifierWithTimeLimit(e, "night_domain_debuff", .8, 2000);
             });
 

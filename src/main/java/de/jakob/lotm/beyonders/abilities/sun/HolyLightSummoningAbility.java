@@ -8,7 +8,6 @@ import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AnimationUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -38,7 +37,7 @@ public class HolyLightSummoningAbility extends Ability {
         dynamicSpirituality = new LinkedList<>(List.of(2000f, 1000f, 670f, 380f, 325f, 237f, 170f, 150f));
 
 
-        baseDamage = 4;
+        baseDamage = 6;
     }
 
     @Override

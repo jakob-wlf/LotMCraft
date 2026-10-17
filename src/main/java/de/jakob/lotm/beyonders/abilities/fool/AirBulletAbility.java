@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -33,7 +32,7 @@ public class AirBulletAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5200f, 2000f, 1400f, 875f, 800f, 475f, 420f, 390f));
 
-        baseDamage = 4;
+        baseDamage = 15;
     }
 
     @Override
@@ -92,7 +91,7 @@ public class AirBulletAbility extends Ability {
             case 6 -> 1.65f;
             case 5 -> 2f;
             case 4 -> 3.25f;
-            case 3, 2, 1 -> 5.5f;
+            case 3, 2, 1, 0 -> 5.5f;
         };
     }
 
@@ -101,8 +100,11 @@ public class AirBulletAbility extends Ability {
             default -> .2f;
             case 6 -> .3f;
             case 5 -> .45f;
-            case 4 -> .75f;
-            case 3, 2, 1 -> 1.0f;
+            case 4 -> 1f;
+            case 3 -> 1.25f;
+            case 2 -> 1.5f;
+            case 1 -> 1.75f;
+            case 0 -> 2.25f;
         };
     }
 }

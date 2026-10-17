@@ -9,9 +9,8 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -128,7 +127,7 @@ public class MundaneConceptualTheft extends SelectableAbility {
 
         if(entitySeq > 6) return;
 
-        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, Math.max(10, baseDistance), true).getCenter().add(0, 1, 0);
+        Vec3 targetLoc = AbilityUtil.getTargetBlock(entity, baseDistance, true).getCenter().add(0, 1, 0);
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 
         var validatedPos = TeleportationUtil.clampToBorder(level, targetLoc);

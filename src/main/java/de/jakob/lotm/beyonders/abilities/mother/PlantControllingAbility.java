@@ -6,7 +6,6 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -45,7 +44,7 @@ public class PlantControllingAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f, 240f, 195f));
 
-        baseDamage = 3;
+        baseDamage = 5;
     }
 
     @Override

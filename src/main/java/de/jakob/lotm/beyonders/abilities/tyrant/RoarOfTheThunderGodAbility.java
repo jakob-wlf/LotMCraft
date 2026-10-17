@@ -2,21 +2,19 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -104,13 +102,13 @@ public class RoarOfTheThunderGodAbility extends Ability {
 
         EffectManager.playEffect(EffectIds.THUNDER_EXPLOSION, startPos.x, startPos.y + .5, startPos.z, (ServerLevel) level, entity);
 
-        for(int y = 0; y < 3; y++) {
-            for (int i = 3; i < 27; i+=2) {
-                AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1 - y, 0), i).forEach(b -> {
-                    spawnFallingBlocks(level, startPos, b, griefing);
-                });
-            }
-        }
+//        for(int y = 0; y < 3; y++) {
+//            for (int i = 3; i < 27; i+=2) {
+//                AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1 - y, 0), i).forEach(b -> {
+//                    spawnFallingBlocks(level, startPos, b, griefing);
+//                });
+//            }
+//        }
     }
 
     private void spawnFallingBlocks(Level level, Vec3 startPos, BlockPos b, boolean griefing) {
@@ -122,13 +120,13 @@ public class RoarOfTheThunderGodAbility extends Ability {
         Vec3 vectorFromCenter = new Vec3(b.getX() + 0.5 - startPos.x, 0, b.getZ() + 0.5 - startPos.z).normalize();
         Vec3 movement = (new Vec3(vectorFromCenter.x, 1, vectorFromCenter.z)).normalize().scale(.75);
 
-        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
-        block.setDeltaMovement(movement);
-        if(!griefing || state.getDestroySpeed(level, b) < 0)
-            block.disableDrop();
-        else {
-            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
-        }
-        block.hurtMarked = true;
+//        FallingBlockEntity block = FallingBlockEntity.fall(level, b.above(), state);
+//        block.setDeltaMovement(movement);
+//        if(!griefing || state.getDestroySpeed(level, b) < 0)
+//            block.disableDrop();
+//        else {
+//            level.setBlockAndUpdate(b, Blocks.AIR.defaultBlockState());
+//        }
+//        block.hurtMarked = true;
     }
 }

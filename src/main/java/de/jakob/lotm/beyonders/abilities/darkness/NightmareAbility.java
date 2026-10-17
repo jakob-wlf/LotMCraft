@@ -6,7 +6,6 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncNightmareAbilityPacket;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.data.NightmareCenter;
 import de.jakob.lotm.util.helper.*;
@@ -62,9 +61,9 @@ public class NightmareAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 2, 3, 3, 3));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 7500f, 4200f, 2500f, 2340f, 1425f, 900f, 780f));
+        dynamicSpirituality = new LinkedList<>(List.of(3000f, 2400f, 1900f, 900f, 600f, 400f, 250f, 100f));
 
-        baseDamage = 13;
+        baseDamage = 10;
     }
 
     @Override
@@ -81,7 +80,7 @@ public class NightmareAbility extends SelectableAbility {
     protected String[] getAbilityNames() {
         return new String[]{
                 "ability.lotmcraft.nightmare.nightmare",
-                "ability.lotmcraft.nightmare.reshape",
+                //"ability.lotmcraft.nightmare.reshape",
                 "ability.lotmcraft.nightmare.restrict",
                 "ability.lotmcraft.nightmare.attack",
                 "ability.lotmcraft.nightmare.teleport"};
@@ -91,13 +90,13 @@ public class NightmareAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         switch(abilityIndex) {
             case 0 -> nightmare(level, entity);
-            case 1 -> reshape(level, entity);
-            case 2 -> restrict(level, entity);
-            case 3 -> attack(level, entity);
-            case 4 -> teleport(level, entity);
+            //case 1 -> reshape(level, entity);
+            case 1 -> restrict(level, entity);
+            case 2 -> attack(level, entity);
+            case 3 -> teleport(level, entity);
         }
 
-        if(abilityIndex != 3){
+        if(abilityIndex != 2){
             clearArtifactScaling(entity);
         }
     }

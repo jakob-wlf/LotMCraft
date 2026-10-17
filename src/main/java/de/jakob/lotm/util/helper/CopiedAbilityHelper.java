@@ -2,9 +2,12 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.attachments.CopiedAbilityComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelMenu;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncCopiedAbilitiesPacket;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 
 
@@ -17,12 +20,11 @@ public class CopiedAbilityHelper {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.addAbility(data);
 
-        if(player instanceof ServerPlayer serverPlayer){
+        if(player instanceof ServerPlayer serverPlayer)
             syncToClient(serverPlayer);
-        }
     }
 
-    public static void removeAbility(LivingEntity player, int index) {
+    public static void removeAbilityIndex(LivingEntity player, int index) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
         component.removeAbility(index);
 
@@ -38,6 +40,15 @@ public class CopiedAbilityHelper {
             syncToClient(serverPlayer);
         }
     }
+
+    public static void openCopiedAbilityWheel(ServerPlayer player) {
+        syncToClient(player);
+        player.openMenu(new SimpleMenuProvider(
+                (id, inventory, p) -> new CopiedAbilityWheelMenu(id, inventory),
+                Component.translatable("lotm.copied_ability_wheel.title")
+        ));
+    }
+
 
     public static void clearAbilities(LivingEntity player) {
         CopiedAbilityComponent component = player.getData(ModAttachments.COPIED_ABILITY_COMPONENT);
@@ -66,7 +77,7 @@ public class CopiedAbilityHelper {
         int newUses = data.remainingUses() - 1;
 
         if (newUses <= 0) {
-            removeAbility(entity, index);
+            removeAbilityIndex(entity, index);
         } else {
             component.getAbilities().set(index, data.withRemainingUses(newUses));
         }
@@ -95,8 +106,8 @@ public class CopiedAbilityHelper {
 
     private static boolean shouldReduceUsesForType(String copyType) {
         return switch (copyType) {
-            default -> true;
             case "replicated" -> false;
+            default -> true;
         };
     }
 

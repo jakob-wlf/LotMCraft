@@ -5,7 +5,6 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -35,7 +34,7 @@ public class FlameControllingAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5200f, 2000f, 1400f, 875f, 800f, 475f, 420f, 390f));
 
-        baseDamage = 4;
+        baseDamage = 6;
     }
 
     @Override

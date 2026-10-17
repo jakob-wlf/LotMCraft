@@ -1,8 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.DistortionFieldEntity;
 import de.jakob.lotm.util.BeyonderData;
@@ -104,8 +102,7 @@ public class DistortionFieldAbility extends Ability {
             // Randomly teleport entities around and disable ability use
             AbilityUtil.getNearbyEntities(entity, serverLevel, startPos, 40).forEach(e -> {
                 if(random.nextInt(15) == 0 && AbilityUtil.getSeqWithArt(entity, this) <= BeyonderData.getSequence(e)) {
-                    DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("distortion_field", 20 * 2, e);
+                    AbilityUtil.sealAllTargetAbilities(entity, e, "distortion_field", 20 * 2);
                 }
 
                 e.teleportTo(e.getX() + random.nextDouble(-8, 8), e.getY() + random.nextDouble(-1, 2), e.getZ() + random.nextDouble(-8, 8));

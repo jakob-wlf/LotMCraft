@@ -11,7 +11,6 @@ import de.jakob.lotm.network.packets.toClient.AddEntityTagPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -42,7 +41,7 @@ public class FlaringSunAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(5000f, 2500f, 1500f, 800f, 780f));
 
-        baseDamage = 2f;
+        baseDamage = 4f;
     }
 
     @Override

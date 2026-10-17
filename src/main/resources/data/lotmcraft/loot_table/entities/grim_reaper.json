@@ -1,0 +1,272 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:death_calling_crows_eyeball",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_of_a_pale_lich",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_crystal",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:molt_of_the_immortal_cicada",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:cloth_wrapped_persons_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flower_grown_from_a_corpse",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_demonic_wolf_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_demonic_wolf_heart",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadowless_demonic_wolf_blood",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadowless_demonic_wolf_heart",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:demonic_wolf_of_fog_transformed_heart",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:white_frost_crystal_of_demonic_wolf_of_fog",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hound_of_fulgrim_blood",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hound_of_fulgrim_eyes",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_contaminated_soil",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fragrance_hornet_grass",
+          "weight": 45
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:death_calling_crows_eyeball",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_of_a_pale_lich",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_crystal",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:molt_of_the_immortal_cicada",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:cloth_wrapped_persons_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flower_grown_from_a_corpse",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_demonic_wolf_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_demonic_wolf_heart",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadowless_demonic_wolf_blood",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadowless_demonic_wolf_heart",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:demonic_wolf_of_fog_transformed_heart",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:white_frost_crystal_of_demonic_wolf_of_fog",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hound_of_fulgrim_blood",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hound_of_fulgrim_eyes",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_contaminated_soil",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fragrance_hornet_grass",
+          "weight": 45
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:death_calling_crows_eyeball",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_of_a_pale_lich",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_crystal",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:molt_of_the_immortal_cicada",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:cloth_wrapped_persons_crystal",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flower_grown_from_a_corpse",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_demonic_wolf_blood",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:dark_demonic_wolf_heart",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadowless_demonic_wolf_blood",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:shadowless_demonic_wolf_heart",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:demonic_wolf_of_fog_transformed_heart",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:white_frost_crystal_of_demonic_wolf_of_fog",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hound_of_fulgrim_blood",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hound_of_fulgrim_eyes",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_contaminated_soil",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fragrance_hornet_grass",
+          "weight": 45
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

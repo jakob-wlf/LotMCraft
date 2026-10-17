@@ -1,6 +1,7 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -33,7 +34,9 @@ public record ReleaseMarionettePacket(int entityId) implements CustomPacketPaylo
             ServerLevel level = serverPlayer.serverLevel();
 
             if (level.getEntity(packet.entityId()) instanceof LivingEntity living) {
-                living.hurt(living.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+                if(living.getData(ModAttachments.MARIONETTE_COMPONENT).isMarionette() && living.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID().equals(serverPlayer.getUUID().toString())) {
+                    living.hurt(living.damageSources().fellOutOfWorld(), Float.MAX_VALUE);
+                }
             }
         });
     }

@@ -262,7 +262,7 @@ public class ConceptualTheftAbility extends SelectableAbility {
                 targetLocation.x + "," + targetLocation.y + "," + targetLocation.z);
 
         // Give item to player
-        if (entity instanceof net.minecraft.world.entity.player.Player player) {
+        if (entity instanceof Player player) {
             if (!player.getInventory().add(excavatedArea)) {
                 player.drop(excavatedArea, false);
             }

@@ -8,10 +8,12 @@ import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
+import de.jakob.lotm.util.helper.*;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.PerformantExplosion;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -22,9 +24,11 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -156,43 +160,61 @@ public class FlameMasteryAbility extends SelectableAbility {
     private void eruption(ServerLevel level, LivingEntity entity) {
         Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
         boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        ParticleUtil.spawnParticles(level, ParticleTypes.FLAME, targetPos, 1500, 2, 6, 2, .02);
-        ParticleUtil.spawnParticles(level, ParticleTypes.SMOKE, targetPos, 300, 2, 6, 2, .02);
-        ParticleUtil.spawnParticles(level, ParticleTypes.EXPLOSION, targetPos, 90, 2, 6, 2, .02);
-        ParticleUtil.spawnParticles(level, dust, targetPos, 400, 2, 6, 2, 0);
+
+        BlockPos blockPos = BlockPos.containing(targetPos);
+
+        double offsetX = targetPos.x - (blockPos.getX() + 0.5);
+        double offsetY = targetPos.y - (blockPos.getY() + 0.5);
+        double offsetZ = targetPos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("eruption", blockPos, offsetX, offsetY, offsetZ, 3, null, -1, false, true, null),
+                (ServerLevel) level, targetPos, 128
+        );
 
         float damage = baseDamage;
         AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.SOUL_FIRE,damage/2, targetPos, true, false, true, 0);
         AbilityUtil.damageNearbyEntities(level, entity, 9, ModDamageTypes.FIRE,damage/2, targetPos, true, false, true, 0);
 
-        for(int i = 0; i < 25; i++) {
-            FallingBlockEntity falling = FallingBlockEntity.fall(
-                    level,
-                    BlockPos.containing(targetPos.x, targetPos.y, targetPos.z).offset(random.nextInt(-1, 1), 2, random.nextInt(-1, 1)),
-                    i % 2 == 0 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState()
-            );
+        ServerScheduler.scheduleDelayed(10, () -> {
+            PerformantExplosion.create(level, entity, targetPos, 9, griefing, griefing ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
+            PerformantExplosion.create(level, entity, targetPos.add(0, 1, 0), 9, griefing, griefing ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
+            PerformantExplosion.create(level, entity, targetPos.add(0, 2, 0), 9, griefing, griefing ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP);
+            level.playSound(null, BlockPos.containing(targetPos), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3.0f, 1.0f);
+            level.playSound(null, BlockPos.containing(targetPos.add(0, 1, 0)), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 3.0f, 1.0f);
+            for(int i = 0; i < 25; i++) {
+                FallingBlockEntity falling = FallingBlockEntity.fall(
+                        level,
+                        BlockPos.containing(targetPos.x, targetPos.y, targetPos.z).offset(random.nextInt(-1, 1), 2, random.nextInt(-1, 1)),
+                        i % 2 == 0 ? Blocks.MAGMA_BLOCK.defaultBlockState() : Blocks.BASALT.defaultBlockState()
+                );
 
-            double xVel = random.nextDouble(-3, 3);
-            double yVel = random.nextDouble(3.5, 5);
-            double zVel = random.nextDouble(-3, 3);
-            Vec3 motion = new Vec3(xVel, yVel, zVel).normalize().scale(1.4);
-            falling.setDeltaMovement(motion);
-            ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
-                falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
-                falling.hurtMarked = true;
-            });
-            if(!griefing)
-                falling.disableDrop();
-        }
+                double xVel = random.nextDouble(-3, 3);
+                double yVel = random.nextDouble(3.5, 5);
+                double zVel = random.nextDouble(-3, 3);
+                Vec3 motion = new Vec3(xVel, yVel, zVel).normalize().scale(1.4);
+                falling.setDeltaMovement(motion);
+                ServerScheduler.scheduleForDuration(0, 1, 40, () -> {
+                    falling.setDeltaMovement(falling.getDeltaMovement().x, falling.getDeltaMovement().y - 0.03, falling.getDeltaMovement().z);
+                    falling.hurtMarked = true;
+                });
+                if(!griefing)
+                    falling.disableDrop();
+            }
+        });
     }
 
     private void fireballBarrage(ServerLevel level, LivingEntity entity) {
-        double shots = 15;
-        Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
+        double shots = 25;
         Vec3 pos = entity.getEyePosition();
-        Vec3 dir = entity.getLookAngle();
+
         for (int i = 0; i < shots; i++) {
-            ServerScheduler.scheduleDelayed(i * 7, () -> fireball(level, entity, pos, dir, targetPos), level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
+            ServerScheduler.scheduleDelayed(i * 3, () -> {
+                Vec3 pos2 = entity.getEyePosition();
+                Vec3 dir = entity.getLookAngle();
+                Vec3 targetPos = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f);
+                fireball(level, entity, pos2, dir, targetPos);
+            }, level, () -> AbilityUtil.getTimeInArea(entity, new Location(pos, level)));
         }
     }
 
@@ -206,6 +228,7 @@ public class FlameMasteryAbility extends SelectableAbility {
         FireballEntity fireball = new FireballEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity), 1.75f);
 
         fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position,
+        fireball.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
         fireball.shoot(direction.x, direction.y, direction.z, 1.85f*multiplier(entity), 0);
         level.addFreshEntity(fireball);
     }

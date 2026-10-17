@@ -50,6 +50,8 @@ public class UnshadowedDomainAbility extends Ability {
         return 800;
     }
 
+    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(1f, 185 / 255f, 3 / 255f), 10f);
+
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if(level.isClientSide)

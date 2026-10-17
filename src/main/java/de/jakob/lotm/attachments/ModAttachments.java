@@ -40,6 +40,13 @@ public class ModAttachments {
                             .build()
             );
 
+    public static final Supplier<AttachmentType<RitualsComponent>> RITUALS =
+            ATTACHMENT_TYPES.register("rituals", () ->
+                    AttachmentType.builder(RitualsComponent::new)
+                            .serialize(RitualsComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );
 
     public static final Supplier<AttachmentType<DisabledFlightComponent>> FLIGHT_DISABLE_COMPONENT =
             ATTACHMENT_TYPES.register("disabled_flight_component", () ->

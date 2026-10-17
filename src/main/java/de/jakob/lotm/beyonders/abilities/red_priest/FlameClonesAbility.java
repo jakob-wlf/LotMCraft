@@ -1,14 +1,16 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateUtils;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -22,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class FlameClonesAbility extends Ability {
     public FlameClonesAbility(String id) {
-        super(id, 1 ); //20 * 60 * 2
+        super(id, 60 * 2 ); //20 * 60 * 2
         canBeShared = false;
     }
 
@@ -53,33 +55,33 @@ public class FlameClonesAbility extends Ability {
         if(!(entity instanceof Player player)) return;
         int Seq = BeyonderData.getSequence(player);
         int npcCount = getNpcCount(Seq);
-        int npcSeq = 8;
         int SP_COST = npcCount*20;
         if(BeyonderData.getSpirituality(entity) < SP_COST)  return;
         List<BeyonderNPCEntity> clones = new ArrayList<>();
         for(int i = 0; i < npcCount; i++) {
             Vec3 spawnPos = entity.position().add(random.nextDouble(-3, 3), 0, random.nextDouble(-3, 3));
 
-            BeyonderNPCEntity flameClone = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "knight", "red_priest", npcSeq, false, false);
+            BeyonderNPCEntity flameClone = new BeyonderNPCEntity(ModEntities.BEYONDER_NPC.get(), serverLevel, false, "flame_clone"+BeyonderData.getSequence(entity), "red_priest", 9, false, false);
+            BeyonderData.clearBeyonderData(flameClone);
             flameClone.setPos(spawnPos);
             flameClone.setPuppetWarrior(true);
             flameClone.setHealth(flameClone.getHealth() * 20 / 100);
             flameClone.setMaxLifetimeIfPuppet(200);
-            flameClone.setCustomName(Component.literal("Flame Clone"));
-            flameClone.setCustomNameVisible(false);
-            flameClone.getPersistentData().putBoolean("PuppetSummon", true);
+            flameClone.getPersistentData().putBoolean("PuppetSummoned", true);
             flameClone.getPersistentData().putUUID("PuppetSummonOwner", entity.getUUID());
+            SubordinateComponent component = flameClone.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            component.setShouldAttack(true);
             clones.add(flameClone);
-
             serverLevel.addFreshEntity(flameClone);
-            SubordinateUtils.turnEntityIntoSubordinate(flameClone, entity);
+            flameClone.getAttribute(Attributes.MAX_HEALTH).setBaseValue(4D);
+            SubordinateUtils.turnEntityIntoSubordinate(flameClone, entity, false);
 
             BeyonderData.addModifier(flameClone, "puppet_soldier", 0.3f);
         }
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         ServerScheduler.scheduleUntil(serverLevel, () -> {
             clones.removeIf(flameClone -> !flameClone.isAlive());
-            float cost = clones.size()*(BeyonderData.getSpirituality(entity)/100);
+            float cost = clones.size()*(BeyonderData.getSpirituality(entity)/200);
             if(clones.isEmpty()) shouldStop.set(true);
             if(BeyonderData.getSpirituality(entity) < cost) {
                 shouldStop.set(true);

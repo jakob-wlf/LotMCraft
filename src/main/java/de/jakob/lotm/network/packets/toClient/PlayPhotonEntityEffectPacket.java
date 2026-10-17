@@ -11,8 +11,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Quaternionf;
 
+import java.util.UUID;
+
 public record PlayPhotonEntityEffectPacket(String effectPath, int entityId, double xOffset, double yOffset, double zOffset,
-                                           double scale, Quaternionf rot, boolean checkState, boolean allowMulti) implements CustomPacketPayload {
+                                           double scale, Quaternionf rot, boolean checkState, boolean allowMulti, UUID effectUUID, boolean autoRotate) implements CustomPacketPayload {
 
     public static final Type<PlayPhotonEntityEffectPacket> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "play_photon_entity_effect"));
@@ -38,6 +40,8 @@ public record PlayPhotonEntityEffectPacket(String effectPath, int entityId, doub
                 }
                 ByteBufCodecs.BOOL.encode(buf, packet.checkState());
                 ByteBufCodecs.BOOL.encode(buf, packet.allowMulti());
+                ByteBufCodecs.STRING_UTF8.encode(buf, packet.effectUUID().toString());
+                ByteBufCodecs.BOOL.encode(buf, packet.autoRotate());
             },
             buf -> {
                 String effectPath = ByteBufCodecs.STRING_UTF8.decode(buf);
@@ -53,7 +57,10 @@ public record PlayPhotonEntityEffectPacket(String effectPath, int entityId, doub
                 Quaternionf rot = x == -1 && y == -1 && z == -1 && w == -1 ? null : new Quaternionf(x, y, z, w);
                 boolean checkState = ByteBufCodecs.BOOL.decode(buf);
                 boolean allowMulti = ByteBufCodecs.BOOL.decode(buf);
-                return new PlayPhotonEntityEffectPacket(effectPath, entityId, xOffset, yOffset, zOffset, scale, rot, checkState, allowMulti);
+                String uuidString = ByteBufCodecs.STRING_UTF8.decode(buf);
+                UUID effectUUID = UUID.fromString(uuidString);
+                boolean autoRotate = ByteBufCodecs.BOOL.decode(buf);
+                return new PlayPhotonEntityEffectPacket(effectPath, entityId, xOffset, yOffset, zOffset, scale, rot, checkState, allowMulti, effectUUID, autoRotate);
             }
     );
     @Override

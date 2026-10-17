@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.fool;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.FoolingComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -18,6 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -63,6 +64,10 @@ public class FoolingAbility extends Ability {
 
         for (LivingEntity target : nearby) {
             FoolingComponent component = target.getData(ModAttachments.FOOLING_COMPONENT);
+
+            if(BeyonderData.getPathway(target).equals("visionary") &&
+                    BeyonderData.getSequence(target) <= 0)
+                duration = 20 * 2;
 
             component.setTicksRemaining(duration);
         }

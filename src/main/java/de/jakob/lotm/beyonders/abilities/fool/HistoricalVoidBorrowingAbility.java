@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,7 +47,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
     private static Map<UUID, Integer> timer = new HashMap<>();
 
     public HistoricalVoidBorrowingAbility(String id) {
-        super(id, 1);
+        super(id, 5);
 
         canBeUsedByNPC = false;
         cannotBeStolen = true;
@@ -54,6 +55,8 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
         canBeShared = false;
         canBeCopied = false;
         canBeReplicated = false;
+
+        dynamicCooldown = new LinkedList<>(List.of(1, 4, 8, 16));
     }
 
     @Override

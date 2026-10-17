@@ -57,7 +57,9 @@ public class SpaceFragmentationAbility extends Ability {
         final int BLOW_TICK = 160;
         final int GRIEF_START = 60;
         final int PHASE2_END = 100;
-        final int mult = (int) Math.max(multiplier(entity) / 4, 1);
+
+        float blowDamage = baseDamage * 10;
+        float tickDamage = baseDamage;
 
         AtomicInteger tick = new AtomicInteger(0);
         ServerScheduler.scheduleForDuration(0, 1, BLOW_TICK + 1, () -> {
@@ -66,7 +68,7 @@ public class SpaceFragmentationAbility extends Ability {
 
             if (t == BLOW_TICK) {
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 40,
-                        DamageLookup.lookupDamage(1, 2f) * mult, targetLoc, true, true);
+                        blowDamage, targetLoc, true, true);
 
                 if (BeyonderData.isGriefingEnabled(entity)) {
                     AbilityUtil.getBlocksInSphereRadius(level, targetLoc, 37, true, true, false).forEach(pos -> {
@@ -88,10 +90,9 @@ public class SpaceFragmentationAbility extends Ability {
             }
 
             if (t % 20 == 0) {
-                float scale = progress * 0.5f;
                 double dmgRadius = 8 + progress * 22;
                 AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, dmgRadius,
-                        DamageLookup.lookupDamage(1, scale) * mult, targetLoc, true, true);
+                        tickDamage, targetLoc, true, true);
             }
 
             AABB box = new AABB(targetLoc, targetLoc).inflate(40);

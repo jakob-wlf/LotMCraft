@@ -37,12 +37,11 @@ public class ChestLootModifier extends LootModifier {
         /*
         if (context.getQueriedLootTableId().getPath().contains("chests/")) {
             if (context.getRandom().nextFloat() < 0.45f) {
-
                 String pathway = BeyonderData.implementedPathways.get(random.nextInt(BeyonderData.implementedPathways.size()));
                 int sequence = getWeightedHighSequence();
                 ItemStack item = getRandomLoot(pathway, sequence);
 
-                if (item != null && (sequence >= 7)) {
+                if (item != null && (sequence >= 5)) {
                     generatedLoot.add(item);
                 }
             }

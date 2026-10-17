@@ -4,7 +4,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
-import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.*;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMaxDistanceGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteMovementGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.MarionetteTargetGoal;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.goals.NonBeyonderMarionetteUseAbilityGoal;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.goals.EntityLoadChunksGoal;
 import net.minecraft.server.level.ServerLevel;
@@ -79,6 +82,19 @@ public class MarionetteUtils {
             return;
         }
         if (!isMarionette(entity)) {
+            if(entity instanceof Player player) {
+                String playerUUID = player.getStringUUID();
+                for (ServerLevel level : player.getServer().getAllLevels()) {
+                    for (Entity e : level.getAllEntities()) {
+                        if (e instanceof LivingEntity livingEntity && isMarionette(livingEntity)) {
+                            String ownerUUID = livingEntity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
+                            if (ownerUUID.equals(playerUUID)) {
+                                livingEntity.hurt(livingEntity.damageSources().generic(), Float.MAX_VALUE);
+                            }
+                        }
+                    }
+                }
+            }
             return;
         }
 

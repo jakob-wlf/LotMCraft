@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
@@ -11,19 +11,15 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.ParticleUtil;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
@@ -47,7 +43,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(1, 1, 1, 2, 3));
+        dynamicCooldown = new LinkedList<>(List.of(0, 0, 1, 2, 3));
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(
@@ -79,8 +75,8 @@ public class VirtualPersonaAbility extends SelectableAbility {
     @Override
     public void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -97,13 +93,6 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     private void clearAll(Level level, LivingEntity entity){
-        if (level instanceof ClientLevel clientLevel){
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
-            return;
-        }
-
         if(!(level instanceof ServerLevel serverLevel)) return;
 
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
@@ -138,7 +127,10 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
             StringBuilder affectsResultBuilder = new StringBuilder("Affects:");
             for(var obj : affects){
-                var data = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj)).get();
+                var dataOp = BeyonderData.playerMap.get(BeyonderData.playerMap.getKeyByName(obj));
+                if(dataOp.isEmpty()) continue;
+
+                var data = dataOp.get();
 
                 String location = "";
                 var targetLoop = level.getPlayerByUUID(BeyonderData.playerMap.getKeyByName(obj));
@@ -162,7 +154,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
             String avatarsResult = "";
             if(BeyonderData.getSequence(entity) <= 3) {
-                StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
+                StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSize() + "\nAvatars:");
                 for (var obj : avatars) {
                     AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
 
@@ -208,7 +200,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
 
         String avatarsResult = "";
         if(BeyonderData.getSequence(entity) <= 3) {
-            StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSive() + "\nAvatars:");
+            StringBuilder avatarsBuilder = new StringBuilder("Amount of avatars: " + component.getAvatarsSize() + "\nAvatars:");
             for (var obj : avatars) {
                 AvatarEntity avatar = (AvatarEntity) serverLevel.getEntity(obj);
 
@@ -242,7 +234,16 @@ public class VirtualPersonaAbility extends SelectableAbility {
             return;
         }
 
-        var target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.2f);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true,
+                    true, true, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true, true);
+        }
+
         if(target == null){
             AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.dream_traversal.failed")
                     .withColor(0xFFff124d));
@@ -269,13 +270,6 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     private void virtualSelf(Level level, LivingEntity entity) {
-        if (level instanceof ClientLevel clientLevel){
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), 2, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(0, 0, 1), 2.0, 20);
-            ParticleUtil.spawnCircleParticles(clientLevel, dust, entity.getEyePosition(), new Vec3(1, 0, 0), 2.0, 20);
-            return;
-        }
-
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         int seq = BeyonderData.getSequence(entity);
 
@@ -360,6 +354,11 @@ public class VirtualPersonaAbility extends SelectableAbility {
         var component = entity.getData(ModAttachments.VIRTUAL_PERSONAS.get());
         component.createAvatar(avatar.getUUID());
 
+//        if(entity instanceof ServerPlayer player) {
+//            BeyonderData.anchoringStorage.addAvatar(player.getName().getString(),
+//                    avatar.getUUID());
+//        }
+
         AbilityUtil.sendActionBar(entity,
                 Component.translatable("ability.lotmcraft.virtual_persona.avatar_spawned").withColor(0xFFe3ffff));
     }
@@ -382,7 +381,7 @@ public class VirtualPersonaAbility extends SelectableAbility {
     }
 
     @SubscribeEvent
-    public static void onAvatarDeath(LivingDeathEvent event) {
+    public static void onAvatarDeath(EntityLeaveLevelEvent event) {
         if(!(event.getEntity() instanceof AvatarEntity avatar)) return;
         if(!(avatar.level() instanceof ServerLevel level)) return;
         if(!avatar.getPathway().equals("visionary")) return;

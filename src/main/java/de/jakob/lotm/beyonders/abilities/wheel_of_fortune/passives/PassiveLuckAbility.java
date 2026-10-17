@@ -1,10 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune.passives;
 
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
-import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
@@ -50,9 +51,13 @@ public class PassiveLuckAbility extends PassiveAbility {
             return;
         }
         LuckComponent component = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-        //if (component.getLuck() >= getLuckLevelForSequence(sequence)) {return;};
-        if(component.getLuck() < getLuckLevelForSequence(sequence)) {
-            component.setLuck(component.getLuck() + (int) Math.round(5 * BeyonderData.getMultiplier(entity)));
+
+        if(entity.tickCount % 200 == 0) {
+            if (component.getLuck() < getLuckLevelForSequence(sequence)) {
+                int rate = getLuckRate(sequence);
+
+                AbilityUtil.setTargetLuck(entity, entity, component.getLuck() + rate);
+            }
         }
     }
 
@@ -70,4 +75,17 @@ public class PassiveLuckAbility extends PassiveAbility {
         };
     }
 
+    private int getLuckRate(int seq){
+        return switch (seq){
+            case 7 -> 10;
+            case 6 -> 20;
+            case 5 -> 30;
+            case 4 -> 100;
+            case 3 -> 125;
+            case 2 -> 200;
+            case 1 -> 250;
+            case 0 -> 300;
+            default -> 0;
+        };
+    }
 }

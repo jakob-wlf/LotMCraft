@@ -30,6 +30,8 @@ public record PerformMiraclePacket(String miracle) implements CustomPacketPayloa
             if(!(context.player() instanceof ServerPlayer serverPlayer)) {
                 return;
             }
+            if(!LOTMCraft.abilityHandler.getById("miracle_creation_ability").hasAbility(serverPlayer, false))
+                return;
             MiracleHandler.performMiracle(packet.miracle(), serverPlayer.serverLevel(), context.player());
         });
     }

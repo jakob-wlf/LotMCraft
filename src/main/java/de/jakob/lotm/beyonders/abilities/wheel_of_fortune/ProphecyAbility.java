@@ -1,18 +1,15 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.ModEntities;
-import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
+import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.TsunamiEntity;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -92,7 +89,7 @@ public class ProphecyAbility extends SelectableAbility {
                         targetLoc = targetLoc.subtract(0, 1, 0);
                 }
 
-                float damage = baseDamage * 15;
+                float damage = baseDamage * 10;
 
                 GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, damage, BeyonderData.isGriefingEnabled(entity), 0, 200, 0x6522a8);
                 level.addFreshEntity(lightning);
@@ -100,7 +97,7 @@ public class ProphecyAbility extends SelectableAbility {
             case 2 -> {
                 LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 3);
 
-                float damage = baseDamage * 3;
+                float damage = baseDamage;
                 Vec3 pos = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
                 TornadoEntity tornado = target == null ? new TornadoEntity(ModEntities.TORNADO.get(), level, .15f, damage, entity)
@@ -147,9 +144,8 @@ public class ProphecyAbility extends SelectableAbility {
                 BeyonderData.addModifierWithTimeLimit(target, "prophecy", 0.8, 20 * 10);
             }
             case 1 -> {
-                LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
                 int amplifier = getLuck(AbilityUtil.getSeqWithArt(entity, this));
-                component.addLuckWithMin(-amplifier, (int) (-amplifier * 4));
+                AbilityUtil.addTargetLuckWithMin(entity, target, -amplifier, (int) (-amplifier * 4));
                 EffectManager.playEffect(EffectIds.MISFORTUNE_CURSE, target.getX(), target.getY() + 1, target.getZ(), (ServerLevel) level);
             }
             case 2 -> {
@@ -179,9 +175,8 @@ public class ProphecyAbility extends SelectableAbility {
     }
 
     private void giveLuckEffect(Level level, LivingEntity entity) {
-        LuckComponent component = entity.getData(ModAttachments.LUCK_COMPONENT.get());
         int amplifier = getLuck(AbilityUtil.getSeqWithArt(entity, this));
-        component.addLuckWithMax(amplifier, 3000);
+        AbilityUtil.addTargetLuckWithMax(entity, entity, amplifier, 3000);
         EffectManager.playEffect(EffectIds.BLESSING, entity.getX(), entity.getY() + 1, entity.getZ(), (ServerLevel) level);
     }
 
@@ -208,16 +203,5 @@ public class ProphecyAbility extends SelectableAbility {
             case 9 -> new ItemStack(Items.ENDER_PEARL, random.nextInt(1, 8));
             default -> new ItemStack(Items.DIAMOND, 1);
         };
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        return super.shouldUseAbility(entity) && entity.level() instanceof ServerLevel;
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        boolean hasTarget = AbilityUtil.getTargetEntity(entity, 40, 6) != null;
-        return hasTarget ? random.nextInt(getAbilityNames().length) : random.nextInt(2);
     }
 }

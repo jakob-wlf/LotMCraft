@@ -1,0 +1,13 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "type": "minecraft:warden"
+      }
+    }
+  ],
+  "table": "lotmcraft:ingredients/autumn_crocus_essence"
+}

@@ -2,13 +2,14 @@ package de.jakob.lotm.block;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.block.custom.*;
+import de.jakob.lotm.block.custom.SpiritPortalBlock;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -41,6 +42,16 @@ public class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.POWDER_SNOW)
             ));
+
+    public static final DeferredBlock<SpiritPortalBlock> SPIRIT_PORTAL = registerBlock("spirit_portal",
+            () -> new SpiritPortalBlock(BlockBehaviour.Properties.of()
+                    .noCollission().noOcclusion().noLootTable()
+                    .strength(-1.0f, 3_600_000.0f)
+                    .lightLevel(s -> 11)
+                    .sound(SoundType.GLASS)
+                    .pushReaction(PushReaction.BLOCK)
+            ));
+
 
 
     public static final DeferredBlock<Block> RITUALISTIC_TABLE = registerBlock("ritualistic_table",

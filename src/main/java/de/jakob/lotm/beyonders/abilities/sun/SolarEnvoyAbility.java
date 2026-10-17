@@ -1,13 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.sun;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -37,7 +36,7 @@ public class SolarEnvoyAbility extends ToggleAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(400f, 300f, 200f));
 
-        baseDamage = 4f;
+        baseDamage = 8f;
     }
 
     @Override

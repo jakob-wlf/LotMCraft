@@ -5,12 +5,9 @@ import de.jakob.lotm.beyonders.abilities.common.AngelFlightAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.WindBladeEntity;
-import de.jakob.lotm.network.PacketHandler;
-import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -150,7 +147,7 @@ public class WindManipulationAbility extends SelectableAbility {
         Location loc = new Location(targetPos, level);
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        ServerScheduler.scheduleForDuration(0, 1, (int) (20 * 13* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 1, (int) 20 * 5, () -> {
             for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetPos, 2.5)) {
                 // Blink Escape - only the bound entity can free itself
                 if(InteractionHandler.isInteractionPossibleForEntity(loc, "blink_escape", entitySeq, e)) {

@@ -59,7 +59,7 @@ description='''${mod_description}'''
 # The coremods config file path is not configurable and is always loaded from META-INF/coremods.json
 
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.${mod_id}]] #optional
+[[dependencies.${mod_id}]]
 # the modid of the dependency
 modId="neoforge" #mandatory
 # The type of the dependency. Can be one of "required", "optional", "incompatible" or "discouraged" (case insensitive).
@@ -84,6 +84,14 @@ type="required"
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
 versionRange="${minecraft_version_range}"
 ordering="NONE"
+side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="terrablender"
+type="required"
+reason="Adds the Spirit World Patch biome to the overworld"
+versionRange="[1.21.1-4.1.0.8,)"
+ordering="AFTER"
 side="BOTH"
 
 [[mixins]]

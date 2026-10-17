@@ -1,0 +1,20 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "type": "minecraft:husk"
+      }
+    },
+    {
+      "condition": "minecraft:killed_by_player"
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.06
+    }
+  ],
+  "table": "lotmcraft:ingredients/white_mustard_seeds"
+}

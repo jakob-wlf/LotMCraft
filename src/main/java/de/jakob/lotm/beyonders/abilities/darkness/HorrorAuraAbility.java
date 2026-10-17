@@ -1,12 +1,12 @@
 package de.jakob.lotm.beyonders.abilities.darkness;
 
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.beyonders.abilities.sun.HolyOathAbility;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -14,7 +14,6 @@ import de.jakob.lotm.rendering.effectRendering.EffectParams;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.ParticleTypes;
@@ -41,9 +40,9 @@ public class HorrorAuraAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(10, 13, 15, 20));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+        dynamicSpirituality = new LinkedList<>(List.of(17000f, 7000f, 4000f, 3250f));
 
-        baseDamage = 1;
+        baseDamage = 2;
     }
 
     @Override

@@ -42,7 +42,7 @@ public class TeamUtils {
      */
     public static boolean addMember(ServerPlayer leader, ServerPlayer member) {
         int sequence = BeyonderData.getSequence(leader);
-        TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
+        TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get()).withLeader(leader.getStringUUID());
 
         if (leaderTeam.memberCount() >= getMaxTeamSize(sequence)) {
             return false;
@@ -51,16 +51,17 @@ public class TeamUtils {
             return false;
         }
 
-        leader.setData(ModAttachments.TEAM_COMPONENT.get(), leaderTeam.addMember(member.getStringUUID()));
+        leader.setData(ModAttachments.TEAM_COMPONENT.get(), leaderTeam.addMember(member.getStringUUID()).withLeader(leader.getStringUUID()));
 
-        TeamComponent memberTeam = member.getData(ModAttachments.TEAM_COMPONENT.get());
-        member.setData(ModAttachments.TEAM_COMPONENT.get(), memberTeam.withLeader(leader.getStringUUID()));
+        TeamComponent memberTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
+        member.setData(ModAttachments.TEAM_COMPONENT.get(), memberTeam);
 
         // Clear any stale contributions from a previous team so slots start empty
         SharedAbilitiesComponent memberShared = member.getData(ModAttachments.SHARED_ABILITIES_COMPONENT.get());
         member.setData(ModAttachments.SHARED_ABILITIES_COMPONENT.get(),
                 memberShared.removeContributions(leader.getStringUUID()));
 
+        CohortUtil.syncToTeam(leader);
         syncToTeam(leader);
         return true;
     }
@@ -70,11 +71,11 @@ public class TeamUtils {
      * Also clears the member's shared ability contributions for this team.
      */
     public static void removeMember(ServerPlayer leader, ServerPlayer member) {
-        TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
+        TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get()).withLeader(leader.getStringUUID());
         leader.setData(ModAttachments.TEAM_COMPONENT.get(), leaderTeam.removeMember(member.getStringUUID()));
 
         TeamComponent memberTeam = member.getData(ModAttachments.TEAM_COMPONENT.get());
-        member.setData(ModAttachments.TEAM_COMPONENT.get(), memberTeam.clearLeader());
+        member.setData(ModAttachments.TEAM_COMPONENT.get(), memberTeam.clearAll());
 
         SharedAbilitiesComponent memberShared = member.getData(ModAttachments.SHARED_ABILITIES_COMPONENT.get());
         member.setData(ModAttachments.SHARED_ABILITIES_COMPONENT.get(),
@@ -83,9 +84,10 @@ public class TeamUtils {
         // Tell the removed member to clear their team data immediately
         PacketHandler.sendToPlayer(member, new SyncSharedAbilitiesDataPacket(
                 "", new java.util.ArrayList<>(), new java.util.ArrayList<>(), new java.util.HashMap<>(), 0, 0));
-
+        CohortUtil.syncToTeam(leader);
         syncToTeam(leader);
     }
+
 
     /**
      * Disbands the entire team of the given leader, clearing all member data.
@@ -116,7 +118,7 @@ public class TeamUtils {
      * Syncs the full shared abilities data to all online team members and the leader.
      */
     public static void syncToTeam(ServerPlayer leader) {
-        TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get());
+        TeamComponent leaderTeam = leader.getData(ModAttachments.TEAM_COMPONENT.get()).withLeader(leader.getStringUUID());
         int sequence = BeyonderData.getSequence(leader);
         int maxSize = getMaxTeamSize(sequence);
         int slots = getSlotsPerMember(sequence);

@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.projectiles.SpearOfLightProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.VectorUtil;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,7 +27,7 @@ public class SpearOfLightAbility extends Ability {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(6000f, 3000f, 2000f));
 
-        baseDamage = 30f;
+        baseDamage = 32f;
     }
 
     @Override

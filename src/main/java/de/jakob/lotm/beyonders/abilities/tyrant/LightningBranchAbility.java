@@ -2,7 +2,6 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningBranchEntity;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;

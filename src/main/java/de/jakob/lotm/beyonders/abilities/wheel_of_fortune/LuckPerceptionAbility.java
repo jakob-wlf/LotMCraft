@@ -1,19 +1,29 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.network.packets.toClient.LuckPerceptionPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LuckPerceptionAbility extends ToggleAbility {
+
+    private static final double SCAN_RADIUS = 24;
+    private static final int MAX_ENTRIES = 48;
+
     public LuckPerceptionAbility(String id){
         super(id);
 
@@ -27,45 +37,41 @@ public class LuckPerceptionAbility extends ToggleAbility {
 
         if (entity.tickCount % 10 != 0) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.5f, true);
-        if(target == null){
-            LuckComponent luck = entity.getData(ModAttachments.LUCK_COMPONENT.get());
-            String name = entity.hasCustomName()
-                    ? entity.getCustomName().getString()
-                    : entity.getType().getDescription().getString();
-
-            AbilityUtil.sendActionBar(entity, Component.literal(
-                    "§d" + name + " §7| Luck: " + luck.getLuck()));
-            return;
-        }
-
         int seq = AbilityUtil.getSeqWithArt(entity, this);
+
+        syncToClient(level, entity, seq);
+    }
+
+    private boolean canPerceive(int seq, LivingEntity target) {
         int targetSeq = BeyonderData.getSequence(target);
         String path = BeyonderData.getPathway(target);
 
-        if(VisionaryHandler.shouldStayInvisible(seq, target)){
-            AbilityUtil.sendActionBar(entity, Component.literal(""));
-            return;
-        }
+        if (VisionaryHandler.shouldStayInvisible(seq, target)) return false;
+        if ("wheel_of_fortune".equals(path) && targetSeq < seq) return false;
+        return !AbilityUtil.isTargetSignificantlyStronger(seq, targetSeq);
+    }
 
-        if(path.equals("wheel_of_fortune") && targetSeq < seq){
-            AbilityUtil.sendActionBar(entity, Component.literal(""));
-            return;
-        }
+    private void syncToClient(Level level, LivingEntity entity, int seq) {
+        if (!(entity instanceof ServerPlayer player)) return;
 
-        if(AbilityUtil.isTargetSignificantlyStronger(seq, targetSeq)){
-            AbilityUtil.sendActionBar(entity, Component.literal(""));
-            return;
-        }
+        double selfLuck = entity.getData(ModAttachments.LUCK_COMPONENT.get()).getLuck();
 
-        LuckComponent luck = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        String name = target.hasCustomName()
-                ? target.getCustomName().getString()
-                : target.getType().getDescription().getString();
+        List<LuckPerceptionPacket.Entry> entries = level.getEntitiesOfClass(
+                        LivingEntity.class,
+                        entity.getBoundingBox().inflate(SCAN_RADIUS),
+                        e -> e != entity
+                                && e.isAlive()
+                                && !(e instanceof ArmorStand)
+                                && e.distanceToSqr(entity) <= SCAN_RADIUS * SCAN_RADIUS
+                                && canPerceive(seq, e))
+                .stream()
+                .sorted(Comparator.comparingDouble(e -> e.distanceToSqr(entity)))
+                .limit(MAX_ENTRIES)
+                .map(e -> new LuckPerceptionPacket.Entry(
+                        e.getId(), e.getData(ModAttachments.LUCK_COMPONENT.get()).getLuck()))
+                .toList();
 
-        AbilityUtil.sendActionBar(entity, Component.literal(
-                "§d" + name + " §7| Luck: " + luck.getLuck()
-        ));
+        PacketDistributor.sendToPlayer(player, new LuckPerceptionPacket(true, selfLuck, entries));
     }
 
     @Override
@@ -75,11 +81,14 @@ public class LuckPerceptionAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         clearArtifactScaling(entity);
         AbilityUtil.sendActionBar(entity, Component.literal(""));
+        if (!level.isClientSide && entity instanceof ServerPlayer player) {
+            PacketDistributor.sendToPlayer(player, LuckPerceptionPacket.inactive());
+        }
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("wheel_of_fortune", 5));
+        return new HashMap<>(Map.of("wheel_of_fortune", 8));
     }
 
     @Override

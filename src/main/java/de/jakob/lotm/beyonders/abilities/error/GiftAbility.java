@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.error;
 
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.error.handler.TheftHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
@@ -163,9 +163,8 @@ public class GiftAbility extends SelectableAbility {
         EffectManager.playEffect(EffectIds.GIFTING_PARTICLES, target.getX(), target.getY() + target.getBbHeight() / 2, target.getZ(), player, entity);
 
         var targetLuck = target.getData(ModAttachments.LUCK_COMPONENT.get());
-
-        targetLuck.setLuck(targetLuck.getLuck() + luck.getLuck());
-        luck.setLuck(0);
+        AbilityUtil.setTargetLuck(entity, target,targetLuck.getLuck() + luck.getLuck());
+        AbilityUtil.setTargetLuck(entity, entity, 0);
     }
 
     private void giftDigestion(Level level, LivingEntity entity){
@@ -364,7 +363,7 @@ public class GiftAbility extends SelectableAbility {
             for(int i = 0; i < offHandItem.getCount(); i++) {
                 FallingBlockEntity anvil = FallingBlockEntity.fall(level, BlockPos.containing(target.getX(), target.getY() + 10 + i, target.getZ()), Blocks.ANVIL.defaultBlockState());
                 anvil.disableDrop();
-                anvil.setHurtsEntities(6, 50);
+                anvil.setHurtsEntities(3, 20);
             }
         }
         else if(offHandItem.is(Items.ENDER_PEARL)) {

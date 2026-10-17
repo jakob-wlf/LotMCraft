@@ -98,7 +98,7 @@ public class MercuryArmoryAbility extends SelectableAbility {
             AbilityUtil.sendActionBar(caster, Component.translatable("ability.lotmcraft.mercury_armory.not_liquefied").withColor(0xFFC8CCD9));
             return;
         }
-        LivingEntity target = AbilityUtil.getTargetEntity(caster, RANGE, 1.5f, true, true, true);
+        LivingEntity target = AbilityUtil.getTargetEntity(caster, RANGE, 1.5f, true, true, true, false);
         if (target == null) {
             AbilityUtil.sendActionBar(caster, Component.translatable("ability.lotmcraft.mercury_armory.no_target").withColor(0xFFC8CCD9));
             return;

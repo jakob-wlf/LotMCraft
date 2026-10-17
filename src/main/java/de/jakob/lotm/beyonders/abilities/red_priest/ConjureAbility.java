@@ -8,6 +8,7 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.network.packets.toServer.WhipSlashPayload;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameParticle;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.ChatFormatting;
@@ -15,9 +16,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
@@ -45,6 +48,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -241,7 +245,7 @@ public class ConjureAbility extends SelectableAbility {
                             target.getY() + target.getBbHeight() * 0.5,
                             target.getZ()
                     );
-                    makeFireSlash(serverLevel, start, end);
+                    makeFireSlash(serverLevel, start, end, (ServerPlayer) player);
                 }
             }
             ExplosionDamageCalculator zeroDamageCalc = new ExplosionDamageCalculator() {
@@ -333,11 +337,12 @@ public class ConjureAbility extends SelectableAbility {
         return false;
     }
 
-    public static void makeFireSlash(ServerLevel level, Vec3 start, Vec3 end) {
+    public static void makeFireSlash(ServerLevel level, Vec3 start, Vec3 end, @Nullable ServerPlayer player) {
         Vec3 axis = end.subtract(start);
         double dist = Math.max(axis.length(), 0.1);
         Vec3 dir = axis.normalize();
-
+        SimpleParticleType big = PriestFlameParticle.byId(BeyonderData.getSequence(player)).getType();
+        SimpleParticleType small = PriestFlameParticle.byId(BeyonderData.getSequence(player)).getSubType();
         Vec3 ref = Math.abs(dir.y) > 0.99 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
         Vec3 perp1 = dir.cross(ref).normalize();
         Vec3 perp2 = perp1.cross(dir).normalize();
@@ -360,10 +365,10 @@ public class ConjureAbility extends SelectableAbility {
 
             double body = Math.sin(Math.PI * Math.pow(t, 0.85));
 
-            level.sendParticles(ParticleTypes.FLAME, p.x, p.y, p.z, 1, 0, 0, 0, 0.0);
+            level.sendParticles(big, p.x, p.y, p.z, 1, 0, 0, 0, 0.0);
 
             if (body > 0.35 && i % 2 == 0) {
-                level.sendParticles(ParticleTypes.SMALL_FLAME, p.x, p.y, p.z, 1, 0, 0, 0, 0.0);
+                level.sendParticles(small, p.x, p.y, p.z, 1, 0, 0, 0, 0.0);
             }
             if (level.random.nextFloat() < 0.15F) {
                 level.sendParticles(ParticleTypes.LAVA, p.x, p.y, p.z, 1, 0, 0, 0, 0.0);
@@ -374,7 +379,7 @@ public class ConjureAbility extends SelectableAbility {
             }
         }
 
-        level.sendParticles(ParticleTypes.FLAME, end.x, end.y, end.z, 4, 0.12, 0.12, 0.12, 0.02);
+        level.sendParticles(big, end.x, end.y, end.z, 4, 0.12, 0.12, 0.12, 0.02);
         level.sendParticles(ParticleTypes.LAVA, end.x, end.y, end.z, 3, 0.15, 0.15, 0.15, 0.0);
         level.sendParticles(ParticleTypes.SOUL_FIRE_FLAME, end.x, end.y, end.z, 2, 0.10, 0.10, 0.10, 0.0);
     }

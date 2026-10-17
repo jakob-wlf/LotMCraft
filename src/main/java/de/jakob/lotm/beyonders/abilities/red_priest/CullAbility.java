@@ -26,6 +26,8 @@ public class CullAbility extends ToggleAbility {
     public CullAbility(String id) {
         super(id);
 
+        canBeShared = false;
+
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(90f, 40f, 30f, 25f, 20f, 12.5f));
     }
@@ -44,7 +46,7 @@ public class CullAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-        BeyonderData.addModifier(entity, "cull", 1.1);
+        BeyonderData.addModifier(entity, "cull", 1.25);
         if(entity instanceof ServerPlayer player)
             PacketHandler.sendToPlayer(player, new SyncCullAbilityPacket(true));
 
@@ -55,16 +57,14 @@ public class CullAbility extends ToggleAbility {
     public void tick(Level level, LivingEntity entity) {
         if(level.isClientSide)
             return;
-
+        if(!(entity instanceof ServerPlayer player)) return;
         List<LivingEntity> nearbyEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 30)
                 .stream()
-                .filter(nearbyEntity -> {
-                    return !VisionaryHandler.shouldStayInvisible(AbilityUtil.getSeqWithArt(entity, this), nearbyEntity);
-                })
+                .filter(nearbyEntity -> !VisionaryHandler.shouldStayInvisible(AbilityUtil.getSeqWithArt(entity, this), nearbyEntity))
                 .toList();
 
         for (LivingEntity nearbyEntity : nearbyEntities) {
-            setGlowingForPlayer(nearbyEntity, (ServerPlayer) entity, true);
+            setGlowingForPlayer(nearbyEntity, player, true);
         }
 
         glowingEntities.putIfAbsent(entity.getUUID(), new HashSet<>(Set.of()));

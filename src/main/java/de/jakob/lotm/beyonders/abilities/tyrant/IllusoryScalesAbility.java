@@ -1,6 +1,5 @@
 package de.jakob.lotm.beyonders.abilities.tyrant;
 
-import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -8,8 +7,8 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,6 +55,10 @@ public class IllusoryScalesAbility extends ToggleAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
+        if(level.isClientSide)
+            return;
+
+        ParticleUtil.spawnParticles((ServerLevel) level, blueDust, entity.position().add(0, entity.getEyeHeight() / 2, 0), 5, .4, entity.getEyeHeight() / 2, .4, 0);
     }
 
     @Override

@@ -4,9 +4,6 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -16,15 +13,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
@@ -40,6 +33,9 @@ public class ManipulationAbility extends SelectableAbility {
     public ManipulationAbility(String id) {
         super(id, 5);
         canBeUsedByNPC = false;
+        canBeCopied = false;
+        canBeReplicated = false;
+        cannotBeStolen = true;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 3, 5));
@@ -71,8 +67,8 @@ public class ManipulationAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -207,7 +203,16 @@ public class ManipulationAbility extends SelectableAbility {
         }
         if (!(level instanceof ServerLevel serverLevel)) return;
 
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true,
+                    false, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 2, true);
+        }
+
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
@@ -306,35 +311,5 @@ public class ManipulationAbility extends SelectableAbility {
             Ability chosen = abilities.get(random.nextInt(abilities.size()));
             chosen.useAbility(level, player);
         }, level);
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
-        if (target == null) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20, false, true)
-                .stream()
-                .anyMatch(e -> !e.getUUID().equals(entity.getUUID()) && !e.getUUID().equals(target.getUUID()));
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        return 0;
     }
 }

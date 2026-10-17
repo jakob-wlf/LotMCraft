@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.Holder;
@@ -19,6 +20,7 @@ import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 
+import java.util.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +35,8 @@ public class DamageResistanceHandler {
     private static Map<UUID, Holder<DamageType>> damageMap = new ConcurrentHashMap<>(300);
 
     @SubscribeEvent
-   public static void onDamage(LivingIncomingDamageEvent event) {
-        if(!(event.getEntity().level() instanceof ServerLevel level)) return;
+    public static void onDamage(LivingIncomingDamageEvent event) {
+        if (!(event.getEntity().level() instanceof ServerLevel level)) return;
 
         var entity = event.getEntity();
         var source = event.getSource();
@@ -42,17 +44,17 @@ public class DamageResistanceHandler {
 
         var sourceEntity = source.getEntity();
 
-        if(sourceEntity != null && (sourceEntity instanceof LivingEntity livingSource
-                && BeyonderData.isBeyonder(livingSource))){
+        if (sourceEntity != null && (sourceEntity instanceof LivingEntity livingSource
+                && BeyonderData.isBeyonder(livingSource))) {
 
             float mult = 1f;
+            int sourceSeq = AuthorityResistanceManager.getFromBuffer(livingSource);
 
-            if(BeyonderData.isBeyonder(entity) || entity instanceof ServerPlayer) {
-
-                float baseStep;
+            if (BeyonderData.isBeyonder(entity) || entity instanceof ServerPlayer) {
 
                 int entitySeq = BeyonderData.getSequence(entity);
-                int sourceSeq = BeyonderData.getSequence(livingSource);
+
+                float baseStep;
 
                 if (entitySeq >= 5 && sourceSeq >= 5)
                     baseStep = 0.1f;
@@ -74,9 +76,8 @@ public class DamageResistanceHandler {
                 if (mult <= 0.0f) {
                     mult = 0f;
                 }
-            }
-            else{
-                if(BeyonderData.getSequence(livingSource) <= 4){
+            } else {
+                if (sourceSeq <= 4) {
                     mult = 10f;
                 }
             }
@@ -84,17 +85,22 @@ public class DamageResistanceHandler {
             damage *= mult;
         }
 
-        if(BeyonderData.isBeyonder(entity)) {
+        if (BeyonderData.isBeyonder(entity)) {
 
             int seq = BeyonderData.getSequence(entity);
 
             float mult = 1.0f;
-            switch (seq){
+            switch (seq) {
                 case 4 -> mult = 0.75f;
-                case 0,1,2,3 -> mult = 0.5f;
+                case 3 -> mult = 0.5f;
+                case 0, 1, 2 -> mult = 0f;
             }
 
-            if(!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE/2)){
+            if(mult == 0f && !entity.level().getGameRules().getBoolean(ModGameRules.ANGEL_DAMAGE_IMMUNITY)) {
+                mult = 0.4f;
+            }
+
+            if (!ModDamageTypes.isModDamage(source) && !(damage >= Float.MAX_VALUE / 2) && (!(sourceEntity instanceof LivingEntity livingSource) || !BeyonderData.isBeyonder(livingSource) || BeyonderData.getSequence(livingSource) > seq)) {
                 damage *= mult;
             }
 
@@ -110,9 +116,9 @@ public class DamageResistanceHandler {
 
         var storedDamageType = damageMap.get(entity.getUUID());
 
-        if(storedDamageType != null) {
+        if (storedDamageType != null) {
             if (ModDamageTypes.isModDamage(source)
-            && ModDamageTypes.isModDamage(storedDamageType)
+                    && ModDamageTypes.isModDamage(storedDamageType)
                     && !storedDamageType.is(Objects.requireNonNull(source.typeHolder().getKey()))) {
                 entity.invulnerableTime = 0;
                 entity.hurtTime = 0;
@@ -145,6 +151,7 @@ public class DamageResistanceHandler {
         List<Float> error = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
         List<Float> door = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
         List<Float> demoness = new LinkedList<>(List.of(3.5f, 2.5f, 2.5f,  2f, 1.5f, 1f, 0.9f, 0.8f, 0.75f, 0.25f));
+        List<Float> darkness = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.6f, 0.5f, 0.25f));
 
 
         physicalDamage.put("tyrant", tyrant);
@@ -157,6 +164,7 @@ public class DamageResistanceHandler {
         physicalDamage.put("error", error);
         physicalDamage.put("door", door);
         physicalDamage.put("demoness", demoness);
+        physicalDamage.put("darkness", darkness);
     }
 
     @SubscribeEvent

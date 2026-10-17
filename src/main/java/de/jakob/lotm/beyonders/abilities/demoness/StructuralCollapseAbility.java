@@ -4,9 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -52,10 +50,11 @@ public class StructuralCollapseAbility extends Ability {
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 3);
 
-        boolean griefing = BeyonderData.isGriefingEnabled(entity);
-        if(griefing) {
-            collapseArea(serverLevel, targetLoc);
-        }
+        // Collapse the area
+//        boolean griefing = BeyonderData.isGriefingEnabled(entity);
+//        if(griefing) {
+//            collapseArea(serverLevel, targetLoc);
+//        }
 
         // Damage entities
         AbilityUtil.damageNearbyEntities(serverLevel, entity, 35,

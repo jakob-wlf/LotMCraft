@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.KillCountComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.entity.ModEntities;
@@ -72,8 +72,8 @@ public class SacrificeAbility extends Ability {
 
         if (ControllingUtils.isControlling(player)) {
             player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
-                    net.minecraft.network.chat.Component.literal("Sacrifice cannot be used while controlling a puppet")
-                            .withStyle(net.minecraft.ChatFormatting.RED)
+                    Component.literal("Sacrifice cannot be used while controlling a puppet")
+                            .withStyle(ChatFormatting.RED)
             ));
             return;
         }
@@ -86,8 +86,8 @@ public class SacrificeAbility extends Ability {
 
         if (kills < KILLS_PER_SECOND) {
             player.connection.send(new net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket(
-                    net.minecraft.network.chat.Component.literal("Not enough kill count to use Sacrifice (need at least " + KILLS_PER_SECOND + " kills)")
-                            .withStyle(net.minecraft.ChatFormatting.RED)
+                    Component.literal("Not enough kill count to use Sacrifice (need at least " + KILLS_PER_SECOND + " kills)")
+                            .withStyle(ChatFormatting.RED)
             ));
             return;
         }

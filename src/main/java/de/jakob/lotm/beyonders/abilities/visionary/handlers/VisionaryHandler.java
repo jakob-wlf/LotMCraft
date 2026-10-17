@@ -27,7 +27,8 @@ public class VisionaryHandler {
         MIND_WORLD_SEAL = value;
     }
 
-    public static boolean shouldBeAffectedWithMindWorldSeal(int seq){
+    public static boolean shouldBeAffectedWithMindWorldSeal(int seq, String path){
+        seq = seq + (path.equals("visionary") ? 0 : 2);
         return isMindWorldSealed() && seq >= 1;
     }
 
@@ -46,9 +47,12 @@ public class VisionaryHandler {
         if(caster.equals(target)) return;
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return;
@@ -75,9 +79,12 @@ public class VisionaryHandler {
         if(caster.equals(target)) return false;
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return false;
@@ -121,9 +128,12 @@ public class VisionaryHandler {
         String pathTarget = BeyonderData.getPathway(target);
 
         if(target instanceof ServerPlayer targetPlayer) {
-            var data = BeyonderData.playerMap.get(targetPlayer.getUUID()).get();
-            seqTarget = data.sequence();
-            pathTarget = data.pathway();
+            var data = BeyonderData.playerMap.get(targetPlayer.getUUID());
+
+            if(data.isPresent()) {
+                seqTarget = data.get().sequence();
+                pathTarget = data.get().pathway();
+            }
         }
 
         if(!pathTarget.equals("visionary")) return false;
@@ -137,21 +147,29 @@ public class VisionaryHandler {
 
 
     public static boolean isInvisible(LivingEntity target){
-        if(target.level() instanceof ServerLevel)
-            return PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(target.getUUID())
-                    || RealityLoopholeAbility.phasedOutClient.contains(target.getUUID());
+        if(!target.level().isClientSide)
+            return PsychologicalInvisibilityAbility.invisiblePlayers.containsKey(target.getUUID());
 
-        return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID())
-                || RealityLoopholeAbility.phasedOutClient.contains(target.getUUID());
+        return PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID());
     }
 
     public static boolean shouldStayInvisible(int seq, LivingEntity target){
-        if(RealityLoopholeAbility.phasedOutClient.contains(target.getUUID())){
-            return true;
+        if(isInvisible(target)){
+            if(target.level().isClientSide)
+                return (seq+1) > PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            else
+                return (seq+1) > PsychologicalInvisibilityAbility.invisiblePlayers.get(target.getUUID());
         }
 
-        if(PsychologicalInvisibilityAbility.invisiblePlayersClient.containsKey(target.getUUID())){
-            return seq >= PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+        return false;
+    }
+
+    public static boolean shouldStayInvisibleVisOnly(int seq, LivingEntity target){
+        if(isInvisible(target)){
+            if(target.level().isClientSide)
+                return seq > PsychologicalInvisibilityAbility.invisiblePlayersClient.get(target.getUUID());
+            else
+                return seq > PsychologicalInvisibilityAbility.invisiblePlayers.get(target.getUUID());
         }
 
         return false;

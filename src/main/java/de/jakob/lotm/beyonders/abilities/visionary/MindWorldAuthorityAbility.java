@@ -2,9 +2,9 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import com.jcraft.jorbis.Block;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
@@ -207,7 +207,7 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
 
         var component = entity.getData(ModAttachments.ENVISION_SPLIT.get());
 
-        var target = AbilityUtil.getTargetEntity(entity, 30, 1f, true);
+        var target = AbilityUtil.getTargetEntity(entity, 30, 1f, true, true);
         if(target == null){
             StringBuilder resultBuilder = new StringBuilder("List of granted players:");
             for(var obj : component.names){
@@ -394,20 +394,14 @@ public class MindWorldAuthorityAbility extends SelectableAbility {
             var component = player.getData(ModAttachments.ENVISION_SPLIT.get());
             if(component.isEnvisioned()) return;
 
-            LOTMCraft.LOGGER.info("in event");
-
             if(!component.avatars.isEmpty()) {
                 var id = component.avatars.removeFirst();
                 var target = serverLevel.getEntity(id);
-
-                LOTMCraft.LOGGER.info("in event, id:{}", id);
 
                 while (target == null && !component.avatars.isEmpty()) {
                     id = component.avatars.removeFirst();
                     target = serverLevel.getEntity(id);
                 }
-
-                LOTMCraft.LOGGER.info("after loop");
 
                 if (target == null && component.avatars.isEmpty()) return;
 

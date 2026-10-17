@@ -243,10 +243,11 @@ public class BeyonderDataTickHandler {
             }
         }
 
+        if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
+            entity.kill();
+        }
+
         if(BeyonderData.isBeyonder(livingEntity)) {
-            if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
-                entity.kill();
-            }
 
             if(entity.tickCount % 20 == 0){
                 entity.getData(ModAttachments.REGEN_DISABLER.get()).incrementCount();
@@ -342,8 +343,8 @@ public class BeyonderDataTickHandler {
 
         if (BeyonderData.isBeyonder(player)) {
             // Regenerate Spirituality
-            float amount = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player),
-                    BeyonderData.getSequence(player), player) * 0.0006f;
+            float amount = BeyonderData.getMaxSpirituality(BeyonderData.getPathway(player, true),
+                    BeyonderData.getSequence(player, false, true), player) * 0.0006f;
 
             var disabler = player.getData(ModAttachments.REGEN_DISABLER.get());
             if(disabler.isDisabled())

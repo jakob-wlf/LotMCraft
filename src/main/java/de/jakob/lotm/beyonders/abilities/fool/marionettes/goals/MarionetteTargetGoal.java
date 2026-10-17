@@ -1,10 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.fool.marionettes.goals;
 
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.MarionetteComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
 
@@ -18,7 +17,7 @@ public class MarionetteTargetGoal extends TargetGoal {
     public MarionetteTargetGoal(Mob marionette) {
         super(marionette, false);
         this.marionette = marionette;
-        this.setFlags(EnumSet.of(Goal.Flag.TARGET));
+        this.setFlags(EnumSet.of(Flag.TARGET));
     }
 
     @Override

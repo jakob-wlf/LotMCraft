@@ -59,10 +59,11 @@ public class LoopHoleCreationAbility extends Ability {
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
-        if(!(level instanceof ServerLevel serverLevel)) {
+        if (!(level instanceof ServerLevel serverLevel)) {
             return;
         }
-        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this))) return;
+        if (ProhibitionHandler.IsInTheftZone(entity.position(), (ServerLevel) level, AbilityUtil.getSeqWithArt(entity, this)))
+            return;
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
         UUID loopholeId = UUID.randomUUID();
 
@@ -75,13 +76,13 @@ public class LoopHoleCreationAbility extends Ability {
                 loopholeId,
                 entity.getUUID(),
                 targetLoc,
-                3.0*multiplier(entity), // radius
+                3.0 * multiplier(entity), // radius
                 serverLevel,
-                System.currentTimeMillis() + (20 * 14 * 50) // 14 seconds in milliseconds
+                System.currentTimeMillis() + (20 * 7 * 50) // 7 seconds in milliseconds
         );
         activeLoopholes.put(loopholeId, loopholeData);
 
-        ServerScheduler.scheduleForDuration(0, 2,(20 * 7), () -> {
+        ServerScheduler.scheduleForDuration(0, 2, (20 * 7), () -> {
             // Update entities in loophole
             updateEntitiesInLoophole(loopholeData);
 
@@ -96,8 +97,8 @@ public class LoopHoleCreationAbility extends Ability {
 
         ServerScheduler.scheduleForDuration(0, 45, (20 * 7), () -> {
             AbilityUtil.getNearbyEntities(entity, serverLevel, targetLoc, 3).forEach(e -> {
-                    if(BeyonderData.isBeyonder(e))
-                        TheftHandler.performAbilityTheft(serverLevel, entity, e, random, true, this);
+                if (BeyonderData.isBeyonder(e))
+                    TheftHandler.performAbilityTheft(serverLevel, entity, e, random, true, this);
             });
         });
 
@@ -137,6 +138,47 @@ public class LoopHoleCreationAbility extends Ability {
                 entityToLoophole.put(entityId, loopholeData.id);
             }
         }
+
+        var ownerEntity = loopholeData.level.getEntity(loopholeData.creatorId);
+//        if (ownerEntity instanceof ServerPlayer owner) {
+//            if (!BeyonderData.getPathway(owner).equals("error") || BeyonderData.getSequence(owner) != 2) return;
+//            var set = Seq1.map.get(ownerEntity.getUUID());
+//            var factions = BeyonderData.factionStorage.getPartOfFaction(owner.getName().getString());
+//
+//            FactionCore nation = null;
+//            FactionCore church = null;
+//
+//            switch (factions.size()) {
+//                case 1 -> {
+//                    nation = factions.getFirst();
+//                }
+//                case 2 -> {
+//                    nation = factions.getFirst();
+//                    church = factions.getLast();
+//                }
+//            }
+//
+//            boolean allGood = true;
+//            for (var entity : entitiesInRange) {
+//                if (entity instanceof ServerPlayer player) {
+//                    if(BeyonderData.getSequence(player) > 7) continue;
+//
+//                    if (nation != null && nation.isPartOfFaction(player.getName().getString()))
+//                        allGood = false;
+//                    else if(church != null && church.isPartOfFaction(player.getName().getString()))
+//                        allGood = false;
+//
+//                    if(allGood){
+//                        allGood = !AllyUtil.areAllies(player, owner);
+//                    }
+//
+//                    if(allGood)
+//                        set.add(player.getUUID());
+//                }
+//            }
+//
+//            Seq1.map.put(owner.getUUID(), set);
+//        }
     }
 
     private static void removeLoophole(UUID loopholeId) {
@@ -240,7 +282,7 @@ public class LoopHoleCreationAbility extends Ability {
     }
 
     private void stealAbilities(LivingEntity entity, LivingEntity target) {
-        if(!BeyonderData.isBeyonder(target)) {
+        if (!BeyonderData.isBeyonder(target)) {
             return;
         }
 

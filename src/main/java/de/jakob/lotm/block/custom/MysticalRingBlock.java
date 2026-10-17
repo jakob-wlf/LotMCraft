@@ -60,7 +60,6 @@ public class MysticalRingBlock extends Block implements EntityBlock {
         BLOCK_TO_PATHWAY.put(Blocks.LAPIS_BLOCK, "moon");
         BLOCK_TO_PATHWAY.put(Blocks.OBSIDIAN, "abyss");
         BLOCK_TO_PATHWAY.put(Blocks.NETHER_BRICKS, "chained");
-        BLOCK_TO_PATHWAY.put(Blocks.REDSTONE_BLOCK, "black_emperor");
         BLOCK_TO_PATHWAY.put(Blocks.DIAMOND_BLOCK, "justiciar");
     }
 

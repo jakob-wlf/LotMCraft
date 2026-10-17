@@ -2,14 +2,13 @@ package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -17,7 +16,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import org.joml.Vector3f;
@@ -91,22 +89,5 @@ public class PsycheStormAbility extends Ability {
 
         serverLevel.playSound(null, BlockPos.containing(loc.getPosition()), SoundEvents.BREEZE_DEATH, SoundSource.BLOCKS);
 
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        float multiplier = multiplier(entity);
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10 * Math.max(multiplier / 2, 1))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
     }
 }

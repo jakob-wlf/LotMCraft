@@ -1,8 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -58,28 +56,12 @@ public class MisfortuneFieldAbility extends Ability {
 
                 if (!(BeyonderData.getPathway(e).equals("monster") && BeyonderData.getSequence(e) < entitySeq)) {
                     if (!(BeyonderData.getPathway(e).equals("darkness") && BeyonderData.getSequence(e) + 1 < entitySeq)) {
-                        LuckComponent luckComponent = e.getData(ModAttachments.LUCK_COMPONENT.get());
-                        luckComponent.addLuckWithMin(-amplifier, -amplifier * 3);
+                        AbilityUtil.addTargetLuckWithMin(entity, e, -amplifier, -amplifier * 3);
                     }
                 }
 
             });
         });
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20 * multiplier(entity))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
     }
 
     private static int getUnluck(int seq) {

@@ -1,0 +1,6 @@
+{
+  "type": "lotmcraft:spirit_shrine",
+  "biomes": "lotmcraft:spirit_world_patch",
+  "spawn_overrides": {},
+  "step": "surface_structures"
+}

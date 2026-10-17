@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.red_priest;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.entity.custom.projectiles.FireballEntity;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.VectorUtil;
@@ -58,7 +59,9 @@ public class CompressionAbility extends SelectableAbility {
     @Override
     public void onHold(Level level, LivingEntity entity) {
         if(!(entity instanceof ServerPlayer player)) return;
-        if(BeyonderData.getSequence(entity) <= 2 && CHARGES==0) CHARGES=3;
+        if(BeyonderData.getSequence(entity) <= 2 && CHARGES<3) CHARGES=3;
+        else if(BeyonderData.getSequence(entity) <= 4 && CHARGES<2) CHARGES=2;
+        else if(BeyonderData.getSequence(entity) <= 6 && CHARGES<1) CHARGES=1;
         player.displayClientMessage(Component.translatable("lotm.charges").append(": " + CHARGES).withStyle(ChatFormatting.DARK_RED), true);
     }
 
@@ -90,11 +93,8 @@ public class CompressionAbility extends SelectableAbility {
         int Seq = BeyonderData.getSequence(entity);
         MAX = (Seq < 1) ? LIMITS[3] : (Seq < 3) ? LIMITS[2] : (Seq < 5) ? LIMITS[1] : LIMITS[0];
         if( CHARGES == 0 ) {
-            if (BeyonderData.getSequence(entity) <= 5) CHARGES+=1;
-            else {
-                entity.sendSystemMessage(Component.literal("You have no charges").withStyle(ChatFormatting.RED));
-                return;
-            }
+            entity.sendSystemMessage(Component.literal("You have no charges").withStyle(ChatFormatting.RED));
+            return;
         }
 
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
@@ -104,13 +104,16 @@ public class CompressionAbility extends SelectableAbility {
         if(!ArrayUtils.contains(LIMITS, CHARGES)) {
             FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(7, 0.8) * multiplier(entity), BeyonderData.isGriefingEnabled(entity));
             fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+            fireball.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
             fireball.shoot(direction.x, direction.y, direction.z, 1.85f*multiplier(entity), 0);
             level.addFreshEntity(fireball);
             CHARGES--;
         } else {
-            int Scale = ArrayUtils.indexOf(LIMITS, CHARGES)+1;
+            int Scale = ArrayUtils.indexOf(LIMITS, CHARGES) + 1;
             FireballEntity fireball = new FireballEntity(level, entity, DamageLookup.lookupDamage(7, Scale*3.2) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), Scale*5.5f);
             fireball.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
+            fireball.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
+
             fireball.shoot(direction.x, direction.y, direction.z, 2.35f * multiplier(entity), 0);
             level.addFreshEntity(fireball);
 //            if (CHARGES == MAX) {

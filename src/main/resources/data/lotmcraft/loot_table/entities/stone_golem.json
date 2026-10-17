@@ -1,0 +1,392 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:celestine",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:citrine",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:candle_devourer_core",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_giant_core",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_elf_core",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:war_comet_core",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:heart_of_a_magma_titan",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:solidified_magma",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_pyroxene_powder",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:pure_white_brilliant_rock",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:land_rhinoceros_core_horn_crystal",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:giant_king_court_priest_postmortem_crystal",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:six_winged_gargoyle_core_crystal",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:six_winged_gargoyle_eyes",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_treant_true_root",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:true_root_of_mist_treant",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_gland",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:rainbow_salamander_pituitary_gland",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_rock",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_pact_tree_fruit",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:tree_of_elder_crystalized_roots",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystallized_roots",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:strange_faced_cannabis_crystal",
+          "weight": 28
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:celestine",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:citrine",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:candle_devourer_core",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_giant_core",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_elf_core",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:war_comet_core",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:heart_of_a_magma_titan",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:solidified_magma",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_pyroxene_powder",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:pure_white_brilliant_rock",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:land_rhinoceros_core_horn_crystal",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:giant_king_court_priest_postmortem_crystal",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:six_winged_gargoyle_core_crystal",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:six_winged_gargoyle_eyes",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_treant_true_root",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:true_root_of_mist_treant",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_gland",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:rainbow_salamander_pituitary_gland",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_rock",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_pact_tree_fruit",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:tree_of_elder_crystalized_roots",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystallized_roots",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:strange_faced_cannabis_crystal",
+          "weight": 28
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.5
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:celestine",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:citrine",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:candle_devourer_core",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_giant_core",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_elf_core",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:war_comet_core",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:heart_of_a_magma_titan",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:solidified_magma",
+          "weight": 10
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_pyroxene_powder",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:pure_white_brilliant_rock",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:land_rhinoceros_core_horn_crystal",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:giant_king_court_priest_postmortem_crystal",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:six_winged_gargoyle_core_crystal",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:six_winged_gargoyle_eyes",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mist_treant_true_root",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:true_root_of_mist_treant",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_blood",
+          "weight": 15
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_gland",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:rainbow_salamander_pituitary_gland",
+          "weight": 36
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_rock",
+          "weight": 45
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_pact_tree_fruit",
+          "weight": 28
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:tree_of_elder_crystalized_roots",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystallized_roots",
+          "weight": 21
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:strange_faced_cannabis_crystal",
+          "weight": 28
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.25
+        }
+      ]
+    }
+  ]
+}

@@ -3,8 +3,6 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.dimension.ModDimensions;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
@@ -12,7 +10,6 @@ import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.TemporaryChunkLoader;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -44,12 +41,13 @@ public class ConcealmentAbility extends SelectableAbility {
         autoClear = false;
         cannotBeStolen = true;
         canBeShared = false;
+        canBeUsedByNPC = false;
 
         hasDynamicCooldown = true;
         dynamicCooldown = new LinkedList<>(List.of(3, 4, 6));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(24000f, 12000f, 7500f));
+        dynamicSpirituality = new LinkedList<>(List.of(18000f, 10000f, 6500f));
     }
 
     @Override
@@ -94,7 +92,7 @@ public class ConcealmentAbility extends SelectableAbility {
 
         if(BeyonderData.getSpirituality(entity) <= BeyonderData.
                 getMaxSpirituality(BeyonderData.getPathway(entity),
-                        BeyonderData.getSequence(entity)) * 0.7f){
+                        BeyonderData.getSequence(entity)) * 0.4f){
             return;
         }
 
@@ -248,7 +246,7 @@ public class ConcealmentAbility extends SelectableAbility {
 
         if(BeyonderData.getSpirituality(entity) <= BeyonderData.
                 getMaxSpirituality(BeyonderData.getPathway(entity),
-                        BeyonderData.getSequence(entity)) * 0.7f){
+                        BeyonderData.getSequence(entity)) * 0.4f){
             return;
         }
 
@@ -256,6 +254,8 @@ public class ConcealmentAbility extends SelectableAbility {
 
         AtomicDouble radius = new AtomicDouble(2 * (int) (Math.max(multiplier(entity)/2,1)));
         Vec3 finalTargetLoc = entity.position();
+
+        boolean isDarkness0 = BeyonderData.getSequence(entity) == 0 && BeyonderData.getPathway(entity).equals("darkness");
 
         final HashSet<BlockPos> processedBlocks = new HashSet<>();
 
@@ -297,7 +297,7 @@ public class ConcealmentAbility extends SelectableAbility {
 
                 BlockPos safePos = findSafePosition(destinationLevel, targetEntity.getX(), targetEntity.blockPosition().getY(), targetEntity.getZ(), false);
 
-                TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
+                //TemporaryChunkLoader.forceChunksTemporarily(destinationLevel, safePos.getX(), safePos.getZ(), 10, 20 * 10);
 
                 targetEntity.teleportTo(destinationLevel,
                         safePos.getX() + 0.5,
@@ -319,6 +319,14 @@ public class ConcealmentAbility extends SelectableAbility {
                     if(!(targetEntity instanceof Player))
                         return;
                 }
+
+//                if(targetEntity instanceof ServerPlayer playerTarget){
+//                    if(BeyonderData.getPathway(playerTarget).equals("door") && BeyonderData.getSequence(playerTarget) == 1){
+//                        if(isDarkness0){
+//                            Seq0.affected.add(playerTarget.getUUID());
+//                        }
+//                    }
+//                }
 
                 int returnTime = AbilityUtil.isTargetSignificantlyWeaker(entitySeq, BeyonderData.getSequence(teleportedEntity)) ? 20 * 60 * 2 :
                         BeyonderData.getSequence(teleportedEntity) < entitySeq ? 20 * 5 : 20 * 25;
@@ -384,8 +392,7 @@ public class ConcealmentAbility extends SelectableAbility {
                 ServerScheduler.scheduleDelayed(duration, () -> ((Mob) targetEntity).setNoAi(false));
             }
             if(BeyonderData.isBeyonder(targetEntity)) {
-                DisabledAbilitiesComponent component = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                component.disableAbilityUsageForTime("concealed_thoughts", duration, targetEntity);
+                AbilityUtil.sealAllTargetAbilities(entity, targetEntity, "cogitation", duration);
             }
         }
 

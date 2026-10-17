@@ -16,7 +16,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class BlessingsOfWIndAbility extends SelectableAbility {
     public BlessingsOfWIndAbility(String id) {
@@ -130,5 +132,7 @@ public class BlessingsOfWIndAbility extends SelectableAbility {
 
             PhysicalEnhancementsAbility.removeEnhancementBoost(target, "blessings_of_wind");
         }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
+
+
     }
 }

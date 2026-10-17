@@ -9,10 +9,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -52,15 +49,16 @@ public class FogOfWarAbility extends ToggleAbility {
         if(level.isClientSide)
             return;
 
+        // Fog of War is weakened by light_source interactions
         Location fogLoc = new Location(entity.getEyePosition(), level);
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         boolean lightNearby = InteractionHandler.isInteractionPossible(fogLoc, "light_source", seq);
 
-        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.FOG_OF_WAR.get(), entity.getEyePosition(), 60, 15*multiplier(entity), 5*multiplier(entity), 15*multiplier(entity), 0);
+        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.FOG_OF_WAR.get(), entity.getEyePosition(), 20, 15*multiplier(entity), 5*multiplier(entity), 15*multiplier(entity), 0);
         AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.getEyePosition(), 20*multiplier(entity)).forEach(e -> {
             if (!AllyUtil.isAlly(entity, e.getUUID())) {
                 if (!lightNearby) {
-                    e.addEffect(new MobEffectInstance(net.minecraft.world.effect.MobEffects.BLINDNESS, 40, 0, false, false, true));
+                    e.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 40, 0, false, false, true));
                 }
                 e.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, lightNearby ? 0 : 2, false, false, true));
                 BeyonderData.addModifier(e, "fog_of_war", lightNearby ? .85 : .7);

@@ -6,7 +6,6 @@ import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -42,7 +41,7 @@ public class NatureSpellsAbility extends SelectableAbility {
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(3500f, 1500f, 1000f, 700f, 500f, 300f));
 
-        baseDamage = 3;
+        baseDamage = 4;
     }
 
     @Override
@@ -57,7 +56,10 @@ public class NatureSpellsAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.nature_spells.swamp", "ability.lotmcraft.nature_spells.child_of_oak", "ability.lotmcraft.nature_spells.natures_wrath"};
+        return new String[]{
+                "ability.lotmcraft.nature_spells.swamp",
+                "ability.lotmcraft.nature_spells.child_of_oak",
+                "ability.lotmcraft.nature_spells.natures_wrath"};
     }
 
     @Override
@@ -143,7 +145,7 @@ public class NatureSpellsAbility extends SelectableAbility {
 
                 targetEntity.hurt(ModDamageTypes.source(serverLevel, ModDamageTypes.NATURE_WRATH, entity), baseDamage);
             }
-        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(target.position().add(0, target.getEyeHeight() / 2, 0), serverLevel)));
+        }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(target.position().add(0, target.getEyeHeight() / 2, 0), serverLevel)));
     }
 
     private void childOfOak(ServerLevel serverLevel, LivingEntity entity) {

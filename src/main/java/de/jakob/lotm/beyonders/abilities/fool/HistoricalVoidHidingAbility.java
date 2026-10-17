@@ -2,11 +2,9 @@ package de.jakob.lotm.beyonders.abilities.fool;
 
 import com.zigythebird.playeranimcore.math.Vec3f;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.data.Location;
@@ -18,10 +16,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -180,5 +175,17 @@ public class HistoricalVoidHidingAbility extends ToggleAbility {
             }
             return locations.getOrDefault(entity.getUUID(), new Location(new Vec3(entity.getX(), findSafeY(overWorld, (int) entity.getX(), (int) entity.getZ()), entity.getZ()), overWorld));
         }
+    }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if(entity.getHealth() > entity.getMaxHealth() * 0.15 && ((ToggleAbility) LOTMCraft.abilityHandler.getById("historical_void_hiding_ability")).isActiveForEntity(entity)) {
+            return true;
+        }
+        if(entity.getHealth() <= entity.getMaxHealth() * 0.15 && !entity.getData(ModAttachments.HISTORICAL_VOID_COMPONENT).hasSummonedSelf) {
+            return true;
+        }
+
+        return  false;
     }
 }

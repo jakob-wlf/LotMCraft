@@ -1,8 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.red_priest;
 
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.WindManipulationFlightAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.FireRavenEntity;
@@ -11,21 +11,24 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.network.packets.toServer.AbilitySelectionPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.data.PriestFlameVariants;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.DamageLookup;
-import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
+import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -146,21 +149,25 @@ public class PyrokinesisAbility extends SelectableAbility {
     }
 
     private void flamingSpear(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if(level.isClientSide || !(entity instanceof ServerPlayer player))
             return;
 
         Vec3 startPos = VectorUtil.getRelativePosition(entity.getEyePosition().add(entity.getLookAngle().normalize()), entity.getLookAngle().normalize(), 0, random.nextDouble(1, 2.85f), random.nextDouble(-.1, .6));
         Vec3 direction = AbilityUtil.getTargetLocation(entity, baseDistance, 1.4f).subtract(startPos).normalize();
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
-
-        float damage = baseDamage;
-
-        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, damage, BeyonderData.isGriefingEnabled(entity));
+        boolean ride = player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5;
+        if(player.isPassenger()) ride = false;
+        FlamingSpearProjectileEntity spear = new FlamingSpearProjectileEntity(level, entity, DamageLookup.lookupDamage(7, 0.9) * multiplier(entity), BeyonderData.isGriefingEnabled(entity), 2.0f, ride);
         spear.setPos(startPos.x, startPos.y, startPos.z); // Set initial position
-        spear.shoot(direction.x, direction.y, direction.z, 3f, 0);
+        spear.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
+        spear.shoot(direction.x, direction.y, direction.z, 2f*multiplier(entity), 0);
         level.addFreshEntity(spear);
-
+        if(player.isShiftKeyDown() && BeyonderData.getSequence(entity) <= 5) {
+            if(player.getVehicle() instanceof FlamingSpearProjectileEntity) return;
+            spear.setRide(true);
+            player.startRiding(spear, true);
+        }
     }
 
     private void fireRavens(Level level, LivingEntity entity) {
@@ -200,12 +207,12 @@ public class PyrokinesisAbility extends SelectableAbility {
         Vec3 lookAngle = new Vec3(entity.getLookAngle().x, 0, entity.getLookAngle().z).normalize();
         Vec3 perpendicular = VectorUtil.getPerpendicularVector(lookAngle).normalize();
 
-        Vec3 pos = targetPos.add(0, 1, 0);
-        BlockPos blockPos = BlockPos.containing(pos);
+        Vec3 flamePos = targetPos.add(0, 1, 0);
+        BlockPos blockPos = BlockPos.containing(flamePos);
 
-        double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .6;
-        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+        double offsetX = flamePos.x - (blockPos.getX() + 0.5);
+        double offsetY = flamePos.y - (blockPos.getY() + 0.5) + .6;
+        double offsetZ = flamePos.z - (blockPos.getZ() + 0.5);
 
         Quaternionf rotation = new Quaternionf().rotateTo(
                 new Vector3f(0, 0, 1),
@@ -214,7 +221,7 @@ public class PyrokinesisAbility extends SelectableAbility {
 
         PacketHandler.sendToNearbyPlayers(
                 new PlayPhotonBlockEffectPacket("flame_wall", blockPos, offsetX, offsetY, offsetZ, 3, rotation, -1, false, true, null),
-                (ServerLevel) level, pos, 128
+                (ServerLevel) level, flamePos, 128
         );
 
         float damage = baseDamage/6;
@@ -225,12 +232,12 @@ public class PyrokinesisAbility extends SelectableAbility {
 
             for(int i = -1; i < 6; i++) {
                 for(int j = -7; j < 8; j++) {
-                    Vec3 currentPos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
+                    Vec3 pos = targetPos.add(perpendicular.scale(j)).add(0, i, 0);
 
-                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1f, ModDamageTypes.FIRE ,damage, currentPos, true, false);
+                    AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 1f, ModDamageTypes.FIRE ,damage, pos, true, false);
 
-                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, currentPos, 1f)) {
-                        Vec3 knockback = target.position().subtract(currentPos).normalize().add(0, .2, 0).scale(0.8f);
+                    for(LivingEntity target : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, pos, 1f)) {
+                        Vec3 knockback = target.position().subtract(pos).normalize().add(0, .2, 0).scale(0.8f);
                         target.setDeltaMovement(knockback);
                     }
                 }
@@ -238,9 +245,9 @@ public class PyrokinesisAbility extends SelectableAbility {
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(targetPos, level)));
     }
 
-    //TODO: Place flame blocks on griefing
+    //TODO: PLace flame blocks on griefing
     private void flameWave(Level level, LivingEntity entity) {
-        if(level.isClientSide)
+        if (level.isClientSide)
             return;
 
         Vec3 startPos = entity.getEyePosition().add(0, .5, 0);
@@ -250,18 +257,26 @@ public class PyrokinesisAbility extends SelectableAbility {
         float damage = baseDamage;
 
         ServerScheduler.scheduleDelayed(18, () -> {
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.FIRE, damage/2, entity.position().add(0, .2, 0), true, false);
-            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.SOUL_FIRE, damage/2, entity.position().add(0, .2, 0), true, false);});
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
+            AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 5.5, ModDamageTypes.SOUL_FIRE, damage / 2, entity.position().add(0, .2, 0), true, false);
+        });
+
+        String path = switch(PriestFlameVariants.byId(BeyonderData.getSequence(entity))) {
+            case WHITE -> "flame_wave_white";
+            case WHITISH_BLUE, AZURE -> "flame_wave_blue";
+            case VIOLENT, AZURE_VIOLENT, DARK -> "flame_wave_purple";
+            default -> "flame_wave_red";
+        };
 
         Vec3 pos = entity.position();
         BlockPos blockPos = BlockPos.containing(pos);
 
         double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetY = .3;
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("flame_wave", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
+                new PlayPhotonBlockEffectPacket(path, blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
                 (ServerLevel) level, pos, 128
         );
     }

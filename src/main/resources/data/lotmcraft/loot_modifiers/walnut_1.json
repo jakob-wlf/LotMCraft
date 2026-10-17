@@ -1,0 +1,14 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:dark_oak_leaves"
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.03
+    }
+  ],
+  "table": "lotmcraft:ingredients/walnut"
+}

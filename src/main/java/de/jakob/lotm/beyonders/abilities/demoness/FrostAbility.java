@@ -9,7 +9,6 @@ import de.jakob.lotm.entity.custom.projectiles.FrostSpearProjectileEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -134,7 +133,7 @@ public class FrostAbility extends SelectableAbility {
             }
 
             radius.addAndGet(.5);
-        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, startPos, entity, this, interactionFlags, 20, 20 * 3));
     }
@@ -192,6 +191,6 @@ public class FrostAbility extends SelectableAbility {
             ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.SNOWFLAKE, pos, 45, 0.25, 0.02);
 
             currentPos.set(pos.add(direction));
-        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+        }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
 }

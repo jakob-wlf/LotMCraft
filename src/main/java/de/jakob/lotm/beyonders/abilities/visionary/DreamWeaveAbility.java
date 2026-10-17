@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
@@ -12,6 +12,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
@@ -59,8 +60,8 @@ public class DreamWeaveAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -87,7 +88,6 @@ public class DreamWeaveAbility extends SelectableAbility {
         mob.setPuppetWarrior(true);
         mob.setMaxLifetimeIfPuppet(20 * 10);
         // No target set yet — mob is passive until harmed
-
         serverLevel.addFreshEntity(mob);
 
         if (target instanceof Mob targetMob) {
@@ -129,6 +129,20 @@ public class DreamWeaveAbility extends SelectableAbility {
             if (!mob.isRemoved()) mob.discard();
             removeMob(target.getUUID(), mob);
         });
+
+        if(!BeyonderData.getPathway(entity).equals("visionary") ||
+                BeyonderData.getSequence(entity) != 3) return;
+
+        if(entity instanceof ServerPlayer player) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                if(!(target.hasEffect(ModEffects.ASLEEP))) return;
+
+                var component = player.getData(ModAttachments.RITUALS.get());
+                if (component.isCompleted()) return;
+
+                component.addTargetUuid(targetPlayer.getUUID());
+            }
+        }
     }
 
     // Spawns 3 mobs, 3 sequences below the caster
@@ -171,6 +185,18 @@ public class DreamWeaveAbility extends SelectableAbility {
             }
             removeAllMobs(target.getUUID(), mobs);
         });
+
+        if(!BeyonderData.getPathway(entity).equals("visionary") ||
+                BeyonderData.getSequence(entity) != 3) return;
+
+        if(entity instanceof ServerPlayer player) {
+            if (target instanceof ServerPlayer targetPlayer) {
+                var component = player.getData(ModAttachments.RITUALS.get());
+                if (component.isCompleted()) return;
+
+                component.addTargetUuid(targetPlayer.getUUID());
+            }
+        }
     }
 
 
@@ -223,37 +249,5 @@ public class DreamWeaveAbility extends SelectableAbility {
         if (tracked == null) return;
         tracked.removeAll(mobs);
         if (tracked.isEmpty()) VICTIM_MOBS.remove(victimUUID);
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
-        return target != null;
-    }
-
-    @Override
-    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
-        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
-        if (target == null) {
-            return 0;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        int targetSeq = BeyonderData.getSequence(target);
-
-        return targetSeq <= entitySeq ? 0 : 1;
     }
 }

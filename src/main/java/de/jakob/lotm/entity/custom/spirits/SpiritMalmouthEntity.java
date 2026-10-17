@@ -65,11 +65,11 @@ public class SpiritMalmouthEntity extends Animal {
 
     public static AttributeSupplier.Builder createAttributes() {
         return Animal.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 160.0)
+                .add(Attributes.MAX_HEALTH, 80.0)
                 .add(Attributes.MOVEMENT_SPEED, 1)
                 .add(Attributes.FLYING_SPEED, 1.2)
                 .add(Attributes.SCALE, 1.35)
-                .add(Attributes.ATTACK_DAMAGE, 50.0)
+                .add(Attributes.ATTACK_DAMAGE, 35.0)
                 .add(Attributes.ARMOR, 5.0)
                 .add(Attributes.FOLLOW_RANGE, 40.0);
     }

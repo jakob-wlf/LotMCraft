@@ -2,14 +2,14 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 
 import com.mojang.datafixers.util.Pair;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.OpenDiscernmentScreenPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.helper.AbilityUtil;
+import de.jakob.lotm.util.helper.PureIdealismUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
@@ -23,10 +23,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -44,6 +41,9 @@ public class PureIdealismAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         canAlwaysBeUsed = true;
+
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 5));
     }
 
     @Override
@@ -58,8 +58,13 @@ public class PureIdealismAbility extends SelectableAbility {
     @Override
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        String path = BeyonderData.getPathway(entity);
+        if(!path.equals("visionary")){
+            AbilityUtil.sendActionBar(entity, Component.literal("You have to be from visionary pathway!").withColor(0xFFff124d));
+            return;
+        }
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -87,7 +92,16 @@ public class PureIdealismAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         if (!(entity instanceof ServerPlayer player)) return;
 
-        var target = AbilityUtil.getTargetEntity(player, baseDistance, 1f);
+        LivingEntity target = null;
+
+        if(DiscernmentAbility.discerning.contains(entity.getUUID())){
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.6f, true,
+                    true, false, true);
+        }
+        else{
+            target = AbilityUtil.getTargetEntity(entity, baseDistance, 1.6f, true, true);
+        }
+
         if (target == null) return;
 
         if (!BeyonderData.isBeyonder(target)) return;
@@ -151,8 +165,7 @@ public class PureIdealismAbility extends SelectableAbility {
                     entity.teleportTo(pos.x, pos.y, pos.z);
                     entity.setDeltaMovement(Vec3.ZERO);
 
-                    var component = entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT.get());
-                    component.disableAbilityUsageForTime("visionary_meditation", 20, entity);
+                    AbilityUtil.sealAllTargetAbilities(entity, entity, "visionary_meditation", 20);
 
                     entity.addEffect(new MobEffectInstance(MobEffects.DARKNESS, 20 * 2, 10, false, false, false));
                     entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 20 * 2, 10, false, false, false));
@@ -185,7 +198,7 @@ public class PureIdealismAbility extends SelectableAbility {
     private static int getMeditationDuration(int seq, int targetSeq){
         int diff = 10 - (targetSeq - seq);
 
-        return 50 * diff;
+        return 360 * diff;
     }
 
     @SubscribeEvent

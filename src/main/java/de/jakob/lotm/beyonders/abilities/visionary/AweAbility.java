@@ -8,7 +8,6 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -66,8 +65,9 @@ public class AweAbility extends Ability {
         }
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        String path = BeyonderData.getPathway(entity);
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -76,7 +76,7 @@ public class AweAbility extends Ability {
 
         level.playSound(null, BlockPos.containing(entity.position()), SoundEvents.ENDER_DRAGON_GROWL, SoundSource.BLOCKS, 1, 1);
 
-        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), Math.max(baseDistance, 75)).forEach(e -> {
+        AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), Math.min(baseDistance, 75)).forEach(e -> {
             VisionaryHandler.shouldTrigger(entitySeq, entity, e, this);
 
             if (BeyonderData.isBeyonder(e)) {
@@ -115,26 +115,5 @@ public class AweAbility extends Ability {
             }, (ServerLevel) level);
 
         });
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
-            return false;
-        }
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 10 * (int) Math.max(multiplier(entity) / 2, 1))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t));
     }
 }

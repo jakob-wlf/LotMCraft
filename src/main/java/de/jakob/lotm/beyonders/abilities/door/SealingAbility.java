@@ -1,10 +1,10 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
-import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
@@ -86,9 +86,7 @@ public class SealingAbility extends Ability {
             }
 
             BeyonderData.addModifierWithTimeLimit(e, "sealed", .6, duration);
-
-            DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-            component.disableAbilityUsageForTime("sealed", duration, e);
+            AbilityUtil.sealAllTargetAbilities(entity, e, "sealed", duration);
 
             durationMap.put(e.getUUID(), duration);
 

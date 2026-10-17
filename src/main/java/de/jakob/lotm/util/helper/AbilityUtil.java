@@ -1,6 +1,7 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
 import de.jakob.lotm.beyonders.abilities.error.RealityLoopholeAbility;
@@ -11,12 +12,9 @@ import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.entity.custom.BeyonderNPCEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TimeChangeEntity;
-import de.jakob.lotm.events.custom.TargetEntityEvent;
-import de.jakob.lotm.events.custom.TargetLocationEvent;
-import de.jakob.lotm.events.custom.TargetNonLivingEntityEvent;
+import de.jakob.lotm.events.custom.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.LastStandAbility;
 import net.minecraft.core.BlockPos;
@@ -54,6 +52,8 @@ public class AbilityUtil {
     //if bool is true - it will not clear the map after skill usage
     public static Map<UUID, Boolean> ignoreAllies = new ConcurrentHashMap<UUID, Boolean>();
 
+    //invul for skills
+    public static Map<UUID, Integer> invul = new ConcurrentHashMap<>();
 
     // ==================== SEQUENCE UTILITY METHODS ====================
 
@@ -209,6 +209,9 @@ public class AbilityUtil {
         if (target instanceof Player player && player.isCreative()) return false;
         if (RealityLoopholeAbility.phasedOut.contains(target.getUUID())) return false;
         if (!source.canAttack(target)) return false;
+
+        if(invul.containsKey(target.getUUID()))
+            return false;
 
         // Check ally relationship - allies cannot damage each other
         if (AllyUtil.areAllies(source, target)) {
@@ -436,19 +439,19 @@ public class AbilityUtil {
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, false, false, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, false, false, false, false);
     }
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
                                                boolean onlyAllowWithLineOfSight) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, false, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, false, false, false);
     }
 
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
                                                boolean onlyAllowWithLineOfSight, boolean allowAllies) {
-        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, allowAllies, false);
+        return getTargetEntity(entity, radius, entityDetectionRadius, onlyAllowWithLineOfSight, allowAllies, false, false);
     }
 
     /**
@@ -461,9 +464,10 @@ public class AbilityUtil {
      */
     @Nullable
     public static LivingEntity getTargetEntity(LivingEntity entity, int radius, float entityDetectionRadius,
-                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+                                               boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes,
+                                               boolean ignoreBlocks) {
         LivingEntity targetEntity = getTargetEntityInternal(entity, radius, entityDetectionRadius,
-                onlyAllowWithLineOfSight, allowAllies, targetMarionettes);
+                onlyAllowWithLineOfSight, allowAllies, targetMarionettes, ignoreBlocks);
 
         if (targetEntity instanceof ArmorStand) return null;
 
@@ -500,7 +504,8 @@ public class AbilityUtil {
      */
     @Nullable
     private static LivingEntity getTargetEntityInternal(LivingEntity entity, int radius, float entityDetectionRadius,
-                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes) {
+                                                        boolean onlyAllowWithLineOfSight, boolean allowAllies, boolean targetMarionettes,
+                                                        boolean ignoreBlocks) {
         // Check for existing targets first (unless line of sight only)
         if (!onlyAllowWithLineOfSight) {
             LivingEntity currentTarget = getCurrentTarget(entity);
@@ -535,9 +540,11 @@ public class AbilityUtil {
             }
 
             // Check for blocks
-            BlockState block = entity.level().getBlockState(BlockPos.containing(currentPosition));
-            if (!block.getCollisionShape(entity.level(), BlockPos.containing(currentPosition)).isEmpty()) {
-                break;
+            if(!ignoreBlocks) {
+                BlockState block = entity.level().getBlockState(BlockPos.containing(currentPosition));
+                if (!block.getCollisionShape(entity.level(), BlockPos.containing(currentPosition)).isEmpty()) {
+                    break;
+                }
             }
         }
 
@@ -799,6 +806,7 @@ public class AbilityUtil {
                 .filter(e -> !(e instanceof Player player) || (!player.isCreative() || allowCreativeMode))
                 .filter(entity -> entity.position().distanceToSqr(center) <= radiusSquared)
                 .filter(entity -> entity != exclude)
+                .filter(entity -> !(entity instanceof ArmorStand))
                 .filter(e -> exclude == null || (!(e instanceof LivingEntity le) || mayTarget(exclude, le, allowAllies, false)))
                 .toList();
     }
@@ -1364,4 +1372,109 @@ public class AbilityUtil {
     public static double getMultiplierWithArt(LivingEntity entity, Ability ability){
         return ability.artifactScalingMap.containsKey(entity.getUUID()) ? 1 : BeyonderData.getMultiplier(entity);
     }
+
+    public static void sealAllTargetAbilities(LivingEntity source ,LivingEntity target, String cause, int ticks){
+        AbilitySealedEvent event = new AbilitySealedEvent(source, target, ticks, cause);
+        NeoForge.EVENT_BUS.post(event);
+        if(event.isCanceled()) {
+            return;
+        }
+
+        LivingEntity newTarget = event.getTargetEntity();
+        int newDuration = event.getDuration();
+        String newCause = event.getCause() != null ? event.getCause() : "";
+        LivingEntity newSource = event.getSourceEntity();
+
+        if (newTarget == null || newDuration <= 0) {
+            return;
+        }
+
+        DisabledAbilitiesComponent component = newTarget.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableAbilityUsageForTime(newCause, newDuration, newTarget);
+    }
+
+    public static void sealSpecificTargetAbility(LivingEntity source ,LivingEntity target, String ability, String cause, int ticks){
+        AbilitySealedEvent event = new AbilitySealedEvent(source, target, ticks, cause, ability);
+        NeoForge.EVENT_BUS.post(event);
+        if(event.isCanceled()) {
+            return;
+        }
+
+        LivingEntity newTarget = event.getTargetEntity();
+        int newDuration = event.getDuration();
+        String newCause = event.getCause() != null ? event.getCause() : "";
+        LivingEntity newSource = event.getSourceEntity();
+        String newAbility = event.getAbility();
+
+        if (newTarget == null || newDuration <= 0 || newAbility == null) {
+            return;
+        }
+
+        DisabledAbilitiesComponent component = newTarget.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
+        component.disableSpecificAbilityForTime(newAbility, newCause, newDuration);
+    }
+
+    public static void setTargetLuck(LivingEntity source, LivingEntity target, int luck) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+
+        int oldLuck = comp.getLuck();
+        luck = Mth.clamp(luck, -6360, 3000);
+        boolean isLuckIncreased = luck > oldLuck;
+
+        LuckSetEvent event = new LuckSetEvent(source, target, luck, isLuckIncreased);
+        NeoForge.EVENT_BUS.post(event);
+
+        if (event.isCanceled()) {
+            return;
+        }
+
+        LivingEntity newTarget = event.getTargetEntity();
+        if (newTarget == null) return;
+
+        int newLuck = event.getLuck();
+
+        comp = newTarget.getData(ModAttachments.LUCK_COMPONENT);
+        comp.setLuck(newLuck);
+    }
+
+    public static void addTargetLuck(LivingEntity source, LivingEntity target, int amount) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+        setTargetLuck(source, target, comp.getLuck() + amount);
+    }
+
+    public static void addTargetLuckWithMax(LivingEntity source, LivingEntity target, int amount, int max) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+
+        int currentLuck = comp.getLuck();
+        int proposedLuck = (amount >= 0 && currentLuck + amount > max) ? max : currentLuck + amount;
+
+        setTargetLuck(source, target, proposedLuck);
+    }
+
+    public static void addTargetLuckWithMin(LivingEntity source, LivingEntity target, int amount, int min) {
+        if (target == null) return;
+
+        LuckComponent comp = target.getData(ModAttachments.LUCK_COMPONENT);
+
+        int currentLuck = comp.getLuck();
+        int proposedLuck = (amount < 0 && currentLuck + amount < min) ? min : currentLuck + amount;
+
+        setTargetLuck(source, target, proposedLuck);
+    }
+
+    public static void refund(Player player, Ability ability) {
+        refund(player, ability, true, true);
+    }
+
+    public static void refund(Player player, Ability ability, boolean cd, boolean sp) {
+        if(cd) player.getData(ModAttachments.COOLDOWN_COMPONENT).setCooldown(ability.getId(), 0);
+        if(sp) BeyonderData.incrementSpirituality(player, ability.spiritualityCost(BeyonderData.getSequence(player)));
+    }
+
 }

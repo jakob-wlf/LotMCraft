@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.LightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;

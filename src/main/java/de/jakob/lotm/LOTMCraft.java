@@ -8,11 +8,13 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.KnowledgeRecipe;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
+import de.jakob.lotm.dimension.spirit_world.spirit_patch.SpiritPatchSetup;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.big_moon.BigMoonRenderer;
@@ -36,6 +38,7 @@ import de.jakob.lotm.entity.client.ability_entities.mother_pathway.return_from_n
 import de.jakob.lotm.entity.client.ability_entities.portal.PortalRenderer;
 import de.jakob.lotm.entity.client.ability_entities.red_priest_pathway.fire_plate.FirePlateRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.strong_lightning.StrongLightningRenderer;
+import de.jakob.lotm.entity.client.projectiles.water_bolt.WaterBoltRenderer;
 import de.jakob.lotm.entity.client.spirits.headless_bride.HeadlessBrideRenderer;
 import de.jakob.lotm.entity.client.spirits.knowledge_rabbit.RabbitOfKnowledgeRenderer;
 import de.jakob.lotm.entity.client.murloc.MurlocRenderer;
@@ -94,11 +97,15 @@ import de.jakob.lotm.gui.ModMenuTypes;
 import de.jakob.lotm.gui.custom.ability_wheel.AbilityWheelScreen;
 import de.jakob.lotm.gui.custom.artifact_wheel.ArtifactWheelScreen;
 import de.jakob.lotm.gui.custom.brewing_cauldron.BrewingCauldronScreen;
+import de.jakob.lotm.gui.custom.cohort.CohortScreen;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelScreen;
+import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
 import de.jakob.lotm.gui.custom.honorific_names.HonorificNamesScreen;
 import de.jakob.lotm.gui.custom.marionettes.MarionetteControlScreen;
 import de.jakob.lotm.gui.custom.mass_puppeteering.MassPuppeteeringScreen;
+import de.jakob.lotm.gui.custom.pathway_selection.PathwaySelectionScreen;
 import de.jakob.lotm.gui.custom.recipe.RecipeScreen;
 import de.jakob.lotm.gui.custom.ritualistic_table.RitualScreen;
 import de.jakob.lotm.gui.custom.sefirah.SefirahScreen;
@@ -113,7 +120,6 @@ import de.jakob.lotm.particle.*;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
-import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.beyonders.quest.QuestRegistry;
 import de.jakob.lotm.rendering.GuidingBookRenderer;
 import de.jakob.lotm.beyonders.rituals.RitualManager;
@@ -231,6 +237,8 @@ public class LOTMCraft
         ModDimensions.register(modEventBus);
         ModGameRules.register();
 
+        SpiritPatchSetup.init(modEventBus);
+
         PotionItemHandler.registerPotions(modEventBus);
 
         QuestRegistry.init();
@@ -267,6 +275,10 @@ public class LOTMCraft
     public void onServerStarting(ServerStartingEvent event) {
     }
 
+    @SubscribeEvent
+    public void onServerStarted(ServerStartedEvent event) {
+    }
+
     @EventBusSubscriber(modid = MOD_ID, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
@@ -276,6 +288,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);
+            EntityRenderers.register(ModEntities.WATER_BOLT.get(), WaterBoltRenderer::new);
             EntityRenderers.register(ModEntities.PAPER_DAGGER.get(), PaperDaggerProjectileRenderer::new);
             EntityRenderers.register(ModEntities.FIRE_RAVEN.get(), FireRavenRenderer::new);
             EntityRenderers.register(ModEntities.APPRENTICE_DOOR.get(), ApprenticeDoorRenderer::new);
@@ -294,7 +307,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.BLACK_HOLE.get(), BlackHoleRenderer::new);
             EntityRenderers.register(ModEntities.WAR_BANNER.get(), WarBannerRenderer::new);
             EntityRenderers.register(ModEntities.MYSTICAL_DOOR.get(), MysticalDoorRenderer::new);
-            EntityRenderers.register(ModEntities.Meteor.get(), MeteorRenderer::new);
+            EntityRenderers.register(ModEntities.METEOR.get(), MeteorRenderer::new);
             EntityRenderers.register(ModEntities.JUDGMENT_SWORD.get(), JudgmentSwordRenderer::new);
             EntityRenderers.register(ModEntities.ANCIENT_COURT.get(), AncientCourtEntityRenderer::new);
             EntityRenderers.register(ModEntities.JUSTICE_SWORD.get(), JusticeSwordRenderer::new);
@@ -396,6 +409,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.BEYONDER_TRADE_MENU.get(), BeyonderTradeScreen::new);
             event.register(ModMenuTypes.HONORIFIC_NAMES_MENU.get(), HonorificNamesScreen::new);
             event.register(ModMenuTypes.RECIPE_MENU.get(), RecipeScreen::new);
+            event.register(ModMenuTypes.COHORT_MENU.get(), CohortScreen::new);
             event.register(ModMenuTypes.BREWING_CAULDRON_MENU.get(), BrewingCauldronScreen::new);
             event.register(ModMenuTypes.RITUAL_MENU.get(), RitualScreen::new);
             event.register(ModMenuTypes.SEFIRAH_MENU.get(), SefirahScreen::new);
@@ -403,8 +417,11 @@ public class LOTMCraft
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
             event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
             event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
+            event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.FLAMING_JUMP_MENU.get(), FlamingJumpScreen::new);
             event.register(ModMenuTypes.MASS_PUPPETEERING_MENU.get(), MassPuppeteeringScreen::new);
+            event.register(ModMenuTypes.PATHWAY_SELECTION.get(), PathwaySelectionScreen::new);
+            event.register(ModMenuTypes.INGREDIENT_ENCYCLOPEDIA.get(), IngredientEncyclopediaScreen::new);
         }
 
         @SubscribeEvent

@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.StrongLightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -76,7 +75,7 @@ public class LightningStormAbility extends Ability {
                     if(state.getCollisionShape(level, BlockPos.containing(loc)).isEmpty())
                         loc = loc.subtract(0, 1, 0);
                 }
-                StrongLightningEntity lightning = new StrongLightningEntity(level, entity, loc, 65, 10, damage, BeyonderData.isGriefingEnabled(entity), 3, 200, 0x4a23e8);
+                StrongLightningEntity lightning = new StrongLightningEntity(level, entity, loc, 65, 10, damage, BeyonderData.isGriefingEnabled(entity), 0, 200, 0x4a23e8);
                 level.addFreshEntity(lightning);
             }
         });

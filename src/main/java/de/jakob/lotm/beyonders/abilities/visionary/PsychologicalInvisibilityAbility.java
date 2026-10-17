@@ -13,20 +13,16 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderPlayerEvent;
-import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import net.neoforged.neoforge.event.entity.living.EffectParticleModificationEvent;
 import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
@@ -54,9 +50,10 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         canBeReplicated = false;
         cannotBeStolen = true;
         canBeUsedInArtifact = false;
+        canBeShared = false;
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(40f, 35f, 25f, 20f, 20f, 13f, 10f));
+        dynamicSpirituality = new LinkedList<>(List.of(30f, 25f, 17f, 13f, 10f, 7f, 5f));
     }
 
     @Override
@@ -74,12 +71,16 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
             cancel(serverLevel, entity);
+        }
+
+        if(entity.getRemainingFireTicks() > 0 && entity.hasEffect(MobEffects.FIRE_RESISTANCE)){
+            entity.setRemainingFireTicks(0);
         }
 
         if (entity instanceof ServerPlayer) {
@@ -94,8 +95,8 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -104,7 +105,12 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
 
         if (entity instanceof ServerPlayer) {
             if (!invisiblePlayers.containsKey(entity.getUUID())) {
-                add(entity, AbilityUtil.getSeqWithArt(entity, this));
+                int seq = AbilityUtil.getSeqWithArt(entity, this);
+                if(!path.equals("visionary")){
+                    seq -= 1;
+                }
+
+                add(entity, seq);
             }
         }
     }
@@ -160,11 +166,11 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
         return switch (seq) {
             case 6 -> 1;
             case 5 -> 2;
-            case 4 -> 10;
-            case 3 -> 15;
-            case 2 -> 25;
-            case 1 -> 40;
-            case 0 -> 80;
+            case 4 -> 4;
+            case 3 -> 5;
+            case 2 -> 7;
+            case 1 -> 9;
+            case 0 -> 12;
             default -> 1;
         };
     }
@@ -338,16 +344,6 @@ public class PsychologicalInvisibilityAbility extends ToggleAbility {
                 }
             }
         }
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-        return !VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq);
     }
 
 }

@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.attachments.MultiplierModifierComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.MultiplierModifierComponent;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +17,9 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+@EventBusSubscriber(
+        modid = LOTMCraft.MOD_ID
+)
 public class PureIdealism extends PassiveAbility {
     public PureIdealism(String id) {
         super(id);

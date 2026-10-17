@@ -36,6 +36,12 @@ public class SpectatingAbility extends ToggleAbility {
 
         canBeUsedByNPC = false;
         autoClear = false;
+        canBeShared = false;
+
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeCopied = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -51,8 +57,8 @@ public class SpectatingAbility extends ToggleAbility {
     @Override
     public void start(Level level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
@@ -78,7 +84,7 @@ public class SpectatingAbility extends ToggleAbility {
 
         int seq = AbilityUtil.getSeqWithArt(entity, this);
         if(lookedAt != null) {
-            if (VisionaryHandler.shouldStayInvisible(seq, lookedAt)){
+            if (VisionaryHandler.shouldStayInvisibleVisOnly(seq, lookedAt)){
                 return;
             }
             else if(VisionaryHandler.shouldFailAndTrigger(seq, entity, lookedAt, this, false)){
@@ -92,7 +98,8 @@ public class SpectatingAbility extends ToggleAbility {
             }
         }
 
-        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq)){
+        String path = BeyonderData.getPathway(entity);
+        if(VisionaryHandler.shouldBeAffectedWithMindWorldSeal(seq, path)){
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));

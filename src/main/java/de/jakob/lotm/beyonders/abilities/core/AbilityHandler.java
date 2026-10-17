@@ -34,6 +34,7 @@ public class AbilityHandler {
         // COMMON
         abilities.add(new CogitationAbility("cogitation_ability"));
         abilities.add(new DivinationAbility("divination_ability"));
+        abilities.add(new DangerPremonitionDivinationAbility("danger_premonition_divination_ability"));
         abilities.add(new SpiritVisionAbility("spirit_vision_ability"));
         abilities.add(new CurseOfMisfortuneAbility("curse_of_misfortune_ability"));
         abilities.add(new AngelAuthorityAbility("angel_authority_ability"));
@@ -160,6 +161,7 @@ public class AbilityHandler {
         // abilities.add(new HistoricalVoidHidingAbility("historical_void_hiding_ability"));
         abilities.add(new MiracleCreationAbility("miracle_creation_ability"));
         abilities.add(new GraftingAbility("grafting_ability"));
+        abilities.add(new GraftingAbilitiesAbility("grafting_abilities_ability"));
         abilities.add(new FoolingAbility("fooling_ability"));
 
         // DARKNESS PATHWAY
@@ -331,20 +333,6 @@ public class AbilityHandler {
         abilities.add(new ConceptualTheftAbility("conceptual_theft_ability"));
         abilities.add(new TimeManipulationAbility("time_manipulation_ability"));
         abilities.add(new RealityLoopholeAbility("reality_loophole_ability"));
-
-        // BLACK EMPEROR PATHWAY
-//        abilities.add(new Eloquence("eloquence_ability"));
-//        abilities.add(new MausoleumDomainAbility("mausoleum_domain_ability"));
-//        abilities.add(new BriberAbility("briber_ability"));
-//        abilities.add(new WeaknessDetectionAbility("weakness_detection_ability"));
-//        abilities.add(new DistortionAbility("distortion_ability"));
-//        abilities.add(new CorrosionAbility("corrosion_ability"));
-//        abilities.add(new DisorderAbility("disorder_ability"));
-//        abilities.add(new CommandingPresenceAbility("commanding_presence_ability"));
-//        abilities.add(new ExploitAbility("exploit_ability"));
-//        abilities.add(new BestowmentAbility("bestowment_ability"));
-//        abilities.add(new MagnifyAbility("magnify_ability"));
-//        abilities.add(new CommandingOrdersAbility("commanding_orders_ability"));
 
         // DEATH PATHWAY
         abilities.add(new EyeOfDeathAbility("eye_of_death_ability"));

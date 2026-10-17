@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -81,7 +81,7 @@ public class BlessingAbility extends Ability {
         int luck = getLuck(entitySeq);
 
         LuckComponent component = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        component.addLuckWithMax(luck, 3000);
+        AbilityUtil.addTargetLuckWithMax(entity, target, luck, 3000);
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(serverLevel, target.position(), entity, target, this, interactionFlags, interactionRadius, interactionCacheTicks));
     }
 

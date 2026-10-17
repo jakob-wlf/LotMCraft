@@ -1,9 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.wheel_of_fortune;
 
 import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.LuckComponent;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -64,8 +61,7 @@ public class MisfortuneGiftingAbility extends Ability {
 
         int amplifier = getLuck(entitySeq);
 
-        LuckComponent luckComponent = target.getData(ModAttachments.LUCK_COMPONENT.get());
-        luckComponent.addLuckWithMin(-amplifier, -amplifier * 3);
+        AbilityUtil.addTargetLuckWithMin(entity, target, -amplifier, -amplifier * 3);
     }
 
     private static int getLuck(int seq){
@@ -78,24 +74,5 @@ public class MisfortuneGiftingAbility extends Ability {
             case 0 -> 1500;
             default -> 0;
         };
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        if (!(entity.level() instanceof ServerLevel serverLevel)) {
-            return false;
-        }
-
-        float multiplier = multiplier(entity);
-        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
-
-        return AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 15 * (multiplier * multiplier))
-                .stream()
-                .anyMatch(t -> AbilityUtil.mayDamage(entity, t)
-                        && AbilityUtil.getSequenceResistanceFactor(entitySeq, BeyonderData.getSequence(t)) < 1.0);
     }
 }

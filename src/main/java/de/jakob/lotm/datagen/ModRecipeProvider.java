@@ -52,12 +52,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 .unlockedBy("has_iron_ingot", has(Items.IRON_INGOT))
                 .save(recipeOutput);
 
-        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, ModItems.GUIDING_BOOK.get())
-                .requires(Items.BOOK)
-                .requires(Items.AMETHYST_SHARD)
-                .unlockedBy("has_leather", has(Items.LEATHER))
-                .save(recipeOutput);
-
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.CRYSTAL_BALL.asItem())
                 .pattern("GGG")
                 .pattern("GAG")
@@ -99,6 +93,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .requires(ModTags.Items.BEYONDER_POTIONS)
                 .requires(ModTags.Items.BEYONDER_POTIONS)
                 .unlockedBy("has_beyonder_potion", has(ModTags.Items.BEYONDER_POTIONS))
+                .save(recipeOutput);
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.INGREDIENT_ENCYCLOPEDIA.get())
+                .pattern(" L ")
+                .pattern("PBS")
+                .pattern(" A ")
+                .define('B', Items.BOOK)
+                .define('A', Items.AZURE_BLUET)
+                .define('L', Items.LILAC)
+                .define('S', Items.SUGAR_CANE)
+                .define('P', Items.POPPY)
+                .unlockedBy("has_book", has(Items.BOOK))
                 .save(recipeOutput);
     }
 }

@@ -1,10 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.darkness;
 
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.LuckComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.PacketHandler;
@@ -14,7 +13,6 @@ import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -27,6 +25,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
+import java.util.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,7 +44,7 @@ public class MidnightPoemAbility extends SelectableAbility {
         dynamicCooldown = new LinkedList<>(List.of(2, 3, 3, 4, 4, 5, 5, 6, 6));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 7500f, 4200f, 2500f, 2340f, 1425f, 900f, 780f, 300f));
+        dynamicSpirituality = new LinkedList<>(List.of(12000f, 5500f, 3200f, 1500f, 1000f, 825f, 700f, 580f, 220f));
 
         baseDamage = 10;
     }
@@ -194,7 +193,12 @@ public class MidnightPoemAbility extends SelectableAbility {
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, actualDuration, 5, false, false, false));
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, actualDuration, 4, false, false, false));
 
-            ServerScheduler.scheduleForDuration(0, 3, actualDuration, () -> {
+            UUID[] schedulerID = new UUID[1];
+            schedulerID[0] = ServerScheduler.scheduleForDuration(0, 3, actualDuration, () -> {
+                if(target.isDeadOrDying() || !target.isAlive()) {
+                    ServerScheduler.cancel(schedulerID[0]);
+                    return;
+                }
                 target.setOnGround(true);
                 var pos = target.position();
                 target.setDeltaMovement(new Vec3(0, 0, 0));
@@ -230,13 +234,13 @@ public class MidnightPoemAbility extends SelectableAbility {
         LuckComponent luckComponent = entity.getData(ModAttachments.LUCK_COMPONENT);
         if(luckComponent.getLuck() < 0) {
             int amplifier = 200;
-            luckComponent.addLuckWithMax(amplifier, 3000);
+            AbilityUtil.addTargetLuckWithMax(entity, entity, amplifier, 3000);
         }
 
         entity.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(0.1f, entity);
         entity.removeEffect(ModEffects.LOOSING_CONTROL);
-        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10, false, true).forEach(e ->
 
+        AbilityUtil.getNearbyEntities(entity, serverLevel, entity.getEyePosition(), 10).forEach(e ->
         {
             e.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(0.1f, e);
             e.removeEffect(ModEffects.LOOSING_CONTROL);
@@ -244,7 +248,7 @@ public class MidnightPoemAbility extends SelectableAbility {
             LuckComponent luckC = e.getData(ModAttachments.LUCK_COMPONENT);
             if(luckC.getLuck() < 0) {
                 int amplifier = 200;
-                luckC.addLuckWithMax(amplifier, 3000);
+                AbilityUtil.addTargetLuckWithMax(entity, e, amplifier, 3000);
             }
         });
     }
@@ -333,8 +337,7 @@ public class MidnightPoemAbility extends SelectableAbility {
                     ServerScheduler.scheduleDelayed(duration, () -> ((Mob) e).setNoAi(false));
                 }
                 if(BeyonderData.isBeyonder(e)) {
-                    DisabledAbilitiesComponent component = e.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-                    component.disableAbilityUsageForTime("pacify", purified ? duration/2:duration, e);
+                    AbilityUtil.sealAllTargetAbilities(entity, e, "pacify", purified ? duration/2:duration);
                 }
             }
 

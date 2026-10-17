@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightningEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,14 +55,5 @@ public class HeavenlyPunishmentAbility extends Ability {
 
         GiantLightningEntity lightning = new GiantLightningEntity(level, entity, targetLoc, 50, 6, baseDamage, BeyonderData.isGriefingEnabled(entity), 0, 200* multiplier(entity), 0x6522a8);
         level.addFreshEntity(lightning);
-    }
-
-    @Override
-    public boolean shouldUseAbility(LivingEntity entity) {
-        if (!super.shouldUseAbility(entity)) {
-            return false;
-        }
-
-        return hasNearbyDamageableTarget(entity, (int) (70 * multiplier(entity)));
     }
 }

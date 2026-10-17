@@ -11,7 +11,6 @@ import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -30,7 +29,7 @@ import java.util.Map;
 
 public class FlameAuthorityAbility extends SelectableAbility {
     public FlameAuthorityAbility(String id) {
-        super(id, 12f, "burning");
+        super(id, 8f, "burning");
         canBeShared = false;
 
         hasDynamicCooldown = true;
@@ -82,7 +81,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
 
         float damage = baseDamage/4;
 
-        ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 6),
+        ServerScheduler.scheduleForDuration(0, 5, (int) (20 * 12),
                 () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 15, ModDamageTypes.CHAOS, damage, startPos, true, false, 20 * 40),
                 null,
                 serverLevel,
@@ -109,7 +108,7 @@ public class FlameAuthorityAbility extends SelectableAbility {
         float damage = baseDamage/4;
 
         ServerScheduler.scheduleForDuration(
-                0, 5, (int) (20 * 4),
+                0, 5, (int) (20 * 6),
                 () -> AbilityUtil.damageNearbyEntities(serverLevel, entity, 22.5, ModDamageTypes.CHAOS, damage, pos, true, false, 20 * 40),
                 null,
                 serverLevel,

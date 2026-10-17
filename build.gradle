@@ -40,6 +40,11 @@ repositories {
         name = "ModMaven"
         url = "https://modmaven.dev"
     }
+
+    exclusiveContent {
+        forRepository { maven { url = "https://cursemaven.com" } }
+        filter { includeGroup "curse.maven" }
+    }
 }
 
 base {
@@ -152,6 +157,15 @@ configurations.all {
 
 dependencies {
     implementation 'com.github.Querz:NBT:6.1'
+
+    implementation "curse.maven:terrablender-neoforge-940057:6054947"
+
+    jarJar("curse.maven:terrablender-neoforge-940057") {
+        version {
+            strictly "[6054947,)"
+            prefer "6054947"
+        }
+    }
 
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
 

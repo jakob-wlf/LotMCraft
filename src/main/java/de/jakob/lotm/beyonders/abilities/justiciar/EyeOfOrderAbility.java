@@ -3,6 +3,8 @@ package de.jakob.lotm.beyonders.abilities.justiciar;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.ChatFormatting;
@@ -97,6 +99,9 @@ public class EyeOfOrderAbility extends ToggleAbility {
             cancel((ServerLevel) level, entity);
             return;
         }
+
+        if(entity instanceof ServerPlayer player)
+            PacketHandler.sendToPlayer(player, new PlayPhotonEntityEffectPacket("eye_of_order", player.getId(), 0, 0, 0, 1, null, true, true, UUID.randomUUID(), true));
 
         if (entity.tickCount % TICK_RATE != 0) return;
 

@@ -7,6 +7,7 @@ import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -27,7 +28,6 @@ public abstract class ToggleAbility extends Ability {
     protected ToggleAbility(String id, String... interactionFlags) {
         super(id, 0, interactionFlags);
 
-        canBeUsedByNPC = false;
         doesNotIncreaseDigestion = true;
     }
 
@@ -41,8 +41,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.putIfAbsent(entity.getUUID(), new HashSet<>());
             activeAbilities.get(entity.getUUID()).add(this);
             start(level, entity);
-            if(entity instanceof ServerPlayer player)
-                PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()));
+            PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.START.getValue()), (ServerLevel) level);
             return;
         }
 
@@ -54,8 +53,7 @@ public abstract class ToggleAbility extends Ability {
             activeAbilities.get(entity.getUUID()).remove(this);
         }
         stop(level, entity);
-        if(entity instanceof ServerPlayer player)
-            PacketHandler.sendToPlayer(player, new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()));
+        PacketHandler.sendToAllPlayersInSameLevel(new SyncToggleAbilityPacket(entity.getId(), getId(), SyncToggleAbilityPacket.Action.STOP.getValue()), level);
     }
 
     public static void cleanUp(ServerLevel serverLevel, LivingEntity entity) {
@@ -78,6 +76,11 @@ public abstract class ToggleAbility extends Ability {
             }
 
             BeyonderData.reduceSpirituality(entity, cost);
+        }
+
+        if(!level.isClientSide && entity instanceof Mob mob && mob.getTarget() ==null) {
+            cancel((ServerLevel) level, entity);
+            return;
         }
 
         tick(level, entity);

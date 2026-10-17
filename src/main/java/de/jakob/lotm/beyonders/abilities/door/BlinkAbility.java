@@ -8,17 +8,20 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.CharmAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import de.jakob.lotm.util.helper.TeleportationUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,10 +43,10 @@ public class BlinkAbility extends SelectableAbility {
 
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(0, 0, 0, 1, 1, 1));
+        dynamicCooldown = new LinkedList<>(List.of(0, 0, 0, 0, 1, 2));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(6000f, 2400f, 1500f, 1000f, 975f, 815f));
+        dynamicSpirituality = new LinkedList<>(List.of(1000f, 800f, 650f, 300f, 200f, 150f));
 
         baseDamage = 3;
     }
@@ -70,7 +73,10 @@ public class BlinkAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.blink.blink", "ability.lotmcraft.blink.barrage"};
+        return new String[]{
+                "ability.lotmcraft.blink.blink",
+                "ability.lotmcraft.blink.barrage"
+        };
     }
 
     @Override
@@ -131,6 +137,8 @@ public class BlinkAbility extends SelectableAbility {
         Vec3 targetLocBuff = AbilityUtil.getTargetBlock(entity, 14, true).getCenter().add(0, 1, 0);
         Vec3 originalPos = entity.position();
         var targetLoc = TeleportationUtil.clampToBorder((ServerLevel) level, targetLocBuff);
+        if(entity instanceof ServerPlayer serverPlayer)
+            PacketHandler.sendToPlayer(serverPlayer, new PlayPhotonBlockEffectPacket("blink", BlockPos.containing(originalPos), 0, 0, 0, 1, null, -1, true, false, null));
 
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .5f, 1);
 

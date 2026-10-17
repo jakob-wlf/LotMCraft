@@ -69,7 +69,7 @@ public class InvisibilityAbility extends Ability {
             }, () -> {
                 invisiblePlayers.remove(entity.getUUID());
                 clearArtifactScaling(entity);
-                }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), level)));
+                }, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
             taskIdRef.set(taskId);
         }
     }

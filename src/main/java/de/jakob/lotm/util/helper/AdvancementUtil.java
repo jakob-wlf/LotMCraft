@@ -1,14 +1,18 @@
 package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
+import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -132,6 +136,21 @@ public class AdvancementUtil {
     // onSuccessPreSet runs before setBeyonder if non-null.
     private static void executeAdvancement(LivingEntity entity, String pathway, int sequence,
                                            double failureChance, Runnable onSuccessPreSet) {
+        if(entity instanceof ServerPlayer player) {
+            if (hasRitual(sequence)) {
+                var component = player.getData(ModAttachments.RITUALS.get());
+
+                if(entity.level() instanceof ServerLevel level) {
+                    if(level.getGameRules().getBoolean(ModGameRules.APPLY_RITUALS)) {
+                        if (!component.isCompleted())
+                            failureChance = 100.0;
+                    }
+                }
+
+                RitualEffectHandlerEvent.removeRitual(player);
+            }
+        }
+
         int duration = calculateAdvancementDuration(sequence);
         StartAdvanceSequencePathwayEvent event = postAdvancementEvent(entity, sequence, pathway, failureChance, duration);
 

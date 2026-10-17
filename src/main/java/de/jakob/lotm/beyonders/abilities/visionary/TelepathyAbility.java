@@ -1,9 +1,9 @@
 package de.jakob.lotm.beyonders.abilities.visionary;
 
-import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.network.chat.Component;
@@ -21,6 +21,12 @@ public class TelepathyAbility extends ToggleAbility {
         super(id);
         autoClear = false;
         canBeUsedByNPC = false;
+        canBeShared = false;
+
+        canBeReplicated = false;
+        cannotBeStolen = true;
+        canBeCopied = false;
+        canBeUsedInArtifact = false;
     }
 
     @Override
@@ -37,10 +43,12 @@ public class TelepathyAbility extends ToggleAbility {
     public void start(Level level, LivingEntity entity) {
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));
+            return;
         }
     }
 
@@ -59,11 +67,12 @@ public class TelepathyAbility extends ToggleAbility {
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
-        if (VisionaryHandler.shouldStayInvisible(entitySeq, target)) return;
+        if (VisionaryHandler.shouldStayInvisibleVisOnly(entitySeq, target)) return;
         if (VisionaryHandler.shouldFailAndTrigger(entitySeq, entity, target, this, false)) return;
         if (AbilityUtil.isTargetSignificantlyStronger(entitySeq, BeyonderData.getSequence(target))) return;
 
-        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq)) {
+        String path = BeyonderData.getPathway(entity);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, path)) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.mind_world_authority_ability.is_sealed")
                             .withColor(0xFFff124d));

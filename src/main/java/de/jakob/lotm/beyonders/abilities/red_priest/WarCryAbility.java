@@ -4,7 +4,6 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -69,16 +68,18 @@ public class WarCryAbility extends Ability {
 
         BeyonderData.addModifierWithTimeLimit(entity, "war_cry", 1.05, (long) (20 * 5));
         entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, (int) (20 * 5), 4, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, (int) (20 * 5), 3, false, false, false));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, (int) (20 * 5), 0, false, false, false));
 
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos.add(0, 1, 0), 600, .75, .75, .75, .15);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, startPos, 600, 7, .2, 7, .005);
 
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
     }
 
     private void spawnFallingBlocks(Level level, Vec3 startPos, BlockPos b, boolean griefing) {

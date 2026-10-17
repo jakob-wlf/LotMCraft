@@ -20,25 +20,22 @@ import de.jakob.lotm.util.playerMap.*;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.TeamUtils;
-import de.jakob.lotm.attachments.MarionetteComponent;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.*;
 
 public class BeyonderData {
-    private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180, 50};
-    //private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0, 1.0};
-    private static final double[] multiplier = {1, 1, 1, 1, 1, 1, 1, 1, 1.0, 1.0, 1.0};
-    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .2, .3, .4, 1.0, 1.0, 1.0};
+    private static final int[] spiritualityLookup = {60000, 20000, 10000, 5000, 3900, 1900, 1200, 780, 200, 180};
+    //private static final double[] multiplier = {9, 4.25, 3.25, 2.15, 1.85, 1.4, 1.25, 1.1, 1.0, 1.0};
+    private static final double[] multiplier = {1, 1, 1, 1, 1, 1, 1, 1, 1.0, 1.0};
+    private static final double[] sanityDecreaseMultiplier = {.01, .02, .025, .05, .1, .2, .3, .4, 1.0, 1.0};
 
     public static final HashMap<String, List<Integer>> implementedRecipes = new HashMap<>();
 
@@ -116,6 +113,17 @@ public class BeyonderData {
         };
     }
 
+    public static boolean hasUniqueness(ServerPlayer player){
+        var dataOp = playerMap.get(player.getUUID());
+
+        if(dataOp.isEmpty()) return false;
+
+        boolean has = player.getData(ModAttachments.UNIQUENESS_COMPONENT.get()).hasUniqueness();
+        boolean isSeq0 = getSequence(player) == 0;
+
+        return isSeq0 || has;
+    }
+
     public static String getSequenceName(String pathway, int sequence) {
         if(!pathwayInfos.containsKey(pathway))
             return "Unknown";
@@ -137,7 +145,7 @@ public class BeyonderData {
     public static void initPathwayInfos() {
         pathwayInfos.put("fool", new PathwayInfos("fool", 0xFF864ec7, new String[]{"fool", "attendant_of_mysteries", "miracle_invoker", "scholar_of_yore", "bizarro_sorcerer", "marionettist", "faceless", "magician", "clown", "seer"}, new String[]{"error", "door"}));
         pathwayInfos.put("error", new PathwayInfos("error", 0xFF0018b8, new String[]{"error", "worm_of_time", "trojan_horse_of_destiny", "mentor_of_deceit", "parasite", "dream_stealer", "prometheus", "cryptologist", "swindler", "marauder"}, new String[]{"fool", "door"}));
-        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}, new String[]{"error", "error"}));
+        pathwayInfos.put("door", new PathwayInfos("door", 0xFF89f5f5, new String[]{"door", "key_of_stars", "planeswalker", "wanderer", "secrets_sorcerer", "traveler", "scribe", "astrologer", "trickmaster", "apprentice"}, new String[]{"fool", "error"}));
         pathwayInfos.put("visionary", new PathwayInfos("visionary", 0xFFe3ffff, new String[]{"visionary", "author", "discerner", "dream_weaver", "manipulator", "dreamwalker", "hypnotist", "psychiatrist", "telepathist", "spectator"}, new String[]{"sun", "hanged_man", "white_tower", "tyrant"}));
         pathwayInfos.put("sun", new PathwayInfos("sun", 0xFFffad33, new String[]{"sun", "white_angel", "lightseeker", "justice_mentor", "unshadowed", "priest_of_light", "notary", "solar_high_priest", "light_supplicant", "bard"}, new String[]{"visionary", "hanged_man", "white_tower", "tyrant"}));
         pathwayInfos.put("tyrant", new PathwayInfos("tyrant", 0xFF336dff, new String[]{"tyrant", "thunder_god", "calamity", "sea_king", "cataclysmic_interrer", "ocean_songster", "wind_blessed", "seafarer", "folk_of_rage", "sailor"}, new String[]{"sun", "hanged_man", "white_tower", "visionary"}));
@@ -304,6 +312,14 @@ public class BeyonderData {
             }
         }
 
+    }
+
+    public static boolean hasRitual(LivingEntity entity){
+        return hasRitual(getSequence(entity) - 1);
+    }
+
+    public static boolean hasRitual(int seq){
+        return false;
     }
 
     public static int getMaxWormAmount(int sequence) {
@@ -872,8 +888,8 @@ public class BeyonderData {
             case 6 -> 1.0105f;
             case 5 -> 1.015f;
             case 4 -> 1.03f;
-            case 3 -> 1.15f;
-            case 2 -> 1.25f;
+            case 3 -> 1.075f;
+            case 2 -> 1.1f;
             case 1 -> 1.0f + (float) stacks/7 ;
             default -> 0.0f;
         };

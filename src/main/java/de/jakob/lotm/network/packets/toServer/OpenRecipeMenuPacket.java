@@ -1,8 +1,8 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.gui.custom.recipe.RecipeMenuProvider;
 import de.jakob.lotm.beyonders.potions.PotionRecipe;
+import de.jakob.lotm.gui.custom.recipe.RecipeMenuProvider;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItem;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import net.minecraft.network.FriendlyByteBuf;
@@ -53,6 +53,8 @@ public record OpenRecipeMenuPacket(int sequence, String pathway) implements Cust
                 List<ItemStack> ingredients = new ArrayList<>();
                 ingredients.add(recipe.supplementaryIngredient1());
                 ingredients.add(recipe.supplementaryIngredient2());
+                ingredients.add(recipe.supplementaryIngredient3());
+                ingredients.add(recipe.supplementaryIngredient4());
                 ingredients.add(recipe.mainIngredient());
 
                 player.openMenu(new RecipeMenuProvider(ingredients, pathway, sequence));

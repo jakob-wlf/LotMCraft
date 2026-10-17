@@ -10,7 +10,6 @@ import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -21,7 +20,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.SoulFireBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
@@ -37,7 +35,6 @@ import java.util.concurrent.atomic.AtomicReference;
 //TODO: Create black flame block
 public class BlackFlameAbility extends SelectableAbility {
 
-    private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(0.08f, 0f, 0.1f), 1.5f);
 
     public BlackFlameAbility(String id) {
         super(id, 1f, "soul_burn", "burning");
@@ -82,6 +79,7 @@ public class BlackFlameAbility extends SelectableAbility {
         }
     }
 
+    DustParticleOptions dust = new DustParticleOptions(new Vector3f(0, 0, 0), 2f);
 
     private void burn(Level level, LivingEntity entity) {
         if(level.isClientSide)
@@ -114,7 +112,6 @@ public class BlackFlameAbility extends SelectableAbility {
             );
         });
 
-        AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 2.5, ModDamageTypes.BLACK_FLAME, baseDamage, targetPos, true, false);
 
         ServerScheduler.scheduleDelayed(51, () -> level.setBlockAndUpdate(BlockPos.containing(targetPos), Blocks.AIR.defaultBlockState()));
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, targetPos, entity, this, interactionFlags, 4, 10));
@@ -125,15 +122,13 @@ public class BlackFlameAbility extends SelectableAbility {
         if(level.isClientSide)
             return;
 
-        Vec3 startPos = entity.position().add(0, .35, 0);
+        Vec3 startPos = entity.getEyePosition().add(0, .5, 0);
 
         level.playSound(null, startPos.x, startPos.y, startPos.z, SoundEvents.BLAZE_SHOOT, entity.getSoundSource(), 1.0f, 1.0f);
 
         AtomicDouble i = new AtomicDouble(0.6);
         ServerScheduler.scheduleForDuration(0, 2, 80, () -> {
             double radius = i.get() < .71 ? i.get() : i.get() * 2;
-
-            ParticleUtil.spawnCircleParticles((ServerLevel) level, ModParticles.BLACK_FLAME.get(), startPos, radius, (int) (radius * 27));
 
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, radius - .3, radius, baseDamage, startPos.subtract(0, 1, 0), true, false, true, 0, 20 * 5, ModDamageTypes.source(level, ModDamageTypes.BLACK_FLAME, entity));
 

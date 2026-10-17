@@ -17,27 +17,26 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityEvent;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.util.Collection;
 import java.util.Set;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -61,7 +60,6 @@ public class ControllingUtils {
         component.captureAttributesFrom(player);
 
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
-        BeyonderDataTickHandler.invalidateCache(player);
 
         ControlBodyDouble controlBodyDouble = ControlBodyDouble.create(level, player, !spawnOriginalBody);
         level.addFreshEntity(controlBodyDouble);
@@ -121,6 +119,10 @@ public class ControllingUtils {
                 }
             }
         }
+
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(target);
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(source);
+
 
         float maxHealth = target.getMaxHealth();
         float sourceHealth = source.getHealth();
@@ -182,7 +184,6 @@ public class ControllingUtils {
         BeyonderDataTickHandler.invalidateCache(player);
         PhysicalEnhancementsAbility.removeAllEnhancementsForEntity(player);
 
-
         ControlBodyDouble controlBodyDouble = component.getBodyDouble();
         if(controlBodyDouble == null || !controlBodyDouble.isAlive()) {
             component.restoreAttributesTo(player);
@@ -243,7 +244,7 @@ public class ControllingUtils {
     @SubscribeEvent
     public static void onDimensionChange(EntityTravelToDimensionEvent event) {
         if (!(event.getEntity() instanceof Player player) || !isControlling(player)) return;
-        if (getManipulationDistance(BeyonderData.getSequence(player)) < 0 && BeyonderData.getPathway(player).equals("fool")) {
+        if (getManipulationDistance(BeyonderData.getSequence(player, false, true)) < 0 && BeyonderData.getPathway(player, true).equals("fool")) {
             if (event.getDimension().equals(Level.NETHER) ||
                     event.getDimension().equals(Level.END) ||
                     event.getDimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) return;
@@ -277,12 +278,13 @@ public class ControllingUtils {
         if(!(event.getEntity() instanceof ServerPlayer player)) return;
 
         if(!isControlling(player)) return;
-        System.out.println("Pathway: " + BeyonderData.getPathway(player) + " - Sequence" + BeyonderData.getSequence(player) + " - Controlled Sequence: " + getControlledSequence(player));
         EntityControllingComponent component = player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT);
         if(component.bodyDouble == null) return;
         if(component.bodyDouble.level() != player.level() || !component.bodyDouble.isAlive()) return;
 
-        if(player.distanceTo(component.bodyDouble) > getManipulationDistance(BeyonderData.getSequence(player)) * 5) {
+        int maxDistance = getManipulationDistance(BeyonderData.getSequence(player, false, true));
+        if (maxDistance < 0) return;
+        if(player.distanceTo(component.bodyDouble) > maxDistance * 5) {
             cancel(player, 0, true, false);
         }
     }
@@ -293,8 +295,7 @@ public class ControllingUtils {
             case 4 -> 75;
             case 3 -> 200;
             case 2 -> 500;
-            case 1 -> 2000;
-            case 0 -> 5000;
+            case 1, 0 -> -1;
         };
     }
 }

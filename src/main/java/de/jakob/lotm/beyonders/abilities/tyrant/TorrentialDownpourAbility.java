@@ -3,10 +3,11 @@ package de.jakob.lotm.beyonders.abilities.tyrant;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -130,10 +131,9 @@ public class TorrentialDownpourAbility extends Ability {
         }, () -> activeDownpours.remove(data), (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
 
         // Scheduler for Damage
-        double multiplier = multiplier(entity);
         float damage = baseDamage;
 
-        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 15* multiplier(entity)), () -> {
+        ServerScheduler.scheduleForDuration(0, 10, (int) (20 * 30), () -> {
             AbilityUtil.damageNearbyEntities((ServerLevel) level, entity, 25, ModDamageTypes.WATER, damage, startPos, true, false, true, 0);
         }, null, (ServerLevel) level, () -> AbilityUtil.getTimeInArea(entity, new Location(startPos, level)));
     }

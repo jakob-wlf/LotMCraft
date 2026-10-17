@@ -23,7 +23,7 @@ public class ConcealedDomainAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(2, 4, 5));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(50000f, 35000f, 22000f));
+        dynamicSpirituality = new LinkedList<>(List.of(8000f, 6000f, 4000f));
     }
 
     @Override

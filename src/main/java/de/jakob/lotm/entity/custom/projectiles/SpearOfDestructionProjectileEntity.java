@@ -89,15 +89,8 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
         if(!(result.getEntity() instanceof LivingEntity target)) {
             return;
         }
-        if(owner != null) {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE, owner), (float) damage/2);
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.CHAOS, owner), (float) damage/2);
-
-        }
-        else {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.SOUL_FIRE), (float) damage/2);
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.CHAOS), (float) damage/2);
-        }
+        if(owner != null) target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(level, ModDamageTypes.FIRE), (float) damage);
 
         if(!(level() instanceof ServerLevel serverLevel)) {
             return;

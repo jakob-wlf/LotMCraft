@@ -7,6 +7,7 @@ import de.jakob.lotm.beyonders.abilities.core.Ability;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +39,7 @@ public record SealedArtifactData(
                                             .collect(Collectors.toList()),
                                     // Ability objects -> String IDs
                                     abilities -> abilities.stream()
+                                            .filter(Objects::nonNull)
                                             .map(Ability::getId)
                                             .collect(Collectors.toList())
                             )

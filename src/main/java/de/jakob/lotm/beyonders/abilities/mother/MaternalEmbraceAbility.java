@@ -1,9 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
-import de.jakob.lotm.beyonders.abilities.core.Ability;
-import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.TransformationComponent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -77,8 +76,7 @@ public class MaternalEmbraceAbility extends Ability {
         component.setTransformedAndSync(true, targetEntity);
         component.setTransformationIndexAndSync(TransformationComponent.TransformationType.COFFIN, targetEntity);
 
-        DisabledAbilitiesComponent disabledAbilitiesComponent = targetEntity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT);
-        disabledAbilitiesComponent.disableAbilityUsageForTime("maternal_embrace", duration, targetEntity);
+        AbilityUtil.sealAllTargetAbilities(entity, targetEntity, "maternal_embrace", duration);
 
         targetEntity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, duration, 20, false, false, false));
         targetEntity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 20, false, false, false));

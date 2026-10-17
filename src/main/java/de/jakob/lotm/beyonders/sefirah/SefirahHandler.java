@@ -128,7 +128,6 @@ public class SefirahHandler {
         String invitedSefirot = sefirotData.getInvitedSefirot(player.getUUID());
 
         if(invitedSefirot == null) {
-
             return;
         }
 

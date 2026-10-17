@@ -42,8 +42,10 @@ public class CleansingAbility extends SelectableAbility {
 
     @Override
     public String[] getAbilityNames() {
-        return new String[]{"ability.lotmcraft.cleansing.self",
-                "ability.lotmcraft.cleansing.others"};
+        return new String[]{
+                "ability.lotmcraft.cleansing.self",
+                "ability.lotmcraft.cleansing.others"
+        };
     }
 
     @Override
@@ -82,20 +84,46 @@ public class CleansingAbility extends SelectableAbility {
         cleanEntity(entity);
     }
 
-    private void cleanEntity(LivingEntity e){
-        e.setRemainingFireTicks(0);
-
-        e.getActiveEffects()
-                .stream()
-                .map(MobEffectInstance::getEffect)
-                .filter(effect ->
-                        effect.value().getCategory() == MobEffectCategory.HARMFUL
-                        && !effect.equals(ModEffects.LOOSING_CONTROL))
-                .forEach(e::removeEffect);
-
-        if(e instanceof Player player) {
-            player.getFoodData().setSaturation(20);
-            player.getFoodData().setFoodLevel(20);
+    private void cleanEntity(LivingEntity entity) {
+        if (entity == null || entity.isRemoved()) {
+            return;
         }
+
+        entity.setRemainingFireTicks(0);
+
+        List<MobEffectInstance> buff = new LinkedList<>();
+
+        for(var effect : entity.getActiveEffects()){
+            if(effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL &&
+            !effect.equals(ModEffects.LOOSING_CONTROL))
+                buff.add(effect);
+
+        }
+
+        for (var effect : buff) {
+            entity.removeEffect(effect.getEffect());
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int value = getValue(entitySeq);
+
+        if (entity instanceof Player player) {
+            var foodData = player.getFoodData();
+
+            player.getFoodData().setSaturation(foodData.getSaturationLevel() + value);
+            player.getFoodData().setFoodLevel(foodData.getFoodLevel() + value);
+        }
+    }
+
+    private static int getValue(int seq){
+        return switch (seq){
+          case 9, 8 -> 3;
+          case 7,6 -> 5;
+          case 5 -> 6;
+          case 4 -> 10;
+          case 3 -> 12;
+          case 2, 1, 0 -> 20;
+            default -> 0;
+        };
     }
 }

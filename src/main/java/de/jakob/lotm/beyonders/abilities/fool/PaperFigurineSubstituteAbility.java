@@ -6,6 +6,7 @@ import de.jakob.lotm.beyonders.abilities.death.NationOfTheDeadAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.ImprisonAbility;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -45,10 +46,10 @@ public class PaperFigurineSubstituteAbility extends Ability {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(6, 7, 7, 8, 8, 9, 10, 10));
+        dynamicCooldown = new LinkedList<>(List.of(1, 3, 4, 8, 8, 9, 10, 10));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(17500f, 7000f, 3800f, 2500f, 2275f, 1660f, 1400f, 1300f));
+        dynamicSpirituality = new LinkedList<>(List.of(30000f, 12000f, 5000f, 2500f, 2275f, 1660f, 1400f, 1300f));
 
     }
 
@@ -69,9 +70,6 @@ public class PaperFigurineSubstituteAbility extends Ability {
                 player.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
             return;
         }
-
-        if(figurineNumbers.containsKey(entity.getUUID()) && figurineNumbers.get(entity.getUUID()) >= 5)
-            return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
 
@@ -114,7 +112,7 @@ public class PaperFigurineSubstituteAbility extends Ability {
         if (NationOfTheDeadAbility.SUBSTITUTION_SUPPRESSED.contains(event.getEntity().getUUID())) return;
         if (!figurineNumbers.containsKey(event.getEntity().getUUID())) return;
 
-        if(event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
+        if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
 
@@ -133,7 +131,6 @@ public class PaperFigurineSubstituteAbility extends Ability {
         event.setNewDamage(0);
 
         Vec3 pos = entity.position();
-
         Level level = entity.level();
 
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.CLOUD, entity.getEyePosition().subtract(0, .4, 0), 35, .3, .8, .3, 0);
@@ -141,8 +138,8 @@ public class PaperFigurineSubstituteAbility extends Ability {
         Random r = new Random();
         Vec3 newPos = pos.add(r.nextDouble(-7, 7), r.nextDouble(-1, 3), r.nextDouble(-7, 7));
 
-        for(int i = 0; i < 65; i++) {
-            if(level.getBlockState(BlockPos.containing(newPos.x, newPos.y, newPos.z)).isAir())
+        for (int i = 0; i < 65; i++) {
+            if (level.getBlockState(BlockPos.containing(newPos.x, newPos.y, newPos.z)).isAir())
                 break;
 
             newPos = pos.add(r.nextDouble(-7, 7), r.nextDouble(-1, 3), r.nextDouble(-7, 7));
@@ -150,12 +147,12 @@ public class PaperFigurineSubstituteAbility extends Ability {
 
         entity.teleportTo(newPos.x, newPos.y, newPos.z);
 
-        if(entity instanceof Player player) {
+        if (entity instanceof Player player) {
             int index = player.getInventory().findSlotMatchingItem(new ItemStack(ModItems.PAPER_FIGURINE_SUBSTITUTE.get()));
-            if(index != -1)
+            if (index != -1)
                 player.getInventory().removeItem(index, 1);
         }
-        
+
         ServerLevel serverLevel = (ServerLevel) level;
         ServerScheduler.scheduleForDuration(0, 1, 20, () ->
         serverLevel.sendParticles(
@@ -169,7 +166,6 @@ public class PaperFigurineSubstituteAbility extends Ability {
 
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ARMOR_STAND_HIT, SoundSource.BLOCKS, 3, 1);
         level.playSound(null, pos.x, pos.y, pos.z, SoundEvents.ENDERMAN_TELEPORT, SoundSource.BLOCKS, .6f, 1);
-
     }
 
     public static void setFigurineNumber(UUID uuid, int number) {

@@ -5,21 +5,15 @@ import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.calamities.Earthquake;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.data.Location;
-import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
-import de.jakob.lotm.util.helper.ParticleUtil;
-import de.jakob.lotm.util.scheduling.ServerScheduler;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.*;
 
 public class EarthquakeAbility extends Ability {

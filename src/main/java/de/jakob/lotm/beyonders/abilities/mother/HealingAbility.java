@@ -1,15 +1,19 @@
 package de.jakob.lotm.beyonders.abilities.mother;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -65,7 +69,17 @@ public class HealingAbility extends SelectableAbility {
 
         for(LivingEntity e : AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, entity.position(), 6, false, true)) {
             e.setHealth(Math.min(e.getMaxHealth(), e.getHealth() + restoredHealth));
-            ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), e.getEyePosition().subtract(0, .3, 0), 35, .9);
+            Vec3 pos = e.getEyePosition().subtract(0, .5, 0);
+            BlockPos blockPos = BlockPos.containing(pos);
+
+            double offsetX = pos.x - (blockPos.getX() + 0.5);
+            double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+            double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+            PacketHandler.sendToNearbyPlayers(
+                    new PlayPhotonBlockEffectPacket("healing", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
+                    (ServerLevel) level, pos, 128
+            );
         }
     }
 
@@ -80,7 +94,17 @@ public class HealingAbility extends SelectableAbility {
 
         entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + restoredHealth));
 
-        ParticleUtil.spawnParticles((ServerLevel) level, ModParticles.HEALING.get(), entity.getEyePosition().subtract(0, .3, 0), 35, .9);
+        Vec3 pos = entity.getEyePosition().subtract(0, .5, 0);
+        BlockPos blockPos = BlockPos.containing(pos);
+
+        double offsetX = pos.x - (blockPos.getX() + 0.5);
+        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
+        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayPhotonBlockEffectPacket("healing", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
+                (ServerLevel) level, pos, 128
+        );
     }
 
     private static int getAmount(int seq){

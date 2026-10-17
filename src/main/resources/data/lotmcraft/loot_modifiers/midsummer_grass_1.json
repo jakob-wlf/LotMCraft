@@ -1,0 +1,33 @@
+{
+  "type": "neoforge:add_table",
+  "conditions": [
+    {
+      "condition": "minecraft:block_state_property",
+      "block": "minecraft:short_grass"
+    },
+    {
+      "condition": "minecraft:time_check",
+      "value": {
+        "min": 0,
+        "max": 12000
+      },
+      "period": 24000
+    },
+    {
+      "condition": "minecraft:location_check",
+      "predicate": {
+        "biomes": [
+          "minecraft:plains",
+          "minecraft:sunflower_plains",
+          "minecraft:flower_forest",
+          "minecraft:meadow"
+        ]
+      }
+    },
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.05
+    }
+  ],
+  "table": "lotmcraft:ingredients/midsummer_grass"
+}

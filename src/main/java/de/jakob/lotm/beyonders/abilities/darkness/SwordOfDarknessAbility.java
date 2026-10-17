@@ -3,8 +3,6 @@ package de.jakob.lotm.beyonders.abilities.darkness;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
-import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.attachments.SanityComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
@@ -12,7 +10,6 @@ import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.VectorUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
@@ -41,9 +38,9 @@ public class SwordOfDarknessAbility extends Ability {
         dynamicCooldown = new LinkedList<>(List.of(3, 5, 6, 8));
 
         hasDynamicSpirituality = true;
-        dynamicSpirituality = new LinkedList<>(List.of(20000f, 8500f, 5000f, 5000f));
+        dynamicSpirituality = new LinkedList<>(List.of(9500f, 6750f, 4400f, 2850f));
 
-        baseDamage = 10;
+        baseDamage = 12;
     }
 
     @Override
@@ -93,11 +90,8 @@ public class SwordOfDarknessAbility extends Ability {
 
                     //Additional effects
                     AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 20).forEach(e -> {
-                        SanityComponent sanityComponent = e.getData(ModAttachments.SANITY_COMPONENT);
-                        sanityComponent.increaseSanityAndSync(-0.000163f, e);
                         if (seq <= 1)
                         {
-                            //Eternal rest part
                             int actualDuration = 20;
                             e.addEffect(new MobEffectInstance(ModEffects.ASLEEP, actualDuration, 1, false, false, true));
                             e.addEffect(new MobEffectInstance(MobEffects.DARKNESS, actualDuration, 5, false, false, false));
@@ -114,7 +108,7 @@ public class SwordOfDarknessAbility extends Ability {
                             boolean hasMorale = InteractionHandler.isInteractionPossibleForEntity(eLoc, "morale_boost", seq, e);
                             int duration = hasMorale? 20 : 20 * 2;
                             BeyonderData.addModifierWithTimeLimit(e, "sword_of_darkness_multiplier_reduction", 0.7, duration);
-                        };
+                        }
                     });
                     if(BeyonderData.isGriefingEnabled(entity)) {
                         if(serverLevel.getBlockState(BlockPos.containing(point)).getDestroySpeed(level, BlockPos.containing(point)) < 0)
@@ -125,7 +119,7 @@ public class SwordOfDarknessAbility extends Ability {
 
                 distance.addAndGet(.5);
             }
-        }, () -> clearArtifactScaling(entity), serverLevel, () -> AbilityUtil.getTimeInArea(entity, new de.jakob.lotm.util.data.Location(entity.position(), serverLevel)));
+        }, () -> clearArtifactScaling(entity), serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
     @Override

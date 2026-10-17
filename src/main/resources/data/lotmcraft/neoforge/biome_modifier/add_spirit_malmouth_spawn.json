@@ -17,7 +17,7 @@
   "spawners": [
     {
       "type": "lotmcraft:spirit_malmouth",
-      "weight": 100,
+      "weight": 80,
       "minCount": 1,
       "maxCount": 5,
       "category": "creature"

@@ -60,6 +60,31 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                RecognitionSyncPacket.TYPE,
+                RecognitionSyncPacket.STREAM_CODEC,
+                RecognitionSyncPacket::handle
+        );
+
+
+        registrar.playToClient(
+                CancelPhotonEntityEffectPacket.TYPE,
+                CancelPhotonEntityEffectPacket.STREAM_CODEC,
+                CancelPhotonEntityEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                CancelPhotonBlockEffectPacket.TYPE,
+                CancelPhotonBlockEffectPacket.STREAM_CODEC,
+                CancelPhotonBlockEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                PlayCancellablePhotonBlockEffectPacket.TYPE,
+                PlayCancellablePhotonBlockEffectPacket.STREAM_CODEC,
+                PlayCancellablePhotonBlockEffectPacket::handle
+        );
+
+        registrar.playToClient(
                 SyncPlayerSefirotPacket.TYPE,
                 SyncPlayerSefirotPacket.STREAM_CODEC,
                 SyncPlayerSefirotPacket::handle
@@ -309,6 +334,13 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                SyncPreLoadGamerulePacket.TYPE,
+                SyncPreLoadGamerulePacket.STREAM_CODEC,
+                SyncPreLoadGamerulePacket::handle
+        );
+
+
+        registrar.playToClient(
                 SyncCullAbilityPacket.TYPE,
                 SyncCullAbilityPacket.STREAM_CODEC,
                 SyncCullAbilityPacket::handle
@@ -363,11 +395,6 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
-                SyncExplodedTrapPacket.TYPE,
-                SyncExplodedTrapPacket.STREAM_CODEC,
-                SyncExplodedTrapPacket::handle
-        );
-        registrar.playToClient(
                 SyncGriefingStatePacket.TYPE,
                 SyncGriefingStatePacket.STREAM_CODEC,
                 SyncGriefingStatePacket::handle
@@ -377,6 +404,12 @@ public class PacketHandler {
                 DarknessEffectPacket.TYPE,
                 DarknessEffectPacket.STREAM_CODEC,
                 DarknessEffectPacket::handle
+        );
+
+        registrar.playToClient(
+                PuppetTimerPacket.TYPE,
+                PuppetTimerPacket.STREAM_CODEC,
+                PuppetTimerPacket::handle
         );
 
         registrar.playToClient(
@@ -438,12 +471,6 @@ public class PacketHandler {
                 UpdateEffectPositionPacket.TYPE,
                 UpdateEffectPositionPacket.STREAM_CODEC,
                 UpdateEffectPositionPacket::handle
-        );
-
-        registrar.playToClient(
-                OpenCoordinateScreenForTeleportationPacket.TYPE,
-                OpenCoordinateScreenForTeleportationPacket.STREAM_CODEC,
-                OpenCoordinateScreenForTeleportationPacket::handle
         );
 
         registrar.playToClient(
@@ -603,6 +630,12 @@ public class PacketHandler {
         );
 
         registrar.playToClient(
+                LuckPerceptionPacket.TYPE,
+                LuckPerceptionPacket.STREAM_CODEC,
+                LuckPerceptionPacket::handle
+        );
+
+        registrar.playToClient(
                 IsPlayerModelPacket.TYPE,
                 IsPlayerModelPacket.STREAM_CODEC,
                 IsPlayerModelPacket::handle
@@ -622,11 +655,6 @@ public class PacketHandler {
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
-        registrar.playToServer(
-                BecomeBeyonderPacket.TYPE,
-                BecomeBeyonderPacket.STREAM_CODEC,
-                BecomeBeyonderPacket::handle
-        );
 
         registrar.playToServer(
                 WhipSlashPayload.TYPE,
@@ -634,6 +662,11 @@ public class PacketHandler {
                 WhipSlashPayload::handle
         );
 
+        registrar.playToServer(
+                UseCopiedAbilityPacket.TYPE,
+                UseCopiedAbilityPacket.STREAM_CODEC,
+                UseCopiedAbilityPacket::handle
+        );
 
         registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
@@ -858,6 +891,7 @@ public class PacketHandler {
                 OpenRecipeMenuPacket::handle
         );
 
+
         registrar.playToServer(
                 TeleportToSefirotPacket.TYPE,
                 TeleportToSefirotPacket.STREAM_CODEC,
@@ -883,9 +917,15 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
-                TeleportPlayerToLocationPacket.TYPE,
-                TeleportPlayerToLocationPacket.STREAM_CODEC,
-                TeleportPlayerToLocationPacket::handle
+                FlamingJumpTeleportPacket.TYPE,
+                FlamingJumpTeleportPacket.STREAM_CODEC,
+                FlamingJumpTeleportPacket::handle
+        );
+
+        registrar.playToServer(
+                TeleportToCoordinatesPacket.TYPE,
+                TeleportToCoordinatesPacket.STREAM_CODEC,
+                TeleportToCoordinatesPacket::handle
         );
 
         registrar.playToServer(
@@ -952,6 +992,11 @@ public class PacketHandler {
                 OpenArtifactWheelPacket::handle);
 
         registrar.playToServer(
+                RequestGameruleSyncPacket.TYPE,
+                RequestGameruleSyncPacket.STREAM_CODEC,
+                RequestGameruleSyncPacket::handle);
+
+        registrar.playToServer(
                 RequestOpenMarionetteMenuPacket.TYPE,
                 RequestOpenMarionetteMenuPacket.STREAM_CODEC,
                 RequestOpenMarionetteMenuPacket::handle);
@@ -1000,6 +1045,7 @@ public class PacketHandler {
     }
 
     public static void sendToServer(CustomPacketPayload packet) {
+        if(Minecraft.getInstance().getConnection() == null) return;
         Minecraft.getInstance().getConnection().send(packet);
     }
 

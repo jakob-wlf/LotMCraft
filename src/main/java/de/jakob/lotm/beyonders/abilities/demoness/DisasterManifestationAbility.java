@@ -2,21 +2,18 @@ package de.jakob.lotm.beyonders.abilities.demoness;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import com.zigythebird.playeranimcore.math.Vec3f;
-import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
-import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
-import de.jakob.lotm.attachments.ActiveShaderComponent;
 import de.jakob.lotm.attachments.FogComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.MeteorEntity;
 import de.jakob.lotm.entity.custom.ability_entities.TornadoEntity;
-import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
@@ -102,7 +99,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
             AbilityUtil.getBlocksInSphereRadius(serverLevel, startPos, radius.get(), true, true, false).forEach(b -> {
                 BlockState state = serverLevel.getBlockState(b);
                 BlockState aboveState = serverLevel.getBlockState(b.above());
-                if(!state.is(Blocks.PACKED_ICE) && aboveState.getCollisionShape(serverLevel, b.above()).isEmpty() && random.nextBoolean()) {
+                if(!state.is(Blocks.PACKED_ICE) && aboveState.getCollisionShape(serverLevel, b.above()).isEmpty()) {
                     ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SNOWFLAKE, b.getCenter().add(0, 1, 0), 1, .4);
                 }
                 if(griefing) {
@@ -136,7 +133,7 @@ public class DisasterManifestationAbility extends SelectableAbility {
                 }
             }
 
-            radius.addAndGet(1);
+            radius.addAndGet(.5);
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 
