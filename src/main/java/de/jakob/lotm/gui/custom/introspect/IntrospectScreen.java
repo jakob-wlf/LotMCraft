@@ -19,6 +19,7 @@ import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.*;
+import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityId;
 import de.jakob.lotm.util.helper.ClientTeamData;
 import net.minecraft.ChatFormatting;
@@ -209,14 +210,14 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ABILITIES_PANEL_WIDTH = 120;
     private static final int ABILITIES_PANEL_HEIGHT = 115;
     private static final int ABILITY_WHEEL_HEIGHT = 100;
-    // Ability bar: 2 rows x 5 columns (the old single row overlapped its own icons)
-    private static final int BAR_COLS = 5;
-    private static final int BAR_CELL_W = 22;
+    // Ability bar: 3 rows x 6 columns
+    private static final int BAR_COLS = 6;
+    private static final int BAR_CELL_W = 18;
     private static final int BAR_CELL_H = 28;
-    private static final int ABILITY_BAR_HEIGHT = 75;
+    private static final int ABILITY_BAR_HEIGHT = 100;
     private static final int ABILITY_ICON_SIZE = 16;
     private static final int ABILITY_WHEEL_MAX = 24;
-    private static final int ABILITY_BAR_MAX = 10;
+    private static final int ABILITY_BAR_MAX = AbilityBarHelper.MAX_SLOTS;
     private static final int SHARED_POOL_HEIGHT = 50;
     private static final int SHARED_WHEEL_HEIGHT = 60;
 
@@ -237,7 +238,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int ALLY_MAX_ROWS = 8;
     private static final int ALLY_MAX_REQUESTS = 5;
 
-    private static final String[] KEYBIND_LABELS = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
+    private static final String[] KEYBIND_LABELS = new String[ABILITY_BAR_MAX];
 
     private int abilitiesScrollOffset = 0;
     private int maxAbilitiesScroll = 0;
@@ -620,12 +621,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         sharedWheelSlots.clear();
         sharedWheelSlots.addAll(AbilityWheelClientData.getSharedWheelAbilities());
 
-        KEYBIND_LABELS[0] = LOTMCraft.useAbilityBarAbility1.getKey().getDisplayName().getString();
-        KEYBIND_LABELS[1] = LOTMCraft.useAbilityBarAbility2.getKey().getDisplayName().getString();
-        KEYBIND_LABELS[2] = LOTMCraft.useAbilityBarAbility3.getKey().getDisplayName().getString();
-        KEYBIND_LABELS[3] = LOTMCraft.useAbilityBarAbility4.getKey().getDisplayName().getString();
-        KEYBIND_LABELS[4] = LOTMCraft.useAbilityBarAbility5.getKey().getDisplayName().getString();
-        KEYBIND_LABELS[5] = LOTMCraft.useAbilityBarAbility6.getKey().getDisplayName().getString();
+        for (int i = 0; i < KEYBIND_LABELS.length; i++) {
+            KEYBIND_LABELS[i] = AbilityHotbarClientState.shortKeyLabel(LOTMCraft.useAbilityBarKeys[i]);
+        }
 
         int panelX = this.leftPos + this.imageWidth + 5;
         int inputWidth = ALLY_PANEL_WIDTH - 10;
@@ -1965,7 +1963,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         }
     }
 
-    // Bar layout helpers: 2 rows x 5 columns
+    // Bar layout helpers: rows of BAR_COLS columns
     private int barIconX(int slot, int panelX) {
         return panelX + 5 + (slot % BAR_COLS) * BAR_CELL_W + (BAR_CELL_W - ABILITY_ICON_SIZE) / 2;
     }

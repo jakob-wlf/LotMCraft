@@ -11,6 +11,7 @@ import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.ChatFormatting;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.StringWidget;
@@ -31,6 +32,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
+import net.neoforged.neoforge.client.settings.KeyConflictContext;
+import net.neoforged.neoforge.client.settings.KeyModifier;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.lwjgl.glfw.GLFW;
 
@@ -47,16 +50,14 @@ public class ClientEvents {
         LOTMCraft.openWheelToggleKey = new KeyMapping("key.beyonders.open_wheel_toggle", GLFW.GLFW_KEY_LEFT_ALT, "key.categories.beyonders");
         LOTMCraft.openWheelHoldKey = new KeyMapping("key.beyonders.open_wheel_hold", GLFW.GLFW_KEY_Y, "key.categories.beyonders");
         LOTMCraft.useSelectedAbilityKey = new KeyMapping("key.beyonders.use_ability", GLFW.GLFW_KEY_M, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility1 = new KeyMapping("key.beyonders.use_ability_bar_ability_1", GLFW.GLFW_KEY_1, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility2 = new KeyMapping("key.beyonders.use_ability_bar_ability_2", GLFW.GLFW_KEY_2, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility3 = new KeyMapping("key.beyonders.use_ability_bar_ability_3", GLFW.GLFW_KEY_3, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility4 = new KeyMapping("key.beyonders.use_ability_bar_ability_4", GLFW.GLFW_KEY_4, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility5 = new KeyMapping("key.beyonders.use_ability_bar_ability_5", GLFW.GLFW_KEY_5, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility6 = new KeyMapping("key.beyonders.use_ability_bar_ability_6", GLFW.GLFW_KEY_6, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility7 = new KeyMapping("key.beyonders.use_ability_bar_ability_7", GLFW.GLFW_KEY_7, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility8 = new KeyMapping("key.beyonders.use_ability_bar_ability_8", GLFW.GLFW_KEY_8, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility9 = new KeyMapping("key.beyonders.use_ability_bar_ability_9", GLFW.GLFW_KEY_9, "key.categories.beyonders");
-        LOTMCraft.useAbilityBarAbility0 = new KeyMapping("key.beyonders.use_ability_bar_ability_0", GLFW.GLFW_KEY_0, "key.categories.beyonders");
+        LOTMCraft.toggleAbilityHotbarKey = new KeyMapping("key.beyonders.toggle_ability_hotbar", GLFW.GLFW_KEY_R, "key.categories.beyonders");
+        // Slots 1-9 default to the number keys, slots 10-18 to Ctrl + number keys
+        for (int i = 0; i < LOTMCraft.useAbilityBarKeys.length; i++) {
+            int key = GLFW.GLFW_KEY_1 + (i % 9);
+            KeyModifier modifier = i < 9 ? KeyModifier.NONE : KeyModifier.CONTROL;
+            LOTMCraft.useAbilityBarKeys[i] = new KeyMapping("key.beyonders.use_ability_bar_ability_" + (i + 1),
+                    KeyConflictContext.IN_GAME, modifier, InputConstants.Type.KEYSYM, key, "key.categories.beyonders");
+        }
         LOTMCraft.nextArtifactAbilityKey = new KeyMapping("key.beyonders.next_artifact_ability", GLFW.GLFW_KEY_P, "key.categories.beyonders");
         LOTMCraft.returnToMainBody = new KeyMapping("key.beyonders.return_to_main_body", GLFW.GLFW_KEY_P, "key.categories.beyonders");
         LOTMCraft.openArtifactWheel = new KeyMapping("key.beyonders.openArtifactWheel", GLFW.GLFW_KEY_L, "key.categories.beyonders");
@@ -76,16 +77,10 @@ public class ClientEvents {
         event.register(LOTMCraft.openWheelToggleKey);
         event.register(LOTMCraft.openWheelHoldKey);
         event.register(LOTMCraft.useSelectedAbilityKey);
-        event.register(LOTMCraft.useAbilityBarAbility1);
-        event.register(LOTMCraft.useAbilityBarAbility2);
-        event.register(LOTMCraft.useAbilityBarAbility3);
-        event.register(LOTMCraft.useAbilityBarAbility4);
-        event.register(LOTMCraft.useAbilityBarAbility5);
-        event.register(LOTMCraft.useAbilityBarAbility6);
-        event.register(LOTMCraft.useAbilityBarAbility7);
-        event.register(LOTMCraft.useAbilityBarAbility8);
-        event.register(LOTMCraft.useAbilityBarAbility9);
-        event.register(LOTMCraft.useAbilityBarAbility0);
+        event.register(LOTMCraft.toggleAbilityHotbarKey);
+        for (KeyMapping keyMapping : LOTMCraft.useAbilityBarKeys) {
+            event.register(keyMapping);
+        }
         event.register(LOTMCraft.returnToMainBody);
         event.register(LOTMCraft.openArtifactWheel);
         event.register(LOTMCraft.nextArtifactAbilityKey);

@@ -97,6 +97,9 @@ public class AbilityBarRenderer {
         int w = PLAQUE_PAD + ICON_SIZE + 6 + textW + PLAQUE_PAD;
         int h = PLAQUE_H;
         int x = hotbarRight + PLAQUE_GAP;
+        if (AbilityHotbarRenderer.isShown()) {
+            x += AbilityHotbarRenderer.COG_OVERHANG;
+        }
         int y = screenH - h - 1;
 
         
@@ -157,6 +160,9 @@ public class AbilityBarRenderer {
 
         if (mc.gameMode != null && mc.gameMode.canHurtPlayer()) {
             y -= SURVIVAL_JAR_OFFSET;
+        }
+        if (AbilityHotbarRenderer.isShown()) {
+            y -= AbilityHotbarRenderer.EXTRA_HEIGHT;
         }
 
         HudWidgets.blitFull(g, HudTheme.JAR, x, y, JAR_W, JAR_H);

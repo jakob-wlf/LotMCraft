@@ -28,6 +28,7 @@ import de.jakob.lotm.rendering.effectRendering.VFXRenderer;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import de.jakob.lotm.util.data.ClientSacrificeCache;
 import de.jakob.lotm.util.data.ClientSpiritCache;
+import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AnimationUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.helper.RingExpansionRenderer;
@@ -449,6 +450,9 @@ public class ClientHandler {
 
     public static void handleUpdateAbilityBarPacket(ArrayList<String> abilities) {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null) {
+            AbilityBarHelper.setAbilities(mc.player, new ArrayList<>(abilities));
+        }
         if (mc.screen instanceof IntrospectScreen screen) {
             screen.setAbilityBarSlots(abilities);
         }

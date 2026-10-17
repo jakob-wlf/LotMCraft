@@ -30,7 +30,11 @@ public record SyncAbilityBarAbilitiesPacket(ArrayList<String> abilities) impleme
     public static void handle(SyncAbilityBarAbilitiesPacket packet, IPayloadContext context) {
         context.enqueueWork(() -> {
             ServerPlayer player = (ServerPlayer) context.player();
-            AbilityBarHelper.setAbilities(player, packet.abilities);
+            ArrayList<String> abilities = packet.abilities;
+            if (abilities.size() > AbilityBarHelper.MAX_SLOTS) {
+                abilities = new ArrayList<>(abilities.subList(0, AbilityBarHelper.MAX_SLOTS));
+            }
+            AbilityBarHelper.setAbilities(player, abilities);
         });
     }
 }

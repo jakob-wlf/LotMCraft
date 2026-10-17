@@ -3,11 +3,14 @@ package de.jakob.lotm.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.SyncAbilityCooldownPacket;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
 public class ResetCooldownsCommand {
@@ -27,6 +30,9 @@ public class ResetCooldownsCommand {
                         }
 
                         player.getData(ModAttachments.COOLDOWN_COMPONENT).removeAllCooldowns();
+                        if (player instanceof ServerPlayer serverPlayer) {
+                            PacketHandler.sendToPlayer(serverPlayer, SyncAbilityCooldownPacket.clearAll());
+                        }
                         source.sendSuccess(() -> Component.literal("Reset cooldowns for " + player.getName().getString()), true);
                         return 1;
                     })

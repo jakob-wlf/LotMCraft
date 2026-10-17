@@ -1,6 +1,7 @@
 package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
 import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +21,7 @@ public class AbilityWheelEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             AbilityWheelHelper.syncToClient(serverPlayer);
             CopiedAbilityHelper.syncToClient(serverPlayer);
+            AbilityBarHelper.syncToClient(serverPlayer);
         }
     }
 
@@ -32,6 +34,7 @@ public class AbilityWheelEvents {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             AbilityWheelHelper.syncToClient(serverPlayer);
             CopiedAbilityHelper.syncToClient(serverPlayer);
+            AbilityBarHelper.syncToClient(serverPlayer);
         }
     }
 
@@ -46,6 +49,7 @@ public class AbilityWheelEvents {
             serverPlayer.getServer().execute(() -> {
                 AbilityWheelHelper.syncToClient(serverPlayer);
                 CopiedAbilityHelper.syncToClient(serverPlayer);
+                AbilityBarHelper.syncToClient(serverPlayer);
             });
         }
     }

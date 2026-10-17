@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 public class AbilityBarHelper {
 
+    public static final int MAX_SLOTS = 18;
+
     public static ArrayList<String> getAbilities(LivingEntity entity) {
         return entity.getData(ModAttachments.ABILITY_BAR_COMPONENT).getAbilities();
     }
@@ -20,5 +22,9 @@ public class AbilityBarHelper {
         if(entity instanceof ServerPlayer serverPlayer) {
             PacketHandler.sendToPlayer(serverPlayer, new SyncAbilityBarPacket(abilities));
         }
+    }
+
+    public static void syncToClient(ServerPlayer player) {
+        PacketHandler.sendToPlayer(player, new SyncAbilityBarPacket(getAbilities(player)));
     }
 }

@@ -69,6 +69,9 @@ public class SharedAbilityHudRenderer {
         int regularIconX = hasOffhand
                 ? hotbarStartX - FRAME_SIZE - 5 - 30
                 : hotbarStartX - FRAME_SIZE - 5;
+        if (AbilityHotbarRenderer.isShown()) {
+            regularIconX -= AbilityHotbarRenderer.COG_OVERHANG;
+        }
         int iconY = screenH - 11 - (FRAME_SIZE / 2);
 
         // Place shared icon directly to the left of the regular icon, with 3px gap
@@ -115,6 +118,9 @@ public class SharedAbilityHudRenderer {
         }
 
         int hotbarEndX = (screenW - HOTBAR_WIDTH) / 2 + HOTBAR_WIDTH;
+        if (AbilityHotbarRenderer.isShown()) {
+            hotbarEndX += AbilityHotbarRenderer.COG_OVERHANG;
+        }
         int gap = 12;
         // If SelectedAbilityRenderer is visible (existingBoxW > 0), place after it; otherwise use same start position
         int boxX = existingBoxW > 0

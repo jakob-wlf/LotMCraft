@@ -182,16 +182,8 @@ public class LOTMCraft
     public static KeyMapping openMarionetteMenuKey;
     public static KeyMapping nextMarionetteKey;
 
-    public static KeyMapping useAbilityBarAbility1;
-    public static KeyMapping useAbilityBarAbility2;
-    public static KeyMapping useAbilityBarAbility3;
-    public static KeyMapping useAbilityBarAbility4;
-    public static KeyMapping useAbilityBarAbility5;
-    public static KeyMapping useAbilityBarAbility6;
-    public static KeyMapping useAbilityBarAbility7;
-    public static KeyMapping useAbilityBarAbility8;
-    public static KeyMapping useAbilityBarAbility9;
-    public static KeyMapping useAbilityBarAbility0;
+    public static KeyMapping toggleAbilityHotbarKey;
+    public static final KeyMapping[] useAbilityBarKeys = new KeyMapping[18];
 
     public static AbilityHandler abilityHandler;
     public static PassiveAbilityHandler passiveAbilityHandler;
