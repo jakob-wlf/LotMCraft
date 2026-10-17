@@ -1,0 +1,7 @@
+{
+  "trigger": "dimension",
+  "target": "lotmcraft:spirit:world",
+  "title": { "text": "The Spirit World", "color": "magenta", "bold": true },
+  "subtitle": { "text": "The Realm of Uncertainty", "color": "aqua", "italic": true },
+  "frequency": "once"
+}

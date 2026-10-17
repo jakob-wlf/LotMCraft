@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
@@ -11,6 +12,8 @@ import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 public class ModAttachments {
@@ -24,6 +27,15 @@ public class ModAttachments {
                             .copyOnDeath()
                             .build()
             );
+
+    public static final Supplier<AttachmentType<Set<ResourceLocation>>> SEEN_TITLES = ATTACHMENT_TYPES.register("seen_titles",
+            () -> AttachmentType.<Set<ResourceLocation>>builder(() -> new HashSet<>())
+                    .serialize(ResourceLocation.CODEC.listOf().xmap(l -> (Set<ResourceLocation>) new HashSet<>(l), s -> java.util.List.copyOf(s)))
+                    .copyOnDeath()
+                    .build());
+
+    public static final Supplier<AttachmentType<Set<ResourceLocation>>> INSIDE_NOW = ATTACHMENT_TYPES.register("inside_now",
+            () -> AttachmentType.<Set<ResourceLocation>>builder(() -> new HashSet<>()).build());
 
     public static final Supplier<AttachmentType<MarionetteOwnerComponent>> MARIONETTE_OWNER_COMPONENT =
             ATTACHMENT_TYPES.register("marionette_owner_component", () ->

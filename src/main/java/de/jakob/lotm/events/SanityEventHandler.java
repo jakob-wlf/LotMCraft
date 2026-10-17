@@ -193,10 +193,6 @@ public class SanityEventHandler {
                         random.nextBoolean() ? 2 : -2, false, false));
             }
 
-            if(entity instanceof Player player && random.nextInt(10) == 0) {
-                ClientHandler.applyCameraShakeToPlayer(1, 20, player);
-            }
-
             if(random.nextInt(100) >= 80) {
                 entity.hurt(ModDamageTypes.source(entity.level(), ModDamageTypes.LOOSING_CONTROL), Float.MAX_VALUE);
             }
