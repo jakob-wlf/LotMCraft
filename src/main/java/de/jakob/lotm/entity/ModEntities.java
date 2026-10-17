@@ -50,6 +50,13 @@ public class ModEntities {
             ENTITY_TYPES.register("spear_of_light", () -> EntityType.Builder.<SpearOfLightProjectileEntity>of(SpearOfLightProjectileEntity::new, MobCategory.MISC)
                     .sized(.35f, .35f).noSave().build("spear_of_light"));
 
+    public static final Supplier<EntityType<BribeProjectile>> BRIBE_PROJECTILE = ENTITY_TYPES.register("bribe_projectile",
+            () -> EntityType.Builder.<BribeProjectile>of(BribeProjectile::new, MobCategory.MISC)
+                            .sized(0.25F, 0.25F)
+                            .clientTrackingRange(4)
+                            .updateInterval(10)
+                            .build("bribe_projectile"));
+
     public static final DeferredHolder<EntityType<?>, EntityType<BeyonderSpawnerEntity>> BEYONDER_SPAWNER =
             ENTITY_TYPES.register("beyonder_spawner",
                     () -> EntityType.Builder.of(BeyonderSpawnerEntity::new, MobCategory.MISC)
@@ -84,10 +91,6 @@ public class ModEntities {
     public static final Supplier<EntityType<WaterBoltEntity>> WATER_BOLT =
             ENTITY_TYPES.register("water_bolt", () -> EntityType.Builder.<WaterBoltEntity>of(WaterBoltEntity::new, MobCategory.MISC)
                     .sized(.55f, .55f).noSave().build("water_bolt"));
-
-    public static final Supplier<EntityType<FireballEntity>> GIANT_FIREBALL =
-            ENTITY_TYPES.register("giant_fireball", () -> EntityType.Builder.<FireballEntity>of(FireballEntity::new, MobCategory.MISC)
-                    .sized(1.55f, 1.55f).noSave().build("giant_fireball"));
 
     public static final Supplier<EntityType<FirePlateEntity>> FIRE_PLATE =
             ENTITY_TYPES.register("fire_armor_plate", () -> EntityType.Builder.<FirePlateEntity>of(FirePlateEntity::new, MobCategory.MISC)

@@ -136,7 +136,7 @@ public class EloquenceAbility extends ToggleAbility {
 
     private static void applyVillagerDiscount(Villager villager, LivingEntity player, int amplifier) {
         GossipContainer gossip = villager.getGossips();
-        gossip.add(player.getUUID(), GossipType.MAJOR_POSITIVE, 5*(amplifier+1));
+        gossip.add(player.getUUID(), GossipType.MAJOR_POSITIVE, 20*(amplifier+1));
         ServerScheduler.scheduleDelayed(10*20, () -> gossip.remove(player.getUUID(), GossipType.MAJOR_POSITIVE));
         player.sendSystemMessage(Component.literal("You successfully persuaded the villager to give you a discount").withStyle(ChatFormatting.DARK_GRAY));
     }

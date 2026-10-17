@@ -132,6 +132,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -425,6 +426,8 @@ public class LOTMCraft
         @SubscribeEvent
         public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(ModBlockEntities.RITUALISTIC_TABLE_BE.get(), RitualisticTableBlockEntityRenderer::new);
+            event.registerEntityRenderer(ModEntities.BRIBE_PROJECTILE.get(),
+                    ThrownItemRenderer::new);
         }
     }
 

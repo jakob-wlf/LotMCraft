@@ -1424,10 +1424,16 @@
   "lotmcraft.weakness_detection_ability": "Weakness Detection",
   "lotmcraft.distortion_ability.description" : "Actions may have different results.",
   "lotmcraft.distortion_ability": "Distortion",
-  "lotmcraft.briber_ability.description" : "Bribes may assist you.",
-  "lotmcraft.briber_ability": "Bribing",
+
   "lotmcraft.eloquence_ability.description" : "Your words weaken others.",
   "lotmcraft.eloquence_ability": "Eloquence",
+
+  "lotmcraft.briber_ability": "Bribing",
+  "lotmcraft.briber_ability.description": "Throw the item you are holding in your off-hand to bribe a player and apply debuffs to your advantage",
+  "ability.lotmcraft.bribe.weaken": "Weaken",
+  "ability.lotmcraft.bribe.charm": "Charm",
+  "ability.lotmcraft.bribe.arrogance": "Arrogance",
+  "ability.lotmcraft.bribe.connection": "Connection",
   "lotmcraft.commanding_presence_ability.description" : "People bow to you.",
   "lotmcraft.commanding_presence_ability": "Commanding Presence",
 

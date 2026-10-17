@@ -347,6 +347,10 @@ public class AbilityHandler {
 
         // BLACK EMPEROR
         abilities.add(new EloquenceAbility("eloquence_ability"));
+        abilities.add(new BribeAbility("briber_ability"));
+
+
+
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }
 
