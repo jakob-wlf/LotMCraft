@@ -30,6 +30,7 @@ public class AreaTitleManager extends SimpleJsonResourceReloadListener {
         files.forEach((id, json) -> AreaTitle.CODEC.parse(com.mojang.serialization.JsonOps.INSTANCE, json)
                 .resultOrPartial(err -> LOGGER.error("Bad area title {}: {}", id, err))
                 .ifPresent(def -> {
+                    System.out.println("loaded " + id);
                     all.put(id, def);
                     if (def.trigger() == AreaTitle.Trigger.DIMENSION) dims.put(def.target(), Map.entry(id, def));
                     else structs.put(id, def);

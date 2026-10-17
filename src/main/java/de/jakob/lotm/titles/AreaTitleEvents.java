@@ -1,5 +1,6 @@
 package de.jakob.lotm.titles;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -20,7 +21,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.Map;
 import java.util.Set;
 
-@EventBusSubscriber(modid = "yourmod")
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class AreaTitleEvents {
     private static final int STRUCTURE_CHECK_INTERVAL = 10; // ticks
 
@@ -33,6 +34,8 @@ public class AreaTitleEvents {
     public static void onDimensionChange(PlayerEvent.PlayerChangedDimensionEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer sp)) return;
         sp.getData(ModAttachments.INSIDE_NOW).clear(); // structure state is per-level
+
+        System.out.println("Switched to " + e.getTo());
 
         var entry = AreaTitleManager.forDimension(e.getTo().location());
         if (entry != null) tryShow(sp, entry.getKey(), entry.getValue());

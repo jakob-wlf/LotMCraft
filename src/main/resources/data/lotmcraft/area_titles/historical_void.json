@@ -1,0 +1,6 @@
+{
+  "trigger": "dimension",
+  "target": "lotmcraft:historical_void",
+  "title": { "text": "Historical Void", "color": "white", "bold": true },
+  "frequency": "once"
+}

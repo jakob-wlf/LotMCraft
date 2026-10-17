@@ -1,4 +1,4 @@
-// 1.21.1	2026-10-12T21:40:20.7488142	Registries
+// 1.21.1	2026-10-17T16:08:00.4851255	Registries
 843427c0d404af0927658f5b99281788c0e2f17a data/lotmcraft/dimension/brood_hive.json
 ad1f9c204b84ffc483c59eddf94a32609834f0cf data/lotmcraft/dimension/concealment_world.json
 11f11eab26b6bc7f0bb4d07005bb3cd69131f79c data/lotmcraft/dimension/deep_space.json
@@ -22,7 +22,7 @@ a0fc1fedca1cf3bbdb139457f4cd907af4be4e92 data/lotmcraft/dimension_type/sefirah_c
 178500223b85fe18060b25f0a0f770d04f529123 data/lotmcraft/dimension_type/space.json
 7d3fcf98ce9a7009ebb61fbe924b8d0f1c966a96 data/lotmcraft/dimension_type/space_time_labyrinth.json
 b4de84f7dcb1749b55a0d35ea1418899424d5a55 data/lotmcraft/dimension_type/spirit_world.json
-e3d5ad3129deac04539c3cb2bade0604deb232d5 data/lotmcraft/dimension_type/underworld.json
+290c9e34033a1ef0cd444b8960e043a80d4fc201 data/lotmcraft/dimension_type/underworld.json
 29b94866cbdb6bf9dded74109e04469896b5a116 data/lotmcraft/worldgen/biome/brood_hive_biome.json
 5edb70021ed096fa001bd52874ca52815d19ac05 data/lotmcraft/worldgen/biome/concealment_world_biome.json
 3119f86dbafc0f4c9ad0be8b76851a1e51e92a4b data/lotmcraft/worldgen/biome/deep_space_biome.json
@@ -46,8 +46,8 @@ df2d1ceaad7e59be5187df6268311d80d488d80d data/lotmcraft/worldgen/biome/spirit_te
 dbb1600ad16533f0596cbc6c89b46ca82b3a5df8 data/lotmcraft/worldgen/biome/spirit_wool_meadows.json
 a0dbf2e09e08a685670933a0c187ee9bc40be3d2 data/lotmcraft/worldgen/biome/spirit_world_patch.json
 18d3d5fcab2aa4ce8fb376fff71eb0e067d07a86 data/lotmcraft/worldgen/biome/spirit_world_wastes.json
-29cf9d21e35ca4d7d8b51cf80d28aace304a2fa8 data/lotmcraft/worldgen/biome/underworld_pale_white_nation.json
-d8e7c5a8c9ad496376bfa18dee77cdfa84df94ea data/lotmcraft/worldgen/biome/underworld_styx_chasm.json
+f7a027da7e4a60179765501e57dadd6dfc3e68ae data/lotmcraft/worldgen/biome/underworld_pale_white_nation.json
+664f3d34eb022cd939af65e112aadc320e5828f6 data/lotmcraft/worldgen/biome/underworld_styx_chasm.json
 6e50e83c0c49d067d0150db1f7e59eacd70f85d0 data/lotmcraft/worldgen/configured_feature/spirit_patch_decor.json
 f56ffe7d5d4e27c680775952de40f866c40a8405 data/lotmcraft/worldgen/placed_feature/spirit_patch_decor.json
 217e8970466aa6445f2dfd5a312d23b54678a462 data/lotmcraft/worldgen/structure/spirit_shrine.json
