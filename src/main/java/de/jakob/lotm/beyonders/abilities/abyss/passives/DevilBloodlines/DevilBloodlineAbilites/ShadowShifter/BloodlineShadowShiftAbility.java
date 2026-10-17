@@ -34,8 +34,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BloodlineShadowShiftAbility extends PassiveAbility {
 
-    private static final int UNLOCK_SEQUENCE = 6;
-
     private static final double SHADOW_SHIFT_DISTANCE = 100.0D;
 
     // Activates when a hit leaves the user at 20% HP or lower.
@@ -43,7 +41,7 @@ public class BloodlineShadowShiftAbility extends PassiveAbility {
 
     // 10 min cooldown.
     private static final long COOLDOWN = 20L * 600L;
-    // Shadow clone survives for 10 mins.
+    // Shadow clone survives for 1 min.
     private static final long CLONE_DURATION = 20L * 60L;
     private static final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
     private static final DustParticleOptions SHADOW_DUST = new DustParticleOptions(new Vector3f(0.05F, 0.0F, 0.08F), 2.0F);
@@ -53,7 +51,7 @@ public class BloodlineShadowShiftAbility extends PassiveAbility {
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("abyss", UNLOCK_SEQUENCE));
+        return new HashMap<>(Map.of("abyss", 6));
     }
     @Override
     public boolean meetsBloodlineRequirement(LivingEntity entity) {
@@ -75,7 +73,7 @@ public class BloodlineShadowShiftAbility extends PassiveAbility {
         if (!(entity.level() instanceof ServerLevel level)) return;
         if (entity.isDeadOrDying()) return;
         if (!"abyss".equals(BeyonderData.getPathway(entity))) return;
-        if (BeyonderData.getSequence(entity) > UNLOCK_SEQUENCE) return;
+        if (BeyonderData.getSequence(entity) > 6) return;
         if (!hasShadowShiftBloodline(entity)) return;
         tryShadowShift(level, entity);
     }
