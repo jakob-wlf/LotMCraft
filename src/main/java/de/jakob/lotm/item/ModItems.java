@@ -6,6 +6,7 @@ import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.data.ModTags;
 import de.jakob.lotm.item.custom.*;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.IEventBus;
@@ -62,6 +63,10 @@ public class ModItems {
     public static final DeferredItem<Item> TWILIGHT_SWORD = ITEMS.registerItem("twilight_sword", props -> new SwordItem(Tiers.IRON, props), new Item.Properties().stacksTo(1).attributes(SwordItem.createAttributes(Tiers.IRON, 3, -2.4F)));
     public static final DeferredItem<Item> DAWN_AXE = ITEMS.registerItem("dawn_axe", props -> new AxeItem(Tiers.IRON, props), new Item.Properties().stacksTo(1).attributes(AxeItem.createAttributes(Tiers.IRON, 6.0F, -3.1F)));
     public static final DeferredItem<Item> DAWN_SPEAR = ITEMS.registerItem("dawn_spear", TridentItem::new, new Item.Properties().stacksTo(1).durability(250).attributes(TridentItem.createAttributes()));
+    public static final DeferredItem<Item> DAWN_HELMET = ITEMS.registerItem("dawn_helmet", props -> new DawnArmorItem(EquipmentSlot.HEAD, props), new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> DAWN_CHESTPLATE = ITEMS.registerItem("dawn_chestplate", props -> new DawnArmorItem(EquipmentSlot.CHEST, props), new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> DAWN_LEGGINGS = ITEMS.registerItem("dawn_leggings", props -> new DawnArmorItem(EquipmentSlot.LEGS, props), new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> DAWN_BOOTS = ITEMS.registerItem("dawn_boots", props -> new DawnArmorItem(EquipmentSlot.FEET, props), new Item.Properties().stacksTo(1));
 
 
     public static final Supplier<Item> SUBORDINATE_CONTROLLER = ITEMS.register("subordinate_controller",

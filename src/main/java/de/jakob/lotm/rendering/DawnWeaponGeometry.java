@@ -28,11 +28,13 @@ public final class DawnWeaponGeometry implements IUnbakedGeometry<DawnWeaponGeom
 
     private final int textureWidth;
     private final int textureHeight;
+    private final boolean center;
     private final List<Cube> cubes;
 
-    private DawnWeaponGeometry(int textureWidth, int textureHeight, List<Cube> cubes) {
+    private DawnWeaponGeometry(int textureWidth, int textureHeight, boolean center, List<Cube> cubes) {
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
+        this.center = center;
         this.cubes = cubes;
     }
 
@@ -61,7 +63,8 @@ public final class DawnWeaponGeometry implements IUnbakedGeometry<DawnWeaponGeom
             }
             cubes.add(new Cube(from, to, origin, rotation, faces));
         }
-        return new DawnWeaponGeometry(width, height, cubes);
+        boolean center = !json.has("center") || json.get("center").getAsBoolean();
+        return new DawnWeaponGeometry(width, height, center, cubes);
     }
 
     private static float[] vec(JsonObject json, String key) {
@@ -88,8 +91,9 @@ public final class DawnWeaponGeometry implements IUnbakedGeometry<DawnWeaponGeom
             maxX = Math.max(maxX, corner.x);
             maxZ = Math.max(maxZ, corner.z);
         }
-        float centerX = (minX + maxX) * 0.5F;
-        float centerZ = (minZ + maxZ) * 0.5F;
+        float shiftX = center ? (minX + maxX) * 0.5F : 0;
+        float shiftY = center ? minY : 0;
+        float shiftZ = center ? (minZ + maxZ) * 0.5F : 0;
         List<BakedQuad> quads = new ArrayList<>();
         for (Cube cube : cubes) {
             for (Face face : cube.faces) {
@@ -99,7 +103,7 @@ public final class DawnWeaponGeometry implements IUnbakedGeometry<DawnWeaponGeom
                     FaceInfo.VertexInfo info = FaceInfo.fromFacing(face.direction).getVertexInfo(vertex);
                     float[] box = cube.box();
                     Vector3f point = rotate(new Vector3f(box[info.xFace], box[info.yFace], box[info.zFace]), cube.origin, cube.rotation);
-                    point.set((point.x - centerX) / 16.0F, (point.y - minY) / 16.0F, (point.z - centerZ) / 16.0F);
+                    point.set((point.x - shiftX) / 16.0F, (point.y - shiftY) / 16.0F, (point.z - shiftZ) / 16.0F);
                     float u = (vertex == 0 || vertex == 1) ? face.uv[0] : face.uv[2];
                     float v = (vertex == 0 || vertex == 3) ? face.uv[1] : face.uv[3];
                     int index = vertex * 8;
