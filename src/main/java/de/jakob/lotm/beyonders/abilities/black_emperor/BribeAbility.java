@@ -4,6 +4,7 @@ import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.demoness.CharmAbility;
 import de.jakob.lotm.entity.custom.projectiles.BribeProjectile;
 import de.jakob.lotm.particle.ModParticles;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.helper.BribeConnectionRegistry;
@@ -46,6 +47,11 @@ public class BribeAbility extends SelectableAbility {
 
     public BribeAbility(String id) {
         super(id, 5);
+        hasDynamicSpirituality = true;
+        hasDynamicCooldown = true;
+
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 2000f, 1000f, 600f, 400f, 200f, 120f, 90f));
+        dynamicCooldown = new LinkedList<>(List.of(1,2,2,4,4,6,6,6));
     }
 
     @Override
@@ -120,7 +126,14 @@ public class BribeAbility extends SelectableAbility {
 
     public static void apply(Level level, LivingEntity player, LivingEntity target, BribeTypes type) {
         if (!(level instanceof ServerLevel level1)) return;
+        if(BeyonderData.isBeyonder(target)) {
+            double chance = EloquenceAbility.calculateMultiplier(BeyonderData.getSequence(player), BeyonderData.getSequence(target));
+            if(RANDOM.nextDouble() > chance) {
+                player.sendSystemMessage(Component.literal("Your bribe attempt failed due to sequence gap").withStyle(ChatFormatting.DARK_GRAY));
+                return;
+            }
 
+        }
         switch (type) {
             case WEAKEN     -> applyWeaken(player, target, level1);
             case ARROGANCE  -> applyArrogance(player, target, level1);

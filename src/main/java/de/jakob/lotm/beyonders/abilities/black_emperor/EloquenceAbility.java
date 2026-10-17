@@ -208,7 +208,7 @@ public class EloquenceAbility extends ToggleAbility {
         }
     }
 
-    private static double calculateMultiplier(int casterSeq, int targetSeq) {
+    public static double calculateMultiplier(int casterSeq, int targetSeq) {
         int diff = AbilityUtil.getSequenceDifference(
                 AbilityUtil.getSequenceCategory(casterSeq),
                 AbilityUtil.getSequenceCategory(targetSeq)
