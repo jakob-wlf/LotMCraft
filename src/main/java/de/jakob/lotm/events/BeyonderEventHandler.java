@@ -47,8 +47,7 @@ import net.neoforged.neoforge.event.entity.living.*;
 import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static de.jakob.lotm.util.BeyonderData.*;
 
@@ -57,6 +56,7 @@ public class BeyonderEventHandler {
 
     private static final String LAST_KILL_ADVANCE_KEY = "lotm_last_kill_advance";
     private static final long KILL_ADVANCE_COOLDOWN_TICKS = 20L * 60 * 7;
+    private static Map<UUID, Long> regressInvul = new HashMap<>();
 
     @SubscribeEvent
     public static void onPlayerJoinWorld(PlayerEvent.PlayerLoggedInEvent event) {
@@ -249,10 +249,14 @@ public class BeyonderEventHandler {
 
         var data = playerMap.get(player).get();
 
-        BeyonderCharacteristicItem charItem = BeyonderCharacteristicItemHandler
-                .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+        BeyonderCharacteristicItem charItem = null;
 
-        BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+        if(!regressInvul.containsKey(player.getUUID())) {
+            charItem = BeyonderCharacteristicItemHandler
+                    .selectCharacteristicOfPathwayAndSequence(BeyonderData.getPathway(player), dropSequence);
+
+            BeyonderData.setBeyonder(player, data.pathway(), data.sequence(), true, false, false, false);
+        }
 
         if (charItem == null) return;
 
@@ -273,6 +277,8 @@ public class BeyonderEventHandler {
             );
 
             event.getDrops().add(itemEntity);
+
+            regressInvul.put(player.getUUID(), System.currentTimeMillis());
         }
     }
 
@@ -292,10 +298,24 @@ public class BeyonderEventHandler {
 
             if (!BeyonderData.isBeyonder(player)) return;
             if (playerMap.get(player).isEmpty()) return;
+
             if (!player.level().getGameRules().getBoolean(ModGameRules.REGRESS_SEQUENCE_ON_DEATH)
             && !player.getData(ModAttachments.ENVISION_SPLIT.get()).isEnvisioned()) {
                 BeyonderData.recalculateCharStackModifiers(player);
                 return;
+            }
+
+            if(regressInvul.containsKey(player.getUUID())){
+                long expirationTime = regressInvul.get(player.getUUID())
+                        + player.level().getGameRules().getInt(ModGameRules
+                        .AFTER_DEATH_REGRESSION_INVULNERABILITY) * 1000L;
+
+                if (System.currentTimeMillis() >= expirationTime) {
+                    regressInvul.remove(player.getUUID());
+                }
+                else{
+                    return;
+                }
             }
 
             StoredData data = playerMap.get(player).get();
@@ -490,7 +510,7 @@ public class BeyonderEventHandler {
             }
 
             // Either way, reset digestion to full so the victim isn't immediately vulnerable again
-            victimPlayer.getData(ModAttachments.BEYONDER_COMPONENT).setSpirituality(1);
+            victimPlayer.getData(ModAttachments.BEYONDER_COMPONENT).setDigestionProgress(1);
             if (victim instanceof ServerPlayer sp) PacketHandler.syncBeyonderDataToPlayer(sp);
         }
     }
@@ -604,14 +624,13 @@ public class BeyonderEventHandler {
         int seq = BeyonderData.getSequence(entity);
         String path =  BeyonderData.getPathway(entity);
 
-
         if (target == Level.NETHER && seq > 7){
             event.setCanceled(true);
         }
         else if (target == Level.END){
-            if(path.equals("door") && seq > 3)
+            if(path.equals("door") && seq > 4)
                 event.setCanceled(true);
-            else if(seq > 2)
+            else if(seq > 3)
                 event.setCanceled(true);
         }
     }

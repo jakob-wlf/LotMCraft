@@ -25,6 +25,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,6 +47,8 @@ public class MercuryLiquefactionAbility extends ToggleAbility {
 
     public MercuryLiquefactionAbility(String id) {
         super(id);
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(160f, 110f, 80f, 55f));
     }
 
     @Override

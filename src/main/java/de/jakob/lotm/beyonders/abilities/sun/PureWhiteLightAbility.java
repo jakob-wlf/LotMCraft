@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.sun;
 import com.google.common.util.concurrent.AtomicDouble;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;

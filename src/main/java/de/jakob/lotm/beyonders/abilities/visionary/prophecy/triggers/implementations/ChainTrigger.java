@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.implementations;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionsEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerBase;
@@ -9,6 +10,8 @@ import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.Tri
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextEnum;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.implementations.TriggerChainContext;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.effect.ModEffects;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;

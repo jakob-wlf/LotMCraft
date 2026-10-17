@@ -15,7 +15,6 @@ import de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway.GiantLightnin
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.DarknessEffectPacket;
 import de.jakob.lotm.network.packets.toClient.HotGroundEffectPacket;
-import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
@@ -49,18 +48,6 @@ public class MiracleHandler {
 
 
     public static void performMiracle(String miracleId, ServerLevel level, LivingEntity caster) {
-        Vec3 pos = caster.position();
-        BlockPos blockPos = BlockPos.containing(pos);
-
-        double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5) + .25;
-        double offsetZ = pos.z - (blockPos.getZ() + 0.5);
-
-        PacketHandler.sendToNearbyPlayers(
-                new PlayPhotonBlockEffectPacket("miracle_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null),
-                (ServerLevel) level, pos, 128
-        );
-
         switch (miracleId) {
             case "summon_village" -> summonStructure(level, caster, "village_plains", "minecraft");
             case "summon_end_city" -> summonStructure(level, caster, "end_city", "minecraft");

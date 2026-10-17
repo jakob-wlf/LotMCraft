@@ -5,7 +5,6 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
-import de.jakob.lotm.util.helper.DamageLookup;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import net.minecraft.core.Holder;
@@ -33,6 +32,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -49,7 +50,7 @@ public class MercuryArmoryAbility extends SelectableAbility {
     private static final int BASE_STRUGGLE = 8;
     private static final int STRUGGLE_PER_SEQUENCE = 4;
     private static final int DAMAGE_INTERVAL = 20;
-    private static final double DAMAGE_SCALE = 0.15D;
+    private static final int DAMAGE = 16;
     private static final int PARTICLE_POINTS = 10;
     private static final Set<String> SPEECH_ABILITIES = Set.of(
             "SirenSongAbility", "HolySongAbility", "LanguageOfFoulnessAbility",
@@ -67,6 +68,11 @@ public class MercuryArmoryAbility extends SelectableAbility {
     public MercuryArmoryAbility(String id) {
         super(id, 16);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(5000f, 3000f, 2200f, 1600f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(4, 8, 12, 16));
+        baseDamage = DAMAGE;
     }
 
     @Override
@@ -178,7 +184,7 @@ public class MercuryArmoryAbility extends SelectableAbility {
 
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 10, coat.severe ? 9 : 2, false, false));
         if (caster.tickCount % DAMAGE_INTERVAL == 0) {
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, caster), (float) DamageLookup.lookupDamage(3, DAMAGE_SCALE));
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, caster), DAMAGE);
         }
     }
 

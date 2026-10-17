@@ -154,7 +154,7 @@ public class BlackHoleEntity extends Entity {
         pullEntities();
         damageEntities();
 
-        suckUpBlocks();
+        //suckUpBlocks();
     }
     
     private void pullEntities() {

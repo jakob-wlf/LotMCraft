@@ -32,9 +32,9 @@ import java.util.Map;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class WeaponMasteryAbility extends PassiveAbility {
 
-    private static final float WEAPON_DAMAGE_MULTIPLIER = 1.5f;
+    private static final float WEAPON_DAMAGE_MULTIPLIER = 1.15f;
     private static final double ATTACK_SPEED_BONUS = 0.25D;
-    private static final float THROWN_MULTIPLIER = 1.5f;
+    private static final float THROWN_MULTIPLIER = 1.25f;
     private static final float SHIELD_KNOCKBACK_STRENGTH = 1.4f;
     private static final float ARMOR_SAVE_CHANCE = 0.15f;
     private static final ResourceLocation SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "weapon_mastery_attack_speed");

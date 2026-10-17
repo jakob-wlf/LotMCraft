@@ -1,6 +1,8 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.implementations;
 
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.TriggerBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextBase;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers.context.TriggerContextEnum;
 import net.minecraft.core.HolderLookup;

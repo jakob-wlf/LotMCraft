@@ -24,6 +24,7 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID, value = Dist.CLIENT)

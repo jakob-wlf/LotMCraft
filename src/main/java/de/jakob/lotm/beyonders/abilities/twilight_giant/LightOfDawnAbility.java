@@ -19,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,10 @@ public class LightOfDawnAbility extends Ability {
     public LightOfDawnAbility(String id) {
         super(id, 35, "purification", "light_source", "light_strong");
         interactionRadius = RADIUS;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(1400f, 1000f, 800f, 650f, 500f, 400f, 350f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(10, 15, 18, 22, 26, 30, 35));
         interactionCacheTicks = DURATION;
     }
 

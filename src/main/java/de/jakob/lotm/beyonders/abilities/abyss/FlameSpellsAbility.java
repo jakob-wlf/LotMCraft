@@ -80,12 +80,12 @@ public class FlameSpellsAbility extends SelectableAbility {
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.FLAME, startPos.add(0, 1, 0), 600, .75, 1.25, .75, .025);
         ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.EXPLOSION, startPos.add(0, 1, 0), 20, .75, 1.25, .75, .025);
 
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
-        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3).forEach(b -> {
-            spawnFallingBlocks(level, startPos, b, griefing);
-        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 5).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
+//        AbilityUtil.getBlocksInCircleOutline((ServerLevel) level, startPos.subtract(0, 1, 0), 3).forEach(b -> {
+//            spawnFallingBlocks(level, startPos, b, griefing);
+//        });
 
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, startPos, entity, this, new String[]{"explosion", "burning"}, 4, 20));
     }

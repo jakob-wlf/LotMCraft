@@ -5,6 +5,8 @@ import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryLoosingControlHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;

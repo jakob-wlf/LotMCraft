@@ -35,7 +35,7 @@ public abstract class Quest {
     }
 
     protected List<ItemStack> currencyRewardForSequence(int seq, Random random) {
-        int[] charPriceInSoli = {0, 2560, 1920, 1600, 1100, 400, 200, 100, 30, 10};
+        int[] charPriceInSoli = {0, 2560, 1920, 1600, 800, 650, 500, 400, 300, 100};
         int fullPrice = charPriceInSoli[Math.clamp(seq, 1, 9)];
 
         long rewardSoli = (long) (fullPrice * 0.22);

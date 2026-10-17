@@ -5,15 +5,19 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUseEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
@@ -21,6 +25,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +37,7 @@ public class LastStandAbility extends SelectableAbility {
     private static final int KOKOA_TICKS = 20 * 60;
     private static final int LAST_FIGHT_TICKS = 20 * 30;
     private static final int WORLD_FIGHT_TICKS = 20 * 3;
+    private static final double WORLD_FIGHT_RADIUS = 2000.0D;
     private static final double SEQUENCE_ZERO = 2.25D;
     private static final String MODIFIER = "hand_of_god_last_stand";
     private static final String STATS = "last_stand";
@@ -44,6 +50,10 @@ public class LastStandAbility extends SelectableAbility {
         canBeUsedByNPC = false;
         cannotBeStolen = true;
         canBeReplicated = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(28000f, 14000f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(80, 150));
     }
 
     @Override
@@ -105,26 +115,47 @@ public class LastStandAbility extends SelectableAbility {
         Stand stand = stands.get(player.getUUID());
         boolean world = stand != null && stand.world;
         cleanup(player);
-        if (world) shatter(player);
+        if (world) {
+            LawAbility.SOLACE_KILLED.add(player.getUUID());
+            shatter(player);
+        }
         if (kill) die(player);
+        if (world) ServerScheduler.scheduleDelayed(2, () -> LawAbility.SOLACE_KILLED.remove(player.getUUID()), player.serverLevel());
     }
 
     private static void shatter(ServerPlayer caster) {
+        if (caster.getServer() == null) return;
         List<LivingEntity> victims = new ArrayList<>();
-        for (Entity entity : caster.serverLevel().getAllEntities()) {
-            if (entity instanceof LivingEntity living && living != caster && living.isAlive()) victims.add(living);
+        List<UUID> killed = new ArrayList<>();
+        Vec3 origin = caster.position();
+        double radiusSqr = WORLD_FIGHT_RADIUS * WORLD_FIGHT_RADIUS;
+        for (ServerLevel level : caster.getServer().getAllLevels()) {
+            for (Entity entity : level.getAllEntities()) {
+                if (!(entity instanceof LivingEntity living) || living == caster || !living.isAlive()) continue;
+                if (living.position().distanceToSqr(origin) > radiusSqr) continue;
+                victims.add(living);
+            }
         }
         for (LivingEntity living : victims) {
             if (endures(living)) continue;
+            UUID id = living.getUUID();
+            LawAbility.SOLACE_KILLED.add(id);
+            killed.add(id);
             living.invulnerableTime = 0;
-            living.hurt(living.damageSources().genericKill(), Float.MAX_VALUE);
+            living.setHealth(0f);
+            living.die(living.damageSources().genericKill());
+        }
+        if (!killed.isEmpty()) {
+            ServerScheduler.scheduleDelayed(2, () -> {
+                for (UUID id : killed) LawAbility.SOLACE_KILLED.remove(id);
+            }, caster.serverLevel());
         }
     }
 
     private static boolean endures(LivingEntity living) {
         if (!BeyonderData.isBeyonder(living) || BeyonderData.getSequence(living) != 0) return false;
         String pathway = BeyonderData.getPathway(living);
-        return "mother".equals(pathway) || "darkness".equals(pathway);
+        return "mother".equals(pathway) || "darkness".equals(pathway) || "error".equals(pathway);
     }
 
     private static boolean onlyLastFight(LivingEntity entity) {

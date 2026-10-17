@@ -6,6 +6,7 @@ import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 

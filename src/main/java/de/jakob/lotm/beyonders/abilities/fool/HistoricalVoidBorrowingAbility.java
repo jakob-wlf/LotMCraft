@@ -75,7 +75,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                 "ability.lotmcraft.historical_void_borrowing.borrow_health",
                 "ability.lotmcraft.historical_void_borrowing.borrow_spirituality",
                 "ability.lotmcraft.historical_void_borrowing.borrow_cleansed_state",
-                "ability.lotmcraft.historical_void_borrowing.borrow_sequence",
+                //"ability.lotmcraft.historical_void_borrowing.borrow_sequence",
                 "ability.lotmcraft.historical_void_borrowing.borrow_effects",
                 "ability.lotmcraft.historical_void_borrowing.return_all_borrows"
         };
@@ -95,7 +95,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             default -> spiritualityCost = 5000;
         }
 
-        if(abilityIndex == 0 || abilityIndex == 2 || abilityIndex == 3 || abilityIndex == 4) {
+        if(abilityIndex == 0 || abilityIndex == 2 || abilityIndex == 3) {
             if(BeyonderData.getSpirituality(entity) < spiritualityCost) return;
             BeyonderData.reduceSpirituality(entity, spiritualityCost);
         }
@@ -110,13 +110,13 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
             case 2:
                 historicalVoidBorrowCleansedState(player, serverLevel);
                 break;
+//            case 3:
+//                historicalVoidBorrowSequence(player, serverLevel);
+//                break;
             case 3:
-                historicalVoidBorrowSequence(player, serverLevel);
-                break;
-            case 4:
                 historicalVoidBorrowEffects(player, serverLevel);
                 break;
-            case 5:
+            case 4:
                 returnAllBorrows(player);
                 break;
         }
@@ -344,7 +344,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
                                 anotherTag.putFloat("sequence", BeyonderData.getSequence(player));
                                 anotherTag.putString("pathway", BeyonderData.getPathway(player));
 
-                                trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SEQUENCE, player.getUUID(), anotherTag);
+                                    trackHistoricalBorrows(player, borrowTime, HistoricalVoidSummoningAbility.SummonType.SEQUENCE, player.getUUID(), anotherTag);
 
                                 BeyonderData.setPathway(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getString("pathway"));
                                 BeyonderData.setSequence(player, entityData.getCompound("EntityNBT").getCompound("neoforge:attachments").getCompound("lotmcraft:beyonder_component").getInt("sequence"));
@@ -457,10 +457,10 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
     private static int getMaxHistoricalBorrowingCount(ServerPlayer serverPlayer){
         return switch (BeyonderData.getSequence(serverPlayer)){
-            case 0 -> 50;
-            case 1 -> 20;
-            case 2 -> 10;
-            default -> 5;
+            case 0 -> 24;
+            case 1 -> 12;
+            case 2 -> 6;
+            default -> 3;
         };
     }
 
@@ -491,7 +491,7 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
         HistoricalVoidComponent historicalVoidComponentDataBigName = player.getData(ModAttachments.HISTORICAL_VOID_COMPONENT);
 
-        int amplifier = Math.min(newEffect.getAmplifier(), 5);
+        int amplifier = Math.min(newEffect.getAmplifier(), 20);
         int duration = newEffect.getDuration();
 
         // check if effect already exists in saved list
@@ -538,29 +538,32 @@ public class HistoricalVoidBorrowingAbility extends SelectableAbility {
 
         HistoricalVoidComponent data = serverPlayer.getData(ModAttachments.HISTORICAL_VOID_COMPONENT.get());
 
-        if (getHistoricalBorrowingCount(serverPlayer) != 0) {
+        if (getHistoricalBorrowingCount(serverPlayer) > 0) {
             if (timer.getOrDefault(player.getUUID(), 0) == 0) {
                 data.historicalBorrowingCount = Math.max(0, data.historicalBorrowingCount - 1);
             }
 
             timer.put(player.getUUID(), timer.getOrDefault(player.getUUID(), 0) + 1);
-            if (timer.get(player.getUUID()) > 20 * 60) {
+            if (timer.get(player.getUUID()) > 30 * 60) {
                 timer.put(player.getUUID(),0);
             }
+        } else {
+            timer.remove(player.getUUID());
         }
 
         for (HistoricalVoidComponent.SummonInfo info : data.activeSummonTimes.values()) {
-                if (serverLevel.getGameTime() > info.summonTime()) {
+            if (serverLevel.getGameTime() > info.summonTime()) {
 
-                    if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
-                            info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
-                            info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
-                            info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE
-                    ) {
-                        resetHistoricalBorrows(serverPlayer, info.summonTime());
-                    }
-
+                if (info.type() == HistoricalVoidSummoningAbility.SummonType.HEALTH ||
+                        info.type() == HistoricalVoidSummoningAbility.SummonType.SPIRITUALITY ||
+                        info.type() == HistoricalVoidSummoningAbility.SummonType.CLEANSED_STATE||
+                        //info.type() == HistoricalVoidSummoningAbility.SummonType.SEQUENCE ||
+                        info.type() == HistoricalVoidSummoningAbility.SummonType.EFFECT
+                ) {
+                    resetHistoricalBorrows(serverPlayer, info.summonTime());
                 }
+
+            }
         }
     }
 

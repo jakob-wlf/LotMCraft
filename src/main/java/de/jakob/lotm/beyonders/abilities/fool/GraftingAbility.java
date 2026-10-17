@@ -17,6 +17,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -276,6 +277,20 @@ public class GraftingAbility extends SelectableAbility {
             graftingDamagePairs.removeIf(pair -> startUUID.equals(pair.getA()) && targetUUID.equals(pair.getB()));
             graftingDamageCasters.remove(startUUID);
         });
+    }
+
+    public static void endOwned(LivingEntity owner) {
+        if (owner == null) return;
+        UUID id = owner.getUUID();
+        graftingDamagePairs.removeIf(pair -> id.equals(pair.getA()));
+        graftingDamageCasters.remove(id);
+        graftingAbilitiesPairs.removeIf(pair -> id.equals(pair.getA()) || id.equals(graftingAbilitiesCasters.get(pair.getA())));
+        graftingAbilitiesCasters.entrySet().removeIf(entry -> id.equals(entry.getKey()) || id.equals(entry.getValue()));
+        graftingTargetsPairs.removeIf(pair -> id.equals(pair.getA()));
+        graftingDamageEntities.remove(id);
+        graftingAbilitiesEntities.remove(id);
+        graftingTargetsEntities.remove(id);
+        graftingLocations.remove(id);
     }
 
     private void graftLocations(Level level, LivingEntity entity) {

@@ -78,11 +78,4 @@ public class SubordinateEventHandler {
         loadChunksAroundEntity(level, mob, 2);
     }
 
-    @SubscribeEvent
-    public static void onWorldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel) {
-            BeyonderData.initBeyonderMap(serverLevel);
-        }
-    }
-
 }

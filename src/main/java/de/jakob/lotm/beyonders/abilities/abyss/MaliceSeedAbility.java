@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.justiciar.LawAbility;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -139,6 +140,7 @@ public class MaliceSeedAbility extends Ability {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onCasterDeath(LivingDeathEvent event) {
         LivingEntity caster = event.getEntity();
+        if (LawAbility.SOLACE_KILLED.contains(caster.getUUID())) return;
         if (!(caster.level() instanceof ServerLevel serverLevel)) return;
 
         UUID casterUUID = caster.getUUID();

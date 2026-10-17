@@ -6,6 +6,10 @@ import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
+import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
+import de.jakob.lotm.attachments.MarionetteOwnerComponent;
+import de.jakob.lotm.attachments.SanityComponent;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.demoness.MirrorSubstituteAbility;
 import de.jakob.lotm.beyonders.abilities.door.DoorSubstitutionAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
@@ -373,7 +377,7 @@ public class PuppeteeringAbility extends SelectableAbility {
 
             // set sanity to 0.04 to prevent mirror revival and darkness revival from triggering
             SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
-            sanity.setSanity(0.04f);
+            sanity.setSanity(0.03f);
 
             MiracleOfResurrectionComponent miracleOfResurrection = target.getData(ModAttachments.MIRACLE_OF_RESURRECTION);
             miracleOfResurrection.setResurrectionAttempts(0);

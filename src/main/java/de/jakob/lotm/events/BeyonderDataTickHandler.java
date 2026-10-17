@@ -247,6 +247,10 @@ public class BeyonderDataTickHandler {
             entity.kill();
         }
 
+        if(entity.getData(ModAttachments.SANITY_COMPONENT.get()).getSanity() == 0.0f){
+            entity.kill();
+        }
+
         if(BeyonderData.isBeyonder(livingEntity)) {
 
             if(entity.tickCount % 20 == 0){
@@ -259,12 +263,12 @@ public class BeyonderDataTickHandler {
                 invalidateCache(livingEntity);
             }
 
-            if(entity.tickCount % getWormRecoverTime(livingEntity) == 0) {
+            if(entity.tickCount % (20 * 30) == 0) {
                 BeyonderData.incrementWormAmount(livingEntity, 1);
             }
 
             // Tick Passive Abilities, and onHold for currently selected Ability and tick luck
-            if(entity.tickCount % 5 == 0) {
+            if(entity.tickCount % 20 == 0) {
                 tickPassiveAbilities(livingEntity);
 
                 // Remove Unluck gradually

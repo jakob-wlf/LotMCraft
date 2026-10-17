@@ -55,7 +55,7 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
             sanity.setSanityAndSync(Math.max(0.0f, sanity.getSanity() - (seq == 4 ? 0.03f : 0.01f)), entity);
         }
 
-        int range = 200;
+        int range = 100;
 
         // Make all entities lower than you loose control when seeing you
         AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), range).forEach(e -> {
@@ -67,10 +67,13 @@ public class MythicalCreatureFormAbility extends ToggleAbility {
                         int entitySeq = BeyonderData.getSequence(entity);
 
                         if(!VisionaryHandler.isInvisible(entity) && ! entity.hasEffect(MobEffects.INVISIBILITY)) {
-                            e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
-                                    getAmount(entitySeq), e,
-                                    BeyonderData.getSequence(e), entitySeq);
-                            VisionaryLoosingControlHandler.applyEffect(entity, e, this);
+                            if(entitySeq < BeyonderData.getSequence(e)) {
+                                e.getData(ModAttachments.SANITY_COMPONENT.get()).decreaseSanityWithSequenceDifference(
+                                        getAmount(entitySeq), e,
+                                        BeyonderData.getSequence(e), entitySeq);
+
+                                VisionaryLoosingControlHandler.applyEffect(entity, e, this);
+                            }
                         }
 
                         doPathRelatedEffect(BeyonderData.getPathway(entity), level, entity, e);

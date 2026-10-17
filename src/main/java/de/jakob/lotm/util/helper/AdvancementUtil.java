@@ -8,6 +8,8 @@ import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.custom.StartAdvanceSequencePathwayEvent;
 import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.ChangePlayerPerspectivePacket;
 import de.jakob.lotm.beyonders.potions.BeyonderPotion;
 import de.jakob.lotm.beyonders.potions.PotionItemHandler;
 import de.jakob.lotm.util.BeyonderData;
@@ -136,6 +138,7 @@ public class AdvancementUtil {
     // onSuccessPreSet runs before setBeyonder if non-null.
     private static void executeAdvancement(LivingEntity entity, String pathway, int sequence,
                                            double failureChance, Runnable onSuccessPreSet) {
+
         if(entity instanceof ServerPlayer player) {
             if (hasRitual(sequence)) {
                 var component = player.getData(ModAttachments.RITUALS.get());

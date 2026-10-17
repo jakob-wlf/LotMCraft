@@ -3,27 +3,21 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity.CourtProhibitionType;
+import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierEntity;
 import de.jakob.lotm.events.AncientCourtHandler;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,13 +25,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -53,14 +51,20 @@ public class SilverRapierAbility extends SelectableAbility {
     private static final double BLINK_RADIUS = 2.5D;
     private static final double FLY_SPEED = 0.8D;
     private static final double ORBIT_RADIUS = 1.6D;
-    private static final double DAMAGE_SCALE = 0.25D;
+    private static final int DAMAGE = 1;
     private static final float DODGE_CHANCE = 0.4f;
 
     private static final Map<UUID, Swarm> swarms = new HashMap<>();
+    private static final Set<UUID> noKnockback = new HashSet<>();
 
     public SilverRapierAbility(String id) {
         super(id, 12);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4000f, 2600f, 1800f, 1400f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(3, 6, 9, 12));
+        baseDamage = DAMAGE;
     }
 
     @Override
@@ -87,7 +91,7 @@ public class SilverRapierAbility extends SelectableAbility {
     protected void castSelectedAbility(Level level, LivingEntity entity, int selectedAbility) {
         if (!(level instanceof ServerLevel serverLevel) || !(entity instanceof ServerPlayer owner)) return;
         Swarm swarm = swarms.computeIfAbsent(owner.getUUID(), uuid -> new Swarm());
-        swarm.prune(serverLevel);
+        swarm.prune(serverLevel, owner);
         switch (selectedAbility) {
             case 1 -> attack(serverLevel, owner, swarm);
             case 2 -> {
@@ -100,25 +104,20 @@ public class SilverRapierAbility extends SelectableAbility {
     }
 
     public static boolean isRapier(Entity entity) {
-        return entity.getTags().contains(RAPIER_TAG);
+        return entity instanceof SilverRapierEntity || entity.getTags().contains(RAPIER_TAG);
     }
 
     private static void condense(ServerLevel level, ServerPlayer owner, Swarm swarm) {
         Vec3 look = owner.getLookAngle();
         for (int i = 0; i < RAPIERS_PER_CAST && swarm.rapiers.size() < MAX_RAPIERS; i++) {
-            Vex vex = EntityType.VEX.create(level);
-            if (vex == null) return;
+            SilverRapierEntity rapier = ModEntities.SILVER_RAPIER.get().create(level);
+            if (rapier == null) return;
             Vec3 pos = owner.getEyePosition().add(look.scale(1.5 + i));
-            vex.moveTo(pos.x, pos.y, pos.z, owner.getYRot(), 0);
-            vex.setNoAi(true);
-            vex.setSilent(true);
-            vex.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
-            vex.setDropChance(EquipmentSlot.MAINHAND, 0);
-            vex.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, MobEffectInstance.INFINITE_DURATION, 0, false, false));
-            vex.setCustomName(Component.translatable("entity.lotmcraft.silver_rapier"));
-            vex.addTag(RAPIER_TAG);
-            level.addFreshEntity(vex);
-            swarm.rapiers.add(vex.getUUID());
+            rapier.moveTo(pos.x, pos.y, pos.z, owner.getYRot(), 0);
+            rapier.addTag(RAPIER_TAG);
+            level.addFreshEntity(rapier);
+            AllyUtil.makeAllies(owner, rapier, false);
+            swarm.rapiers.add(rapier.getUUID());
             level.sendParticles(ParticleTypes.WHITE_ASH, pos.x, pos.y, pos.z, 10, 0.2, 0.2, 0.2, 0.02);
         }
         level.playSound(null, owner.blockPosition(), SoundEvents.ANVIL_PLACE, owner.getSoundSource(), 0.6f, 1.8f);
@@ -137,7 +136,7 @@ public class SilverRapierAbility extends SelectableAbility {
     }
 
     private static void dilute(ServerLevel level, ServerPlayer owner, Swarm swarm) {
-        swarm.discardAll(level);
+        swarm.discardAll(level, owner);
         swarms.remove(owner.getUUID());
     }
 
@@ -147,7 +146,7 @@ public class SilverRapierAbility extends SelectableAbility {
         Swarm swarm = swarms.get(owner.getUUID());
         if (swarm == null) return;
         ServerLevel level = owner.serverLevel();
-        swarm.prune(level);
+        swarm.prune(level, owner);
         if (swarm.rapiers.isEmpty()) {
             swarms.remove(owner.getUUID());
             return;
@@ -158,13 +157,18 @@ public class SilverRapierAbility extends SelectableAbility {
 
         List<UUID> ids = new ArrayList<>(swarm.rapiers);
         for (int i = 0; i < ids.size(); i++) {
-            if (!(level.getEntity(ids.get(i)) instanceof Vex rapier)) continue;
+            if (!(level.getEntity(ids.get(i)) instanceof SilverRapierEntity rapier)) continue;
             if (swarm.target == null) {
                 orbit(owner, rapier, i, ids.size());
             } else {
                 hunt(level, owner, rapier, swarm.target, i);
             }
         }
+    }
+
+    @SubscribeEvent
+    public static void onKnockback(LivingKnockBackEvent event) {
+        if (noKnockback.contains(event.getEntity().getUUID())) event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -210,25 +214,27 @@ public class SilverRapierAbility extends SelectableAbility {
         Swarm swarm = swarms.remove(event.getEntity().getUUID());
         if (swarm == null || !(event.getEntity() instanceof ServerPlayer player)) return;
         ServerLevel from = player.server.getLevel(event.getFrom());
-        if (from != null) swarm.discardAll(from);
+        if (from != null) swarm.discardAll(from, player);
     }
 
     private static void dismiss(LivingEntity owner) {
         Swarm swarm = swarms.remove(owner.getUUID());
-        if (swarm != null && owner.level() instanceof ServerLevel level) swarm.discardAll(level);
+        if (swarm != null && owner.level() instanceof ServerLevel level) swarm.discardAll(level, owner);
     }
 
     private static boolean isValidTarget(LivingEntity owner, LivingEntity target) {
         return target != owner && target.isAlive() && !isRapier(target) && !AllyUtil.areAllies(owner, target) && AbilityUtil.mayDamage(owner, target);
     }
 
-    private static void orbit(ServerPlayer owner, Vex rapier, int index, int count) {
+    private static void orbit(ServerPlayer owner, SilverRapierEntity rapier, int index, int count) {
+        rapier.setStriking(false);
         double angle = owner.tickCount * 0.08 + index * Math.PI * 2 / count;
         Vec3 pos = owner.position().add(Math.cos(angle) * ORBIT_RADIUS, 1.4, Math.sin(angle) * ORBIT_RADIUS);
         rapier.moveTo(pos.x, pos.y, pos.z, (float) Math.toDegrees(angle), 0);
     }
 
-    private static void hunt(ServerLevel level, ServerPlayer owner, Vex rapier, LivingEntity target, int index) {
+    private static void hunt(ServerLevel level, ServerPlayer owner, SilverRapierEntity rapier, LivingEntity target, int index) {
+        rapier.setStriking(true);
         boolean strikeTick = (owner.tickCount + index * 3) % STRIKE_INTERVAL == 0;
         if (canBlink(rapier, target, owner)) {
             if (!strikeTick) return;
@@ -245,7 +251,12 @@ public class SilverRapierAbility extends SelectableAbility {
         }
         if (!isValidTarget(owner, target)) return;
         target.invulnerableTime = 0;
-        target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), (float) DamageLookup.lookupDamage(4, DAMAGE_SCALE));
+        noKnockback.add(target.getUUID());
+        try {
+            target.hurt(level.damageSources().source(ModDamageTypes.BEYONDER_GENERIC, rapier, owner), DAMAGE);
+        } finally {
+            noKnockback.remove(target.getUUID());
+        }
         level.sendParticles(ParticleTypes.SWEEP_ATTACK, target.getX(), target.getY(0.6), target.getZ(), 1, 0, 0, 0, 0);
         level.playSound(null, target.blockPosition(), SoundEvents.PLAYER_ATTACK_SWEEP, owner.getSoundSource(), 0.6f, 1.6f);
     }
@@ -287,13 +298,19 @@ public class SilverRapierAbility extends SelectableAbility {
         private LivingEntity target;
         private boolean defending;
 
-        private void prune(ServerLevel level) {
-            rapiers.removeIf(uuid -> !(level.getEntity(uuid) instanceof Vex vex) || !vex.isAlive());
+        private void prune(ServerLevel level, LivingEntity owner) {
+            rapiers.removeIf(uuid -> {
+                if (level.getEntity(uuid) instanceof SilverRapierEntity rapier && rapier.isAlive()) return false;
+                AllyUtil.removeAllyOneWay(owner, uuid);
+                return true;
+            });
         }
 
-        private void discardAll(ServerLevel level) {
+        private void discardAll(ServerLevel level, LivingEntity owner) {
             for (UUID uuid : rapiers) {
                 Entity entity = level.getEntity(uuid);
+                if (entity instanceof LivingEntity living) AllyUtil.removeAllies(owner, living, false);
+                else AllyUtil.removeAllyOneWay(owner, uuid);
                 if (entity != null) entity.discard();
             }
             rapiers.clear();

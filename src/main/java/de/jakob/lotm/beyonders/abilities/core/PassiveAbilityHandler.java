@@ -25,7 +25,6 @@ import de.jakob.lotm.beyonders.abilities.error.passives.PhysicalEnhancementsErro
 import de.jakob.lotm.beyonders.abilities.fool.passives.*;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.ChaosHuntingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.EnhancedMentalAttributesAbility;
-import de.jakob.lotm.beyonders.abilities.justiciar.passives.OrderJusticiarAbility;
 
 import de.jakob.lotm.beyonders.abilities.justiciar.passives.PhysicalEnhancementsJusticiarAbility;
 import de.jakob.lotm.beyonders.abilities.mother.passives.PhysicalEnhancementsMotherAbility;
@@ -76,7 +75,6 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new PhysicalEnhancementsTwilightGiantAbility("physical_enhancements_twilight_giant_ability"));
 
         // Justiciar
-        passiveAbilities.add(new OrderJusticiarAbility("order_justiciar_ability"));
         passiveAbilities.add(new EnhancedMentalAttributesAbility("enhanced_mental_attributes_justiciar_ability"));
         passiveAbilities.add(new ChaosHuntingAbility("chaos_hunting_justiciar_ability"));
 

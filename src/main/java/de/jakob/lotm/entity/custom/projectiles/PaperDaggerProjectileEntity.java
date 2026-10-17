@@ -74,12 +74,12 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
         LivingEntity target = (LivingEntity) result.getEntity();
         // check if the owner exists before - to not crash
 
-
-        if (this.getOwner() instanceof LivingEntity livingOwner) {
+        if (owner instanceof LivingEntity livingOwner) {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, livingOwner), (float) damage);
         } else {
             target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT), (float) damage);
         }
+
         level.addFreshEntity(new ItemEntity(level, result.getLocation().x, result.getLocation().y, result.getLocation().z, new ItemStack(Items.PAPER)));
     }
 

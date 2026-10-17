@@ -13,25 +13,25 @@ public class ResetPlayerShapeCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("reset_shape_shifting")
-                .requires(source -> source.hasPermission(2)) // Requires OP level 2
+            .requires(source -> source.hasPermission(2)) // Requires OP level 2
                 .then(Commands.argument("target", EntityArgument.entity())
-                        .executes(context -> {
-                            // Execute on a target entity
-                            CommandSourceStack source = context.getSource();
-                            var targetEntity = EntityArgument.getEntity(context, "target");
+                    .executes(context -> {
+                        // Execute on a target entity
+                        CommandSourceStack source = context.getSource();
+                        var targetEntity = EntityArgument.getEntity(context, "target");
 
-                            if (!(targetEntity instanceof Player player)) {
-                                source.sendFailure(Component.literal("Target must be a player!"));
-                                return 0;
-                            }
+                        if (!(targetEntity instanceof Player player)) {
+                            source.sendFailure(Component.literal("Target must be a player!"));
+                            return 0;
+                        }
 
-                            if (targetEntity instanceof ServerPlayer serverPlayer){
-                                ShapeShiftingUtil.resetShape(serverPlayer);
-                            }
+                        if (targetEntity instanceof ServerPlayer serverPlayer){
+                            ShapeShiftingUtil.resetShape(serverPlayer);
+                        }
 
 
-                            return 1;
-                        })
+                        return 1;
+                    })
                 )
         );
     }

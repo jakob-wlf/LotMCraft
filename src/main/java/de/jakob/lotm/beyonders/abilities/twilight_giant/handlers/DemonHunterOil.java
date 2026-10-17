@@ -82,8 +82,8 @@ public final class DemonHunterOil {
     private static final int MIN_DURATION = 20 * 60 * 10;
     private static final int EXTRA_DURATION = 20 * 60 * 5;
     private static final int EXPIRY_CHECK_INTERVAL = 100;
-    private static final int FREEZE_TICKS = 100;
-    private static final int FREEZE_ROOT_TICKS = 60;
+    private static final int FREEZE_TICKS = 40;
+    private static final int FREEZE_ROOT_TICKS = 15;
     private static final int BURN_SECONDS = 8;
     private static final int DECAY_TICKS = 20 * 10;
     private static final double FLING_STRENGTH = 2.0D;
@@ -218,7 +218,9 @@ public final class DemonHunterOil {
 
         level.playSound(null, target.blockPosition(), SoundEvents.EVOKER_CAST_SPELL, target.getSoundSource(), 1f, 0.6f);
         if (BeyonderData.getSequence(possessor) > BeyonderData.getSequence(attacker)) {
-            possessor.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker), Float.MAX_VALUE);
+            possessor.invulnerableTime = 0;
+            possessor.setHealth(0f);
+            possessor.die(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker));
             return;
         }
         Vec3 away = possessor.position().subtract(attacker.position()).multiply(1, 0, 1);

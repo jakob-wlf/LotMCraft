@@ -98,7 +98,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         canBeUsedInArtifact = false;
         canBeShared = false;
         canBeCopied = false;
-        canBeReplicated = false;
     }
 
     @Override
@@ -519,7 +518,6 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
                                 Component.translatable("lotm.worm").append(Component.literal(": ")).append(Component.literal(String.valueOf(hasWorm))).withColor(0xa26fc9).withStyle(style -> style.withItalic(false))
                         )));
             }
-
             CompoundTag itemData = new CompoundTag();
             itemData.putInt("MarkedIndex", i);
             displayItem.set(DataComponents.CUSTOM_DATA, CustomData.of(itemData));
@@ -585,16 +583,11 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
 
         // Create a spawn egg or representation item
         ItemStack display = new ItemStack(Items.PLAYER_HEAD);
-        display.set(DataComponents.CUSTOM_NAME,
-                Component.literal(customName.isEmpty() ? entityId : customName));
 
-        CompoundTag customTag = new CompoundTag();
-        customTag.put("EntityData", entityData);
-
-        display.set(DataComponents.CUSTOM_DATA,
-                CustomData.of(customTag)
+        display.set(
+                DataComponents.CUSTOM_NAME,
+                Component.literal(customName.isEmpty() ? entityId : customName).withStyle(ChatFormatting.YELLOW)
         );
-
         return display;
     }
 

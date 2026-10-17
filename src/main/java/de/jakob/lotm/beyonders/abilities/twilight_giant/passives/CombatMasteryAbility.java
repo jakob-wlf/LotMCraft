@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.twilight_giant.passives;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.ClientBeyonderCache;
@@ -25,9 +26,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingKnockBackEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -100,7 +103,26 @@ public class CombatMasteryAbility extends PassiveAbility {
         setStacks(entity, 0, 0);
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void onTwilightWeapon(LivingIncomingDamageEvent event) {
+        DamageSource source = event.getSource();
+        if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return;
+        if (!source.is(DamageTypes.PLAYER_ATTACK) && !source.is(DamageTypes.MOB_ATTACK)) return;
+        if (!(attacker.level() instanceof ServerLevel level)) return;
+        if (!"twilight_giant".equals(BeyonderData.getPathway(attacker))) return;
+        if (!WeaponMasteryAbility.isWeapon(attacker.getMainHandItem())) return;
+        float amount = event.getAmount();
+        event.setCanceled(true);
+        LivingEntity target = event.getEntity();
+        int sequence = BeyonderData.getSequence(attacker);
+        float damage = sequence <= 6 ? amount * 0.5f : amount;
+        target.hurt(ModDamageTypes.source(level, ModDamageTypes.PHYSICAL_BASED, attacker), damage);
+        if (sequence <= 6) {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.PURIFICATION, attacker), damage);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onAttack(AttackEntityEvent event) {
         Player player = event.getEntity();
         if (!(player.level() instanceof ServerLevel serverLevel) || !applies(player)) return;
@@ -117,13 +139,9 @@ public class CombatMasteryAbility extends PassiveAbility {
 
     @SubscribeEvent
     public static void onLivingHurt(LivingDamageEvent.Post event) {
-        DamageSource source = event.getSource();
-        if (!(source.getEntity() instanceof LivingEntity attacker) || source.getDirectEntity() != attacker) return;
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
         if (attacker.level().isClientSide() || event.getNewDamage() <= 0) return;
-        if (!source.is(DamageTypes.PLAYER_ATTACK) && !source.is(DamageTypes.MOB_ATTACK)) return;
-        if (!applies(attacker)) return;
-        boolean awaited = awaitingHit.remove(attacker.getUUID());
-        if (!awaited) return;
+        if (!applies(attacker) || !awaitingHit.remove(attacker.getUUID())) return;
         setStacks(attacker, getStacks(attacker) + 1, STACK_DURATION);
     }
 

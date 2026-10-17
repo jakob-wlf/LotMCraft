@@ -4,6 +4,9 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import de.jakob.lotm.util.helper.AbilityUtil;
+import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -12,6 +15,9 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
 import java.util.UUID;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+
+import java.util.*;
 
 @EventBusSubscriber(
         modid = LOTMCraft.MOD_ID

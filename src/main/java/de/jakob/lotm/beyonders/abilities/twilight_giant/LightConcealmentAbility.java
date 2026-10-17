@@ -29,6 +29,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +52,10 @@ public class LightConcealmentAbility extends Ability {
     public LightConcealmentAbility(String id) {
         super(id, 8);
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(4400f, 2800f, 1800f, 1100f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 6, 8));
     }
 
     @Override
@@ -102,7 +107,7 @@ public class LightConcealmentAbility extends Ability {
         if (state == null) return;
         player.setNoGravity(false);
         player.removeEffect(MobEffects.INVISIBILITY);
-        Vec3 exit = exitPosition(player.serverLevel(), state.light());
+        Vec3 exit = ring(exitPosition(player.serverLevel(), state.light()), state.index(), state.count());
         player.connection.teleport(exit.x, exit.y, exit.z, player.getYRot(), player.getXRot());
         player.resetFallDistance();
         player.serverLevel().playSound(null, player.blockPosition(), SoundEvents.AMETHYST_BLOCK_CHIME, player.getSoundSource(), 1f, 1.4f);
@@ -133,14 +138,10 @@ public class LightConcealmentAbility extends Ability {
             leave(player);
             return;
         }
-        Vec3 center = Vec3.atBottomCenterOf(state.light());
-        if (player.position().distanceToSqr(center) > 0.25) {
-            player.connection.teleport(center.x, center.y, center.z, player.getYRot(), player.getXRot());
-        }
-        player.setDeltaMovement(Vec3.ZERO);
-        player.resetFallDistance();
+        place(level, state.light());
         if (player.tickCount % 20 == 0) {
             player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40, 0, false, false));
+            Vec3 center = Vec3.atBottomCenterOf(state.light());
             level.sendParticles(player, ParticleTypes.END_ROD, true, center.x, center.y, center.z, 3, 0.2, 0.2, 0.2, 0.01);
         }
     }
@@ -157,7 +158,7 @@ public class LightConcealmentAbility extends Ability {
 
     private static void hide(ServerLevel level, ServerPlayer player, BlockPos light) {
         if (hidden.containsKey(player.getUUID())) return;
-        hidden.put(player.getUUID(), new Hidden(level, light));
+        hidden.put(player.getUUID(), new Hidden(level, light, 0, 1));
         level.sendParticles(ParticleTypes.FLASH, player.getX(), player.getY() + 1, player.getZ(), 1, 0, 0, 0, 0);
         for (AttributeInstance attribute : new AttributeInstance[]{player.getAttribute(Attributes.MOVEMENT_SPEED), player.getAttribute(Attributes.JUMP_STRENGTH)}) {
             if (attribute == null) continue;
@@ -166,8 +167,7 @@ public class LightConcealmentAbility extends Ability {
         }
         player.setNoGravity(true);
         player.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40, 0, false, false));
-        Vec3 center = Vec3.atBottomCenterOf(light);
-        player.connection.teleport(center.x, center.y, center.z, player.getYRot(), player.getXRot());
+        place(level, light);
         level.playSound(null, light, SoundEvents.BEACON_POWER_SELECT, player.getSoundSource(), 1f, 1.8f);
         AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.light_concealment.hidden").withColor(0xFFFFF3D6));
     }
@@ -190,6 +190,34 @@ public class LightConcealmentAbility extends Ability {
         return level.getLightEmission(pos) >= MIN_LIGHT || level.getMaxLocalRawBrightness(pos) >= MIN_LIGHT;
     }
 
+    private static void place(ServerLevel level, BlockPos light) {
+        List<UUID> ids = new ArrayList<>();
+        for (Map.Entry<UUID, Hidden> entry : hidden.entrySet()) {
+            Hidden state = entry.getValue();
+            if (state.level() == level && state.light().equals(light)) ids.add(entry.getKey());
+        }
+        ids.sort(UUID::compareTo);
+        Vec3 center = Vec3.atBottomCenterOf(light);
+        int count = ids.size();
+        for (int i = 0; i < count; i++) {
+            hidden.put(ids.get(i), new Hidden(level, light, i, count));
+            if (!(level.getEntity(ids.get(i)) instanceof ServerPlayer player)) continue;
+            Vec3 spot = ring(center, i, count);
+            if (player.position().distanceToSqr(spot) > 0.01) {
+                player.connection.teleport(spot.x, spot.y, spot.z, player.getYRot(), player.getXRot());
+            }
+            player.setDeltaMovement(Vec3.ZERO);
+            player.resetFallDistance();
+        }
+    }
+
+    private static Vec3 ring(Vec3 center, int index, int count) {
+        if (count <= 1) return center;
+        double radius = 1.2 / (2.0 * Math.sin(Math.PI / count));
+        double angle = (Math.PI * 2.0 * index) / count;
+        return new Vec3(center.x + Math.cos(angle) * radius, center.y, center.z + Math.sin(angle) * radius);
+    }
+
     private static Vec3 exitPosition(ServerLevel level, BlockPos light) {
         for (BlockPos pos : new BlockPos[]{light, light.above(), light.north(), light.south(), light.east(), light.west(), light.below()}) {
             if (level.getBlockState(pos).getCollisionShape(level, pos).isEmpty() && level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty()) {
@@ -205,7 +233,7 @@ public class LightConcealmentAbility extends Ability {
         return unshadowedZones.stream().anyMatch(zone -> zone.level() == level && zone.center().distanceTo(position) <= UNSHADOWED_RADIUS);
     }
 
-    private record Hidden(ServerLevel level, BlockPos light) {
+    private record Hidden(ServerLevel level, BlockPos light, int index, int count) {
     }
 
     private record Zone(ServerLevel level, Vec3 center, long expires) {

@@ -16,11 +16,15 @@ import de.jakob.lotm.util.helper.ParticleUtil;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -400,6 +404,32 @@ public class DreamTraversalAbility extends SelectableAbility {
 //        var pos = entity.position();
 //        parasite.teleportTo((ServerLevel) entity.level(), pos.x, pos.y, pos.z, Set.of(), entity.getYRot(), entity.getXRot());
 //    }
+
+    @SubscribeEvent
+    public static void onEntityChangedDimension(EntityTravelToDimensionEvent event) {
+        if (!(event.getEntity() instanceof LivingEntity entity)) return;
+        if (!(event.getEntity().level() instanceof ServerLevel level)) return;
+
+        var component = entity.getData(ModAttachments.PARASITE_COMPONENT.get());
+        if (!component.isParasited()) return;
+
+        var parasiteId = component.getParasiteUUID();
+        if (parasiteId == null) {
+            component.setParasited(false);
+            return;
+        }
+
+        var parasite = level.getEntity(parasiteId);
+        if (parasite == null) {
+            component.setParasited(false);
+            return;
+        }
+
+        component.setParasited(false);
+
+        var pos = entity.position();
+        parasite.teleportTo((ServerLevel) entity.level(), pos.x, pos.y, pos.z, Set.of(), entity.getYRot(), entity.getXRot());
+    }
 
     public static boolean isHiding(UUID uuid) {
         return hideMap.containsKey(uuid);

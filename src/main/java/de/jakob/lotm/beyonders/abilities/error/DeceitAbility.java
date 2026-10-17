@@ -27,8 +27,8 @@ import java.util.*;
 public class DeceitAbility extends SelectableAbility {
 
     public static final HashSet<UUID> cannotBeTargeted = new HashSet<>();
-    public static final HashSet<UUID> cannotBeHarmed = new HashSet<>();
-    public static final HashMap<UUID, Integer> seqMap = new HashMap<>(50);
+    private static final HashSet<UUID> cannotBeHarmed = new HashSet<>();
+    private static final HashMap<UUID, Integer> seqMap = new HashMap<>(50);
 
     public DeceitAbility(String id) {
         super(id, 15);

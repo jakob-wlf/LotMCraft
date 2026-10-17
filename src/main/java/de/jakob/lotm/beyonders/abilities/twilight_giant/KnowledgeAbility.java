@@ -6,6 +6,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class KnowledgeAbility extends ToggleAbility {
@@ -13,6 +15,8 @@ public class KnowledgeAbility extends ToggleAbility {
     public KnowledgeAbility(String id) {
         super(id);
         tickRate = 20;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(80f, 60f, 40f, 30f, 20f));
     }
 
     @Override

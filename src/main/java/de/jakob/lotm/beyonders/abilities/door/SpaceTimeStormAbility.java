@@ -5,6 +5,7 @@ import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;

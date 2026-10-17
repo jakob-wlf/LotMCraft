@@ -74,7 +74,7 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         ServerPlayer targetPlayer = player.serverLevel().getServer().getPlayerList()
                 .getPlayer(packet.selectedPlayerUuid);
 
-        if (targetPlayer == null || !(player.level().dimension() == targetPlayer.level().dimension())) {
+        if(targetPlayer == null){
             player.sendSystemMessage(Component.literal("§cPlayer not found"));
             return;
         }
@@ -84,6 +84,11 @@ public record PlayerDivinationSelectedPacket(UUID selectedPlayerUuid, PlayerSele
         String targetPath = BeyonderData.getPathway(targetPlayer);
 
         if(VisionaryHandler.shouldFailAndTrigger(playerSeq, player, targetPlayer, null)){
+            return;
+        }
+
+        if (!(player.level().dimension() == targetPlayer.level().dimension())) {
+            player.sendSystemMessage(Component.literal("§cPlayer not found"));
             return;
         }
 

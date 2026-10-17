@@ -67,36 +67,36 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
 
         return switch (sequenceLevel) {
             case 9 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1 )
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1 )
             );
 
             case 8-> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 1),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 5)
             );
             case 7 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 1),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 6)
             );
 
             case 6 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 1 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7)
             );
 
             case 5 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 2 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 2 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 2 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9)
             );
 
             case 4 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
                     //new PhysicalEnhancement(EnhancementType.RESISTANCE, 7),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
@@ -104,7 +104,7 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
             );
 
             case 3 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
@@ -112,7 +112,7 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
             );
 
             case 2 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 12 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 27),
@@ -120,7 +120,7 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
             );
 
             case 1 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 13 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 34),
@@ -128,7 +128,7 @@ public class PhysicalEnhancementsDeathAbility extends PhysicalEnhancementsAbilit
             );
 
             case 0 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 16 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 47),

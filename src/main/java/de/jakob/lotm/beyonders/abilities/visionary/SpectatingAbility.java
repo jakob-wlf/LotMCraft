@@ -142,8 +142,5 @@ public class SpectatingAbility extends ToggleAbility {
         if(ClientHandler.isSpectating && !VisionaryHandler.isInvisible(target)){
             target.setInvisible(false);
         }
-        else if(target.hasEffect(MobEffects.INVISIBILITY)){
-            target.setInvisible(true);
-        }
     }
 }

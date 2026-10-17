@@ -195,6 +195,7 @@ public class ModAttachments {
                             return attachment.saveToNBT();
                         }
                     })
+                    .copyOnDeath()
                     .build()
     );
 

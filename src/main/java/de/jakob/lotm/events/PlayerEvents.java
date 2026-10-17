@@ -12,6 +12,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.attachments.SacrificeRevertComponent;
 import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -37,17 +38,21 @@ import de.jakob.lotm.util.shapeShifting.ShapeShiftingUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForgeMod;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
@@ -55,6 +60,8 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -125,6 +132,15 @@ public class PlayerEvents {
                 PathwaySelectionMenu.openWithAllPathways(player);
 
                 component.setHasReceivedNewPlayerPerks(true);
+            }
+
+            AttributeInstance attribute = player.getAttribute(NeoForgeMod.NAMETAG_DISTANCE);
+            if (attribute != null && attribute.getValue() != 0) {
+                attribute.setBaseValue(0);
+            }
+
+            if(!AbilityUtil.invul.containsKey(player.getUUID())){
+                AbilityUtil.invul.put(player.getUUID(), 20 * 10);
             }
         }
     }
@@ -205,6 +221,12 @@ public class PlayerEvents {
         }
     }
 
+//    @SubscribeEvent
+//    public static void onServerTick(ServerTickEvent.Post event) {
+//        for (ServerLevel level : event.getServer().getAllLevels()) {
+//            ExplodingFallingBlockHelper.tickExplodingBlocks(level);
+//        }
+//    }
     @SubscribeEvent
     public static void onPlayerDimensionChange(PlayerEvent.PlayerChangedDimensionEvent event) {
         if(event.getEntity() instanceof ServerPlayer serverPlayer) {
@@ -219,12 +241,6 @@ public class PlayerEvents {
         }
     }
 
-    @SubscribeEvent
-    public static void onServerTick(ServerTickEvent.Post event) {
-        for (ServerLevel level : event.getServer().getAllLevels()) {
-            ExplodingFallingBlockHelper.tickExplodingBlocks(level);
-        }
-    }
 
     private static void sendActionBar(ServerPlayer player, Component message) {
         ClientboundSetActionBarTextPacket packet = new ClientboundSetActionBarTextPacket(message);

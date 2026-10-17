@@ -152,7 +152,6 @@ public abstract class Ability {
             CopiedAbilityHelper.decrementUses(entity, getId());
         }
 
-
         // Handle Cooldown
         AbilityCooldownComponent component = newUser.getData(ModAttachments.COOLDOWN_COMPONENT);
 
@@ -317,7 +316,7 @@ public abstract class Ability {
     }
 
     protected boolean shouldConsumeSpirituality(LivingEntity entity) {
-        return !entity.hasInfiniteMaterials() && entity instanceof Player;
+        return !entity.hasInfiniteMaterials();
     }
 
     public int lowestSequenceUsable() {

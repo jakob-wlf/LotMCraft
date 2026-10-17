@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "lotmcraft:one_pound"
+    }
+  ],
+  "result": {
+    "id": "lotmcraft:one_soli",
+    "count": 9
+  }
+}

@@ -9,8 +9,10 @@ import java.util.UUID;
 
 public class ParasitationComponent {
 
+    private boolean isParasiting = false;
     private boolean isParasited = false;
     private UUID parasiteUUID = null;
+    private UUID parasitingUUID = null;
 
     public ParasitationComponent() {
     }
@@ -38,6 +40,9 @@ public class ParasitationComponent {
                     ParasitationComponent component = new ParasitationComponent();
                     component.parasiteUUID = tag.hasUUID("hostUUID") ? tag.getUUID("hostUUID") : null;
                     component.isParasited = tag.getBoolean("isParasited");
+                    component.isParasiting = tag.getBoolean("is_parasiting");
+
+                    component.parasitingUUID = tag.hasUUID("parasiting") ? tag.getUUID("parasiting") : null;
                     return component;
                 }
 
@@ -48,7 +53,28 @@ public class ParasitationComponent {
                         tag.putUUID("hostUUID", component.parasiteUUID);
                     }
                     tag.putBoolean("isParasited", component.isParasited);
+                    tag.putBoolean("is_parasiting", component.isParasiting);
+
+                    if (component.parasitingUUID != null) {
+                        tag.putUUID("parasiting", component.parasitingUUID);
+                    }
                     return tag;
                 }
             };
+
+    public boolean isParasiting() {
+        return isParasiting;
+    }
+
+    public void setParasiting(boolean parasiting) {
+        isParasiting = parasiting;
+    }
+
+    public UUID getParasitingUUID() {
+        return parasitingUUID;
+    }
+
+    public void setParasitingUUID(UUID parasitingUUID) {
+        this.parasitingUUID = parasitingUUID;
+    }
 }

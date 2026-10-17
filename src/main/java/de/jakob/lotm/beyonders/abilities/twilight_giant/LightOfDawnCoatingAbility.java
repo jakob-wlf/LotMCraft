@@ -23,6 +23,8 @@ import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -38,6 +40,10 @@ public class LightOfDawnCoatingAbility extends Ability {
     public LightOfDawnCoatingAbility(String id) {
         super(id, 8, "purification", "light_source");
         canBeUsedByNPC = false;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(2000f, 1400f, 1000f, 700f, 500f));
+        hasDynamicCooldown = true;
+        dynamicCooldown = new LinkedList<>(List.of(2, 4, 5, 6, 8));
     }
 
     @Override

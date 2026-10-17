@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "III",
+    "III"
+  ],
+  "key": {
+    "I": {
+      "item": "lotmcraft:one_soli"
+    }
+  },
+  "result": {
+    "id": "lotmcraft:one_pound",
+    "count": 1
+  }
+}

@@ -1,5 +1,7 @@
 package de.jakob.lotm.attachments;
 
+import com.mojang.datafixers.util.Pair;
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.entity.custom.AvatarEntity;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.BeyonderData;
@@ -10,6 +12,9 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
 

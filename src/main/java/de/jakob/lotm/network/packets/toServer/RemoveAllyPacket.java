@@ -1,6 +1,8 @@
 package de.jakob.lotm.network.packets.toServer;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ProxyAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.ServantsAbility;
 import de.jakob.lotm.util.helper.AllyUtil;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
@@ -37,6 +39,14 @@ public record RemoveAllyPacket(UUID allyUUID, String allyName) implements Custom
             Player target = player.server.getPlayerList().getPlayerByName(packet.allyName());
             if(target == null) {
                 player.sendSystemMessage(Component.translatable("lotm.ally.remove.not_found", packet.allyName()).withStyle(style -> style.withColor(0xF44336)));
+                return;
+            }
+            if (ServantsAbility.bound(player.getUUID(), target.getUUID())) {
+                player.sendSystemMessage(Component.translatable("lotm.ally.servant_locked", target.getName()).withStyle(style -> style.withColor(0xF44336)));
+                return;
+            }
+            if (ProxyAbility.bound(player.getUUID(), target.getUUID())) {
+                player.sendSystemMessage(Component.translatable("lotm.ally.proxy_locked", target.getName()).withStyle(style -> style.withColor(0xF44336)));
                 return;
             }
 

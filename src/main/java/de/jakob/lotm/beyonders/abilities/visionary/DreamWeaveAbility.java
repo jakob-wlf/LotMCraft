@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.visionary;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.passives.IllusionImmunityAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.entity.ModEntities;
@@ -112,6 +113,7 @@ public class DreamWeaveAbility extends SelectableAbility {
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
             return;
         }
+        if (IllusionImmunityAbility.immune(entity, target)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
@@ -156,6 +158,7 @@ public class DreamWeaveAbility extends SelectableAbility {
                     Component.translatable("ability.lotmcraft.frenzy.no_target").withColor(0xFFff124d));
             return;
         }
+        if (IllusionImmunityAbility.immune(entity, target)) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.getSequence(target);
@@ -249,5 +252,37 @@ public class DreamWeaveAbility extends SelectableAbility {
         if (tracked == null) return;
         tracked.removeAll(mobs);
         if (tracked.isEmpty()) VICTIM_MOBS.remove(victimUUID);
+    }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if (!super.shouldUseAbility(entity)) {
+            return false;
+        }
+
+        if (!(entity.level() instanceof ServerLevel)) {
+            return false;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        if (VisionaryHandler.shouldBeAffectedWithMindWorldSeal(entitySeq, BeyonderData.getPathway(entity))) {
+            return false;
+        }
+
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
+        return target != null && !IllusionImmunityAbility.immune(entity, target);
+    }
+
+    @Override
+    public int getNPCSelectedAbility(LivingEntity entity, Level level) {
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, (int) (20 * multiplier(entity)), 2);
+        if (target == null) {
+            return 0;
+        }
+
+        int entitySeq = AbilityUtil.getSeqWithArt(entity, this);
+        int targetSeq = BeyonderData.getSequence(target);
+
+        return targetSeq <= entitySeq ? 0 : 1;
     }
 }

@@ -29,38 +29,38 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
     protected List<PhysicalEnhancement> getEnhancementsForSequence(int sequenceLevel) {
         return switch (sequenceLevel) {
             case 9 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1),
                     new PhysicalEnhancement(EnhancementType.SPEED, 1),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 2)
             );
 
             case 8 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 1 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 1 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 7)
             );
             case 7 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 8)
             );
 
             case 6 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3 ),
                   //  new PhysicalEnhancement(EnhancementType.RESISTANCE, 2),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 9)
             );
 
             case 5 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 3),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 4),
                     new PhysicalEnhancement(EnhancementType.SPEED, 3 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 11)
             );
 
             case 4 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 9),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 18),
@@ -68,7 +68,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
             );
 
             case 3 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 4 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 10),
                     new PhysicalEnhancement(EnhancementType.SPEED, 4 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 19),
@@ -76,7 +76,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
             );
 
             case 2 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 5 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 5 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 12),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 27),
@@ -84,7 +84,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
             );
 
             case 1 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6 ),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 6 ),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 14),
                     new PhysicalEnhancement(EnhancementType.SPEED, 5 ),
                     new PhysicalEnhancement(EnhancementType.HEALTH, 34),
@@ -92,7 +92,7 @@ public class PhysicalEnhancementsJusticiarAbility extends PhysicalEnhancementsAb
             );
 
             case 0 -> List.of(
-                    new PhysicalEnhancement(EnhancementType.STRENGTH, 7),
+//                    new PhysicalEnhancement(EnhancementType.STRENGTH, 7),
                     new PhysicalEnhancement(EnhancementType.NIGHT_VISION, 1),
                    // new PhysicalEnhancement(EnhancementType.RESISTANCE, 16),
                     new PhysicalEnhancement(EnhancementType.SPEED, 6 ),

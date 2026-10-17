@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway;
 
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -249,6 +250,11 @@ public class CycleOfFateEntity extends Entity {
                     serverLevel.addFreshEntity(newEntity);
                 }
             }
+        }
+
+        TwilightAging.clear(trigger);
+        for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class, boundingBox)) {
+            TwilightAging.clear(living);
         }
 
         // Remove this entity

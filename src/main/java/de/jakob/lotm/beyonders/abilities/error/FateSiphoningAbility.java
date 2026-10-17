@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.error;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.addons.rituals.RitualEffectHandlerEvent;
+import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.events.ProhibitionHandler;

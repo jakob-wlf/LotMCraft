@@ -6,7 +6,6 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,9 +17,6 @@ import java.util.Map;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SupernaturalResistanceAbility extends PassiveAbility {
-
-    private static final float BASE_RESISTANCE = 0.30f;
-    private static final float RESISTANCE_PER_SEQUENCE = 0.15f;
 
     private static SupernaturalResistanceAbility instance;
 
@@ -44,18 +40,31 @@ public class SupernaturalResistanceAbility extends PassiveAbility {
         if (instance == null || target.level().isClientSide()) return;
         DamageSource source = event.getSource();
         if (!isSupernatural(source) || !instance.shouldApplyTo(target)) return;
-        float resistance = BASE_RESISTANCE;
+        float resistance = reduction(BeyonderData.getSequence(target));
         if (source.getEntity() instanceof LivingEntity attacker && attacker != target) {
-            resistance += (BeyonderData.getSequence(target) <= 0 ?RESISTANCE_PER_SEQUENCE *2.5f : RESISTANCE_PER_SEQUENCE ) * (BeyonderData.getSequence(attacker) - BeyonderData.getSequence(target));
+            resistance += 0.15F * (BeyonderData.getSequence(attacker) - BeyonderData.getSequence(target));
         }
-        resistance = Mth.clamp(resistance, 0f, 1f);
+        resistance = Mth.clamp(resistance, 0F, 1F);
         if (resistance > 0f) event.setAmount(event.getAmount() * (1f - resistance));
     }
 
+    private static float reduction(int sequence) {
+        return switch (sequence) {
+            case 0 -> 0.75F;
+            case 1 -> 0.65F;
+            case 2 -> 0.60F;
+            case 3 -> 0.50F;
+            case 4 -> 0.45F;
+            case 5 -> 0.35F;
+            case 6 -> 0.30F;
+            case 7 -> 0.25F;
+            default -> 0.20F;
+        };
+    }
+
     public static boolean isSupernatural(DamageSource source) {
-        if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC)) return true;
         return source.typeHolder().unwrapKey()
-                .map(key -> key.location().getNamespace().equals(LOTMCraft.MOD_ID) && !key.equals(ModDamageTypes.LOOSING_CONTROL))
+                .map(key -> key.location().getNamespace().equals(LOTMCraft.MOD_ID) && !key.equals(ModDamageTypes.SPACE_DESTRUCTION))
                 .orElse(false);
     }
 }

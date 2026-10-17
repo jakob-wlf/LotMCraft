@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TimeManipulationAbility extends SelectableAbility {
+    private static final int DURATION = 20 * 10;
+
     public TimeManipulationAbility(String id) {
         super(id, 17);
 

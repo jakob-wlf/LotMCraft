@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.death.NationOfTheDeadAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.ImprisonAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.TwilightSwordAbility;
 import de.jakob.lotm.events.ProhibitionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.events.ProhibitionHandler;
@@ -115,6 +116,7 @@ public class PaperFigurineSubstituteAbility extends Ability {
         if (event.getSource().is(ModDamageTypes.LOOSING_CONTROL)) {
             return;
         }
+        if (event.getSource().getEntity() instanceof LivingEntity attacker && TwilightSwordAbility.holds(attacker)) return;
 
         LivingEntity entity = event.getEntity();
         if (entity.level() instanceof ServerLevel sl && ProhibitionHandler.isInStandInsZone(entity.position(), sl, BeyonderData.getSequence(entity))) return;

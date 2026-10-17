@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.ability_entities;
 
 import com.mojang.authlib.GameProfile;
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.BeyonderData;
@@ -237,13 +238,15 @@ public class ControlBodyDouble extends Mob {
         }
 
         BeyonderData.setBeyonder(this, BeyonderData.getPathway(source), BeyonderData.getSequence(source), true, true, false, true, true, false);
+        for (int i = 9; i >= BeyonderData.getSequence(source); i--) {
+            BeyonderData.setCharStack(this, BeyonderData.getCharStack(source, i), i, true);
+        }
+        PhysicalEnhancementsAbility.recalculateAllEnhancementsForEntity(this);
+
         float maxHealth = getMaxHealth();
         float sourceHealth = source.getHealth();
         float newHealth = Math.min(sourceHealth, maxHealth);
-        ServerScheduler.scheduleDelayed(20, () -> { // delayed to ensure that the health is set after the enhancements from being a beyonder are applied
-
-            setHealth(newHealth);
-        });
+        setHealth(newHealth);
     }
 
     public void copyMobEffectsFrom(LivingEntity source) {

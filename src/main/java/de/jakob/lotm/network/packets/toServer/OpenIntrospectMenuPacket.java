@@ -11,6 +11,7 @@ import de.jakob.lotm.network.packets.toClient.SyncIntrospectMenuPacket;
 import de.jakob.lotm.network.packets.toClient.SyncKillCountPacket;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityWheelHelper;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.TwilightAging;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -59,7 +60,7 @@ public record OpenIntrospectMenuPacket(int sequence, String pathway) implements 
                     buf.writeUtf(pathway);
                 });
 
-                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity));
+                PacketHandler.sendToPlayer(player, new SyncIntrospectMenuPacket(sequence, pathway, sanity, TwilightAging.years(player)));
                 PacketHandler.sendToPlayer(player, new SyncAbilityWheelDataToIntrospectPacket(abilityWheelComponent.getAbilities()));
                 PacketHandler.sendToPlayer(player, new SyncKillCountPacket(player.getData(ModAttachments.KILL_COUNT_COMPONENT).getKillCount()));
                 PacketHandler.syncUniquenessToPlayer(player);

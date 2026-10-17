@@ -7,6 +7,7 @@ import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.context.Acti
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -31,6 +32,8 @@ public class StunAction extends ActionBase {
     @Override
     public void action(Level level, LivingEntity entity, UUID casterId) {
         if (level.isClientSide) return;
+
+        //Seq1.stunned.add(entity.getUUID());
 
         ServerScheduler.scheduleForDuration(0, 1, 20 * 7, () -> {
             var pos = entity.position();

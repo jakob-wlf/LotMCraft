@@ -7,7 +7,6 @@ import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.handlers.ClientHandler;
 import de.jakob.lotm.network.packets.toClient.UseAbilityPacket;
 import de.jakob.lotm.util.helper.AbilityUtil;
-import de.jakob.lotm.util.helper.DamageLookup;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -16,7 +15,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -30,6 +31,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,18 +43,19 @@ public class GiantificationAbility extends ToggleAbility {
     private static final double STEP_HEIGHT = 9.0D;
     private static final double STAT_BONUS = 0.25D;
     private static final double SPEED_BONUS = 0.25D;
-    private static final float RESISTANCE = 1.25f;
+    private static final double JUMP_BONUS = 2.2D;
+    private static final float RESISTANCE = 1.15f;
     private static final double STRIDE = 4.0D;
     private static final double STOMP_RADIUS = 20.0D;
     private static final double STOMP_HEIGHT = 5.0D;
-    private static final double DAMAGE_SCALE = 1.0D;
     private static final float SHAKE_RADIUS = 48f;
     private static final float SHAKE_INTENSITY = 1.5f;
     private static final int SHAKE_TICKS = 10;
-    private static final ResourceLocation SCALE_ID = id("gtiant_scale");
+    private static final ResourceLocation SCALE_ID = id("tgiant_scale");
     private static final ResourceLocation STEP_ID = id("tgiant_step");
     private static final ResourceLocation DAMAGE_ID = id("tgiant_damage");
     private static final ResourceLocation SPEED_ID = id("tgiant_speed");
+    private static final ResourceLocation JUMP_ID = id("tgiant_jump");
 
     private static final Map<UUID, Stride> strides = new HashMap<>();
 
@@ -60,6 +64,9 @@ public class GiantificationAbility extends ToggleAbility {
     public GiantificationAbility(String id) {
         super(id);
         instance = this;
+        hasDynamicSpirituality = true;
+        dynamicSpirituality = new LinkedList<>(List.of(250f, 160f, 100f));
+        baseDamage = 5;
     }
 
     @Override
@@ -87,6 +94,7 @@ public class GiantificationAbility extends ToggleAbility {
         setModifier(entity,Attributes.STEP_HEIGHT,STEP_ID,STEP_HEIGHT);
         setModifier(entity, Attributes.ATTACK_DAMAGE, DAMAGE_ID, STAT_BONUS);
         setModifier(entity, Attributes.MOVEMENT_SPEED, SPEED_ID, SPEED_BONUS);
+        setModifier(entity, Attributes.JUMP_STRENGTH, JUMP_ID, JUMP_BONUS);
         strides.put(entity.getUUID(), new Stride(entity.position()));
         level.playSound(null, entity.blockPosition(), SoundEvents.RAVAGER_ROAR, entity.getSoundSource(), 3f, 0.5f);
     }
@@ -109,6 +117,7 @@ public class GiantificationAbility extends ToggleAbility {
         removeModifier(entity, Attributes.STEP_HEIGHT, STEP_ID);
         removeModifier(entity, Attributes.ATTACK_DAMAGE, DAMAGE_ID);
         removeModifier(entity, Attributes.MOVEMENT_SPEED, SPEED_ID);
+        removeModifier(entity, Attributes.JUMP_STRENGTH, JUMP_ID);
         strides.remove(entity.getUUID());
         level.playSound(null, entity.blockPosition(), SoundEvents.BEACON_DEACTIVATE, entity.getSoundSource(), 1.5f, 0.6f);
     }
@@ -123,16 +132,25 @@ public class GiantificationAbility extends ToggleAbility {
         level.playSound(null, entity.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), entity.getSoundSource(), 2f, 0.4f);
         PacketHandler.sendToNearbyPlayers(new UseAbilityPacket(getId(), entity.getId()), level, feet, SHAKE_RADIUS);
 
-        float damage = (float) (DamageLookup.lookupDamage(2, DAMAGE_SCALE) * multiplier(entity));
         for (LivingEntity target : AbilityUtil.getNearbyEntities(entity, level, feet, STOMP_RADIUS)) {
             if (!target.onGround() || target.getY() > feet.y + STOMP_HEIGHT || !AbilityUtil.mayDamage(entity, target)) continue;
+            DamageSource source = ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity);
             if (AbilityUtil.isTargetSignificantlyWeaker(entity, target)) {
-                target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), Float.MAX_VALUE);
-                if (target.isAlive()) target.kill();
+                crush(entity, target, source);
                 continue;
             }
-            target.hurt(ModDamageTypes.source(level, ModDamageTypes.BEYONDER_GENERIC, entity), damage);
+            target.invulnerableTime = 0;
+            target.hurt(source, baseDamage);
+            if (target.getHealth() <= 0f && target.deathTime <= 0) crush(entity, target, source);
         }
+    }
+
+    private static void crush(LivingEntity attacker, LivingEntity target, DamageSource source) {
+        if (target.isRemoved() || target.deathTime > 0) return;
+        if (target instanceof Player player && (player.isCreative() || player.isSpectator())) return;
+        target.invulnerableTime = 0;
+        target.setHealth(0f);
+        target.die(source);
     }
 
     @SubscribeEvent
