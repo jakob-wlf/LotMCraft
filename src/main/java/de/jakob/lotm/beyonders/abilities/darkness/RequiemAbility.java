@@ -1,8 +1,11 @@
 package de.jakob.lotm.beyonders.abilities.darkness;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
-import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.common.SpiritVisionAbility;
+import de.jakob.lotm.beyonders.abilities.death.EyeOfDeathAbility;
+import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.effect.ModEffects;
@@ -32,7 +35,7 @@ import org.joml.Vector3f;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RequiemAbility extends Ability {
+public class RequiemAbility extends SelectableAbility {
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), .5f);
     private final DustParticleOptions bigDust = new DustParticleOptions(new Vector3f(250 / 255f, 40 / 255f, 64 / 255f), 1f);
     private static final HashSet<UUID> pacifiedEntities = new HashSet<>();
@@ -59,7 +62,38 @@ public class RequiemAbility extends Ability {
     }
 
     @Override
-    public void onAbilityUse(Level level, LivingEntity entity) {
+    protected String[] getAbilityNames() {
+        return new String[]{
+                "ability.lotmcraft.requiem.sooth",
+                "ability.lotmcraft.requiem.spirituality",
+                "ability.lotmcraft.requiem.souls",
+                "ability.lotmcraft.requiem.mind",
+                "ability.lotmcraft.requiem.mind_self"
+        };
+    }
+
+    @Override
+    protected void castSelectedAbility(Level level, LivingEntity entity, int abilityIndex) {
+        switch (abilityIndex) {
+            case 1 -> soothSpirituality(level, entity);
+            case 2 -> soothSouls(level, entity);
+            case 3 -> soothMind(level, entity);
+            case 4 -> soothMind(level, entity, entity);
+            default -> sooth(level, entity);
+        }
+    }
+
+    public static boolean blocksSpiritVision(LivingEntity entity) {
+        return entity.getPersistentData().getLong("lotm_sooth_spirit_until") > entity.level().getGameTime();
+    }
+
+    public static float consumption(LivingEntity entity) {
+        if (!blocksSpiritVision(entity)) return 1f;
+        float multiplier = entity.getPersistentData().getFloat("lotm_sooth_spirit_mult");
+        return multiplier < 1f ? 1f : multiplier;
+    }
+
+    private void sooth(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -168,6 +202,71 @@ public class RequiemAbility extends Ability {
 
 
         ServerScheduler.scheduleDelayed(duration, () -> pacifiedEntities.remove(targetEntity.getUUID()));
+    }
+
+    private void soothSpirituality(Level level, LivingEntity entity) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+        if (target == null) {
+            refund(entity);
+            return;
+        }
+        int gap = BeyonderData.getSequence(target) - AbilityUtil.getSeqWithArt(entity, this);
+        float multiplier = gap >= 2 ? 3f : gap == 1 ? 2.25f : gap == 0 ? 2f : 1.5f;
+        int duration = 20 * 30;
+        target.getPersistentData().putLong("lotm_sooth_spirit_until", serverLevel.getGameTime() + duration);
+        target.getPersistentData().putFloat("lotm_sooth_spirit_mult", multiplier);
+        if (LOTMCraft.abilityHandler.getById("spirit_vision_ability") instanceof SpiritVisionAbility vision) {
+            vision.forceStop(serverLevel, target);
+        }
+        level.playSound(null, target.blockPosition(), ModSounds.MIDNIGHT_POEM.get(), SoundSource.PLAYERS, 1, 1.2f);
+    }
+
+    private void soothSouls(Level level, LivingEntity entity) {
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        int duration = 20 * 90;
+        List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 16).stream()
+                .filter(target -> EyeOfDeathAbility.isSpiritEntity(target) || AbilityUtil.isUndead(target))
+                .toList();
+        if (targets.isEmpty()) {
+            refund(entity);
+            return;
+        }
+        long until = serverLevel.getGameTime() + duration;
+        for (LivingEntity target : targets) {
+            if (target instanceof Mob mob) mob.setNoAi(true);
+            target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 4, false, false, true));
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 6, false, false, false));
+            if (EyeOfDeathAbility.isSpiritEntity(target)) {
+                target.getPersistentData().putBoolean("lotm_soothed_souls", true);
+                target.getPersistentData().putLong("lotm_soothed_souls_until", until);
+            }
+            ServerScheduler.scheduleDelayed(duration, () -> {
+                if (target.getPersistentData().getLong("lotm_soothed_souls_until") > target.level().getGameTime()) return;
+                target.getPersistentData().remove("lotm_soothed_souls");
+                target.getPersistentData().remove("lotm_soothed_souls_until");
+                if (target instanceof Mob mob) mob.setNoAi(false);
+            }, serverLevel);
+        }
+        level.playSound(null, entity.blockPosition(), ModSounds.MIDNIGHT_POEM.get(), SoundSource.PLAYERS, 1, 0.8f);
+    }
+
+    private void soothMind(Level level, LivingEntity entity) {
+        if (level.isClientSide) return;
+        LivingEntity target = AbilityUtil.getTargetEntity(entity, baseDistance, 2);
+        if (target == null) target = entity;
+        soothMind(level, entity, target);
+    }
+
+    private void soothMind(Level level, LivingEntity entity, LivingEntity target) {
+        if (level.isClientSide) return;
+        target.getData(ModAttachments.SANITY_COMPONENT).increaseSanityAndSync(0.15f, target);
+        target.removeEffect(ModEffects.LOOSING_CONTROL);
+        level.playSound(null, target.blockPosition(), ModSounds.MIDNIGHT_POEM.get(), SoundSource.PLAYERS, 1, 1.4f);
+    }
+
+    private void refund(LivingEntity entity) {
+        BeyonderData.incrementSpirituality(entity, spiritualityCost(BeyonderData.getSequence(entity)));
     }
 
     private void animateParticleLine(Location startLoc, Vec3 end, int step, int interval, int duration) {

@@ -341,6 +341,11 @@ public class ModAttachments {
                     .build()
     );
 
+    public static final Supplier<AttachmentType<SpiritHousingComponent>> SPIRIT_HOUSING =
+            ATTACHMENT_TYPES.register("spirit_housing", () ->
+                    AttachmentType.serializable(SpiritHousingComponent::new).copyOnDeath().build()
+            );
+
     public static void register(IEventBus eventBus) {
         ATTACHMENT_TYPES.register(eventBus);
     }

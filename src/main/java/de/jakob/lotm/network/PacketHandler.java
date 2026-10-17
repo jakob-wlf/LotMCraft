@@ -624,6 +624,12 @@ public class PacketHandler {
         );
 
         registrar.playToServer(
+                UseSpiritPowerPacket.TYPE,
+                UseSpiritPowerPacket.STREAM_CODEC,
+                UseSpiritPowerPacket::handle
+        );
+
+        registrar.playToServer(
                 RequestSefirotSyncPacket.TYPE,
                 RequestSefirotSyncPacket.STREAM_CODEC,
                 RequestSefirotSyncPacket::handle

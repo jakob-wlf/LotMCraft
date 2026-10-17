@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.darkness.RequiemAbility;
 import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
@@ -124,7 +125,7 @@ public abstract class Ability {
 
         // Consume spirituality
         if(shouldConsumeSpirituality(newUser) && consumeSpirituality) {
-            float cost = getInflatedSpiritualityCost(newUser, serverLevel, seq);
+            float cost = getInflatedSpiritualityCost(newUser, serverLevel, seq) * RequiemAbility.consumption(newUser);
             float current = BeyonderData.getSpirituality(newUser);
 
             // A spirituality shortfall (up to 30%) is paid in sanity: deeper deficits and pricier abilities cost more,

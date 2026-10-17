@@ -3,6 +3,7 @@ package de.jakob.lotm.beyonders.abilities.common;
 import com.lowdragmc.lowdraglib2.editor.resource.IResourcePath;
 import com.lowdragmc.photon.client.postfx.PhotonPostFX;
 import de.jakob.lotm.attachments.AllyComponent;
+import de.jakob.lotm.beyonders.abilities.darkness.RequiemAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.handlers.VisionaryHandler;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -68,6 +69,19 @@ public class SpiritVisionAbility extends ToggleAbility {
         return reqs;
     }
 
+    public void forceStop(ServerLevel level, LivingEntity entity) {
+        if (isActiveForEntity(entity)) cancel(level, entity);
+    }
+
+    @Override
+    public void onAbilityUse(Level level, LivingEntity entity) {
+        if (!level.isClientSide && RequiemAbility.blocksSpiritVision(entity)) {
+            forceStop((ServerLevel) level, entity);
+            return;
+        }
+        super.onAbilityUse(level, entity);
+    }
+
     @Override
     public void start(Level level, LivingEntity entity) {
         if (!level.isClientSide) {
@@ -88,6 +102,11 @@ public class SpiritVisionAbility extends ToggleAbility {
     @Override
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide()) {
+            return;
+        }
+
+        if (RequiemAbility.blocksSpiritVision(entity)) {
+            cancel((ServerLevel) level, entity);
             return;
         }
 
