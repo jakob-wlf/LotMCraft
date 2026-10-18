@@ -2,6 +2,7 @@ package de.jakob.lotm.util.helper;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
+import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
@@ -13,6 +14,7 @@ import de.jakob.lotm.events.custom.*;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.subordinates.SubordinateComponent;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.LastStandAbility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
@@ -77,6 +79,7 @@ public class AbilityUtil {
     }
 
     public static boolean isTargetSignificantlyWeaker(LivingEntity source, LivingEntity target) {
+        if (LastStandAbility.tramples(source, target)) return true;
         return isTargetSignificantlyWeaker(BeyonderData.getSequence(source), BeyonderData.getSequence(target));
     }
 
@@ -251,6 +254,11 @@ public class AbilityUtil {
         if (source == null || target == null) return true;
 
         if(source == target) return false;
+
+        TransformationComponent transformationComponent = target.getData(ModAttachments.TRANSFORMATION_COMPONENT);
+        if(transformationComponent.isTransformed()
+                && transformationComponent.getTransformationIndex() == TransformationComponent.TransformationType.FOG_OF_HISTORY.getIndex()) return false;
+
 
         if(ignoreAllies.containsKey(source.getUUID())) allowAllies = true;
 
@@ -457,6 +465,7 @@ public class AbilityUtil {
                                                boolean ignoreBlocks) {
         LivingEntity targetEntity = getTargetEntityInternal(entity, radius, entityDetectionRadius,
                 onlyAllowWithLineOfSight, allowAllies, targetMarionettes, ignoreBlocks);
+
 
         if (targetEntity instanceof ArmorStand) return null;
 

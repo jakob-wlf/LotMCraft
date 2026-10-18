@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.ability_entities.darkness_pathway;
 
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AllyUtil;
@@ -242,6 +243,10 @@ public class ConcealedDomainEntity extends Entity {
 
                 if (!inside) continue;
 
+                if(!(entity instanceof LivingEntity living)) continue;
+
+                living.addEffect(new MobEffectInstance(ModEffects.CONCEALMENT, 60, 99, false, false, false));
+
                 boolean allowed = isAllowed(entity);
 
                 if (allowed) {
@@ -251,9 +256,7 @@ public class ConcealedDomainEntity extends Entity {
                     myTrackedEntities.add(entity.getUUID());
 
                     // Night vision
-                    if (entity instanceof LivingEntity living) {
-                        living.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 60, 0, false, false, false));
-                    }
+                    living.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 60, 0, false, false, false));
 
                     // Top exit point — eject out
                     double distToTop = entity.position().distanceToSqr(topPoint);

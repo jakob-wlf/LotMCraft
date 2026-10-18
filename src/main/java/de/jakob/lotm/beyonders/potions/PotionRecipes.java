@@ -459,7 +459,7 @@ public class PotionRecipes {
         ));
 
         // ===== DEATH =====
-
+/*
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),
                 new ItemStack(ModIngredients.DEEP_GRAINED_WALNUT.get()),
@@ -542,7 +542,7 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(
                         BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
         ));
-
+*/
 
 // ===== DARKNESS =====
 
@@ -812,7 +812,7 @@ public class PotionRecipes {
 
 
 // ===== ABYSS =====
-
+/*
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CRIMINAL_POTION.get(),
                 new ItemStack(ModIngredients.POPLAR_TREE_LEAF_POWDER.get()),
@@ -902,7 +902,7 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(
                         BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
         ));
-
+*/
         // ===== TYRANT =====
 
         RECIPES.add(new PotionRecipe(
@@ -1183,7 +1183,7 @@ public class PotionRecipes {
 
 
 // ===== JUSTICIAR =====
-
+/*
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.ARBITER.get(),
                 new ItemStack(ModIngredients.RED_WINE.get()),
@@ -1289,6 +1289,92 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(
                         BeyonderCharacteristicItemHandler
                                 .selectCharacteristicOfPathwayAndSequence("justiciar", 1)
+                ))
+        ));
+*/
+
+// Twilight giant
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WARRIOR_POTION.get(),
+                new ItemStack(ModIngredients.BASIL.get()),
+                new ItemStack(ModIngredients.RED_CHESTNUT_FLOWER.get()),
+                new ItemStack(ModIngredients.SHADOWLESS_DEMONIC_WOLF_BLOOD.get()),
+                new ItemStack(ModIngredients.PURIFIED_WATER.get()),
+                new ItemStack(ModIngredients.FLYING_UNICORN_HORN.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.PUGILIST_POTION.get(),
+                new ItemStack(ModIngredients.SILVER_WAR_BEAR_RIGHT_PALM.get()),
+                new ItemStack(ModIngredients.LIQUOR.get()),
+                new ItemStack(ModIngredients.STRING_GRASS_POWDER.get()),
+                new ItemStack(ModIngredients.HORNBEAM_ESSENTIAL_OILS.get()),
+                new ItemStack(ModIngredients.HEART_OF_A_MAGMA_TITAN.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.WEAPON_MASTER_POTION.get(),
+                new ItemStack(ModIngredients.FLASH_PATTERNED_BLACK_SNAKE_HORN.get()),
+                new ItemStack(ModIngredients.WITHERED_GRAPEVINE.get()),
+                new ItemStack(ModIngredients.SUN_ESSENTIAL_OIL.get()),
+                new ItemStack(ModIngredients.CLEMATIS_POWDER.get()),
+                new ItemStack(ModIngredients.DARK_PATTERNED_BLACK_PANTHER_SPINAL_FLUID.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DAWN_PALADIN_POTION.get(),
+                new ItemStack(ModIngredients.RADIANCE_SPIRIT_PACT_TREE_JUICE.get()),
+                new ItemStack(ModIngredients.AMETHYST.get()),
+                new ItemStack(ModIngredients.MERCURY.get()),
+                new ItemStack(ModIngredients.HONEYSUCKLE_ESSENTIAL_OIL.get()),
+                new ItemStack(ModIngredients.BLUE_SHADOW_FALCON_CRYSTALLINE_FEATHERS.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.GUARDIAN_POTION.get(),
+                new ItemStack(ModIngredients.ROSEMARY.get()),
+                new ItemStack(ModIngredients.DAWN_ROOSTER_BLOOD.get()),
+                new ItemStack(ModIngredients.SWAMP_GIANT_BLOOD.get()),
+                new ItemStack(ModIngredients.LEMON_BALM_POWDER.get()),
+                new ItemStack(ModIngredients.PURE_WHITE_BRILLIANT_ROCK.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.DEMON_HUNTER_POTION.get(),
+                new ItemStack(ModIngredients.HOLY_BRILLIANCE_ROCK_LIQUID.get()),
+                new ItemStack(ModIngredients.SOLIDIFIED_MAGMA.get()),
+                new ItemStack(ModIngredients.SHADOW_LIZARD_SCALES.get()),
+                new ItemStack(ModIngredients.ANCIENT_CLOCK.get()),
+                new ItemStack(ModIngredients.MAGMA_GIANT_CORE.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.SILVER_KNIGHT_POTION.get(),
+                new ItemStack(ModIngredients.SUN_DIVINE_BIRD_BLOOD.get()),
+                new ItemStack(ModIngredients.KING_OF_DAWN_ROOSTERS_BLOOD.get()),
+                new ItemStack(ModIngredients.MAGMA_HEART_POWDER.get()),
+                new ItemStack(ModIngredients.WHITE_FROST_CRYSTAL_OF_DEMONIC_WOLF_OF_FOG.get()),
+                new ItemStack(ModIngredients.SWAMP_GIANT_PALMS.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.GLORY_POTION.get(),
+                new ItemStack(ModIngredients.SUN_ORB.get()),
+                new ItemStack(ModIngredients.USED_ALMANAC.get()),
+                new ItemStack(ModIngredients.BEACONS_EXTRACTED_FROM_THE_RIVER_OF_FATE.get()),
+                new ItemStack(ModIngredients.DARK_DEMONIC_WOLF_BLOOD.get()),
+                new ItemStack(ModIngredients.GIANT_KING_COURT_PRIEST_POSTMORTEM_CRYSTAL.get())
+        ));
+
+        RECIPES.add(new PotionRecipe(
+                (BeyonderPotion) PotionItemHandler.HAND_OF_GOD_POTION.get(),
+                new ItemStack(ModIngredients.COW_TEETH_PAEONOL_POWDER.get()),
+                new ItemStack(ModIngredients.SELF_DESIGNED_CIPHER.get()),
+                new ItemStack(ModIngredients.SPIRIT_WORLD_SPECIALTIES.get()),
+                new ItemStack(Items.GOLD_BLOCK),
+                new ItemStack(Objects.requireNonNull(
+                        BeyonderCharacteristicItemHandler
+                                .selectCharacteristicOfPathwayAndSequence("twilight_giant", 1)
                 ))
         ));
     }

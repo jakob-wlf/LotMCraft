@@ -5,11 +5,13 @@ import com.zigythebird.playeranim.api.PlayerAnimationFactory;
 import com.zigythebird.playeranimcore.enums.PlayState;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.KnowledgeRecipe;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
+//import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.block.entity.renderer.RitualisticTableBlockEntityRenderer;
 import de.jakob.lotm.data.ModDataComponents;
 import de.jakob.lotm.dimension.ModDimensions;
@@ -67,6 +69,13 @@ import de.jakob.lotm.entity.client.ability_entities.grafting.GraftingLocationRen
 import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.ancient_court.AncientCourtEntityRenderer;
 import de.jakob.lotm.entity.client.ability_entities.justiciar_pathway.judgment_sword.JudgmentSwordRenderer;
 import de.jakob.lotm.entity.client.ability_entities.sun_pathway.justice_sword.JusticeSwordRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.silver_rapier.SilverRapierRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.FightingArenaRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.ProtectionBarrierRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.HurricaneOfLightRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.ProtectiveCageRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.TwilightDomeRenderer;
+import de.jakob.lotm.entity.client.ability_entities.twilight_giant.twilight_visual.TwilightSlashRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning.LightningRenderer;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.lightning_branch.LightningBranchRenderer;
 import de.jakob.lotm.entity.client.projectiles.fireball.FireballRenderer;
@@ -100,6 +109,7 @@ import de.jakob.lotm.gui.custom.cohort.CohortScreen;
 import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.spirit_command.SpiritCommandScreen;
 import de.jakob.lotm.gui.custom.spirit_housing.SpiritManageScreen;
+import de.jakob.lotm.gui.custom.copied_ability_wheel.CopiedAbilityWheelScreen;
 import de.jakob.lotm.gui.custom.encyclopedia.IngredientEncyclopediaScreen;
 import de.jakob.lotm.gui.custom.flaming_jump.FlamingJumpScreen;
 import de.jakob.lotm.gui.custom.introspect.IntrospectScreen;
@@ -127,6 +137,7 @@ import de.jakob.lotm.beyonders.rituals.RitualManager;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.structure.ModStructures;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.BeyonderMobData;
 import de.jakob.lotm.util.Config;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import de.jakob.lotm.villager.ModVillagers;
@@ -231,6 +242,7 @@ public class LOTMCraft
         ModBlockEntities.register(modEventBus);
         ModStructures.register(modEventBus);
         ModDataComponents.register(modEventBus);
+        KnowledgeRecipe.SERIALIZERS.register(modEventBus);
         PotionRecipeItemHandler.registerRecipes(modEventBus);
         BeyonderCharacteristicItemHandler.registerCharacteristics(modEventBus);
         ModAttachments.register(modEventBus);
@@ -255,6 +267,7 @@ public class LOTMCraft
 
         // Register our mod's ForgeConfigSpec so that Forge can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+        modContainer.registerConfig(ModConfig.Type.COMMON, BeyonderMobData.SPEC, "lotmcraft-beyonder-mobs.toml");
     }
 
     private void clientSetup(final FMLClientSetupEvent event) {
@@ -285,6 +298,13 @@ public class LOTMCraft
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.FLAMING_SPEAR.get(), FlamingSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.FIRE_PLATE.get(), FirePlateRenderer::new);
+            EntityRenderers.register(ModEntities.SILVER_RAPIER.get(), SilverRapierRenderer::new);
+            EntityRenderers.register(ModEntities.TWILIGHT_DOME.get(), TwilightDomeRenderer::new);
+            EntityRenderers.register(ModEntities.PROTECTION_BARRIER.get(), ProtectionBarrierRenderer::new);
+            EntityRenderers.register(ModEntities.FIGHTING_ARENA.get(), FightingArenaRenderer::new);
+            EntityRenderers.register(ModEntities.PROTECTIVE_CAGE.get(), ProtectiveCageRenderer::new);
+            EntityRenderers.register(ModEntities.HURRICANE_OF_LIGHT.get(), HurricaneOfLightRenderer::new);
+            EntityRenderers.register(ModEntities.TWILIGHT_SLASH.get(), TwilightSlashRenderer::new);
             EntityRenderers.register(ModEntities.UNSHADOWED_SPEAR.get(), UnshadowedSpearProjectileRenderer::new);
             EntityRenderers.register(ModEntities.WIND_BLADE.get(), WindBladeRenderer::new);
             EntityRenderers.register(ModEntities.FIREBALL.get(), FireballRenderer::new);
@@ -415,6 +435,7 @@ public class LOTMCraft
             event.register(ModMenuTypes.SEFIRAH_MENU.get(), SefirahScreen::new);
             event.register(ModMenuTypes.ABILITY_WHEEL_MENU.get(), AbilityWheelScreen::new);
             event.register(ModMenuTypes.ARTIFACT_WHEEL_MENU.get(), ArtifactWheelScreen::new);
+            event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
             event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
             event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);

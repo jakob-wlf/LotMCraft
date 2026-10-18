@@ -32,11 +32,13 @@ public class BalancingAbility extends Ability {
         hasOptimalDistance = false;
         postsUsedAbilityEventManually = true;
         canBeShared = false;
+
+
     }
 
     @Override
     public Map<String, Integer> getRequirements() {
-        return new HashMap<>(Map.of("justiciar", 3));
+        return new HashMap<>(Map.of("justiciar", 2));
     }
 
     @Override
@@ -48,6 +50,7 @@ public class BalancingAbility extends Ability {
     public void onAbilityUse(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         ServerLevel serverLevel = (ServerLevel) level;
+
         int ZONE_DURATION = (int) (3600 * multiplier(entity));
         long expiryTick = serverLevel.getGameTime() + ZONE_DURATION;
         BalancingZone zone = new BalancingZone(entity.getUUID(), entity.position(), serverLevel, expiryTick);

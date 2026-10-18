@@ -920,8 +920,8 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
         this.killCount = killCount;
     }
 
-    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity) {
-        this.menu.updateData(sequence, pathway, digestionProgress, sanity);
+    public void updateMenuData(int sequence, String pathway, float digestionProgress, float sanity, float years) {
+        this.menu.updateData(sequence, pathway, digestionProgress, sanity, years);
         initializeAbilities();
     }
 
@@ -1025,6 +1025,12 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
             g.drawString(this.font, Component.literal("+" + charStackCount).withStyle(ChatFormatting.BOLD),
                     x + 50, y + SEQ_COUNTER_Y + 4, TEXT_GOLD, true);
         }
+
+        float years = menu.getYears();
+        String yearsLabel = "Age: " + (years == (int) years ? String.valueOf((int) years) : String.format(java.util.Locale.ROOT, "%.1f", years));
+        int yearsX = x + 50;
+        if (charStackCount > 0) yearsX += this.font.width("+" + charStackCount) + 4;
+        g.drawString(this.font, yearsLabel, yearsX, y + SEQ_COUNTER_Y + 4, TEXT_NORMAL, true);
 
         // --- sequence name on a nameplate (wraps to two lines) ---
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);

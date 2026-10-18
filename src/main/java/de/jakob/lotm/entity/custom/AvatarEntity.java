@@ -145,6 +145,16 @@ public class AvatarEntity extends PathfinderMob {
     }
 
     @Override
+    public boolean requiresCustomPersistence() {
+        return true;
+    }
+
+    @Override
+    public boolean canRide(Entity vehicle) {
+        return false;
+    }
+
+    @Override
     public void tick() {
         super.tick();
 
@@ -175,7 +185,9 @@ public class AvatarEntity extends PathfinderMob {
     public void setTarget(@javax.annotation.Nullable LivingEntity target) {
         UUID owner = getOriginalOwner();
         if (target != null && owner != null && target.getUUID().equals(owner)) return;
+        if (target instanceof AvatarEntity avatar && avatar.getOriginalOwner().equals(owner)) return;
         if (target != null && !AbilityUtil.mayTarget(this, target)) return;
+
         super.setTarget(target);
     }
 

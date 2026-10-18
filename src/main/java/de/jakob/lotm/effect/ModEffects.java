@@ -34,8 +34,7 @@ public class ModEffects {
 
 
     public static final Holder<MobEffect> LOOSING_CONTROL = MOB_EFFECTS.register("loosing_control",
-            () -> new LoosingControlEffect(MobEffectCategory.HARMFUL, 0x493269)
-                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control"), -.45f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            () -> new LoosingControlEffect(MobEffectCategory.HARMFUL, 0x493269));
 
     public static final Holder<MobEffect> CONCEALMENT = MOB_EFFECTS.register("concealment",
             () -> new ConcealmentEffect(MobEffectCategory.BENEFICIAL, 0x161718));
@@ -45,6 +44,9 @@ public class ModEffects {
 
     public static final Holder<MobEffect> FOOLING = MOB_EFFECTS.register("fooling",
             () -> new FoolingEffect(MobEffectCategory.HARMFUL, 0xE040FB));
+
+    public static final Holder<MobEffect> COMBAT_MASTERY = MOB_EFFECTS.register("combat_mastery",
+            () -> new CombatMasteryEffect(MobEffectCategory.BENEFICIAL, 0x944b16));
 
     public static void register(IEventBus eventBus) {
         MOB_EFFECTS.register(eventBus);

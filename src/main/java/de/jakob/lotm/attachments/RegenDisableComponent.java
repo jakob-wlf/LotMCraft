@@ -42,8 +42,6 @@ public class RegenDisableComponent {
     }
 
     public void disableFor(int seconds){
-        if(isDisabled) return;
-
         disabledFor = seconds;
         count = 0;
         isDisabled = true;

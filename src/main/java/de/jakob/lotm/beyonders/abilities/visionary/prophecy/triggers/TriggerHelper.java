@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.visionary.prophecy.triggers;
 
+import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.visionary.passives.MetaAwarenessAbility;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.TokenStream;
 import de.jakob.lotm.beyonders.abilities.visionary.prophecy.actions.ActionBase;

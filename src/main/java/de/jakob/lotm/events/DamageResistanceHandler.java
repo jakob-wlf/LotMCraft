@@ -3,17 +3,22 @@ package de.jakob.lotm.events;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.red_priest.CullAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.passives.WeaponMasteryAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.gamerule.ModGameRules;
 import de.jakob.lotm.util.AuthorityResistanceManager;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingHealEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
@@ -144,6 +149,7 @@ public class DamageResistanceHandler {
         List<Float> door = new LinkedList<>(List.of(2f, 1.5f, 1.5f, 1.25f, 1f, 0.75f));
         List<Float> demoness = new LinkedList<>(List.of(3.5f, 2.5f, 2.5f,  2f, 1.5f, 1f, 0.9f, 0.8f, 0.75f, 0.25f));
         List<Float> darkness = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.6f, 0.5f, 0.25f));
+        List<Float> twilight = new LinkedList<>(List.of(5f, 4f, 4f, 3.5f, 3f, 2.5f, 2.25f, 1.75f, 1f, 0.75f));
 
 
         physicalDamage.put("tyrant", tyrant);
@@ -157,6 +163,7 @@ public class DamageResistanceHandler {
         physicalDamage.put("door", door);
         physicalDamage.put("demoness", demoness);
         physicalDamage.put("darkness", darkness);
+        physicalDamage.put("twilight_giant", twilight);
     }
 
     @SubscribeEvent
@@ -176,9 +183,11 @@ public class DamageResistanceHandler {
         if(list == null || seq + 1 > list.size())
             return;
 
+        if ("twilight_giant".equals(path) && WeaponMasteryAbility.isWeapon(entity.getMainHandItem())) return;
+
         float damage = list.get(seq);
 
-        target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, entity), damage);
+        target.hurt(ModDamageTypes.source(level, "twilight_giant".equals(path) ? ModDamageTypes.PHYSICAL_BASED : ModDamageTypes.IMPACT, entity), damage);
     }
 
     @SubscribeEvent

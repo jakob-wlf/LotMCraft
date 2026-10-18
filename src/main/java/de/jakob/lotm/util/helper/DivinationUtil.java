@@ -12,6 +12,7 @@ import de.jakob.lotm.beyonders.abilities.error.ParasitationAbility;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidHidingAbility;
 import de.jakob.lotm.beyonders.abilities.red_priest.FogOfWarAbility;
 import de.jakob.lotm.beyonders.abilities.tyrant.LightningStormAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.MindConcealmentAbility;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.sefirah.SefirahHandler;
 import de.jakob.lotm.dimension.ModDimensions;
@@ -274,7 +275,10 @@ public class DivinationUtil {
         if (ParasitationAbility.isConcealed(serverPlayer.getUUID())) {
             addedValue += 99;
         }
-        
+        if (activeAbilities.stream().anyMatch(ability -> ability instanceof MindConcealmentAbility)) {
+            addedValue += MindConcealmentAbility.CONCEALMENT_POWER;
+        }
+
         return addedValue;
     }
 

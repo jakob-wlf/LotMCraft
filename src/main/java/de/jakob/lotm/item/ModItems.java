@@ -6,6 +6,7 @@ import de.jakob.lotm.block.ModBlocks;
 import de.jakob.lotm.data.ModTags;
 import de.jakob.lotm.item.custom.*;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.bus.api.IEventBus;
@@ -57,6 +58,14 @@ public class ModItems {
     public static final DeferredItem<Item> PAPER_PICKAXE = ITEMS.registerItem("paper_pickaxe", props -> new PickaxeItem(PAPER_TOOL_TIER, props.attributes(PickaxeItem.createAttributes(PAPER_TOOL_TIER, 1, -2.8f))), new Item.Properties().durability(15));
     public static final DeferredItem<Item> PAPER_AXE = ITEMS.registerItem("paper_axe", props -> new AxeItem(PAPER_TOOL_TIER, props.attributes(AxeItem.createAttributes(PAPER_TOOL_TIER, 6, -3.1f))), new Item.Properties().durability(15));
     public static final DeferredItem<Item> PAPER_SHOVEL = ITEMS.registerItem("paper_shovel", props -> new ShovelItem(PAPER_TOOL_TIER, props.attributes(ShovelItem.createAttributes(PAPER_TOOL_TIER, 1.5f, -3))), new Item.Properties().durability(15));
+    public static final DeferredItem<Item> DAWN_SWORD = ITEMS.registerItem("dawn_sword", props -> new SwordItem(Tiers.IRON, props), new Item.Properties().stacksTo(1).attributes(SwordItem.createAttributes(Tiers.IRON, 3, -2.4F)));
+    public static final DeferredItem<Item> TWILIGHT_SWORD = ITEMS.registerItem("twilight_sword", props -> new SwordItem(Tiers.IRON, props), new Item.Properties().stacksTo(1).attributes(SwordItem.createAttributes(Tiers.IRON, 3, -2.4F)));
+    public static final DeferredItem<Item> DAWN_AXE = ITEMS.registerItem("dawn_axe", props -> new AxeItem(Tiers.IRON, props), new Item.Properties().stacksTo(1).attributes(AxeItem.createAttributes(Tiers.IRON, 6.0F, -3.1F)));
+    public static final DeferredItem<Item> DAWN_SPEAR = ITEMS.registerItem("dawn_spear", TridentItem::new, new Item.Properties().stacksTo(1).durability(250).attributes(TridentItem.createAttributes()));
+    public static final DeferredItem<Item> DAWN_HELMET = ITEMS.registerItem("dawn_helmet", props -> new DawnArmorItem(EquipmentSlot.HEAD, props), new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> DAWN_CHESTPLATE = ITEMS.registerItem("dawn_chestplate", props -> new DawnArmorItem(EquipmentSlot.CHEST, props), new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> DAWN_LEGGINGS = ITEMS.registerItem("dawn_leggings", props -> new DawnArmorItem(EquipmentSlot.LEGS, props), new Item.Properties().stacksTo(1));
+    public static final DeferredItem<Item> DAWN_BOOTS = ITEMS.registerItem("dawn_boots", props -> new DawnArmorItem(EquipmentSlot.FEET, props), new Item.Properties().stacksTo(1));
 
     public static final DeferredItem<Item> CONJURED_SWORD = ITEMS.registerItem("conjured_sword", props -> new SwordItem(CONJURED_TOOL_TIER, props.attributes(SwordItem.createAttributes(CONJURED_TOOL_TIER, 8, -2.4f))), new Item.Properties());
     public static final DeferredItem<Item> CONJURED_WHIP = ITEMS.registerItem("conjured_whip", props -> new SwordItem(CONJURED_TOOL_TIER, props.attributes(SwordItem.createAttributes(CONJURED_TOOL_TIER, 6, -1.6f))), new Item.Properties());
@@ -116,9 +125,9 @@ public class ModItems {
                     .stacksTo(1)
                     .fireResistant()));
 
-    public static final DeferredItem<BlockItem> MYSTICAL_RING = ITEMS.register("mystical_ring",
-            () -> new BlockItem(ModBlocks.MYSTICAL_RING.get(), new Item.Properties())
-    );
+//    public static final DeferredItem<BlockItem> MYSTICAL_RING = ITEMS.register("mystical_ring",
+//            () -> new BlockItem(ModBlocks.MYSTICAL_RING.get(), new Item.Properties())
+//    );
 
     // Uniquenesses (registered, so I can use them in the renderer for the Uniqueness Entity)
     public static final DeferredItem<Item> RED_PRIEST_UNIQUENESS = ITEMS.register("red_priest_uniqueness",

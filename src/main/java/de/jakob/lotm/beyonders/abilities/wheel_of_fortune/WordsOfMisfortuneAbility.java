@@ -49,7 +49,7 @@ public class WordsOfMisfortuneAbility extends Ability {
             return;
         }
 
-        MisfortuneWordsEntity wordsEntity = new MisfortuneWordsEntity(level, entity.position().add(0, 1, 0));
+        MisfortuneWordsEntity wordsEntity = new MisfortuneWordsEntity(level, entity.position().add(0, 1, 0), baseDamage);
         level.addFreshEntity(wordsEntity);
     }
 }

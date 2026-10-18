@@ -16,8 +16,10 @@ import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.AllyUtil;
 import de.jakob.lotm.util.mixin.EntityAccessor;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket;
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -28,6 +30,8 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.Scoreboard;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -59,7 +63,8 @@ public class SpiritVisionAbility extends ToggleAbility {
                         "wheel_of_fortune", 9,
                         "darkness", 7,
                         "abyss", 9,
-                        "red_priest", 8
+                        "red_priest", 8,
+                        "twilight_giant", 7
                 ));
 
         for (String pathway : BeyonderData.pathways) {
@@ -93,6 +98,7 @@ public class SpiritVisionAbility extends ToggleAbility {
         }
 
         entity.playSound(SoundEvents.ENCHANTMENT_TABLE_USE, 1, 1);
+
     }
 
     private final DustParticleOptions dust = new DustParticleOptions(new Vector3f(255, 255, 255), 2f);

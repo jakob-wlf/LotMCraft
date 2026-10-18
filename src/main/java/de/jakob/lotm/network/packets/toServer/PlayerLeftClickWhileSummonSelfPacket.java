@@ -4,6 +4,8 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.AbilityWheelComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.fool.HistoricalVoidSummonSelfAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.MercuryArmoryAbility;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.passives.CombatMasteryAbility;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncAbilityWheelPacket;
 import io.netty.buffer.ByteBuf;
@@ -28,6 +30,8 @@ public record PlayerLeftClickWhileSummonSelfPacket() implements CustomPacketPayl
         context.enqueueWork(() -> {
             if (context.player() instanceof ServerPlayer serverPlayer) {
                 HistoricalVoidSummonSelfAbility.onPlayerLeftClickServer(serverPlayer);
+                CombatMasteryAbility.onAirSwing(serverPlayer);
+                MercuryArmoryAbility.onAirSwing(serverPlayer);
             }
         });
     }

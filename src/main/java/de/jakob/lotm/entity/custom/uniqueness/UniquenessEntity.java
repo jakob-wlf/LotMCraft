@@ -5,6 +5,7 @@ import de.jakob.lotm.attachments.UniquenessComponent;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
+import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -77,13 +78,13 @@ public class UniquenessEntity extends Entity {
             return;
         }
 
-        if(!ACTIVE_ENTITIES.containsValue(this.getId()) || getPathway().isEmpty() || !ACTIVE_ENTITIES.containsKey(getPathway())) {
+        if (!ACTIVE_ENTITIES.containsValue(this.getId()) || getPathway().isEmpty() || !ACTIVE_ENTITIES.containsKey(getPathway())) {
             ACTIVE_ENTITIES.remove(getPathway());
             AABB hitbox = this.getBoundingBox().inflate(2);
             List<LivingEntity> nearby = level().getEntitiesOfClass(LivingEntity.class, hitbox);
 
-            for(LivingEntity entity : nearby) {
-                if(BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 3) {
+            for (LivingEntity entity : nearby) {
+                if (BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) <= 3) {
                     spawnUniqueness(entity);
                     return;
                 }
@@ -158,6 +159,15 @@ public class UniquenessEntity extends Entity {
     }
 
     private void pickUp(Player player, String pathway, ServerLevel serverLevel) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            var pureIdealism = serverPlayer.getData(ModAttachments.DISCERNMENT_DATA.get());
+            var controlling = serverPlayer.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT.get());
+
+            if (pureIdealism.isDiscerning() | controlling.isControlling()) {
+                return;
+            }
+        }
+
         UniquenessComponent component = player.getData(ModAttachments.UNIQUENESS_COMPONENT);
         component.setHasUniqueness(true);
         component.setUniquenessPathway(pathway);
@@ -169,7 +179,7 @@ public class UniquenessEntity extends Entity {
 
         serverLevel.players().forEach(p ->
                 p.displayClientMessage(
-                        Component.literal(player.getName().getString())
+                        Component.literal("Somebody")
                                 .append(Component.translatable("lotm.uniqueness.picked_up"))
                                 .withColor(color),
                         false
@@ -180,7 +190,7 @@ public class UniquenessEntity extends Entity {
 
         // Sync uniqueness component to client
         if (player instanceof ServerPlayer serverPlayer) {
-            de.jakob.lotm.network.PacketHandler.syncUniquenessToPlayer(serverPlayer);
+            PacketHandler.syncUniquenessToPlayer(serverPlayer);
         }
 
         // Remove from active map and discard entity
@@ -215,7 +225,7 @@ public class UniquenessEntity extends Entity {
             }
         }
 
-        if(BeyonderData.playerMap.anyPlayerHoldsUniqueness(pathway)) {
+        if (BeyonderData.playerMap.anyPlayerHoldsUniqueness(pathway)) {
             return true;
         }
 

@@ -48,7 +48,10 @@ public class DivineKingdomManifestationAbility extends Ability {
             return;
         }
 
-        SunKingdomEntity sunKingdomEntity = new SunKingdomEntity(ModEntities.SUN_KINGDOM.get(), level, 20 * 60 * 2, entity.getUUID(), BeyonderData.isGriefingEnabled(entity));
+        if(serverLevel.isNight())
+            serverLevel.setDayTime(6000);
+
+        SunKingdomEntity sunKingdomEntity = new SunKingdomEntity(ModEntities.SUN_KINGDOM.get(), level, 20 * 50, entity.getUUID(), BeyonderData.isGriefingEnabled(entity), baseDamage);
         sunKingdomEntity.setPos(entity.getX(), entity.getY() + .5, entity.getZ());
         serverLevel.addFreshEntity(sunKingdomEntity);
     }

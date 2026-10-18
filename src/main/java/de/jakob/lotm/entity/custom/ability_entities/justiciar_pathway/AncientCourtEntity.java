@@ -141,7 +141,7 @@ public class AncientCourtEntity extends Entity {
                 if (!(e instanceof Player)) pushOut(e);
             });
             case UNDEAD -> getEntitiesInCourt(serverLevel).forEach(e -> {
-                if (e.getType().is(EntityTypeTags.UNDEAD)) pushOut(e);
+                if (AbilityUtil.isUndead(e)) pushOut(e);
             });
             case ESCAPING -> {
                 AABB searchBox = AABB.ofSize(position(), (RADIUS + 10) * 2.0, (RADIUS + 10) * 2.0, (RADIUS + 10) * 2.0);

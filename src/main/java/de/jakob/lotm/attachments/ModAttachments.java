@@ -207,6 +207,7 @@ public class ModAttachments {
                             return attachment.saveToNBT();
                         }
                     })
+                    .copyOnDeath()
                     .build()
     );
 
@@ -316,6 +317,14 @@ public class ModAttachments {
                             .copyOnDeath()
                             .build()
             );
+/*
+    public static final Supplier<AttachmentType<RitualsComponent>> RITUALS =
+            ATTACHMENT_TYPES.register("rituals", () ->
+                    AttachmentType.builder(RitualsComponent::new)
+                            .serialize(RitualsComponent.SERIALIZER)
+                            .copyOnDeath()
+                            .build()
+            );*/
 
     public static final Supplier<AttachmentType<MentalPlagueComponent>> MENTAL_PLAGUE =
             ATTACHMENT_TYPES.register("mental_plague", () ->

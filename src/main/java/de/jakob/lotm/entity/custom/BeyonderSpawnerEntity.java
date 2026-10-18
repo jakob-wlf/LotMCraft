@@ -56,6 +56,9 @@ public class BeyonderSpawnerEntity extends Entity {
     private int checkCooldown = 0;
     private static final int CHECK_INTERVAL = 20;
 
+    private int triggerCooldown = 0;
+    private static final int TRIGGER_COOLDOWN = 20 * 60 * 60 * 12;
+
     public BeyonderSpawnerEntity(EntityType<?> type, Level level) {
         super(type, level);
         this.noPhysics = true;
@@ -80,7 +83,13 @@ public class BeyonderSpawnerEntity extends Entity {
     public void tick() {
         super.tick();
 
-        if (triggered || level().isClientSide()) return;
+        if (level().isClientSide()) return;
+
+        if(triggerCooldown > 0 ){
+            triggerCooldown--;
+
+            return;
+        }
 
         if (--checkCooldown > 0) return;
         checkCooldown = CHECK_INTERVAL;
@@ -103,6 +112,8 @@ public class BeyonderSpawnerEntity extends Entity {
 
         triggered = true;
         performSpawn(serverLevel, triggeringPlayer.get());
+
+        triggerCooldown = TRIGGER_COOLDOWN;
     }
 
     private void performSpawn(ServerLevel level, Player triggeringPlayer) {
@@ -149,8 +160,6 @@ public class BeyonderSpawnerEntity extends Entity {
         } else {
             spawnBeyonderNPC(level, spawnX, spawnY, spawnZ, finalPathway, finalSequence, triggeringPlayer.getUUID());
         }
-
-        this.discard();
     }
 
     private void spawnBeyonderNPC(ServerLevel level,
@@ -169,6 +178,7 @@ public class BeyonderSpawnerEntity extends Entity {
         );
         beyonder.getPersistentData().putUUID("lotm_beyonder_summoner", summoner);
         beyonder.setPos(x, y, z);
+        beyonder.setShouldIgnoreGamerule(true);
         level.addFreshEntity(beyonder);
     }
 
@@ -183,6 +193,7 @@ public class BeyonderSpawnerEntity extends Entity {
         hasTrades       = tag.getBoolean("HasTrades");
         spawnAnimation  = tag.getBoolean("SpawnAnimation");
         triggered       = tag.getBoolean("Triggered");
+        triggerCooldown = tag.getInt("TriggerCooldown");
     }
 
     @Override
@@ -196,6 +207,7 @@ public class BeyonderSpawnerEntity extends Entity {
         tag.putBoolean("HasTrades",     hasTrades);
         tag.putBoolean("SpawnAnimation",spawnAnimation);
         tag.putBoolean("Triggered",     triggered);
+        tag.putInt("TriggerCooldown", triggerCooldown);
     }
 
     public void setTriggerRadius(double radius)       { this.triggerRadius    = radius;    }

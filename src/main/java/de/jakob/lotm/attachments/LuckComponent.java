@@ -43,7 +43,7 @@ public class LuckComponent implements INBTSerializable<CompoundTag> {
 
     public void addLuckWithMin(int amount, int min) {
         if (amount < 0 && this.luck + amount < min) {
-            this.luck = -min;
+            this.luck = min;
         } else {
             this.luck += amount;
         }

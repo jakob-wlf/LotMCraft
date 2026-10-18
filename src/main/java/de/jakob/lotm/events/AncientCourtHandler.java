@@ -31,7 +31,7 @@ public class AncientCourtHandler {
         return null;
     }
 
-    private static boolean hasProhibition(LivingEntity entity, CourtProhibitionType type) {
+    public static boolean hasProhibition(LivingEntity entity, CourtProhibitionType type) {
         AncientCourtEntity court = getCourtFor(entity);
         return court != null && court.currentProhibition == type;
     }

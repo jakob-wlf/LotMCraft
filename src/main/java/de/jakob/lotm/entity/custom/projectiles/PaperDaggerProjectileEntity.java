@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.projectiles;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.item.ModItems;
 import net.minecraft.core.BlockPos;
@@ -72,11 +73,13 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
             return;
         LivingEntity target = (LivingEntity) result.getEntity();
         // check if the owner exists before - to not crash
-        if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(this.damageSources().mobAttack(livingOwner), (float) damage);
+
+        if (owner instanceof LivingEntity livingOwner) {
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT, livingOwner), (float) damage);
         } else {
-            target.hurt(this.damageSources().thrown(this, null), (float) damage);
+            target.hurt(ModDamageTypes.source(level, ModDamageTypes.IMPACT), (float) damage);
         }
+
         level.addFreshEntity(new ItemEntity(level, result.getLocation().x, result.getLocation().y, result.getLocation().z, new ItemStack(Items.PAPER)));
     }
 
@@ -85,7 +88,6 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
         this.discard();
         level.addFreshEntity(new ItemEntity(level, result.getLocation().x, result.getLocation().y, result.getLocation().z, new ItemStack(Items.PAPER)));
     }
-
 
 
     @Override

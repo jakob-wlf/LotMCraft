@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.ability_entities.tyrant_pathway;
 
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.entity.client.ability_entities.tyrant_pathway.tsunami.TsunamiRenderer;
 import de.jakob.lotm.network.PacketHandler;
@@ -251,12 +252,12 @@ public class TsunamiEntity extends Entity {
                     for (LivingEntity entity : AbilityUtil.getNearbyEntities(this.shooter, (ServerLevel) level(), pos, 3)) {
                         if (entity instanceof LivingEntity livingEntity) {
                             // Create damage source
-                            DamageSource damageSource = this.damageSources().generic();
+                            DamageSource damageSource = ModDamageTypes.source(this.level(), ModDamageTypes.WATER, shooter);
                             livingEntity.hurt(damageSource, this.getDamage());
 
                             // Add knockback effect in the direction the tsunami is moving
-                            Vec3 knockbackDirection = getDirectionFacing().normalize().scale(2.0D);
-                            entity.setDeltaMovement(entity.getDeltaMovement().add(knockbackDirection.x, 0.5D, knockbackDirection.z));
+                            //Vec3 knockbackDirection = getDirectionFacing().normalize().scale(2.0D);
+                            //entity.setDeltaMovement(entity.getDeltaMovement().add(knockbackDirection.x, 0.5D, knockbackDirection.z));
                         }
                     }
                 }

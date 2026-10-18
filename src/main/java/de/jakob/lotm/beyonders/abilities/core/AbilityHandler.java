@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
 import de.jakob.lotm.beyonders.abilities.common.*;
+import de.jakob.lotm.beyonders.abilities.common.LuckPerceptionAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.*;
 import de.jakob.lotm.beyonders.abilities.darkness.*;
 import de.jakob.lotm.beyonders.abilities.death.*;
@@ -13,6 +14,7 @@ import de.jakob.lotm.beyonders.abilities.mother.*;
 import de.jakob.lotm.beyonders.abilities.red_priest.*;
 import de.jakob.lotm.beyonders.abilities.sun.*;
 import de.jakob.lotm.beyonders.abilities.tyrant.*;
+import de.jakob.lotm.beyonders.abilities.twilight_giant.*;
 import de.jakob.lotm.beyonders.abilities.visionary.*;
 import de.jakob.lotm.beyonders.abilities.wheel_of_fortune.*;
 import net.minecraft.world.entity.LivingEntity;
@@ -343,6 +345,33 @@ public class AbilityHandler {
         abilities.add(new HandOfDeathAbility("hand_of_death_ability"));
         abilities.add(new DeathFlameAbility("death_flame_ability"));
         abilities.add(new NationOfTheDeadAbility("nation_of_the_dead_ability"));
+
+        //TWILIGHT
+        abilities.add(new LightOfDawnAbility("light_of_dawn_ability"));
+        abilities.add(new DawnArmorAbility("dawn_armor_ability"));
+        abilities.add(new ArsenalOfDawnAbility("arsenal_of_dawn_ability"));
+        abilities.add(new HurricaneOfLightAbility("hurricane_of_light_ability"));
+        abilities.add(new ProtectionAbility("protection_ability"));
+        abilities.add(new EyeOfDemonHuntingAbility("eye_of_demon_hunting_ability"));
+        abilities.add(new KnowledgeAbility("knowledge_ability"));
+        abilities.add(new MindConcealmentAbility("mind_concealment_ability"));
+        abilities.add(new LightOfDawnCoatingAbility("light_of_dawn_coating_ability"));
+        abilities.add(new MercuryLiquefactionAbility("mercury_liquefaction_ability"));
+        abilities.add(new MercuryArmoryAbility("mercury_armory_ability"));
+        abilities.add(new SilverRapierAbility("silver_rapier_ability"));
+        abilities.add(new LightConcealmentAbility("light_concealment_ability"));
+        abilities.add(new SilverArmorAbility("silver_armor_ability"));
+        abilities.add(new GiantificationAbility("giantification_ability"));
+        abilities.add(new BasicTwilightAuthorityAbility("basic_twilight_authority_ability"));
+        abilities.add(new TwilightAuthorityAbility("twilight_authority_ability"));
+        abilities.add(new DevastationAuthorityAbility("devastation_authority_ability"));
+        abilities.add(new CombatAuthorityAbility("combat_authority_ability"));
+        abilities.add(new TwilightSwordAbility("twilight_sword_ability"));
+        abilities.add(new HolinessAuthorityAbility("holiness_authority_ability"));
+        abilities.add(new ProxyAbility("proxy_ability"));
+        abilities.add(new LastStandAbility("last_stand_ability"));
+        abilities.add(new ServantsAbility("servants_ability"));
+
 
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));
     }

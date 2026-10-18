@@ -74,7 +74,7 @@ public class AirBulletAbility extends Ability {
 
             if(!level.getBlockState(BlockPos.containing(pos.x, pos.y, pos.z)).isAir()) {
                 pos = pos.subtract(direction);
-                level.explode(null, pos.x, pos.y, pos.z, getExplosionPowerForSequence(entitySeq), BeyonderData.isGriefingEnabled(entity) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
+                //level.explode(null, pos.x, pos.y, pos.z, getExplosionPowerForSequence(entitySeq), BeyonderData.isGriefingEnabled(entity) ? Level.ExplosionInteraction.MOB : Level.ExplosionInteraction.NONE);
                 hasHit.set(true);
                 return;
             }

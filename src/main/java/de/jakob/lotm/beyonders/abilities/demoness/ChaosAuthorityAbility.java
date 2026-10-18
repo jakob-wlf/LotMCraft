@@ -8,6 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ChaosAuthorityAbility extends SelectableAbility {

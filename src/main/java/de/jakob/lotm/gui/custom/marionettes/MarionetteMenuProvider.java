@@ -11,15 +11,26 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class MarionetteMenuProvider implements MenuProvider {
-    private List<LivingEntity> marionettes;
+    private final List<LivingEntity> marionettes;
+    private final boolean servantMenu;
 
     public MarionetteMenuProvider(List<LivingEntity> marionettes) {
         this.marionettes = marionettes;
+        this.servantMenu = false;
+    }
+
+    public static MarionetteMenuProvider servants() {
+        return new MarionetteMenuProvider(true);
+    }
+
+    private MarionetteMenuProvider(boolean servantMenu) {
+        this.marionettes = List.of();
+        this.servantMenu = servantMenu;
     }
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("gui.lotm.marionette_control.title");
+        return Component.translatable(servantMenu ? "gui.lotm.servants.title" : "gui.lotm.marionette_control.title");
     }
 
     @Override

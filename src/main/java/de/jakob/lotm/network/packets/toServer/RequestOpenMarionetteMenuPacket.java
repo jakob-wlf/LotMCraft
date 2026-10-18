@@ -61,6 +61,7 @@ public record RequestOpenMarionetteMenuPacket() implements CustomPacketPayload {
         player.openMenu(
                 new MarionetteMenuProvider(marionettes),
                 buf -> {
+                    buf.writeBoolean(false);
                     buf.writeVarInt(marionettes.size());
                     for (LivingEntity entity : marionettes) {
                         buf.writeVarInt(entity.getId());

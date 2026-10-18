@@ -46,12 +46,27 @@ public class AreaDesolationAbility extends Ability {
                 .filter(e -> e instanceof DesolateAreaEntity)
                 .map(e -> (DesolateAreaEntity) e).findFirst().orElse(null);
 
+        BloomingAreaEntity previousEntityBlooming = AbilityUtil.getAllNearbyEntities(entity, (ServerLevel) level, entity.position(), 30)
+                .stream()
+                .filter(e -> e instanceof BloomingAreaEntity)
+                .map(e -> (BloomingAreaEntity) e).findFirst().orElse(null);
+
         if(previousEntity != null) {
             previousEntity.discard();
             return;
         }
 
-        DesolateAreaEntity wordsEntity = new DesolateAreaEntity(level, entity.position().add(0, 1, 0));
+        if(previousEntityBlooming != null){
+            previousEntityBlooming.discard();
+            return;
+        }
+
+        DesolateAreaEntity wordsEntity = new DesolateAreaEntity(
+                level,
+                entity.position().add(0, 1, 0),
+                baseDamage,
+                entity
+        );
         level.addFreshEntity(wordsEntity);
     }
 }

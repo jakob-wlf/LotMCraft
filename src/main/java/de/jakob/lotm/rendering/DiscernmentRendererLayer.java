@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.util.ClientBeyonderCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
@@ -21,6 +23,8 @@ import net.minecraft.world.entity.player.Player;
 import java.util.HashSet;
 import java.util.UUID;
 
+import static de.jakob.lotm.rendering.DiscernmentRenderer.activeDiscernment;
+
 
 public class DiscernmentRendererLayer<T extends LivingEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
     public static final RenderType DISCERNMENT = RenderType.create(
@@ -31,12 +35,12 @@ public class DiscernmentRendererLayer<T extends LivingEntity, M extends EntityMo
             false,
             true,
             RenderType.CompositeState.builder()
-                    .setShaderState(RenderType.RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                    .setShaderState(RenderType.POSITION_COLOR_TEX_LIGHTMAP_SHADER)
                     .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
                     .setCullState(RenderStateShard.NO_CULL)
                     .setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
                     .setLightmapState(RenderStateShard.LIGHTMAP)
-                    .setOverlayState(RenderStateShard.OVERLAY)
+                    .setOverlayState(RenderStateShard.NO_OVERLAY)
                     .createCompositeState(true)
     );
 
@@ -51,11 +55,13 @@ public class DiscernmentRendererLayer<T extends LivingEntity, M extends EntityMo
 
         Player player = Minecraft.getInstance().player;
 
-        if(!DiscernmentRenderer.activeDiscernment.containsKey(player.getUUID())) return;
+        if(!activeDiscernment.containsKey(player.getUUID())) return;
+        if (entity.distanceTo(player) > activeDiscernment.get(player.getUUID())) return;
 
         float r = 1f, g = 1f, b = 1f;
 
-        if(entity instanceof Player){
+        if(entity instanceof Player ||
+        DiscernmentRenderer.shapeshifter.contains(entity.getUUID())){
             r = 0.0F;
             g = 1.0F;
             b = 0.0F;
@@ -73,7 +79,7 @@ public class DiscernmentRendererLayer<T extends LivingEntity, M extends EntityMo
 
         VertexConsumer vc = buffer.getBuffer(DISCERNMENT);
 
-        int grayColor = packColor(r, g, b, 1);
+        int color = packColor(r, g, b, 1);
 
         poseStack.pushPose();
 
@@ -84,11 +90,12 @@ public class DiscernmentRendererLayer<T extends LivingEntity, M extends EntityMo
                 vc,
                 LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY,
-                grayColor
+                color
         );
 
         poseStack.popPose();
     }
+
 
     private int packColor(float r, float g, float b, float a) {
         int red = (int)(r * 255.0F);

@@ -12,6 +12,7 @@ import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.PerformantExplosion;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -54,6 +55,11 @@ public class MeteorEntity extends Entity {
     private int petrifiedTicks = 0;
     private int maxLifeTicks = 20 * 12;
     private boolean isDiscarded = false;
+    private boolean isEnvisioned = false;
+
+    public void setEnvisioned(boolean value) {
+        isEnvisioned = value;
+    }
 
     public MeteorEntity(EntityType<?> type, Level level) {
         super(type, level);
@@ -237,7 +243,13 @@ public class MeteorEntity extends Entity {
         moveTo(position().add(direction.normalize().scale(getSpeed())));
 
         if(!level().getBlockState(BlockPos.containing(position())).isAir()) {
-            AbilityUtil.damageNearbyEntities(serverLevel, getCaster() instanceof LivingEntity l ? l : null, getRadius(), getDamage(), position(), true, false);
+            LivingEntity caster = getCaster() instanceof LivingEntity living ? living : null;
+            if (isEnvisioned) {
+                AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), ModDamageTypes.IMAGINATION, getDamage() / 2, position(), true, false);
+                AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), getDamage() / 2, position(), true, false);
+            } else {
+                AbilityUtil.damageNearbyEntities(serverLevel, caster, getRadius(), getDamage(), position(), true, false);
+            }
             ServerScheduler.scheduleDelayed(2, () -> {
                 PacketHandler.sendToNearbyPlayers(
                         new PlayPhotonBlockEffectPacket("explosion", BlockPos.containing(position()), 0, 0, 0, Math.max(1, getExplosionSize() * 0.15), null, -1, false, true, null),
@@ -291,6 +303,7 @@ public class MeteorEntity extends Entity {
         this.setCustomColor(tag.getBoolean("CustomColor"));
         this.setColor(tag.getFloat("ColorR"), tag.getFloat("ColorG"), tag.getFloat("ColorB"));
         this.setAbyssImpact(tag.getBoolean("AbyssImpact"));
+        isEnvisioned = tag.getBoolean("Envisioned");
 
         if (tag.hasUUID("CasterUUID")) {
             this.setCasterUUID(tag.getUUID("CasterUUID"));
@@ -312,6 +325,7 @@ public class MeteorEntity extends Entity {
         tag.putFloat("ColorG", this.getColorG());
         tag.putFloat("ColorB", this.getColorB());
         tag.putBoolean("AbyssImpact", this.isAbyssImpact());
+        tag.putBoolean("Envisioned", isEnvisioned);
 
         UUID casterUUID = getCasterUUID();
         if (casterUUID != null) {

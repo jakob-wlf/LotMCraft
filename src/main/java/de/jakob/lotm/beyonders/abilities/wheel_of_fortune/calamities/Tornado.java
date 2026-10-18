@@ -19,6 +19,7 @@ public class Tornado extends Calamity{
     public void spawnCalamity(ServerLevel level, Vec3 position, float damage, boolean griefing, @Nullable LivingEntity caster) {
         TornadoEntity tornado = new TornadoEntity(ModEntities.TORNADO.get(), level, .4f, damage, caster);
         tornado.setPos(position);
+        tornado.setEnvisioned(isEnvisioned);
         level.addFreshEntity(tornado);
     }
 }

@@ -87,8 +87,8 @@ public class WindBladeEntity extends AbstractArrow {
         this.discard();
         if(!(result.getEntity() instanceof LivingEntity target))
             return;
-        if(owner != null) target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC, owner), (float) damage);
-        else              target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.BEYONDER_GENERIC), (float) damage);
+        if(owner != null) target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.WIND, owner), (float) damage);
+        else              target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.WIND), (float) damage);
         if(!level.isClientSide && owner != null)
             NeoForge.EVENT_BUS.post(new AbilityUsedEvent((ServerLevel) level, target.position(), owner, null, new String[]{"explosion"}, 1.75, 10));
     }

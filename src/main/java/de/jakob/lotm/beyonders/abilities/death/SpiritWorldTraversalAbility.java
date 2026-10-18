@@ -73,9 +73,6 @@ public class SpiritWorldTraversalAbility extends Ability {
                 pos = pos.above();
             }
             BlockPos below = pos.below();
-            if (targetLevel.getBlockState(below).isAir()) {
-                targetLevel.setBlockAndUpdate(below, Blocks.STONE.defaultBlockState());
-            }
             player.teleportTo(targetLevel, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
         }
         ParticleUtil.spawnParticles((ServerLevel)player.level(), ParticleTypes.END_ROD, player.position(), 200, 2.0, 0.001);

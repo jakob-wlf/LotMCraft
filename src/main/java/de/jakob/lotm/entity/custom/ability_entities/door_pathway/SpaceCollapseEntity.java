@@ -1,5 +1,6 @@
 package de.jakob.lotm.entity.custom.ability_entities.door_pathway;
 
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.ModEntities;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import net.minecraft.core.particles.ParticleTypes;
@@ -107,7 +108,7 @@ public class SpaceCollapseEntity extends Entity {
     }
 
     private void damageNearbyEntities(float radius) {
-        AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner(), radius, getDamage(), this.position(), true, false, 0);
+        AbilityUtil.damageNearbyEntities((ServerLevel) level(), getOwner(), radius, ModDamageTypes.SPACE_DESTRUCTION, getDamage(), this.position(), true, false, 0);
     }
 
     private void breakBlocks(float radius) {

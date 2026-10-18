@@ -9,14 +9,17 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class AncientCourtOfJudgmentAbility extends Ability {
 
     public AncientCourtOfJudgmentAbility(String id) {
-        super(id, 20 * 60 * 2, "purification", "light_source", "light_strong", "light_weak");
+        super(id, 20 * 100, "purification", "light_source", "light_strong", "light_weak");
         canBeUsedByNPC = false;
         canBeShared = false;
+
     }
 
     @Override
@@ -26,16 +29,18 @@ public class AncientCourtOfJudgmentAbility extends Ability {
 
     @Override
     protected float getSpiritualityCost() {
-        return 10000;
+        return 25000;
     }
 
     @Override
     public void onAbilityUse(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel)) return;
+
         AncientCourtEntity court = new AncientCourtEntity(
                 ModEntities.ANCIENT_COURT.get(), level,
-                20 * 60 * 2, entity.getUUID(),
+                20 * 50, entity.getUUID(),
                 BeyonderData.isGriefingEnabled(entity));
+
         court.setPos(entity.getX(), entity.getY(), entity.getZ());
         serverLevel.addFreshEntity(court);
     }

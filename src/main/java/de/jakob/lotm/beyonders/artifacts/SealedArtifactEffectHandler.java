@@ -14,53 +14,53 @@ import java.util.List;
 /**
  * Handles the negative effects of sealed artifacts on players
  */
-@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
+//@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class SealedArtifactEffectHandler {
 
-    @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
-        
-        // Only process on server side
-        if (player.level().isClientSide()) {
-            return;
-        }
-
-        // Undying Seal — suppress all negative effects while active
-        if (UndyingSealAbility.isSealed(player.getUUID(), player.level().getGameTime())) {
-            return;
-        }
-
-        // Check main hand
-        ItemStack mainHand = player.getMainHandItem();
-        if (mainHand.getItem() instanceof SealedArtifactItem) {
-            applyHandNegativeEffect(player, mainHand, true);
-        }
-
-        // Check off hand
-        ItemStack offHand = player.getOffhandItem();
-        if (offHand.getItem() instanceof SealedArtifactItem) {
-            applyHandNegativeEffect(player, offHand, false);
-        }
-
-        // check hotbar
-        for (int i = 0; i < 9; i++) {
-            ItemStack stack = player.getInventory().getItem(i);
-            if (stack.getItem() instanceof SealedArtifactItem) {
-                applyHotBarNegativeEffect(player, stack);
-            }
-        }
-
-        // Check inventory for some passive effects (optional)
-        for (ItemStack stack : player.getInventory().items) {
-            if (stack.getItem() instanceof SealedArtifactItem) {
-                SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
-                if (data != null) {
-                    applyInventoryEffect(player, data);
-                }
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public static void onPlayerTick(PlayerTickEvent.Post event) {
+//        Player player = event.getEntity();
+//
+//        // Only process on server side
+//        if (player.level().isClientSide()) {
+//            return;
+//        }
+//
+//        // Undying Seal — suppress all negative effects while active
+//        if (UndyingSealAbility.isSealed(player.getUUID(), player.level().getGameTime())) {
+//            return;
+//        }
+//
+//        // Check main hand
+//        ItemStack mainHand = player.getMainHandItem();
+//        if (mainHand.getItem() instanceof SealedArtifactItem) {
+//            applyHandNegativeEffect(player, mainHand, true);
+//        }
+//
+//        // Check off hand
+//        ItemStack offHand = player.getOffhandItem();
+//        if (offHand.getItem() instanceof SealedArtifactItem) {
+//            applyHandNegativeEffect(player, offHand, false);
+//        }
+//
+//        // check hotbar
+//        for (int i = 0; i < 9; i++) {
+//            ItemStack stack = player.getInventory().getItem(i);
+//            if (stack.getItem() instanceof SealedArtifactItem) {
+//                applyHotBarNegativeEffect(player, stack);
+//            }
+//        }
+//
+//        // Check inventory for some passive effects (optional)
+//        for (ItemStack stack : player.getInventory().items) {
+//            if (stack.getItem() instanceof SealedArtifactItem) {
+//                SealedArtifactData data = stack.get(ModDataComponents.SEALED_ARTIFACT_DATA);
+//                if (data != null) {
+//                    applyInventoryEffect(player, data);
+//                }
+//            }
+//        }
+//    }
 
 
     private static void applyHandNegativeEffect(Player player, ItemStack stack, boolean inMainHand) {
