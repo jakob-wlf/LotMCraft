@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -128,9 +129,11 @@ public class SpiritBlockProjectileEntity extends Entity {
             if (distSq <= hitRadius * hitRadius) {
                 // Deal damage
                 if (owner != null) {
-                    entity.hurt(ModDamageTypes.source(level(), ModDamageTypes.BEYONDER_GENERIC, owner), damage);
+                    DamageSource source = ModDamageTypes.source(owner.level(), ModDamageTypes.IMPACT, owner);
+                    entity.hurt(source, damage);
                 } else {
-                    entity.hurt(ModDamageTypes.source(level(), ModDamageTypes.BEYONDER_GENERIC), damage);
+                    DamageSource source = ModDamageTypes.source(level(), ModDamageTypes.IMPACT);
+                    entity.hurt(source, damage);
                 }
                 this.discard();
                 return;

@@ -78,11 +78,10 @@ public class SpiritBallEntity extends AbstractHurtingProjectile {
         if(!(result.getEntity() instanceof LivingEntity target) || result.getEntity() == this.getOwner())
             return;
 
-        // check if the owner exists before - to not crash
         if (this.getOwner() instanceof LivingEntity livingOwner) {
-            target.hurt(ModDamageTypes.source(level(), ModDamageTypes.BEYONDER_GENERIC, livingOwner), (float) damage);
+            target.hurt(ModDamageTypes.source(level(), ModDamageTypes.SPIRITUAL, livingOwner), (float) damage);
         } else {
-            target.hurt(ModDamageTypes.source(level(), ModDamageTypes.BEYONDER_GENERIC), (float) damage);
+            target.hurt(ModDamageTypes.source(level(), ModDamageTypes.SPIRITUAL), (float) damage);
         }
     }
 

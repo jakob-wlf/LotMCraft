@@ -33,7 +33,6 @@ public class SpiritBubblesEntity extends Animal {
     public SpiritBubblesEntity(EntityType<? extends Animal> entityType, Level level) {
         super(entityType, level);
 
-        // Enable flying movement
         this.moveControl = new FlyingMoveControl(this, 20, true);
         this.navigation = new FlyingPathNavigation(this, level);
     }
@@ -43,7 +42,6 @@ public class SpiritBubblesEntity extends Animal {
         this.goalSelector.addGoal(0, new FloatGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 2.0));
 
-        // Flying-specific goals
         this.goalSelector.addGoal(2, new WaterAvoidingRandomFlyingGoal(this, 1.0));
         this.goalSelector.addGoal(3, new FollowParentGoal(this, 1.25));
         this.goalSelector.addGoal(4, new LookAtPlayerGoal(this, Player.class, 6.0F));

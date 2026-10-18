@@ -191,6 +191,18 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             Blocks.PACKED_ICE.defaultBlockState(),
     };
 
+    // ---- Underworld Patch (VORTEX) ----------------------------------------------------
+    private static final int    VORTEX_CENTER_Y        = 40;    // flat bowl floor around the pool
+    private static final double VORTEX_DEPTH           = 50.0;  // rim is this much above the centre
+    private static final double VORTEX_TURNS           = 4.0;   // spiral windings from rim to centre
+    private static final double VORTEX_RIDGE_AMP       = 6.0;   // height of the bone ribs
+    private static final double VORTEX_RIM_WOBBLE      = 5.0;   // organic rim, still circular
+    private static final double VORTEX_POOL_RADIUS     = 9.0;
+    private static final double VORTEX_POOL_DEPTH      = 5.0;
+    private static final int    VORTEX_WATER_Y         = VORTEX_CENTER_Y + 1;
+    private static final int    VORTEX_BOTTOM_CENTER_Y = 14;    // underside of the bowl
+    private static final int    VORTEX_BOTTOM_RIM_Y    = 76;
+
     private static final double PATCH_FREQ_LARGE  = 0.008;
     private static final double PATCH_FREQ_MEDIUM = 0.020;
 
@@ -235,7 +247,11 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
                     fillChaosOrbs(x, z, wx, wz, chunk, rng);
                 }
 
-                if (island.density > 0) {
+                if (biome.mode == SpiritWorldBiome.GenerationMode.VORTEX) {
+                    fillVortexColumn(x, z, wx, wz, chunk, island, rng);
+                }
+
+                if (island.density > 0 && biome.mode != SpiritWorldBiome.GenerationMode.VORTEX) {
                     int bottom = Math.max(0, island.bottom);
                     for (int y = bottom; y <= island.top; y++) {
                         if (biome.mode == SpiritWorldBiome.GenerationMode.CANYON
@@ -565,10 +581,12 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             case PLATEAU     -> floatingPlateau(x, z, biome);
             case CANYON      -> floatingCanyon(x, z, biome);
             case CHAOS       -> floatingChaos(x, z, biome);
+            case VORTEX      -> floatingVortex(x, z);
         };
 
         IslandData result;
-        if (floating.density > main.density) result = floating;
+        if (biome.mode == SpiritWorldBiome.GenerationMode.VORTEX && floating.density > 0) result = floating;
+        else if (floating.density > main.density) result = floating;
         else if (main.density > 0)           result = main;
         else                                 result = IslandData.EMPTY;
 
@@ -837,6 +855,119 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
             }
         }
         return bestData;
+    }
+
+    private double vortexRidge(int x, int z, double dx, double dz, double r) {
+        double theta = Math.atan2(dz, dx);
+        double psi = VORTEX_TURNS * (r / SpiritWorldBiome.VORTEX_ISLAND_RADIUS)
+                - theta / (2.0 * Math.PI)
+                + improvedNoise(x * 0.03 + 2100, z * 0.03 + 2100) * 0.07;
+        return 0.5 + 0.5 * Math.cos(2.0 * Math.PI * psi);
+    }
+
+    private IslandData floatingVortex(int x, int z) {
+        SpiritWorldBiome.VortexInfo v = SpiritWorldBiome.vortexAt(x, z);
+        if (v == null) return IslandData.EMPTY;
+
+        double dx = x - v.centerX(), dz = z - v.centerZ();
+        double r  = v.dist();
+
+        double radius = SpiritWorldBiome.VORTEX_ISLAND_RADIUS
+                + improvedNoise(x * 0.04 + 1700, z * 0.04 + 1700) * VORTEX_RIM_WOBBLE;
+        if (r >= radius) return IslandData.EMPTY;
+
+        double density = smoothstep((radius - r) / 8.0);
+        if (density <= 0) return IslandData.EMPTY;
+
+        double t = Math.min(r / SpiritWorldBiome.VORTEX_ISLAND_RADIUS, 1.0);
+
+        double funnel = VORTEX_CENTER_Y + VORTEX_DEPTH * Math.pow(t, 1.5);
+        double ridge  = vortexRidge(x, z, dx, dz, r);
+        double ribFade = smoothstep((r - 10.0) / 14.0);          // no ribs inside the pool area
+        double dip    = VORTEX_POOL_DEPTH * (1.0 - smoothstep(r / VORTEX_POOL_RADIUS));
+
+        int top = (int) Math.floor(funnel + ridge * VORTEX_RIDGE_AMP * ribFade - dip);
+
+        double under = VORTEX_BOTTOM_CENTER_Y
+                + (VORTEX_BOTTOM_RIM_Y - VORTEX_BOTTOM_CENTER_Y) * Math.pow(t, 1.2);
+        double drip  = Math.max(0.0, improvedNoise(x * 0.09 + 2500, z * 0.09 + 2500)) * 9.0 * t;
+        int bottom = Mth.clamp((int) (under - drip), 2, top - 5);
+
+        return new IslandData(density, top, bottom, v.centerX(), v.centerZ(), 0, 0, 0);
+    }
+
+    private void fillVortexColumn(int lx, int lz, int wx, int wz, ChunkAccess chunk,
+                                  IslandData island, RandomSource rng) {
+        if (island.density <= 0) return;
+        SpiritWorldBiome.VortexInfo v = SpiritWorldBiome.vortexAt(wx, wz);
+        if (v == null) return;
+
+        double dx = wx - v.centerX(), dz = wz - v.centerZ();
+        double r  = v.dist();
+        double ridge = vortexRidge(wx, wz, dx, dz, r);
+
+        int top    = island.top;
+        int bottom = Math.max(0, island.bottom);
+        for (int y = bottom; y <= top; y++) {
+            chunk.setBlockState(new BlockPos(lx, y, lz),
+                    vortexBlock(y, top, bottom, r, ridge, rng), false);
+        }
+
+        if (top < VORTEX_WATER_Y && r <= VORTEX_POOL_RADIUS + 6) {
+            for (int y = top + 1; y <= VORTEX_WATER_Y; y++) {
+                chunk.setBlockState(new BlockPos(lx, y, lz), Blocks.WATER.defaultBlockState(), false);
+            }
+        }
+    }
+
+    private BlockState vortexBlock(int y, int top, int bottom, double r, double ridge, RandomSource rng) {
+        int   depth = top - y;
+        float roll  = rng.nextFloat();
+
+        // underside of the bowl
+        if (y - bottom < 2) {
+            return roll < 0.55f ? Blocks.BLACKSTONE.defaultBlockState()
+                    : roll < 0.85f ? Blocks.BASALT.defaultBlockState()
+                    : Blocks.OBSIDIAN.defaultBlockState();
+        }
+
+        // surface
+        if (depth == 0) {
+            if (r < VORTEX_POOL_RADIUS + 3) {
+                if (top < VORTEX_WATER_Y) {                       // pool bed
+                    return roll < 0.55f ? Blocks.SOUL_SOIL.defaultBlockState()
+                            : Blocks.BLACKSTONE.defaultBlockState();
+                }
+                return roll < 0.65f ? Blocks.BONE_BLOCK.defaultBlockState()   // bone shoreline
+                        : Blocks.SOUL_SOIL.defaultBlockState();
+            }
+            if (ridge > 0.72) return Blocks.BONE_BLOCK.defaultBlockState();
+            if (ridge < 0.28) return roll < 0.70f ? Blocks.SOUL_SAND.defaultBlockState()
+                    : Blocks.SOUL_SOIL.defaultBlockState();
+            return roll < 0.50f ? Blocks.DEEPSLATE.defaultBlockState()
+                    : roll < 0.80f ? Blocks.COBBLED_DEEPSLATE.defaultBlockState()
+                    : Blocks.POLISHED_DEEPSLATE.defaultBlockState();
+        }
+
+        // sub-surface
+        if (depth <= 3) {
+            if (ridge > 0.72) return roll < 0.60f ? Blocks.BONE_BLOCK.defaultBlockState()
+                    : Blocks.DEEPSLATE_BRICKS.defaultBlockState();
+            if (ridge < 0.28) return roll < 0.50f ? Blocks.SOUL_SOIL.defaultBlockState()
+                    : Blocks.DEEPSLATE.defaultBlockState();
+            return roll < 0.40f ? Blocks.DEEPSLATE_BRICKS.defaultBlockState()
+                    : roll < 0.60f ? Blocks.CRACKED_DEEPSLATE_BRICKS.defaultBlockState()
+                    : Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+        }
+
+        // body
+        if (roll < 0.50f) return Blocks.DEEPSLATE.defaultBlockState();
+        if (roll < 0.70f) return Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+        if (roll < 0.80f) return Blocks.BLACKSTONE.defaultBlockState();
+        if (roll < 0.87f) return Blocks.SCULK.defaultBlockState();
+        if (roll < 0.93f) return Blocks.BONE_BLOCK.defaultBlockState();   // buried bones
+        if (roll < 0.97f) return Blocks.SOUL_SOIL.defaultBlockState();
+        return Blocks.COAL_BLOCK.defaultBlockState();
     }
 
     private double dist(int x, int z, int ix, int iz) {

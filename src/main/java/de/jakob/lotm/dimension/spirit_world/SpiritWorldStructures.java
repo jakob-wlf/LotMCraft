@@ -145,6 +145,7 @@ public final class SpiritWorldStructures {
             case SPIRIT_WORLD_WASTES -> 8;
             case MIRE_HOLLOW -> 6;
             case BONE_STEPPES -> 11;
+            case UNDERWORLD_PATCH -> 12;
         };
     }
 
@@ -162,6 +163,7 @@ public final class SpiritWorldStructures {
             case SPIRIT_WORLD_WASTES -> new Block[]{Blocks.DEEPSLATE_BRICKS, Blocks.SOUL_LANTERN};
             case MIRE_HOLLOW -> new Block[]{Blocks.MUD_BRICKS, Blocks.VERDANT_FROGLIGHT};
             case BONE_STEPPES -> new Block[]{Blocks.BONE_BLOCK, Blocks.SKELETON_SKULL};
+            case UNDERWORLD_PATCH -> new Block[]{Blocks.BONE_BLOCK, Blocks.SKELETON_SKULL};
         };
     }
 

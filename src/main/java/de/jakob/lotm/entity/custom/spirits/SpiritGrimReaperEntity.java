@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.spirits;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -215,7 +216,9 @@ public class SpiritGrimReaperEntity extends Monster {
                 spirit.applyDeathTouch(target, DEATH_TOUCH_WITHER_DURATION, WITHER_AMPLIFIER + 1);
                 float bonusDamage = (float) spirit.getAttributeValue(Attributes.ATTACK_DAMAGE)
                         * (DEATH_TOUCH_DAMAGE_MULTIPLIER - 1.0F);
-                target.hurt(spirit.damageSources().mobAttack(spirit), bonusDamage);
+
+                DamageSource source = ModDamageTypes.source(spirit.level(), ModDamageTypes.SOUL_BASED, spirit);
+                target.hurt(source, bonusDamage);
                 spirit.spawnSoulParticles(target.getX(), target.getY(1.0), target.getZ(), 20);
             }
 
@@ -255,7 +258,8 @@ public class SpiritGrimReaperEntity extends Monster {
             );
 
             for (LivingEntity entity : nearby) {
-                entity.hurt(spirit.damageSources().mobAttack(spirit), SOUL_PULSE_DAMAGE);
+                DamageSource source = ModDamageTypes.source(spirit.level(), ModDamageTypes.SOUL_BASED, spirit);
+                entity.hurt(source, SOUL_PULSE_DAMAGE);
                 entity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, SOUL_PULSE_WEAKNESS_DURATION, 1, false, true));
                 entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, SOUL_PULSE_WEAKNESS_DURATION, 1, false, true));
             }
