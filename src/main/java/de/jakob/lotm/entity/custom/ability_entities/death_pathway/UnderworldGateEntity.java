@@ -74,7 +74,7 @@ public class UnderworldGateEntity extends Entity {
     private static final double GATE_HALF_WIDTH = 1.0;
     private static final double GATE_HEIGHT = 2.5;
 
-    private static final int UNDERWORLD_MIN_Y = 80;
+    private static final int UNDERWORLD_MIN_Y = 70;
     private static final int UNDERWORLD_MAX_Y = 120;
     private static final int CARVE_RADIUS = 1;
     private static final int CARVE_HEIGHT = 3;
@@ -160,6 +160,11 @@ public class UnderworldGateEntity extends Entity {
             if (this.tickCount >= 22) {
                 tentacleAnimationState.startIfStopped(0);
             }
+            return;
+        }
+
+        if(tickCount > 20 * 60 * 2) {
+            discard();
             return;
         }
 

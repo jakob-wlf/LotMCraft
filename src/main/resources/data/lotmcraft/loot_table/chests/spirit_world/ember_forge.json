@@ -142,6 +142,51 @@
       ]
     },
     {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:solidified_magma",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_pyroxene_powder",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_heart_powder",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_elf_core",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:magma_giant_core",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:fire_salamander_blood",
+          "weight": 16
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:heart_of_a_magma_titan",
+          "weight": 16
+        }
+      ]
+    },
+    {
       "rolls": 1,
       "bonus_rolls": 0,
       "conditions": [

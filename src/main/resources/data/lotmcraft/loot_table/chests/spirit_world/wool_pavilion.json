@@ -122,6 +122,46 @@
       ]
     },
     {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:goat_beard_hydrosol",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:hornacis_gray_mountain_goat_horn",
+          "weight": 16
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flash_patterned_black_snake_horn",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:silver_four_leaf_clover",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:flower_of_good_fortune",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:brain_of_a_four_eared_giant_ape",
+          "weight": 1
+        }
+      ]
+    },
+    {
       "rolls": 1,
       "bonus_rolls": 0,
       "conditions": [
