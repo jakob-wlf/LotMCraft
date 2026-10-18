@@ -26,11 +26,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
@@ -85,6 +88,58 @@ public class MarionetteUtils {
             String ownerUUID = controlled.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
             if (!playerUUID.equals(ownerUUID)) continue;
             ControllingUtils.cancel(other, 0f, true, true);
+        }
+    }
+
+    /**
+     * Kills every marionette the player owns and severs the link, e.g. when they stop being a Beyonder.
+     * Marionettes in unloaded chunks are handled when they load (see onEntityJoinLevel / onPlayerJoin).
+     */
+    public static void releaseAllMarionettes(Player player) {
+        if (!(player.level() instanceof ServerLevel) || player.getServer() == null) return;
+        killControlledMarionettes(player);
+
+        // Anything that survived the killing blow (revival effects etc.) is removed outright
+        String playerUUID = player.getStringUUID();
+        List<LivingEntity> survivors = new ArrayList<>();
+        for (ServerLevel level : player.getServer().getAllLevels()) {
+            for (Entity e : level.getAllEntities()) {
+                if (e instanceof LivingEntity livingEntity && livingEntity.isAlive() && isOwnedBy(livingEntity, playerUUID)) {
+                    survivors.add(livingEntity);
+                }
+            }
+        }
+        survivors.forEach(MarionetteUtils::removeMarionette);
+
+        player.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT).getMarionettes().clear();
+    }
+
+    private static boolean isOwnedBy(LivingEntity entity, String playerUUID) {
+        return isMarionette(entity) && playerUUID.equals(entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID());
+    }
+
+    private static void removeMarionette(LivingEntity marionette) {
+        MarionetteComponent component = marionette.getData(ModAttachments.MARIONETTE_COMPONENT);
+        component.setMarionette(false);
+        component.setControllerUUID("");
+        marionette.discard();
+    }
+
+    // A marionette whose owner is no longer a Beyonder shouldn't come back when its chunk loads
+    @SubscribeEvent
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide() || !(event.getEntity() instanceof LivingEntity entity) || entity instanceof Player) return;
+        if (!isMarionette(entity) || entity.getServer() == null) return;
+
+        String ownerUUID = entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
+        try {
+            ServerPlayer owner = entity.getServer().getPlayerList().getPlayer(UUID.fromString(ownerUUID));
+            if (owner != null && !BeyonderData.isBeyonder(owner)) {
+                owner.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT).removeMarionette(entity.getUUID());
+                event.setCanceled(true);
+            }
+        } catch (IllegalArgumentException ignored) {
+            // malformed controller UUID
         }
     }
 
@@ -191,6 +246,7 @@ public class MarionetteUtils {
             return;
         }
 
+        List<LivingEntity> orphaned = new ArrayList<>();
         for(Entity entity : player.serverLevel().getAllEntities()) {
             if(!(entity instanceof LivingEntity)) continue;
 
@@ -198,9 +254,15 @@ public class MarionetteUtils {
 
             String ownerUUID = entity.getData(ModAttachments.MARIONETTE_COMPONENT).getControllerUUID();
             if(ownerUUID.equals(player.getStringUUID())) {
+                if (!BeyonderData.isBeyonder(player)) {
+                    // Loaded while the owner was offline after losing Beyonder status
+                    orphaned.add((LivingEntity) entity);
+                    continue;
+                }
                 player.getData(ModAttachments.MARIONETTE_OWNER_COMPONENT).addMarionette(entity.getUUID());
             }
         }
+        orphaned.forEach(MarionetteUtils::removeMarionette);
     }
 
     @SubscribeEvent

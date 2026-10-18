@@ -18,48 +18,49 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 public class AnchoringEvents {
     private static long tickCounter = 0;
 
-    @SubscribeEvent
-    public static void onLivingTick(EntityTickEvent.Post event) {
-        if(!(event.getEntity() instanceof ServerPlayer player)) return;
-        if(!BeyonderData.isBeyonder(player)) return;
-
-        int seq = BeyonderData.getSequence(player);
-
-        boolean hasSwitched = BeyonderData.hasSwitchedPathway(player);
-        boolean hasUndigestedStack = BeyonderData.getCurrentCharStack(player) > 0
-                && BeyonderData.getDigestionProgress(player) < 1.0f;
-
-        String name = player.getName().getString();
-
-        if(player.level() instanceof ServerLevel level){
-            if(!level.getGameRules().getBoolean(ModGameRules.APPLY_ANCHORING))
-                return;
-        }
-
-        if(player.tickCount % 40 == 0){
-            if(player.level() instanceof ServerLevel level)
-                BeyonderData.anchoringStorage.recalculateAnchoring(name, level);
-        }
-
-        float drain = 0.0f;
-        if(hasSwitched)
-            drain += 0.0025f;
-        if(hasUndigestedStack)
-            drain += 0.0025f;
-
-        drain += AnchoringCore.getSanityLossBase(seq);
-
-        float anchors = (float) BeyonderData.anchoringStorage.getAnchoring(name)
-                .getAnchoring() / 100;
-
-        drain -= anchors;
-        if(drain <= 0.0f) {
-            return;
-        }
-
-        var component = player.getData(ModAttachments.SANITY_COMPONENT.get());
-        component.decreaseSanityAndSync(drain, player);
-    }
+    // Anchoring sanity drain disabled for now
+//    @SubscribeEvent
+//    public static void onLivingTick(EntityTickEvent.Post event) {
+//        if(!(event.getEntity() instanceof ServerPlayer player)) return;
+//        if(!BeyonderData.isBeyonder(player)) return;
+//
+//        int seq = BeyonderData.getSequence(player);
+//
+//        boolean hasSwitched = BeyonderData.hasSwitchedPathway(player);
+//        boolean hasUndigestedStack = BeyonderData.getCurrentCharStack(player) > 0
+//                && BeyonderData.getDigestionProgress(player) < 1.0f;
+//
+//        String name = player.getName().getString();
+//
+//        if(player.level() instanceof ServerLevel level){
+//            if(!level.getGameRules().getBoolean(ModGameRules.APPLY_ANCHORING))
+//                return;
+//        }
+//
+//        if(player.tickCount % 40 == 0){
+//            if(player.level() instanceof ServerLevel level)
+//                BeyonderData.anchoringStorage.recalculateAnchoring(name, level);
+//        }
+//
+//        float drain = 0.0f;
+//        if(hasSwitched)
+//            drain += 0.0025f;
+//        if(hasUndigestedStack)
+//            drain += 0.0025f;
+//
+//        drain += AnchoringCore.getSanityLossBase(seq);
+//
+//        float anchors = (float) BeyonderData.anchoringStorage.getAnchoring(name)
+//                .getAnchoring() / 100;
+//
+//        drain -= anchors;
+//        if(drain <= 0.0f) {
+//            return;
+//        }
+//
+//        var component = player.getData(ModAttachments.SANITY_COMPONENT.get());
+//        component.decreaseSanityAndSync(drain, player);
+//    }
 
     @SubscribeEvent
     private static void onVoidDrain(PlayerTickEvent.Post event){

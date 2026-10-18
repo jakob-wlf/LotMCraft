@@ -421,6 +421,10 @@ public class DesolateAreaEntity extends Entity {
         return false;
     }
 
+    public UUID getOwnerUUID() {
+        return ownerUUID;
+    }
+
     @Override
     public void remove(RemovalReason reason) {
         if (this.level() instanceof ServerLevel serverLevel) {

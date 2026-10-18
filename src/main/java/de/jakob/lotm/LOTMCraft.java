@@ -198,7 +198,9 @@ public class LOTMCraft
     public static KeyMapping nextMarionetteKey;
 
     public static KeyMapping toggleAbilityHotbarKey;
-    public static final KeyMapping[] useAbilityBarKeys = new KeyMapping[18];
+    // Allocated client-side in ClientEvents: creating a KeyMapping[] here would load the client-only
+    // KeyMapping class during LOTMCraft's static init and crash dedicated servers.
+    public static KeyMapping[] useAbilityBarKeys;
 
     public static AbilityHandler abilityHandler;
     public static PassiveAbilityHandler passiveAbilityHandler;
@@ -429,7 +431,6 @@ public class LOTMCraft
             event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.HISTORICAL_VOID_MENU.get(), HistoricalVoidScreen::new);
             event.register(ModMenuTypes.MARIONETTE_MENU.get(), MarionetteControlScreen::new);
-            event.register(ModMenuTypes.COPIED_ABILITY_WHEEL_MENU.get(), CopiedAbilityWheelScreen::new);
             event.register(ModMenuTypes.FLAMING_JUMP_MENU.get(), FlamingJumpScreen::new);
             event.register(ModMenuTypes.MASS_PUPPETEERING_MENU.get(), MassPuppeteeringScreen::new);
             event.register(ModMenuTypes.MALICE_SEED_MENU.get(), MaliceSeedScreen::new);

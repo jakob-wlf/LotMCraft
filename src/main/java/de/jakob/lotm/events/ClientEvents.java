@@ -9,6 +9,7 @@ import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toServer.InventoryOpenedPacket;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.AbilityBarHelper;
 import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.ChatFormatting;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -52,6 +53,7 @@ public class ClientEvents {
         LOTMCraft.useSelectedAbilityKey = new KeyMapping("key.beyonders.use_ability", GLFW.GLFW_KEY_M, "key.categories.beyonders");
         LOTMCraft.toggleAbilityHotbarKey = new KeyMapping("key.beyonders.toggle_ability_hotbar", GLFW.GLFW_KEY_R, "key.categories.beyonders");
         // Slots 1-9 default to the number keys, slots 10-18 to Ctrl + number keys
+        LOTMCraft.useAbilityBarKeys = new KeyMapping[AbilityBarHelper.MAX_SLOTS];
         for (int i = 0; i < LOTMCraft.useAbilityBarKeys.length; i++) {
             int key = GLFW.GLFW_KEY_1 + (i % 9);
             KeyModifier modifier = i < 9 ? KeyModifier.NONE : KeyModifier.CONTROL;

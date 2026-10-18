@@ -60,7 +60,11 @@ public class PotionRecipeItem extends Item {
     ) {
         super.appendHoverText(stack, context, tooltip, flag);
 
+        // Recipe items whose sequence has no recipe registered yet have no recipe attached
+        if (recipe == null) return;
+
         String ritual = RitualDescriptionHelper.getRitualDescription(recipe.potion().getPathway(), recipe.potion().getSequence());
+        if (ritual == null || ritual.isEmpty()) return;
 
         tooltip.add(Component.literal(ritual)
                 .withStyle(ChatFormatting.GRAY));

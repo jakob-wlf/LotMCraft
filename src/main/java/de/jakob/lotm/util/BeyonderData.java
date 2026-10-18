@@ -2,6 +2,9 @@ package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.FoolAdvancementMarionettes;
+import de.jakob.lotm.beyonders.abilities.door.DoorAdvancementCopies;
+import de.jakob.lotm.beyonders.abilities.death.DeathAdvancementSouls;
 import de.jakob.lotm.addons.anchoring.AnchoringStorage;
 import de.jakob.lotm.addons.factions.FactionStorage;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
@@ -255,6 +258,10 @@ public class BeyonderData {
         boolean isNormalSequenceUp = isBeyonder(entity) && oldSeq > sequence && oldPathway.equals(pathway);
         boolean isFirstTimeBeyonder = !isBeyonder(entity) && !pathway.equals("none") && sequence < LOTMCraft.NON_BEYONDER_SEQ;
         boolean isSequenceUp = isNormalSequenceUp || isFirstTimeBeyonder;
+        // Advancing into a stronger sequence of a different pathway. Only grants pathway advancement rewards;
+        // temporary forms (Discernment passes putIntoMap = false) and regressions (weaker sequence) are excluded.
+        boolean isPathwaySwitchUp = isBeyonder(entity) && !oldPathway.equals(pathway) && !pathway.equals("none")
+                && sequence < oldSeq && putIntoMap;
         if (isSequenceUp) {
             ActingCapHelper.onSequenceUp(entity, oldPathway, oldSeq);
         }
@@ -326,6 +333,12 @@ public class BeyonderData {
                 TeamComponent teamComp = serverPlayer.getData(ModAttachments.TEAM_COMPONENT.get());
                 if (teamComp.memberCount() > 0 && !TeamUtils.isEligibleLeader(serverPlayer)) {
                     TeamUtils.disbandTeam(serverPlayer, serverPlayer.getServer());
+                }
+
+                if (isSequenceUp || isPathwaySwitchUp) {
+                    FoolAdvancementMarionettes.onSequenceUp(serverPlayer, pathway, sequence);
+                    DoorAdvancementCopies.onSequenceUp(serverPlayer, pathway, sequence);
+                    DeathAdvancementSouls.onSequenceUp(serverPlayer, pathway, sequence);
                 }
             }
             else {

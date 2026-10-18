@@ -67,6 +67,19 @@ public class PuppeteeringAbility extends SelectableAbility {
         return new HashMap<>(Map.of("fool", 5));
     }
 
+    // Beyonders who switched into Fool above Sequence 5 never have "fool" at history[5],
+    // so grant Puppeteering if any Sequence 5-or-stronger history entry is Fool
+    @Override
+    public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
+        if (BeyonderData.isBeyonder(entity)) {
+            String[] history = BeyonderData.getPathwayHistory(entity);
+            for (int i = 0; i <= 5 && i < history.length; i++) {
+                if ("fool".equals(history[i])) return true;
+            }
+        }
+        return super.hasAbility(entity, ignoreCreativeMode);
+    }
+
     @Override
     public float getSpiritualityCost() {
         return 40;

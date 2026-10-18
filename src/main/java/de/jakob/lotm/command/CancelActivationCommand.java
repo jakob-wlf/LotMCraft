@@ -2,11 +2,15 @@ package de.jakob.lotm.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import de.jakob.lotm.beyonders.abilities.death.NationOfTheDeadAbility;
+import de.jakob.lotm.beyonders.abilities.fool.GraftingAbility;
 import de.jakob.lotm.beyonders.abilities.justiciar.ProhibitionAbility;
 import de.jakob.lotm.entity.custom.ability_entities.BigMoonEntity;
 import de.jakob.lotm.entity.custom.ability_entities.BigSunEntity;
+import de.jakob.lotm.entity.custom.ability_entities.LocationGraftingEntity;
 import de.jakob.lotm.entity.custom.ability_entities.death_pathway.DeathDivineKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlackHoleEntity;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaEntity;
+import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.sun_pathway.SunKingdomEntity;
 import de.jakob.lotm.entity.custom.ability_entities.wheel_of_fortune_pathway.MisfortuneWordsEntity;
 import de.jakob.lotm.item.ModItems;
@@ -25,10 +29,11 @@ import java.util.function.Predicate;
 
 // Cancels the standing activation (domain/entity) of abilities whose effect
 // persists beyond the initial use: Sun's Divine Kingdom, Words of Misfortune,
-// Nation of the Dead, Death's Divine Kingdom, Blackhole, and the summoned Sun/Moon
-// (from the stolen Sun/Moon items or Wrath of Nature). The "all" variant
-// additionally lifts every active Justiciar Prohibition zone and removes every
-// Sun/Moon stolen through Error's Conceptual Theft.
+// Nation of the Dead, Death's Divine Kingdom, Blackhole, Mother's Blooming/Desolate
+// Area, and the summoned Sun/Moon (from the stolen Sun/Moon items or Wrath of Nature).
+// The "all" variant additionally lifts every active Justiciar Prohibition zone, removes
+// every Sun/Moon stolen through Error's Conceptual Theft, clears every Mother area, and ends
+// every Fool Grafting (grafted locations, damage, abilities and targets).
 public class CancelActivationCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -55,6 +60,8 @@ public class CancelActivationCommand {
                     ProhibitionAbility.ACTIVE_ZONES.clear();
 
                     total += clearStolenSunMoon(source);
+                    total += clearMotherAreas(source);
+                    total += clearGrafting(source);
 
                     final int finalTotal = total;
                     source.sendSuccess(() -> Component.literal("Cancelled " + finalTotal + " active ability activation(s) across all players"), true);
@@ -105,6 +112,35 @@ public class CancelActivationCommand {
         return cleared;
     }
 
+    // Removes every Mother Blooming/Desolate Area, including ones whose caster is offline or that lost
+    // their owner on reload, which the per-player pass misses
+    private static int clearMotherAreas(CommandSourceStack source) {
+        int cleared = 0;
+        for (ServerLevel level : source.getServer().getAllLevels()) {
+            for (var entity : level.getAllEntities()) {
+                if ((entity instanceof BloomingAreaEntity || entity instanceof DesolateAreaEntity) && !entity.isRemoved()) {
+                    cleared++;
+                    entity.discard();
+                }
+            }
+        }
+        return cleared;
+    }
+
+    // Removes every grafted location (which has no recorded owner) and ends every damage/ability/target graft
+    private static int clearGrafting(CommandSourceStack source) {
+        int cleared = GraftingAbility.endAll();
+        for (ServerLevel level : source.getServer().getAllLevels()) {
+            for (var entity : level.getAllEntities()) {
+                if (entity instanceof LocationGraftingEntity && !entity.isRemoved()) {
+                    cleared++;
+                    entity.discard();
+                }
+            }
+        }
+        return cleared;
+    }
+
     private static int cancelActivations(CommandSourceStack source, LivingEntity target) {
         return cancelActivations(source, target, true);
     }
@@ -126,6 +162,8 @@ public class CancelActivationCommand {
                     case MisfortuneWordsEntity e -> targetUUID.equals(e.getCasterUUID());
                     case BigSunEntity e -> e.getOwnerUUID().map(targetUUID::equals).orElse(false);
                     case BigMoonEntity e -> e.getOwnerUUID().map(targetUUID::equals).orElse(false);
+                    case BloomingAreaEntity e -> targetUUID.equals(e.getOwnerUUID());
+                    case DesolateAreaEntity e -> targetUUID.equals(e.getOwnerUUID());
                     default -> false;
                 };
 

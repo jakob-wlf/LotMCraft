@@ -12,14 +12,22 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.gamerule.ModGameRules;
+import de.jakob.lotm.util.helper.AllyUtil;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +84,8 @@ public class HandOfDeathAbility extends ToggleAbility {
 
     @SubscribeEvent
     public static void onHitEntity(LivingDamageEvent.Pre event) {
-        Entity attackerEntity = event.getSource().getEntity();
+        DamageSource source = event.getSource();
+        Entity attackerEntity = source.getEntity();
         if (!(attackerEntity instanceof LivingEntity attacker)) return;
 
         LivingEntity victim = event.getEntity();
@@ -85,13 +94,33 @@ public class HandOfDeathAbility extends ToggleAbility {
         HandOfDeathAbility ability = (HandOfDeathAbility) LOTMCraft.abilityHandler.getById("hand_of_death_ability");
         if (ability == null || !ability.isActiveForEntity(attacker)) return;
 
-        // Lower sequence number = stronger. seqDiff > 0 means the victim is weaker (higher sequence).
-        int seqDiff = BeyonderData.getSequence(victim) - BeyonderData.getSequence(attacker);
-        float damageFraction = SAME_SEQUENCE_DAMAGE_FRACTION + (seqDiff * DAMAGE_FRACTION_STEP_PER_SEQUENCE);
-        if (damageFraction <= 0f) return;
+        String damageType = source.typeHolder().getRegisteredName();
+        if (!isMeleeHit(source)) {
+            LOTMCraft.LOGGER.info("[Hand of Death] Skipped non-melee hit: {} -> {} (type={}, direct={})",
+                    attacker.getName().getString(), victim.getName().getString(), damageType,
+                    source.getDirectEntity() == null ? "none" : source.getDirectEntity().getName().getString());
+            return;
+        }
 
+        // Lower sequence number = stronger. seqDiff > 0 means the victim is weaker (higher sequence).
+        int attackerSeq = BeyonderData.getSequence(attacker);
+        int victimSeq = BeyonderData.getSequence(victim);
+        int seqDiff = victimSeq - attackerSeq;
+        float damageFraction = SAME_SEQUENCE_DAMAGE_FRACTION + (seqDiff * DAMAGE_FRACTION_STEP_PER_SEQUENCE);
+        if (damageFraction <= 0f) {
+            LOTMCraft.LOGGER.info("[Hand of Death] No bonus: {} (seq {}) -> {} (seq {}), victim too strong",
+                    attacker.getName().getString(), attackerSeq, victim.getName().getString(), victimSeq);
+            return;
+        }
+
+        float baseDamage = event.getNewDamage();
         float bonusDamage = victim.getMaxHealth() * damageFraction;
-        event.setNewDamage(event.getNewDamage() + bonusDamage);
+        event.setNewDamage(baseDamage + bonusDamage);
+
+        LOTMCraft.LOGGER.info("[Hand of Death] Hit: {} (seq {}) -> {} (seq {}) | type={} | base={} + bonus={} ({}% of {} max HP) = {}",
+                attacker.getName().getString(), attackerSeq, victim.getName().getString(), victimSeq, damageType,
+                String.format("%.2f", baseDamage), String.format("%.2f", bonusDamage), Math.round(damageFraction * 100),
+                String.format("%.1f", victim.getMaxHealth()), String.format("%.2f", baseDamage + bonusDamage));
 
         ServerLevel level = (ServerLevel) victim.level();
         if (victim instanceof Player) {
@@ -101,6 +130,50 @@ public class HandOfDeathAbility extends ToggleAbility {
             ParticleUtil.spawnSphereParticles(level, ParticleTypes.SOUL, center, 1.0, 30, 0.3f);
             level.playSound(null, victim.getX(), victim.getY(), victim.getZ(), SoundEvents.WITHER_HURT, SoundSource.PLAYERS, 1.0f, 0.7f);
         }
+    }
+
+    // TEMP DEBUG: traces Hand of Death hits through the damage pipeline. Remove once the hit issue is solved.
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+    public static void debugTraceAttack(AttackEntityEvent event) {
+        Player attacker = event.getEntity();
+        if (attacker.level().isClientSide || !"death".equals(BeyonderData.getPathway(attacker))) return;
+        if (!(event.getTarget() instanceof LivingEntity victim)) return;
+
+        LOTMCraft.LOGGER.info("[Hand of Death][trace 1/3 swing] {} -> {} | handOfDeathActive={} spirituality={} | swingCanceled={} angelImmunityRule={}",
+                describe(attacker), describe(victim), isHandOfDeathActive(attacker),
+                String.format("%.0f", BeyonderData.getSpirituality(attacker)), event.isCanceled(),
+                victim.level().getGameRules().getBoolean(ModGameRules.ANGEL_DAMAGE_IMMUNITY));
+    }
+
+    // TEMP DEBUG
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+    public static void debugTraceIncoming(LivingIncomingDamageEvent event) {
+        if (!(event.getSource().getEntity() instanceof LivingEntity attacker)) return;
+        LivingEntity victim = event.getEntity();
+        if (victim.level().isClientSide || !(attacker instanceof Player) || !"death".equals(BeyonderData.getPathway(attacker))) return;
+
+        LOTMCraft.LOGGER.info("[Hand of Death][trace 2/3 incoming] {} -> {} | type={} | original={} final={} canceled={} | mayDamage={} allies={} canAttack={} | modDamage={} angelImmunityRule={} victimInvulTime={}",
+                describe(attacker), describe(victim), event.getSource().typeHolder().getRegisteredName(),
+                String.format("%.2f", event.getContainer().getOriginalDamage()), String.format("%.2f", event.getAmount()),
+                event.isCanceled(), AbilityUtil.mayDamage(attacker, victim), AllyUtil.areAllies(attacker, victim),
+                attacker.canAttack(victim), ModDamageTypes.isModDamage(event.getSource()),
+                victim.level().getGameRules().getBoolean(ModGameRules.ANGEL_DAMAGE_IMMUNITY), victim.invulnerableTime);
+    }
+
+    private static boolean isHandOfDeathActive(LivingEntity entity) {
+        HandOfDeathAbility ability = (HandOfDeathAbility) LOTMCraft.abilityHandler.getById("hand_of_death_ability");
+        return ability != null && ability.isActiveForEntity(entity);
+    }
+
+    private static String describe(LivingEntity entity) {
+        return entity.getName().getString() + " (" + BeyonderData.getPathway(entity) + " seq " + BeyonderData.getSequence(entity) + ")";
+    }
+
+    private static boolean isMeleeHit(DamageSource source) {
+        return source.getDirectEntity() == source.getEntity()
+                && (source.is(DamageTypes.PLAYER_ATTACK)
+                 || source.is(DamageTypes.MOB_ATTACK)
+                 || source.is(DamageTypes.MOB_ATTACK_NO_AGGRO));
     }
 
     private static void playLeftHandMarkEffects(ServerLevel level, LivingEntity target) {

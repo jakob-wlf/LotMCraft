@@ -1031,12 +1031,15 @@ public class HistoricalVoidSummoningAbility extends SelectableAbility {
         if (entity.tickCount % 600 != 0) return;
         if (level.isClientSide || !(level instanceof ServerLevel serverLevel)) return;
 
-        if(entity.getPersistentData().getBoolean("VoidSummoned")) {
-            long summonTime = entity.getPersistentData().getLong("VoidSummonTime");
+        CompoundTag data = entity.getPersistentData();
+        // Other abilities (Internal Underworld, Dream Weave) also tag entities as VoidSummoned without a
+        // summon time or owner; those aren't Historical Void summons and must not expire here.
+        if(data.getBoolean("VoidSummoned") && data.contains("VoidSummonTime") && data.hasUUID("VoidSummonOwner")) {
+            long summonTime = data.getLong("VoidSummonTime");
             if (summonTime < serverLevel.getGameTime()) {
-                int cost = Math.max(1, entity.getPersistentData().getInt("VoidSlotCost"));
+                int cost = Math.max(1, data.getInt("VoidSlotCost"));
                 entity.remove(Entity.RemovalReason.DISCARDED);
-                if (serverLevel.getPlayerByUUID(entity.getPersistentData().getUUID("VoidSummonOwner")) instanceof ServerPlayer serverPlayer) {
+                if (serverLevel.getPlayerByUUID(data.getUUID("VoidSummonOwner")) instanceof ServerPlayer serverPlayer) {
                     decrementSummonedCount(serverPlayer, summonTime, cost);
                 }
             }

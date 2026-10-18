@@ -16,16 +16,31 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.util.thread.EffectiveSide;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class PlayerTeleportationAbility extends SelectableAbility {
 
-    public static final ArrayList<UUID> onlinePlayers = new ArrayList<>(); // Needs sync to client side
-    public static final HashMap<UUID, ServerLevel> levelsForPlayer = new HashMap<>(); // Does not need sync to client side
-    public static final HashMap<UUID, String> namesForPlayer = new HashMap<>(); // Needs sync to client side
+    // Server and client keep separate copies: in singleplayer both threads share these statics, and editing
+    // one shared list from both sides crashed the server tick. The lists are swapped as whole immutable
+    // snapshots, never modified in place, so readers always see a complete list.
+    private static volatile List<UUID> serverOnlinePlayers = List.of();
+    private static volatile List<UUID> clientOnlinePlayers = List.of(); // synced from the server
+    public static final Map<UUID, ServerLevel> levelsForPlayer = new ConcurrentHashMap<>(); // Does not need sync to client side
+    private static final Map<UUID, String> serverNamesForPlayer = new ConcurrentHashMap<>();
+    private static final Map<UUID, String> clientNamesForPlayer = new ConcurrentHashMap<>(); // synced from the server
+
+    private static List<UUID> onlinePlayers() {
+        return EffectiveSide.get().isClient() ? clientOnlinePlayers : serverOnlinePlayers;
+    }
+
+    private static Map<UUID, String> namesForPlayer() {
+        return EffectiveSide.get().isClient() ? clientNamesForPlayer : serverNamesForPlayer;
+    }
 
     public PlayerTeleportationAbility(String id) {
         super(id, 20);
@@ -54,8 +69,8 @@ public class PlayerTeleportationAbility extends SelectableAbility {
 
     @Override
     protected String[] getAbilityNames() {
-        ArrayList<UUID> players = new ArrayList<>(onlinePlayers);
-        return players.stream().map(uuid -> namesForPlayer.getOrDefault(uuid, "Unknown Player")).toArray(String[]::new).clone();
+        Map<UUID, String> names = namesForPlayer();
+        return onlinePlayers().stream().map(uuid -> names.getOrDefault(uuid, "Unknown Player")).toArray(String[]::new);
     }
 
     @Override
@@ -64,15 +79,16 @@ public class PlayerTeleportationAbility extends SelectableAbility {
             return;
         }
 
-        if(onlinePlayers.isEmpty()) {
+        List<UUID> players = serverOnlinePlayers;
+        if(players.isEmpty()) {
             return;
         }
-        if(selectedAbility >= onlinePlayers.size()) {
+        if(selectedAbility >= players.size()) {
             selectedAbility = 0;
             setSelectedAbility(player, 0);
         }
 
-        UUID targetPlayerUUID = onlinePlayers.get(selectedAbility);
+        UUID targetPlayerUUID = players.get(selectedAbility);
         ServerLevel targetLevel = levelsForPlayer.getOrDefault(targetPlayerUUID, null);
         if(targetLevel == null) {
             return;
@@ -110,42 +126,48 @@ public class PlayerTeleportationAbility extends SelectableAbility {
             selectedAbilities.put(entity.getUUID(), 0);
         }
 
+        List<UUID> players = onlinePlayers();
+        if(players.isEmpty()) {
+            return "";
+        }
+
         int selectedAbility = selectedAbilities.get(entity.getUUID());
-        if(selectedAbility >= onlinePlayers.size() || selectedAbility < 0) {
+        if(selectedAbility >= players.size() || selectedAbility < 0) {
             selectedAbility = 0;
             selectedAbilities.put(entity.getUUID(), 0);
         }
 
-        String targetPlayerName = namesForPlayer.getOrDefault(onlinePlayers.get(selectedAbility), "Unknown Player");
+        String targetPlayerName = namesForPlayer().getOrDefault(players.get(selectedAbility), "Unknown Player");
         return targetPlayerName;
     }
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post event) {
-        onlinePlayers.clear();
+        List<UUID> snapshot = new ArrayList<>();
         for(ServerPlayer player : event.getServer().getPlayerList().getPlayers()) {
-            onlinePlayers.add(player.getUUID());
+            snapshot.add(player.getUUID());
             levelsForPlayer.put(player.getUUID(), player.serverLevel());
-            namesForPlayer.put(player.getUUID(), player.getName().getString());
+            serverNamesForPlayer.put(player.getUUID(), player.getName().getString());
             PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationPlayerNamesPacket(player.getUUID().toString(), player.getName().getString()));
         }
+        serverOnlinePlayers = List.copyOf(snapshot);
 
-        if(onlinePlayers == null || onlinePlayers.isEmpty() || onlinePlayers.contains(null)) {
+        if(snapshot.isEmpty()) {
             return;
         }
-        List<UUID> snapshot = List.copyOf(onlinePlayers);
 
         PacketHandler.sendToAllPlayers(new SyncPlayerTeleportationOnlinePlayersPacket(
                 new ArrayList<>(snapshot.stream().map(UUID::toString).toList())
         ));
     }
 
+    /** Client side: replaces the synced list in one step. */
     public static void setOnlinePlayers(List<UUID> players) {
-        onlinePlayers.clear();
-        onlinePlayers.addAll(players);
+        clientOnlinePlayers = List.copyOf(players);
     }
 
+    /** Client side. */
     public static void setNameForPlayer(UUID uuid, String name) {
-        namesForPlayer.put(uuid, name);
+        clientNamesForPlayer.put(uuid, name);
     }
 }

@@ -156,6 +156,7 @@ public class DamageResistanceHandler {
         List<Float> demoness = new LinkedList<>(List.of(3.5f, 2.5f, 2.5f,  2f, 1.5f, 1f, 0.9f, 0.8f, 0.75f, 0.25f));
         List<Float> darkness = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.6f, 0.5f, 0.25f));
         List<Float> twilight = new LinkedList<>(List.of(5f, 4f, 4f, 3.5f, 3f, 2.5f, 2.25f, 1.75f, 1f, 0.75f));
+        List<Float> death = new LinkedList<>(List.of(2.5f, 2.25f, 2.25f, 2f, 1.75f, 1f, 0.75f, 0.6f, 0.5f, 0.25f));
 
         List<Float> abyss = new LinkedList<>(List.of(3.5f, 2.5f, 2.5f,  2f, 1.5f, 1f, 0.9f, 0.8f, 0.75f, 0.25f));
 
@@ -171,6 +172,7 @@ public class DamageResistanceHandler {
         physicalDamage.put("demoness", demoness);
         physicalDamage.put("darkness", darkness);
         physicalDamage.put("twilight_giant", twilight);
+        physicalDamage.put("death", death);
         physicalDamage.put("abyss", abyss);
     }
 

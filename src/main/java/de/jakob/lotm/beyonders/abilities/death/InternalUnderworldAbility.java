@@ -126,6 +126,19 @@ public class InternalUnderworldAbility extends SelectableAbility {
         return new HashMap<>(Map.of("death", 5));
     }
 
+    // Beyonders who switched into Death above Sequence 5 never have "death" at history[5],
+    // so grant Internal Underworld if any Sequence 5-or-stronger history entry is Death
+    @Override
+    public boolean hasAbility(LivingEntity entity, boolean ignoreCreativeMode) {
+        if (BeyonderData.isBeyonder(entity)) {
+            String[] history = BeyonderData.getPathwayHistory(entity);
+            for (int i = 0; i <= 5 && i < history.length; i++) {
+                if ("death".equals(history[i])) return true;
+            }
+        }
+        return super.hasAbility(entity, ignoreCreativeMode);
+    }
+
     @Override
     protected float getSpiritualityCost() {
         return 400;
@@ -231,6 +244,11 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
     private static boolean isInCaptureMode(ServerPlayer player) {
         return player.getPersistentData().getBoolean(CAPTURE_MODE_TAG);
+    }
+
+    /** Stores the entity's soul directly, bypassing capture. The caller is responsible for discarding the entity. */
+    public static void storeSoul(ServerPlayer player, LivingEntity entity) {
+        addStoredSoul(player, buildSoulData(entity));
     }
 
     private static CompoundTag buildSoulData(LivingEntity entity) {
@@ -454,6 +472,13 @@ public class InternalUnderworldAbility extends SelectableAbility {
         for (ActiveSoul soul : souls) {
             if (soul.entity().isAlive()) soul.entity().discard();
         }
+    }
+
+    /** Despawns every released soul and empties the stored souls. */
+    public static void clearUnderworld(ServerPlayer player) {
+        despawnSoulsOnDeath(player);
+        player.getPersistentData().remove(STORED_SOULS_TAG);
+        clearCaptureMode(player);
     }
 
     private static void spawnCaptureAttemptParticles(ServerLevel level, LivingEntity target) {

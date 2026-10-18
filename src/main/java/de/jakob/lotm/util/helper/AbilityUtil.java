@@ -4,6 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.*;
 import de.jakob.lotm.attachments.TransformationComponent;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
+import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
 import de.jakob.lotm.beyonders.abilities.error.DeceitAbility;
 import de.jakob.lotm.beyonders.abilities.error.RealityLoopholeAbility;
 import de.jakob.lotm.attachments.ModAttachments;
@@ -340,6 +341,14 @@ public class AbilityUtil {
     }
 
     private static boolean mayDamageSubordinate(LivingEntity source, LivingEntity target) {
+        // Internal Underworld souls cannot be harmed by the Beyonder who released them
+        if (InternalUnderworldAbility.isUnderworldSoul(target)) {
+            SubordinateComponent soulComponent = target.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
+            if (soulComponent.isSubordinate() && source.getStringUUID().equals(soulComponent.getControllerUUID())) {
+                return false;
+            }
+        }
+
         SubordinateComponent sourceComponent = source.getData(ModAttachments.SUBORDINATE_COMPONENT.get());
         if (!sourceComponent.isSubordinate()) {
             return true;

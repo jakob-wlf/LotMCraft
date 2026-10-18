@@ -293,6 +293,21 @@ public class GraftingAbility extends SelectableAbility {
         graftingLocations.remove(id);
     }
 
+    // Ends every active graft (damage, abilities, target) and pending selection, returning how many grafts were active
+    public static int endAll() {
+        int ended = graftingDamagePairs.size() + graftingAbilitiesPairs.size() + graftingTargetsPairs.size();
+        graftingDamagePairs.clear();
+        graftingDamageCasters.clear();
+        graftingAbilitiesPairs.clear();
+        graftingAbilitiesCasters.clear();
+        graftingTargetsPairs.clear();
+        graftingDamageEntities.clear();
+        graftingAbilitiesEntities.clear();
+        graftingTargetsEntities.clear();
+        graftingLocations.clear();
+        return ended;
+    }
+
     private void graftLocations(Level level, LivingEntity entity) {
         if(!(level instanceof ServerLevel serverLevel)) {
             return;

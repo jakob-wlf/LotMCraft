@@ -24,6 +24,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,10 +38,9 @@ public class ReincarnationAbility extends PassiveAbility {
     /** 5 minutes of invisibility in ticks */
     private static final int CONCEALMENT_TICKS = 20 * 60 * 5;
 
-    /** Cooldown in ms by sequence (index = sequence number) */
+    /** Cooldown in ms; the same 5 minutes for every sequence */
     private static long getCooldownMs(int sequence) {
-        if (sequence <= 3) return 12L * 60 * 60 * 1000; // 12 hours
-        return 24L * 60 * 60 * 1000;                    // 24 hours (seq 4+)
+        return 5L * 60 * 1000; // 5 minutes
     }
 
     public ReincarnationAbility(String id) {
@@ -133,6 +133,15 @@ public class ReincarnationAbility extends PassiveAbility {
 
         player.sendSystemMessage(Component.translatable("ability.lotmcraft.reincarnation.triggered")
                 .withStyle(ChatFormatting.DARK_AQUA));
+    }
+
+    /** A real death (Reincarnation didn't save the player) makes it available again. */
+    @SubscribeEvent
+    public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+        if (event.isEndConquered()) return;
+        if (event.getEntity() instanceof ServerPlayer player) {
+            clearCooldown(player);
+        }
     }
 
     private static final int MIN_DISTANCE = 500;

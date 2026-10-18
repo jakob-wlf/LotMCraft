@@ -9,6 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.playerMap.StoredData;
+import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -16,10 +17,27 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.Comparator;
 
+@EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class BeyonderMapCommand {
+
+    private static boolean isSpectator(CommandSourceStack source) {
+        return source.getEntity() instanceof ServerPlayer player && player.isSpectator();
+    }
+
+    @SubscribeEvent
+    public static void onChangeGameMode(PlayerEvent.PlayerChangeGameModeEvent event) {
+        // "get <targets>" is unlocked for spectators, so the client's command tree must be resent
+        // for suggestions to match. The event fires before the mode is applied, hence the one-tick delay.
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            ServerScheduler.scheduleDelayed(1, () -> serverPlayer.server.getCommands().sendCommands(serverPlayer));
+        }
+    }
 
     private static LiteralArgumentBuilder<CommandSourceStack> help() {
         return Commands.literal("help")
@@ -138,7 +156,7 @@ Available commands:
                     return 1;
                 })
                 .then(Commands.argument("targets", GameProfileArgument.gameProfile())
-                .requires(source -> source.hasPermission(2))
+                .requires(source -> source.hasPermission(2) || isSpectator(source))
                 .executes(context -> {
                     CommandSourceStack source = context.getSource();
                     var targets = GameProfileArgument.getGameProfiles(context, "targets");

@@ -7,10 +7,13 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.UniquenessComponent;
+import de.jakob.lotm.beyonders.abilities.death.InternalUnderworldAbility;
 import de.jakob.lotm.beyonders.abilities.death.passives.ReincarnationAbility;
+import de.jakob.lotm.beyonders.abilities.fool.marionettes.MarionetteUtils;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.CopiedAbilityHelper;
 import de.jakob.lotm.util.helper.SetBeyonderAuditLog;
 import de.jakob.lotm.util.playerMap.StoredData;
 import net.minecraft.commands.CommandSourceStack;
@@ -93,6 +96,9 @@ public class BeyonderCommand {
             // toggle would otherwise keep ticking (and stay re-toggleable) after the reset below.
             ToggleAbility.cleanUp(player.serverLevel(), player);
 
+            // Marionettes die with their owner's Beyonder status, and the owner/marionette link is cleared
+            MarionetteUtils.releaseAllMarionettes(player);
+
             ActingCapHelper.skipNextCapApplication = true;
             try {
                 BeyonderData.setBeyonder(player, "none", LOTMCraft.NON_BEYONDER_SEQ, true, false, false, false);
@@ -116,6 +122,11 @@ public class BeyonderCommand {
 
             player.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAllAbilities();
             ReincarnationAbility.clearCooldown(player);
+
+            // Recorded, replicated and Door advancement copies are all held in the copied-ability component
+            CopiedAbilityHelper.clearAbilities(player);
+
+            InternalUnderworldAbility.clearUnderworld(player);
 
             String playerName = player.getGameProfile().getName();
             SetBeyonderAuditLog.get(source.getLevel()).addEntry(source.getTextName(), playerName,

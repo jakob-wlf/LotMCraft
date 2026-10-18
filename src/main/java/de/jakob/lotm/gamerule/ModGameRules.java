@@ -133,7 +133,7 @@ public class ModGameRules {
         SPAWN_WITH_STARTING_CHARACTERISTIC = GameRules.register(
                 "spawnWithCharacteristic",
                 GameRules.Category.MISC,
-                GameRules.BooleanValue.create(true)
+                GameRules.BooleanValue.create(false)
         );
 
         REGRESS_SEQUENCE_ON_DEATH = GameRules.register(
@@ -309,25 +309,8 @@ public class ModGameRules {
                         })
         );
 
-        AFTER_DEATH_REGRESSION_INVULNERABILITY = GameRules.register(
-                "afterDeathRegressionInvulnerability",
-                GameRules.Category.MISC,
-                GameRules.IntegerValue.create(60,
-                        (server, value) -> {
-                            if (value.get() < 0) {
-                                value.set(0, server);
-                            }
-                        })
-        );
-
         APPLY_ANCHORING = GameRules.register(
                 "applyAnchoring",
-                GameRules.Category.MISC,
-                GameRules.BooleanValue.create(true)
-        );
-
-        APPLY_RITUALS = GameRules.register(
-                "applyRituals",
                 GameRules.Category.MISC,
                 GameRules.BooleanValue.create(true)
         );
