@@ -193,15 +193,15 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
 
     // ---- Underworld Patch (VORTEX) ----------------------------------------------------
     private static final int    VORTEX_CENTER_Y        = 40;    // flat bowl floor around the pool
-    private static final double VORTEX_DEPTH           = 50.0;  // rim is this much above the centre
-    private static final double VORTEX_TURNS           = 4.0;   // spiral windings from rim to centre
-    private static final double VORTEX_RIDGE_AMP       = 6.0;   // height of the bone ribs
-    private static final double VORTEX_RIM_WOBBLE      = 5.0;   // organic rim, still circular
-    private static final double VORTEX_POOL_RADIUS     = 9.0;
-    private static final double VORTEX_POOL_DEPTH      = 5.0;
+    private static final double VORTEX_DEPTH           = 30.0;  // rim is this much above the centre
+    private static final double VORTEX_TURNS           = 3.0;   // spiral windings from rim to centre
+    private static final double VORTEX_RIDGE_AMP       = 4.0;   // height of the bone ribs
+    private static final double VORTEX_RIM_WOBBLE      = 3.0;   // organic rim, still circular
+    private static final double VORTEX_POOL_RADIUS     = 7.0;
+    private static final double VORTEX_POOL_DEPTH      = 4.0;
     private static final int    VORTEX_WATER_Y         = VORTEX_CENTER_Y + 1;
-    private static final int    VORTEX_BOTTOM_CENTER_Y = 14;    // underside of the bowl
-    private static final int    VORTEX_BOTTOM_RIM_Y    = 76;
+    private static final int    VORTEX_BOTTOM_CENTER_Y = 18;    // underside of the bowl
+    private static final int    VORTEX_BOTTOM_RIM_Y    = 54;
 
     private static final double PATCH_FREQ_LARGE  = 0.008;
     private static final double PATCH_FREQ_MEDIUM = 0.020;
@@ -856,7 +856,6 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
         }
         return bestData;
     }
-
     private double vortexRidge(int x, int z, double dx, double dz, double r) {
         double theta = Math.atan2(dz, dx);
         double psi = VORTEX_TURNS * (r / SpiritWorldBiome.VORTEX_ISLAND_RADIUS)
@@ -883,14 +882,14 @@ public class SpiritWorldChunkGenerator extends ChunkGenerator {
 
         double funnel = VORTEX_CENTER_Y + VORTEX_DEPTH * Math.pow(t, 1.5);
         double ridge  = vortexRidge(x, z, dx, dz, r);
-        double ribFade = smoothstep((r - 10.0) / 14.0);          // no ribs inside the pool area
+        double ribFade = smoothstep((r - 8.0) / 10.0);           // no ribs inside the pool area
         double dip    = VORTEX_POOL_DEPTH * (1.0 - smoothstep(r / VORTEX_POOL_RADIUS));
 
         int top = (int) Math.floor(funnel + ridge * VORTEX_RIDGE_AMP * ribFade - dip);
 
         double under = VORTEX_BOTTOM_CENTER_Y
                 + (VORTEX_BOTTOM_RIM_Y - VORTEX_BOTTOM_CENTER_Y) * Math.pow(t, 1.2);
-        double drip  = Math.max(0.0, improvedNoise(x * 0.09 + 2500, z * 0.09 + 2500)) * 9.0 * t;
+        double drip  = Math.max(0.0, improvedNoise(x * 0.09 + 2500, z * 0.09 + 2500)) * 7.0 * t;
         int bottom = Mth.clamp((int) (under - drip), 2, top - 5);
 
         return new IslandData(density, top, bottom, v.centerX(), v.centerZ(), 0, 0, 0);

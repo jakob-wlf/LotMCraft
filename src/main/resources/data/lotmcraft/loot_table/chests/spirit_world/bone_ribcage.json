@@ -132,6 +132,46 @@
       ]
     },
     {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:mummy_ashes",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:molt_of_the_immortal_cicada",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_of_a_pale_lich",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:spirit_world_crystal",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:cloth_wrapped_persons_crystal",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:death_calling_crows_eyeball",
+          "weight": 16
+        }
+      ]
+    },
+    {
       "rolls": 1,
       "bonus_rolls": 0,
       "conditions": [

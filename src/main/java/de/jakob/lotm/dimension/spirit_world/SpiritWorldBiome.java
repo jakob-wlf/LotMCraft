@@ -235,15 +235,14 @@ public enum SpiritWorldBiome {
         return pool.toArray(new SpiritWorldBiome[0]);
     }
 
-    public static final int    VORTEX_ISLAND_RADIUS   = 110;   // solid bowl
-    public static final int    VORTEX_BIOME_RADIUS    = 128;   // biome circle (island + void ring)
+    public static final int    VORTEX_ISLAND_RADIUS   = 60;
+    public static final int    VORTEX_BIOME_RADIUS    = 76;
     private static final int   VORTEX_GRID            = 1500;
     private static final float VORTEX_CHANCE          = 0.35f;
-    private static final long  VORTEX_SPAWN_CLEARANCE = 450L;  // keep the central island area free
+    private static final long  VORTEX_SPAWN_CLEARANCE = 450L;
 
     public record VortexInfo(int centerX, int centerZ, double dist) {}
 
-    /** @return the vortex covering (x,z) or null. Cheap: only one grid cell is checked. */
     public static VortexInfo vortexAt(int x, int z) {
         int gx = Math.floorDiv(x, VORTEX_GRID);
         int gz = Math.floorDiv(z, VORTEX_GRID);
