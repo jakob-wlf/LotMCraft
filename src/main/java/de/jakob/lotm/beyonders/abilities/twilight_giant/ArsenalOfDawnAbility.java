@@ -4,7 +4,7 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.death.EyeOfDeathAbility;
+import de.jakob.lotm.beyonders.abilities.death.handlers.SpiritHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.item.ModItems;
 import de.jakob.lotm.network.PacketHandler;
@@ -316,7 +316,7 @@ public class ArsenalOfDawnAbility extends SelectableAbility {
     }
 
     public static boolean isEvil(LivingEntity entity) {
-        if (AbilityUtil.isUndead(entity) || EyeOfDeathAbility.isSpiritEntity(entity)) return true;
+        if (SpiritHandler.isCapturableSpirit(entity)) return true;
         return BeyonderData.isEvilPathway(entity);
     }
 
