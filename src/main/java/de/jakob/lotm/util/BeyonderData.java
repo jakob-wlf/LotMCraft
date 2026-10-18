@@ -102,7 +102,8 @@ public class BeyonderData {
             "visionary",
             "wheel_of_fortune",
             "death",
-            "justiciar"
+            "justiciar",
+            "twilight_giant"
     );
 
     public static int getHighestImplementedSequence(String pathway) {
