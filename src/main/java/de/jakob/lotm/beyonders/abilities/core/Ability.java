@@ -410,9 +410,9 @@ public abstract class Ability {
     }
 
     public int getCooldown(int seq) {
-        if(seq + 1 > dynamicCooldown.size()) return cooldown;
+        if(seq + 1 > dynamicCooldown.size()) return (int) cooldown;
 
-        return hasDynamicCooldown ? 20 * dynamicCooldown.get(seq) : cooldown;
+        return hasDynamicCooldown ? Math.round(20 * dynamicCooldown.get(seq)) : cooldown;
     }
 
     public float spiritualityCost(int seq) {

@@ -1,6 +1,7 @@
 package de.jakob.lotm.util;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.death.handlers.SpiritHandler;
 import de.jakob.lotm.beyonders.abilities.fool.marionettes.ControllingUtils;
 import de.jakob.lotm.beyonders.acting.ActingCapHelper;
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
@@ -397,6 +398,10 @@ public class BeyonderData {
 
         if(entity instanceof Player player && ControllingUtils.isControlling(player) && !ignoreControlling) {
             return ControllingUtils.getControlledSequence(player);
+        }
+
+        if(SpiritHandler.isCapturableSpirit(entity) && !BeyonderData.isBeyonder(entity)) {
+            return SpiritHandler.getSequenceOfSpirit(entity);
         }
 
         if(entity.level().isClientSide) {

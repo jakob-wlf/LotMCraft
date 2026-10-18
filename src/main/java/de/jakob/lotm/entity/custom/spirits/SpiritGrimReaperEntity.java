@@ -82,7 +82,7 @@ public class SpiritGrimReaperEntity extends Monster {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 280.0)
                 .add(Attributes.MOVEMENT_SPEED, 0.3)
-                .add(Attributes.ATTACK_DAMAGE, 90.0)
+                .add(Attributes.ATTACK_DAMAGE, 25.0)
                 .add(Attributes.ARMOR, 8.0)
                 .add(Attributes.FOLLOW_RANGE, 100.0)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.6);

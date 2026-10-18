@@ -122,6 +122,46 @@
       ]
     },
     {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:moonstone",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:pure_white_brilliant_rock",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:holy_brilliance_rock_liquid",
+          "weight": 3
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:divine_blessed_crystal",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:siren_rock",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:crystal_sunflower",
+          "weight": 20
+        }
+      ]
+    },
+    {
       "rolls": 1,
       "bonus_rolls": 0,
       "conditions": [
