@@ -44,7 +44,7 @@ public class AdvancementUtil {
             new HashSet<>(Set.of("fool", "error", "door")),
             new HashSet<>(Set.of("red_priest", "demoness")),
             new HashSet<>(Set.of("sun", "tyrant", "visionary")),
-            new HashSet<>(Set.of("darkness", "death","twilight_giant"))
+            new HashSet<>(Set.of("darkness", "death"))
     );
 
 

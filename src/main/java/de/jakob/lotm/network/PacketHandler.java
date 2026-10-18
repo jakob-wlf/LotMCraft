@@ -1016,12 +1016,6 @@ public class PacketHandler {
                 MassPuppeteeringSelectedEntitiesPacket.STREAM_CODEC,
                 MassPuppeteeringSelectedEntitiesPacket::handle
         );
-
-        registrar.playToServer(
-                UseCopiedAbilityPacket.TYPE,
-                UseCopiedAbilityPacket.STREAM_CODEC,
-                UseCopiedAbilityPacket::handle
-        );
     }
 
     public static boolean sendToServer(CustomPacketPayload packet) {
