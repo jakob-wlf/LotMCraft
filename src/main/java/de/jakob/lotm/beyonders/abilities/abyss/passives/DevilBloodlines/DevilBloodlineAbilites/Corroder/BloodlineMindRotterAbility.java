@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class BloodlineMindRotterAbility extends PassiveAbility {
     public static final float POISON_DAMAGE_MULTIPLIER = 1.25F;
     private static final double RETALIATION_DAMAGE_SCALE = 0.5;
-    private static final int RETALIATION_NAUSEA_TICKS = 20 * 6;
+    private static final int RETALIATION_NAUSEA_TICKS = 20 * 10;
     private static final long RETALIATION_COOLDOWN_TICKS = 20L;
     private static final Map<UUID, Long> lastRetaliation = new ConcurrentHashMap<>();
     private static final DustParticleOptions ROT_DUST =

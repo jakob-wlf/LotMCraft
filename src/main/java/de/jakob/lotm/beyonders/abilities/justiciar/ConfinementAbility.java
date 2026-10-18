@@ -160,7 +160,7 @@ public class ConfinementAbility extends Ability {
         }
     }
 
-    private static void removeZone(ConfinementZone zone, ServerLevel level) {
+    public static void removeZone(ConfinementZone zone, ServerLevel level) {
         for (BlockPos pos : zone.barriers) {
             if (level.getBlockState(pos).is(Blocks.BARRIER)) {
                 level.removeBlock(pos, false);

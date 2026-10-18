@@ -51,7 +51,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class MaliceSeedAbility extends SelectableAbility {
-
     private static final String SEEDS_KEY = "lotm_malice_seeds";
     private static final String MALICE_IDENTITY_KEY = "lotm_malice_identity";
     private static final int SCAN_INTERVAL_TICKS = 29;          // seeds are processed every 1s
@@ -71,7 +70,7 @@ public class MaliceSeedAbility extends SelectableAbility {
         super(id, 100);
         this.canBeCopied = false;
         this.canBeReplicated = false;
-        this.canBeUsedInArtifact = false;
+        this.canBeUsedInArtifact = true;
         this.cannotBeStolen = true;
         canBeShared = false;
     }
@@ -239,10 +238,6 @@ public class MaliceSeedAbility extends SelectableAbility {
         if (!(caster.level() instanceof ServerLevel serverLevel)) return;
         MinecraftServer server = serverLevel.getServer();
         if (!knownCasters.contains(caster.getUUID())) return;
-        if (!BeyonderData.isBeyonder(caster) || !"abyss".equals(BeyonderData.getPathway(caster))) {//|| !"chained".equals(BeyonderData.getPathway(caster)))
-            AbilityUtil.sendActionBar(caster, Component.literal("Your Malice Falls Short.").withColor(0xFFff124d));
-            return;//replace with translatable later
-        }
         String casterKey = caster.getUUID().toString();
         LivingEntity nearest = null;
         double best = Double.MAX_VALUE;

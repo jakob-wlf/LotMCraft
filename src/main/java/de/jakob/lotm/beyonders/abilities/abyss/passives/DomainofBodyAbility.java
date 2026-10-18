@@ -15,14 +15,13 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DomainOfBodyAbility extends PassiveAbility {
 
-    private static final float REGEN_AMOUNT = 2.0F;
+    private static final float BASE_REGEN_AMOUNT = 2.0F;
     private static final float CORROSION_RADIUS = 16.0F;
     private static final float CORROSION_DAMAGE = 3.0F;
     private static final float SANITY_DAMAGE = 1.5F;
@@ -46,13 +45,13 @@ public class DomainOfBodyAbility extends PassiveAbility {
         // Purification damage cancels the regen
         Long blockedUntil = regenBlockedUntil.get(entity.getUUID());
         if (blockedUntil != null) {
-            System.out.println("Healing Blocked");
             if (level.getGameTime() < blockedUntil) return;
             regenBlockedUntil.remove(entity.getUUID());
         }
 
         if (entity.getHealth() < entity.getMaxHealth()) {
-            entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + REGEN_AMOUNT));
+            int seq = BeyonderData.getSequence(entity);
+            entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + (BASE_REGEN_AMOUNT*(3-seq))));
         }
     }
 
@@ -94,8 +93,6 @@ public class DomainOfBodyAbility extends PassiveAbility {
         try {
             int entitySeq = BeyonderData.getSequence(entity);
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(CORROSION_RADIUS), t -> t != entity && t.isAlive())) {
-                float hpBefore = target.getHealth();
-                float sanityBefore = target.getData(ModAttachments.SANITY_COMPONENT).getSanity();
                 target.hurt(level.damageSources().generic(), CORROSION_DAMAGE);
                 SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
                 float before = sanity.getSanity();

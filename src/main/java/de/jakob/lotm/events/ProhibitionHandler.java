@@ -33,6 +33,10 @@ public class ProhibitionHandler {
         if (isInZone(entity.position(), serverLevel, ProhibitionAbility.ProhibitionType.BEYONDER_ABILITIES, BeyonderData.getSequence(entity))) {
             event.setCanceled(true);
             WorldJudgmentHandler.escalate(entity);
+            if (!ProhibitionAbility.ProhibitionZone.appliesTo(entity, ProhibitionAbility.ProhibitionType.BEYONDER_ABILITIES)){
+                event.setCanceled(false);
+                return;
+            }
             if (entity instanceof ServerPlayer sp) {
                 sp.sendSystemMessage(Component.translatable("lotmcraft.prohibition.beyonder_abilities")
                         .withStyle(ChatFormatting.RED));
@@ -102,6 +106,7 @@ public class ProhibitionHandler {
             if (!zone.level.equals(serverLevel)) continue;
             if (!zone.isActive()) continue;
             if (zone.ownerId.equals(player.getUUID())) continue;
+            if (!ProhibitionAbility.ProhibitionZone.appliesTo(player, zone.type)) continue;
 
             double dist = pos.distanceTo(zone.center);
             if (dist <= 40.0) {
@@ -121,6 +126,7 @@ public class ProhibitionHandler {
             if (!zone.level.equals(serverLevel)) continue;
             if (!zone.isActive()) continue;
             if (zone.ownerId.equals(player.getUUID())) continue;
+            if (!ProhibitionAbility.ProhibitionZone.appliesTo(player, zone.type)) continue;
 
             double dist = pos.distanceTo(zone.center);
             if (dist > 40.0 && dist <= 43.0) {

@@ -20,12 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
-/**
- * One-time use. Right click to transform into the shape stored on the mask.
- * The shape string uses the same format as ShapeShiftingUtil:
- *   "minecraft:zombie", or "player:Name:UUID" for players.
- * Does not need the Shapeshifter toggle.
- */
 public class SkinMaskItem extends Item {
 
     private static final String SHAPE_KEY = "mask_shape";

@@ -157,6 +157,7 @@ public class AbilityHandler {
         abilities.add(new MaliceSeedAbility("malice_seed_ability"));
         abilities.add(new BloodSovereignAbility("blood_sovereign_ability"));
         abilities.add(new FearAuraAbility("fear_aura_ability"));
+        abilities.add(new TheCorroderAbility("corroder_ability"));
         abilities.add(new FlamesOfTheAbyssAbility("flames_of_the_abyss_ability"));
         abilities.add(new DegenerationAbility("degeneration_ability"));
 

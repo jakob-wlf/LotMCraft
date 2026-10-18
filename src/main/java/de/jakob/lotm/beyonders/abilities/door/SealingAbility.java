@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.abilities.abyss.TheCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
@@ -75,6 +76,7 @@ public class SealingAbility extends Ability {
 
         List<LivingEntity> sealedEntities = AbilityUtil.getNearbyEntities(entity, (ServerLevel) level, targetLoc, radius, false);
         sealedEntities.forEach(e -> {
+            if (TheCorroderAbility.isCorroding(e.getUUID())) return;
             int duration = 0;
 
             if ((BeyonderData.getPathway(e).equals("door") && AbilityUtil.getSequenceDifference(entitySeq, BeyonderData.getSequence(e)) <= 0)) {
@@ -127,6 +129,7 @@ public class SealingAbility extends Ability {
             ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions2, targetLoc, radius, 40);
 
             sealedEntities.forEach(e -> {
+                if (TheCorroderAbility.isCorroding(e.getUUID())) return;
                 if(!durationMap.containsKey(e.getUUID())) return;
 
                 int duration = durationMap.get(e.getUUID());

@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModEffects {
@@ -36,7 +37,7 @@ public class ModEffects {
     public static final Holder<MobEffect> LOOSING_CONTROL = MOB_EFFECTS.register("loosing_control",
             () -> new LoosingControlEffect(MobEffectCategory.HARMFUL, 0x493269)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "loosing_control"), -.45f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-
+    public static final DeferredHolder<MobEffect, MobEffect> CORRODED = MOB_EFFECTS.register("corroded", CorrodedEffect::new);
     public static final Holder<MobEffect> CONCEALMENT = MOB_EFFECTS.register("concealment",
             () -> new ConcealmentEffect(MobEffectCategory.BENEFICIAL, 0x161718));
 

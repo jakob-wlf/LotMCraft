@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.justiciar;
 
+import de.jakob.lotm.beyonders.abilities.abyss.TheCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
@@ -66,6 +67,7 @@ public class ImprisonAbility extends Ability {
 
         LivingEntity target = AbilityUtil.getTargetEntity(caster, (int) (15 * multiplier(caster)), 1.4f);
         if (target == null) return;
+        if (TheCorroderAbility.isCorroding(target.getUUID())) return;
 
         int entitySeq = AbilityUtil.getSeqWithArt(caster, this);
         int targetSeq = BeyonderData.getSequence(target);
@@ -176,6 +178,11 @@ public class ImprisonAbility extends Ability {
         IMPRISONED.remove(data[0]);
         for (int i = 1; i < data.length; i++) {
             if (data[i] != null) ServerScheduler.cancel(data[i]);
+        }
+    }
+    public static void releaseTarget(UUID targetId) {
+        for (Map.Entry<UUID, UUID[]> e : new ArrayList<>(IMPRISON_DATA.entrySet())) {
+            if (e.getValue()[0].equals(targetId)) cancelImprisonment(e.getKey());
         }
     }
 

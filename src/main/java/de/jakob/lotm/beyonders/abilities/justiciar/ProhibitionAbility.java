@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.justiciar;
 
+import de.jakob.lotm.beyonders.abilities.abyss.TheCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.network.PacketHandler;
@@ -281,6 +282,12 @@ public class ProhibitionAbility extends SelectableAbility {
 
         public boolean isInZone(Vec3 pos, ServerLevel lvl) {
             return lvl.equals(level) && pos.distanceTo(center) <= ZONE_RADIUS;
+        }
+        public static boolean appliesTo(LivingEntity entity, ProhibitionType type) {
+            if (type != ProhibitionType.BEYONDER_ABILITIES && type != ProhibitionType.PLAYERS) {
+                return true;
+            }
+            return !TheCorroderAbility.isCorroding(entity.getUUID());
         }
     }
 }

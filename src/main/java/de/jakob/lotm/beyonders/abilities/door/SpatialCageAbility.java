@@ -172,4 +172,16 @@ public class SpatialCageAbility extends SelectableAbility {
             activeCages.remove(playerUUID);
         }
     }
+    public static boolean corrodeCages(ServerLevel level, Vec3 center, double reach) {
+        for (HashSet<SpatialCage> set : new ArrayList<>(activeCages.values())) {
+            for (SpatialCage cage : new ArrayList<>(set)) {
+                if (cage.level() != level) continue;
+                if (cage.position().distanceTo(center) > cage.radius() + reach) continue;
+                cage.removeCage();
+                cage.barrierBlocks().clear(); // stops the update task from re-placing the blocks
+                return true;
+            }
+        }
+        return false;
+    }
 }

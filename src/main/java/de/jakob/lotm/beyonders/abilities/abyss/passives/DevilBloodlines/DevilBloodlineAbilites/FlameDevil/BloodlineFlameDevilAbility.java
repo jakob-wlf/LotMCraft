@@ -33,7 +33,7 @@ public class BloodlineFlameDevilAbility extends PassiveAbility {
         // - Then long cooldown.
         // - Unique lava sword ability
         //
-        // Flame Cage:
+        // Flame Cage:(done)
         // - Reuse Hellfire Wall if possible.(done)
         // - Projectile immunity for 10 seconds.
         //

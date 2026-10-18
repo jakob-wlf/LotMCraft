@@ -11,14 +11,6 @@ import net.minecraft.world.entity.LivingEntity;
 
 import java.util.List;
 
-/**
- * Decides who is fooled by a Skin Mask disguise. Server side only.
- * Not upgraded (sequence 6, or the wearer has no bloodline):
- *   the mask only changes the skin. Spirit vision sees the true name and stats.
- * Upgraded (sequence 5 or lower, with the Shapeshifter bloodline):
- *   normal spirit vision sees the disguised person and does not lose control.
- *   Special spirit vision sees through it and still loses control.
- */
 public final class SpiritDisguiseUtil {
 
     public static final int UPGRADE_SEQUENCE = 5;

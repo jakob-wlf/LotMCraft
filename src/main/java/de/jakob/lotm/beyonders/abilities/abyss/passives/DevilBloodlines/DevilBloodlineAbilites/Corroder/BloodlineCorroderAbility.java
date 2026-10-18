@@ -7,6 +7,7 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
@@ -20,9 +21,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
@@ -43,17 +42,17 @@ import static de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.D
 public class BloodlineCorroderAbility extends SelectableAbility {
     // Corroding Flames
     private static final int WITHER_II = 1; // amplifier 1 = Wither II
-    // Armor durability lost per hit, as a fraction of each piece's max durability (15%)
-    private static final float FLAME_ARMOR_DAMAGE = 0.15F;
     // Dissolving Mist
     private static final double MIST_RADIUS = 15.0D;
     private static final int MIST_DURATION_TICKS = 20 * 15;
     private static final int POISON_II = 1; // amplifier 1 = Poison II
-    // Armor durability lost per second inside the mist, as a fraction of max durability (1.5%)
-    private static final float MIST_ARMOR_DAMAGE = 0.015F;
     // Extra damage taken by anything inside the mist (10%).
     private static final float MIST_DAMAGE_BONUS = 0.10F;
     private static final long MIST_LINGER_TICKS = 20L * 3L;
+    // Corroded debuff (the effect handles all armor and instrument durability loss)
+    private static final int FLAME_CORRODED_TICKS = 20 * 10;
+    private static final int MIST_CORRODED_TICKS = 20 * 3; // the mist pulses every second, so this keeps refreshing while inside and lingers briefly after
+    private static final int CORRODED_AMPLIFIER = 0;
     private static final Map<UUID, Long> dissolvedUntil = new ConcurrentHashMap<>();
     private final DustParticleOptions corrodingDust = new DustParticleOptions(new Vector3f(25 / 255f, 110 / 255f, 70 / 255f), 1.2f);
     private final DustParticleOptions mistDust = new DustParticleOptions(new Vector3f(0.12F, 0.35F, 0.15F), 2.4F);
@@ -98,21 +97,21 @@ public class BloodlineCorroderAbility extends SelectableAbility {
         ParticleUtil.drawParticleLine(level, ParticleTypes.SMOKE, startPos, look, 2, .5, 23, .4);
         ParticleUtil.drawParticleLine(level, ModParticles.GREEN_FLAME.get(), startPos, look, 2, .5, 35, .4);
         ParticleUtil.drawParticleLine(level, corrodingDust, startPos, look, 2, .5, 23, .4);
-        // Purification neutralizes the wither effect
+        // Purification neutralizes the wither and corroded effects
         boolean purified = InteractionHandler.isInteractionPossible(new Location(startPos, level), "purification", seq);
         AbilityUtil.damageNearbyEntities(level, entity, 2.75 * multiplier(entity), DamageLookup.lookupDamage(6, .9) * multiplier(entity), startPos, true, false, true, 0, 20 * 3, ModDamageTypes.source(level, ModDamageTypes.CORROSION, entity));
-        // Heavy durability damage to the armor of everything hit
-        AbilityUtil.getNearbyEntities(entity, level, startPos, 2.75 * multiplier(entity)).forEach(hit -> {
-            if (hit == entity) return;
-            if (entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(hit.getUUID())) return;
-            corrodeArmor(hit, FLAME_ARMOR_DAMAGE);
-        });
-        if (!purified) {AbilityUtil.addPotionEffectToNearbyEntities(level, entity, 3, startPos, new MobEffectInstance(MobEffects.WITHER, 20 * 8 * (int) Math.max(multiplier(entity) / 2, 1), WITHER_II, false, true));}
+        // Everything hit gets the Corroded debuff
+        if (!purified) {
+            AbilityUtil.getNearbyEntities(entity, level, startPos, 2.75 * multiplier(entity)).forEach(hit -> {
+                if (hit == entity) return;
+                if (entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(hit.getUUID())) return;
+                applyCorroded(hit, FLAME_CORRODED_TICKS);
+            });
+            AbilityUtil.addPotionEffectToNearbyEntities(level, entity, 3, startPos, new MobEffectInstance(MobEffects.WITHER, 20 * 8 * (int) Math.max(multiplier(entity) / 2, 1), WITHER_II, false, true));
+        }
         BlockPos lightPos = BlockPos.containing(startPos);
         if (level.getBlockState(lightPos).isAir()) {level.setBlockAndUpdate(lightPos, Blocks.LIGHT.defaultBlockState());}
-        ServerScheduler.scheduleDelayed(25, () -> {
-            // Only remove our own light block
-            if (level.getBlockState(lightPos).is(Blocks.LIGHT)) {level.setBlockAndUpdate(lightPos, Blocks.AIR.defaultBlockState());}});
+        ServerScheduler.scheduleDelayed(25, () -> {if (level.getBlockState(lightPos).is(Blocks.LIGHT)) {level.setBlockAndUpdate(lightPos, Blocks.AIR.defaultBlockState());}});
         NeoForge.EVENT_BUS.post(new AbilityUsedEvent(level, startPos, entity, this, interactionFlags, 2.4f, interactionCacheTicks));
     }
     //Dissolving Mist
@@ -126,23 +125,16 @@ public class BloodlineCorroderAbility extends SelectableAbility {
             long gameTime = serverLevel.getGameTime();
             ParticleUtil.spawnParticles(serverLevel, mistDust, entity.position().add(0, 1, 0), 200, MIST_RADIUS * 0.6, 0.02);
             AbilityUtil.addPotionEffectToNearbyEntities(serverLevel, entity, MIST_RADIUS, entity.position(), new MobEffectInstance(MobEffects.POISON, 40, POISON_II, false, false, false));
-            // Mark everything in the mist: it takes extra damage while inside and shortly after
+            // Mark everything in the mist: it takes extra damage and stays corroded while inside and shortly after
             AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), MIST_RADIUS).forEach(target -> {
                 if (target == entity) return;
                 if (entity.getData(ModAttachments.ALLY_COMPONENT.get()).isAlly(target.getUUID())) return;
                 dissolvedUntil.put(target.getUUID(), gameTime + MIST_LINGER_TICKS);
-                corrodeArmor(target, MIST_ARMOR_DAMAGE);
+                applyCorroded(target, MIST_CORRODED_TICKS);
             });
             AbilityUtil.damageNearbyEntities(serverLevel, entity, MIST_RADIUS, (float) DamageLookup.lookupDps(6, .2, 35, 20)*getPoisonDamageMultiplier(entity), entity.position(), true, false, true, 0, ModDamageTypes.source(serverLevel, ModDamageTypes.CORROSION, entity));}, () -> clearArtifactScaling(entity), level, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), level)));
     }
-    private static void corrodeArmor(LivingEntity target, float fractionOfMaxDurability) {
-        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
-            ItemStack stack = target.getItemBySlot(slot);
-            if (stack.isEmpty() || !stack.isDamageableItem()) continue;
-            int amount = Math.max(1, (int) (stack.getMaxDamage() * fractionOfMaxDurability));
-            stack.hurtAndBreak(amount, target, slot);
-        }
-    }
+    private static void applyCorroded(LivingEntity target, int ticks) {target.addEffect(new MobEffectInstance(ModEffects.CORRODED, ticks, CORRODED_AMPLIFIER, false, true));}
     @SubscribeEvent
     public static void onIncomingDamage(LivingIncomingDamageEvent event) {
         LivingEntity target = event.getEntity();
