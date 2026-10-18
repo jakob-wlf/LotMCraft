@@ -459,7 +459,7 @@ public class PotionRecipes {
         ));
 
         // ===== DEATH =====
-/*
+
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CORPSE_COLLECTOR_POTION.get(),
                 new ItemStack(ModIngredients.DEEP_GRAINED_WALNUT.get()),
@@ -542,7 +542,7 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(
                         BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("death", 1)))
         ));
-*/
+
 
 // ===== DARKNESS =====
 
@@ -812,7 +812,7 @@ public class PotionRecipes {
 
 
 // ===== ABYSS =====
-/*
+
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.CRIMINAL_POTION.get(),
                 new ItemStack(ModIngredients.POPLAR_TREE_LEAF_POWDER.get()),
@@ -902,7 +902,7 @@ public class PotionRecipes {
                 new ItemStack(Objects.requireNonNull(
                         BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence("abyss", 1)))
         ));
-*/
+
         // ===== TYRANT =====
 
         RECIPES.add(new PotionRecipe(
@@ -1183,7 +1183,7 @@ public class PotionRecipes {
 
 
 // ===== JUSTICIAR =====
-/*
+
         RECIPES.add(new PotionRecipe(
                 (BeyonderPotion) PotionItemHandler.ARBITER.get(),
                 new ItemStack(ModIngredients.RED_WINE.get()),
@@ -1291,7 +1291,7 @@ public class PotionRecipes {
                                 .selectCharacteristicOfPathwayAndSequence("justiciar", 1)
                 ))
         ));
-*/
+
 
 // Twilight giant
         RECIPES.add(new PotionRecipe(
