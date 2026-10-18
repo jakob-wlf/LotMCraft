@@ -816,8 +816,6 @@ public class AbilityUtil {
         );
     }
 
-    // ==================== DAMAGE METHODS ====================
-
 
     private static DamageSource defaultDamageSource(Level level, LivingEntity source) {
         return source != null

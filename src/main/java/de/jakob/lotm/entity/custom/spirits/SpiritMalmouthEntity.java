@@ -272,8 +272,7 @@ public class SpiritMalmouthEntity extends Animal {
                 double dot = toEntityNorm.dot(breathDirection);
 
                 if (dot >= cosThreshold) {
-                    // Entity is within the cone
-                    DamageSource damageSource = ModDamageTypes.source(malmouth.level(), ModDamageTypes.BEYONDER_GENERIC, malmouth);
+                    DamageSource damageSource = ModDamageTypes.source(malmouth.level(), ModDamageTypes.SOUL_BASED, malmouth);
                     entity.hurt(damageSource, damage);
                     entity.invulnerableTime = 0; // Allow continuous breath damage
                 }

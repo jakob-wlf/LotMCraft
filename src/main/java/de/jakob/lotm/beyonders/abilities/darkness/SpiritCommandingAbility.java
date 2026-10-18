@@ -5,7 +5,7 @@ import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.attachments.SpiritHousingComponent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.common.AngelFlightAbility;
-import de.jakob.lotm.beyonders.abilities.death.EyeOfDeathAbility;
+import de.jakob.lotm.beyonders.abilities.death.handlers.SpiritHandler;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.gui.custom.spirit_command.SpiritCommandMenu;
 import de.jakob.lotm.gui.custom.spirit_housing.SpiritManageMenu;
@@ -168,7 +168,7 @@ public class SpiritCommandingAbility extends SelectableAbility {
 
     private void capture(ServerLevel level, ServerPlayer player) {
         LivingEntity target = AbilityUtil.getTargetEntity(player, 8, 1.5f, true);
-        if (target == null || !EyeOfDeathAbility.isSpiritEntity(target)) {
+        if (target == null || !SpiritHandler.isCapturableSpirit(target)) {
             refund(player);
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.spirit_commanding.not_spirit").withColor(0xff124d));
             return;
@@ -186,6 +186,11 @@ public class SpiritCommandingAbility extends SelectableAbility {
             return;
         }
         float chance = Math.min(1f, 0.3f + 0.1f * housing.fails);
+        int spiritSequence = SpiritHandler.getSequenceOfSpirit(target);
+        int playerSequence = BeyonderData.getSequence(player);
+        if (spiritSequence >= 9) chance = 1;
+        else if (spiritSequence < playerSequence) chance = 0;
+        else if (spiritSequence == playerSequence) chance = 0.35f;
         if (player.getRandom().nextFloat() > chance) {
             housing.fails++;
             AbilityUtil.sendActionBar(player, Component.translatable("ability.lotmcraft.spirit_commanding.failed", (int) (chance * 100)).withColor(0xff124d));

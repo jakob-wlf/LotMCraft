@@ -292,17 +292,13 @@ public class SpiritBlueWizardEntity extends Animal {
 
             double distanceSq = wizard.distanceToSqr(target);
 
-            // Check if we've landed close to the target or timer expired
             if ((distanceSq <= JUMP_SLAM_DISTANCE * JUMP_SLAM_DISTANCE && jumpTimer > 5) || jumpTimer > 40) {
-                // Slam impact
                 float damage = (float) wizard.getAttributeValue(Attributes.ATTACK_DAMAGE) * 1.2f;
                 Vec3 impactPos = wizard.position();
 
-                // Impact particles
                 ParticleUtil.spawnSphereParticles(serverLevel, wizard.getWizardDust(), impactPos, 3.0, 40);
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.EXPLOSION, impactPos, 5, 1.0);
 
-                // Damage entities at impact
                 AbilityUtil.damageNearbyEntities(serverLevel, wizard, 4.0, damage, impactPos, true, true);
 
                 jumping = false;

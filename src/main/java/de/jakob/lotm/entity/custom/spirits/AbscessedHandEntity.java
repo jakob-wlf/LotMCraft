@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.spirits;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.projectiles.SpiritBallEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -202,7 +203,7 @@ public class AbscessedHandEntity extends Animal {
             if (hand.distanceToSqr(target) <= (MELEE_RANGE + 0.5f) * (MELEE_RANGE + 0.5f)) {
                 strikeMelee(target, 1.0f);
             }
-            attackCooldown = 15; // fast — this is the bread-and-butter attack
+            attackCooldown = 15;
         }
 
         private void performRangedAttack(LivingEntity target) {
@@ -229,7 +230,6 @@ public class AbscessedHandEntity extends Animal {
             Vec3 destination = findTeleportSpot(target);
 
             if (destination == null) {
-                // No safe spot found nearby — fall back to a ranged attack instead
                 performRangedAttack(target);
                 return;
             }
@@ -246,10 +246,10 @@ public class AbscessedHandEntity extends Animal {
             hand.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
             if (hand.distanceToSqr(target) <= (MELEE_RANGE + 1.5f) * (MELEE_RANGE + 1.5f)) {
-                strikeMelee(target, 1.3f); // surprise follow-up hits harder
+                strikeMelee(target, 1.3f);
             }
 
-            attackCooldown = 70; // powerful — longer cooldown than melee/ranged
+            attackCooldown = 70;
         }
 
         private void strikeMelee(LivingEntity target, float damageMultiplier) {
@@ -258,7 +258,7 @@ public class AbscessedHandEntity extends Animal {
             float damage = (float) hand.getAttributeValue(Attributes.ATTACK_DAMAGE) * damageMultiplier;
             hand.swing(InteractionHand.MAIN_HAND);
 
-            DamageSource source = hand.damageSources().mobAttack(hand);
+            DamageSource source = ModDamageTypes.source(hand.level(), ModDamageTypes.SOUL_BASED, hand);
             target.hurt(source, damage);
             target.knockback(0.4, hand.getX() - target.getX(), hand.getZ() - target.getZ());
 
