@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.spirits;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.entity.custom.projectiles.SpiritBallEntity;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
@@ -183,7 +184,7 @@ public class RabbitOfKnowledgeEntity extends Rabbit {
             float damage = (float) rabbit.getAttributeValue(Attributes.ATTACK_DAMAGE);
             rabbit.swing(InteractionHand.MAIN_HAND);
 
-            DamageSource source = rabbit.damageSources().mobAttack(rabbit);
+            DamageSource source = ModDamageTypes.source(rabbit.level(), ModDamageTypes.IMPACT, rabbit);
             target.hurt(source, damage);
             target.knockback(0.3, rabbit.getX() - target.getX(), rabbit.getZ() - target.getZ());
 

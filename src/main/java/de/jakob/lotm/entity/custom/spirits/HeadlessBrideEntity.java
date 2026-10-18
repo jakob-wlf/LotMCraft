@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.spirits;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.network.packets.toClient.PlayPhotonEntityEffectPacket;
@@ -428,7 +429,8 @@ public class HeadlessBrideEntity extends Monster {
             }
             windupRemaining--;
             if (windupRemaining == 0 && target != null) {
-                target.hurt(bride.damageSources().mobAttack(bride), CURSE_DAMAGE);
+                DamageSource source = ModDamageTypes.source(bride.level(), ModDamageTypes.CURSE, bride);
+                target.hurt(source, CURSE_DAMAGE);
                 target.addEffect(new MobEffectInstance(MobEffects.WITHER, CURSE_WITHER_DURATION, 0, false, true));
                 target.addEffect(new MobEffectInstance(MobEffects.UNLUCK, CURSE_UNLUCK_DURATION, 0, false, true));
                 target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, CURSE_WEAKNESS_DURATION, 0, false, true));

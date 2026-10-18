@@ -2,6 +2,7 @@ package de.jakob.lotm.entity.custom.spirits;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.util.BeyonderData;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -343,7 +344,9 @@ public class KnowledgeDemonEntity extends Monster {
             demon.playSound(SoundEvents.EVOKER_CAST_SPELL, 1.0F, 0.9F);
             demon.spawnKnowledgeParticles(demon.getX(), demon.getY(0.7), demon.getZ(), 14);
 
-            target.hurt(demon.damageSources().mobAttack(demon), INJECTION_DAMAGE);
+            DamageSource source = ModDamageTypes.source(demon.level(), ModDamageTypes.MIND_BASED, demon);
+
+            target.hurt(source, INJECTION_DAMAGE);
             target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, INJECTION_CONFUSION_DURATION, INJECTION_CONFUSION_AMPLIFIER, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, INJECTION_DARKNESS_DURATION, 0, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.HUNGER, INJECTION_HUNGER_DURATION, INJECTION_HUNGER_AMPLIFIER, false, true));

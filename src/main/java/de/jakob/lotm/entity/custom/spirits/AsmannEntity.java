@@ -1,6 +1,7 @@
 package de.jakob.lotm.entity.custom.spirits;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.damage.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -259,7 +260,8 @@ public class AsmannEntity extends Monster {
             asmann.spawnPsychicParticles(asmann.getX(), asmann.getY(0.7), asmann.getZ(), 10);
             asmann.playSound(SoundEvents.ILLUSIONER_CAST_SPELL, 1.0F, 1.0F);
 
-            target.hurt(asmann.damageSources().mobAttack(asmann), MIND_SPIKE_DAMAGE);
+            DamageSource source = ModDamageTypes.source(asmann.level(), ModDamageTypes.MIND_BASED, asmann);
+            target.hurt(source, MIND_SPIKE_DAMAGE);
             target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, MIND_SPIKE_BLIND_DURATION, 0, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, MIND_SPIKE_NAUSEA_DURATION, 0, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.DARKNESS, MIND_SPIKE_DARKNESS_DURATION, 0, false, true));
