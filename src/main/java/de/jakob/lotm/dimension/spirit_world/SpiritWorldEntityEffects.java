@@ -40,6 +40,9 @@ public class SpiritWorldEntityEffects {
         if(!(event.getEntity() instanceof LivingEntity entity)) {
             return;
         }
+        if (entity.level().isClientSide() && !(entity.level() instanceof ServerLevel level)) {
+            return;
+        }
 
         if (!entity.level().dimension().equals(ModDimensions.SPIRIT_WORLD_DIMENSION_KEY)) {
             return;
