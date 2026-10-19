@@ -40,7 +40,7 @@ public class SpaceConcealmentAbility extends SelectableAbility {
         canBeShared = false;
 
         hasDynamicCooldown = true;
-        dynamicCooldown = new LinkedList<>(List.of(1, 2, 3, 4, 5));
+        dynamicCooldown = new LinkedList<>(List.of(1, 1, 2, 2, 3));
 
         hasDynamicSpirituality = true;
         dynamicSpirituality = new LinkedList<>(List.of(18000f, 6700f, 3750f, 2500f, 2340f));

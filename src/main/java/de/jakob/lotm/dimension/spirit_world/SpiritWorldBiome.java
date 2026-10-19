@@ -64,6 +64,11 @@ public enum SpiritWorldBiome {
             GenerationMode.PLATEAU,
             new TerrainParams(60, 5, 0.30f, 0.18f, 85, 270, 290, -4, 15, 0.5f,
                     340)
+    ),
+    UNDERWORLD_PATCH(
+            GenerationMode.VORTEX,
+            new TerrainParams(40, 50, 1.0f, 1.0f, 0, 0, 340, 0, 0, 1.0f,
+                    340)
     );
 
 
@@ -84,7 +89,8 @@ public enum SpiritWorldBiome {
         CONTINENTAL,
         PLATEAU,
         CANYON,
-        CHAOS
+        CHAOS,
+        VORTEX
     }
 
     public boolean isSolid() {
@@ -98,6 +104,7 @@ public enum SpiritWorldBiome {
         return switch (this) {
             case WOOL_MEADOWS -> 1;
             case SPIRIT_WORLD_WASTES -> 3;
+            case UNDERWORLD_PATCH -> 0;   // placed by vortexAt(), never by the Voronoi pool
             default -> 2;
         };
     }
@@ -117,6 +124,7 @@ public enum SpiritWorldBiome {
             case SPIRIT_WORLD_WASTES -> new double[]{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.08, 0.10, 0.15, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.55, 0.0, 0.0, 0.07 };
             case MIRE_HOLLOW          -> new double[]{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.05, 0.05, 0.08, 0.0, 0.0, 0.0, 0.0, 0.0, 0.80, 0.0, 0.02 };
             case BONE_STEPPES         -> new double[]{ 0.0, 0.02, 0.0, 0.0, 0.15, 0.0, 0.0, 0.0, 0.0, 0.03, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75, 0.0 };
+            case UNDERWORLD_PATCH     -> new double[]{ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
         };
     }
 
@@ -205,6 +213,12 @@ public enum SpiritWorldBiome {
                 float p = sinPulse(timeMs, 700, 0.05f, 0.90f);
                 yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
             }
+            case UNDERWORLD_PATCH -> {
+                float h = 0.72f + (float) Math.sin(timeMs / 7000.0) * 0.04f;
+                float[] c = hsb(h, 0.45f, 0.22f);
+                float p = sinPulse(timeMs, 600, 0.10f, 0.80f);
+                yield new float[]{ c[0]*p, c[1]*p, c[2]*p };
+            }
         };
     }
 
@@ -221,7 +235,34 @@ public enum SpiritWorldBiome {
         return pool.toArray(new SpiritWorldBiome[0]);
     }
 
+    public static final int    VORTEX_ISLAND_RADIUS   = 60;
+    public static final int    VORTEX_BIOME_RADIUS    = 76;
+    private static final int   VORTEX_GRID            = 1500;
+    private static final float VORTEX_CHANCE          = 0.35f;
+    private static final long  VORTEX_SPAWN_CLEARANCE = 450L;
+
+    public record VortexInfo(int centerX, int centerZ, double dist) {}
+
+    public static VortexInfo vortexAt(int x, int z) {
+        int gx = Math.floorDiv(x, VORTEX_GRID);
+        int gz = Math.floorDiv(z, VORTEX_GRID);
+        long seed = jenkinsHash((long) gx * 7_368_787L + (long) gz * 3_145_739L + 0x5EED0FB0DEL);
+        if (pseudoRand(seed) >= VORTEX_CHANCE) return null;
+
+        int margin = VORTEX_BIOME_RADIUS + 8;
+        int span   = VORTEX_GRID - 2 * margin;
+        int cx = gx * VORTEX_GRID + margin + (int) (pseudoRand(jenkinsHash(seed ^ 0xA11CE5L)) * span);
+        int cz = gz * VORTEX_GRID + margin + (int) (pseudoRand(jenkinsHash(seed ^ 0xB0B0B0L)) * span);
+        if ((long) cx * cx + (long) cz * cz < VORTEX_SPAWN_CLEARANCE * VORTEX_SPAWN_CLEARANCE) return null;
+
+        double d = Math.hypot(x - cx, z - cz);
+        return d <= VORTEX_BIOME_RADIUS ? new VortexInfo(cx, cz, d) : null;
+    }
+
     public static BiomeWeight[] getBlendedBiomesAt(int x, int z) {
+        if (vortexAt(x, z) != null) {
+            return new BiomeWeight[]{ new BiomeWeight(UNDERWORLD_PATCH, 1.0) };
+        }
         double d1sq = Double.MAX_VALUE, d2sq = Double.MAX_VALUE;
         SpiritWorldBiome b1 = SPIRIT_WORLD_WASTES, b2 = SPIRIT_WORLD_WASTES;
 

@@ -227,6 +227,11 @@ public class ModDimensions {
             ResourceKey.create(Registries.BIOME,
                     ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_bone_steppes"));
 
+    /** index 12 */
+    public static final ResourceKey<Biome> SPIRIT_BIOME_UNDERWORLD_PATCH =
+            ResourceKey.create(Registries.BIOME,
+                    ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "spirit_underworld_patch"));
+
     @SuppressWarnings("unchecked")
     public static final ResourceKey<Biome>[] SPIRIT_WORLD_BIOME_KEYS = new ResourceKey[]{
             SPIRIT_BIOME_WOOL_MEADOWS,       // 0
@@ -241,6 +246,7 @@ public class ModDimensions {
             SPIRIT_BIOME_WASTES,             // 9
             SPIRIT_BIOME_MIRE_HOLLOW,        // 10
             SPIRIT_BIOME_BONE_STEPPES,       // 11
+            SPIRIT_BIOME_UNDERWORLD_PATCH,   // 12
     };
 
     // =========================================================================

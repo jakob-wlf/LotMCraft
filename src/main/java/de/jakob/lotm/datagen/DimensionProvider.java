@@ -210,16 +210,16 @@ public class DimensionProvider {
                                                     .hasPrecipitation(false)
                                                     .temperature(0.0f).downfall(0.0f)
                                                     .specialEffects(new BiomeSpecialEffects.Builder()
-                                                            .skyColor(0x050010)          
-                                                            .fogColor(0x0D0025)          
-                                                            .waterColor(0x6600CC)        
-                                                            .waterFogColor(0x220044)     
+                                                            .skyColor(0x050010)
+                                                            .fogColor(0x0D0025)
+                                                            .waterColor(0x6600CC)
+                                                            .waterFogColor(0x220044)
                                                             .grassColorOverride(0x3B006B)
                                                             .foliageColorOverride(0x4D0088)
                                                             .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
                                                             .ambientParticle(new AmbientParticleSettings(
                                                                     new DustParticleOptions(
-                                                                            new Vector3f(0.45f, 0.05f, 0.9f), 1.0f), 
+                                                                            new Vector3f(0.45f, 0.05f, 0.9f), 1.0f),
                                                                     0.007f))
                                                             .build())
                                                     .mobSpawnSettings(new MobSpawnSettings.Builder().build())
@@ -431,6 +431,27 @@ public class DimensionProvider {
                                                     .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
                                                     .build());
 
+                                    bootstrap.register(ModDimensions.SPIRIT_BIOME_UNDERWORLD_PATCH,
+                                            new Biome.BiomeBuilder()
+                                                    .hasPrecipitation(false)
+                                                    .temperature(0.3f).downfall(0.0f)
+                                                    .specialEffects(new BiomeSpecialEffects.Builder()
+                                                            .skyColor(0x0A0812)
+                                                            .fogColor(0x15101F)
+                                                            .waterColor(0x000000)      // black water
+                                                            .waterFogColor(0x000000)   // black when submerged
+                                                            .grassColorOverride(0x2A2433)
+                                                            .foliageColorOverride(0x2A2433)
+                                                            .ambientMoodSound(AmbientMoodSettings.LEGACY_CAVE_SETTINGS)
+                                                            .ambientParticle(new AmbientParticleSettings(
+                                                                    new DustParticleOptions(
+                                                                            new Vector3f(0.55f, 0.5f, 0.65f), 0.8f),
+                                                                    0.003f))
+                                                            .build())
+                                                    .mobSpawnSettings(new MobSpawnSettings.Builder().build())
+                                                    .generationSettings(new BiomeGenerationSettings.PlainBuilder().build())
+                                                    .build());
+
                                     bootstrap.register(ModDimensions.DREAM_MAZE_BIOME_KEY,
                                             new Biome.BiomeBuilder()
                                                     .hasPrecipitation(false)
@@ -476,20 +497,20 @@ public class DimensionProvider {
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 7), 0)));
 
                                     bootstrap.register(ModDimensions.SPACE_TIME_LABYRINTH_TYPE_KEY, new DimensionType(
-                                            OptionalLong.of(18000),   
-                                            false,                    
-                                            false,                    
-                                            false,                    
-                                            false,                    
-                                            1.0,                      
-                                            false,                    
-                                            false,                    
-                                            0,                        
-                                            256,                      
-                                            256,                      
+                                            OptionalLong.of(18000),
+                                            false,
+                                            false,
+                                            false,
+                                            false,
+                                            1.0,
+                                            false,
+                                            false,
+                                            0,
+                                            256,
+                                            256,
                                             BlockTags.INFINIBURN_OVERWORLD,
                                             ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "space_time_labyrinth"),
-                                            0.05f,                    
+                                            0.05f,
                                             new DimensionType.MonsterSettings(false, false, UniformInt.of(0, 0), 0)));
 
                                     bootstrap.register(ModDimensions.WORLD_CREATION_TYPE_KEY, new DimensionType(
@@ -593,7 +614,8 @@ public class DimensionProvider {
                                             biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_GILDED_RUINS),
                                             biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_WASTES),
                                             biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_MIRE_HOLLOW),
-                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_BONE_STEPPES)
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_BONE_STEPPES),
+                                            biomeRegistry.getOrThrow(ModDimensions.SPIRIT_BIOME_UNDERWORLD_PATCH)
                                     ));
                                     bootstrap.register(ModDimensions.SPIRIT_WORLD_LEVEL_KEY,
                                             new LevelStem(

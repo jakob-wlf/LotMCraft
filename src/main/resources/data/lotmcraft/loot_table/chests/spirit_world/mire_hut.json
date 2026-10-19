@@ -177,6 +177,46 @@
       ]
     },
     {
+      "rolls": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+      },
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:swamp_giant_blood",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:swamp_giant_palms",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:murloc_bladder",
+          "weight": 20
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:soul_bewitching_insect_colony_mucus",
+          "weight": 12
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:puppet_evil_insect_secretions",
+          "weight": 8
+        },
+        {
+          "type": "minecraft:item",
+          "name": "lotmcraft:black_jimsonweed_juice",
+          "weight": 20
+        }
+      ]
+    },
+    {
       "rolls": 1,
       "bonus_rolls": 0,
       "conditions": [
