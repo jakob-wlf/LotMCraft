@@ -41,7 +41,6 @@ public class MaliceAuthorityAbility extends PassiveAbility {
         }
         if (entitySeq == 1) {
             event.setNewDamage(event.getNewDamage() * 0.75F);
-            return;
         }
     }
     public static boolean isActiveFor(LivingEntity entity) {

@@ -18,29 +18,18 @@ import java.util.Random;
 
 import static com.machinezoo.noexception.Exceptions.log;
 
-/**
- * Only decides WHICH bloodline a player has.
- * Each bloodline ability (BloodlineShadowShiftAbility, BloodlineShapeshifterAbility, ...) checks
- * DevilBloodlineAbility.hasBloodline(...) in its own meetsBloodlineRequirement and handles its own
- * behaviour. This class does not tick or run any bloodline logic.
- * - The bloodline is picked from the world seed and the player's UUID.
- * - At sequence 0 the player has every bloodline.
- */
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class DevilBloodlineAbility extends PassiveAbility {
 
     public enum Bloodline { SHADOW_SHIFTER, PHANTOM, SHAPESHIFTER, CURSELING, CORRODER, FLAME_DEVIL }
     private static final int ALL_BLOODLINES_SEQ = 0; // at this sequence the user has every bloodline
-
     public DevilBloodlineAbility(String id) {
         super(id);
     }
-
     @Override
     public Map<String, Integer> getRequirements() {
         return new HashMap<>(Map.of("abyss", 6));
     }
-
     public static void getBloodlineFor(LivingEntity entity, ServerLevel level) {
         assignBloodlineIfMissing(entity, level);
         var component = entity.getData(ModAttachments.BLOODLINE_COMPONENT.get());
@@ -53,12 +42,12 @@ public class DevilBloodlineAbility extends PassiveAbility {
         }
     }
 
-    /** True for an abyss beyonder who has reached sequence 0 and therefore owns every bloodline. */
+    //only seq0 
     public static boolean hasAllBloodlines(LivingEntity entity) {
         return BeyonderData.isBeyonder(entity) && "abyss".equals(BeyonderData.getPathway(entity)) && BeyonderData.getSequence(entity) <= ALL_BLOODLINES_SEQ;
     }
 
-    /** Used by each bloodline ability's meetsBloodlineRequirement. */
+    //used by each bloodline
     public static boolean hasBloodline(LivingEntity entity, Bloodline required) {
         String pathway = BeyonderData.getPathway(entity);
         int seq = BeyonderData.getSequence(entity);
@@ -74,9 +63,13 @@ public class DevilBloodlineAbility extends PassiveAbility {
             getBloodlineFor(player, level);
         }
     }
-
     @Override
     public void tick(Level level, LivingEntity entity) {
+        if (!(entity instanceof ServerPlayer player)) return;
+        if (!(level instanceof ServerLevel serverLevel)) return;
+        var component = player.getData(ModAttachments.BLOODLINE_COMPONENT.get());
+        if (component.hasBloodline()) return;
+        assignBloodlineIfMissing(player, serverLevel);
     }
     @Override
     public void onPassiveAbilityGained(LivingEntity entity, ServerLevel serverLevel) {
