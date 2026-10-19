@@ -18,7 +18,7 @@ public class DemonOfTheBodyAbility extends PassiveAbility {
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide)
             return;
-        PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.RESISTANCE, "demon_of_the_body", 1);
+        PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.RESISTANCE, "demon_of_the_body", 4);
         PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.HEALTH, "demon_of_the_body", 6);
     }
 }

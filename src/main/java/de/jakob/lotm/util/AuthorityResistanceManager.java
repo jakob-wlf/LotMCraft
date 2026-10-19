@@ -139,19 +139,18 @@ public class AuthorityResistanceManager {
         death.put(ModDamageTypes.HOLY_BASED, List.of(2.5f, 2.25f, 2.25f, 2f, 2.0f, 2.0f, 1.5f, 1.25f, 1.1f));
         resistances.put("death", death);
         Map<ResourceKey<DamageType>, List<Float>> abyss = new HashMap<>();
-        abyss.put(ModDamageTypes.MIND_BASED, List.of(0.7f, 0.7f, 0.7f, 0.7f, 0.7f,0.7f,0.7f,0.7f));
-        abyss.put(ModDamageTypes.ABYSS, List.of(0.0f, 0.5f, 0.9f));
+        abyss.put(ModDamageTypes.ABYSS, List.of(0.0f, 0.5f, 0.9f));//Seq0 is just the abyss you cant hurt yourself
         abyss.put(ModDamageTypes.PHYSICAL_BASED, List.of(0.5f, 0.5f, 0.5f));
-        abyss.put(ModDamageTypes.HOLY_BASED, List.of(3f, 2.6f, 2.4f, 2.25f, 2.1f, 2.0f, 1.5f, 1.25f, 1.1f));
-        abyss.put(ModDamageTypes.LIGHTNING, List.of(2.0f, 1.9f, 1.8f, 1.7f, 1.6f, 1.5f, 1.25f, 1.1f));
+        abyss.put(ModDamageTypes.PURIFICATION, List.of(2.7f, 2.5f, 2.3f, 2.25f, 2.0f, 1.75f, 1.5f, 1.25f, 1.1f));//Big counter
         abyss.put(ModDamageTypes.CORROSION, List.of(0.5f, 0.6f, 0.7f, 0.8f, 0.9f));
-        abyss.put(ModDamageTypes.CORRUPTION, List.of(0.25f, 0.5f, 0.7f, 0.8f, 0.8f,1.0f,1.5f,1.8f,2.0f));
         abyss.put(ModDamageTypes.EVIL_BASED, List.of(0.4f, 0.6f, 0.7f, 0.8f, 0.9f));
-        abyss.put(ModDamageTypes.FILTH, List.of(0.0f,0.5f,0.9f));
-        abyss.put(ModDamageTypes.PLAGUE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f));
+        abyss.put(ModDamageTypes.MIND_BASED, List.of(0.7f, 0.7f, 0.7f, 0.7f, 0.7f,0.7f,0.7f,0.7f));//Modified in passive ability
+        abyss.put(ModDamageTypes.PLAGUE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f));//Modified in passive ability
         abyss.put(ModDamageTypes.FIRE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f)); //Modified in passive ability
         abyss.put(ModDamageTypes.CURSE, List.of(0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f)); //Modified in passive ability
-        abyss.put(ModDamageTypes.DEGENERATION, List.of(0.5f, 0.7f, 0.9f));
+        abyss.put(ModDamageTypes.FILTH, List.of(0.5f,0.7f,0.9f));//Shared with Hanged man
+        abyss.put(ModDamageTypes.DEGENERATION, List.of(0.5f, 0.7f, 0.9f));//Shared with Hanged man
+        abyss.put(ModDamageTypes.CORRUPTION, List.of(0.25f, 0.5f, 0.7f, 0.8f, 0.8f,1.0f,1.5f,1.8f,2.0f));//Shared with Hanged man
         resistances.put("abyss", abyss);
     }
 
