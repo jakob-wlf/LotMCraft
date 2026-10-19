@@ -210,6 +210,23 @@ public class ConfinementAbility extends Ability {
                 .findFirst()
                 .ifPresent(z -> removeZone(z, serverLevel));
     }
+    public static List<BlockPos> corrodeBarriers(ServerLevel level, Vec3 center, double reach, int max) {
+        List<BlockPos> removed = new ArrayList<>();
+        for (ConfinementZone zone : ACTIVE_ZONES) {
+            if (removed.size() >= max) break;
+            if (!zone.level.equals(level) || !zone.isActive()) continue;
+            int budget = max - removed.size();
+            List<BlockPos> candidates = zone.barriers.stream().filter(p -> p.getCenter().distanceTo(center) <= reach).sorted(Comparator.comparingDouble(p -> p.getCenter().distanceToSqr(center))).limit(budget).toList();
+            for (BlockPos p : candidates) {
+                if (level.getBlockState(p).is(Blocks.BARRIER)) level.removeBlock(p, false);
+                zone.barriers.remove(p);
+                removed.add(p);
+            }
+            // Once nothing is left the zone is dead, so its teleport block lifts too
+            if (zone.barriers.isEmpty()) removeZone(zone, level);
+        }
+        return removed;
+    }
 
     public static class ConfinementZone {
         public final UUID ownerId;

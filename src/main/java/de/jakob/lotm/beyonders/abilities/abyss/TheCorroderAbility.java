@@ -10,7 +10,12 @@ import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.CorrodedEffect;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.BeyonderData;
+import de.jakob.lotm.util.helper.ParticleUtil;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
@@ -22,6 +27,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,9 +35,10 @@ import java.util.concurrent.ConcurrentHashMap;
 @EventBusSubscriber(modid = LOTMCraft.MOD_ID)
 public class TheCorroderAbility extends ToggleAbility {
 
-    private static final int BARRIER_RADIUS = 8;
+    private static final int BARRIER_RADIUS = 16;
     private static final int SCAN_INTERVAL_TICKS = 20;
-    private static final int BARRIER_COOLDOWN_TICKS = 20 * 8; // time between barriers being eaten through
+    private static final int BLOCKS_PER_TICK = 2;
+    private static final DustParticleOptions CORRODE_DUST = new DustParticleOptions(new Vector3f(0.15f, 0.45f, 0.1f), 1.2f);
     private static final int CORRODED_TICKS = 20 * 10;
     private static final int HIT_GEAR_DAMAGE = 3;
     private static final int HARD_SLOW_AMPLIFIER = 3; // slowness at or above this is treated as a seal/cage and refused
@@ -69,11 +76,10 @@ public class TheCorroderAbility extends ToggleAbility {
         active.add(entity.getUUID());
         breakFree(entity);
         if (entity.tickCount % SCAN_INTERVAL_TICKS != 0) return;
-        destroyBarriers(serverLevel, entity);
+        corrodeBarriers(serverLevel, entity);
     }
 
     // Seals, imprisonment and cages
-    /** Runs every tick, so anything that lands on the corroder is shaken off immediately. Only the corroder is freed. */
     private static void breakFree(LivingEntity entity) {
         if (ImprisonAbility.IMPRISONED.contains(entity.getUUID())) ImprisonAbility.releaseTarget(entity.getUUID());
         if (BeyonderData.isBeyonder(entity)) entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAbilityUsage("sealed");
@@ -81,25 +87,16 @@ public class TheCorroderAbility extends ToggleAbility {
         MobEffectInstance slow = entity.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
         if (slow != null && slow.getAmplifier() >= HARD_SLOW_AMPLIFIER) entity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
     }
-    /** One barrier per pulse, then a cooldown, so it reads as corroding through them. */
-    private static void destroyBarriers(ServerLevel level, LivingEntity entity) {
-        long now = level.getGameTime();
-        Long next = barrierCooldown.get(entity.getUUID());
-        if (next != null && now < next) return;
+    // two barries per pulse so it looks like it is eat though the barrier
+    private static void corrodeBarriers(ServerLevel level, LivingEntity entity) {
         Vec3 pos = entity.position();
-        boolean destroyed = false;
-        for (ConfinementAbility.ConfinementZone zone : ConfinementAbility.ACTIVE_ZONES) {
-            if (!zone.level.equals(level) || !zone.isActive()) continue;
-            if (zone.center.distanceTo(pos) <= zone.radius + BARRIER_RADIUS) {
-                ConfinementAbility.removeZone(zone, level);
-                destroyed = true;
-                break;
-            }
-        }
-        if (!destroyed) destroyed = SpatialCageAbility.corrodeCages(level, pos, BARRIER_RADIUS);
-        if (destroyed) barrierCooldown.put(entity.getUUID(), now + BARRIER_COOLDOWN_TICKS);
+        List<BlockPos> eaten = new ArrayList<>(ConfinementAbility.corrodeBarriers(level, pos, BARRIER_RADIUS, BLOCKS_PER_TICK));
+        if (eaten.size() < BLOCKS_PER_TICK) eaten.addAll(SpatialCageAbility.corrodeCages(level, pos, BARRIER_RADIUS, BLOCKS_PER_TICK - eaten.size()));
+        if (eaten.isEmpty()) return;
+        for (BlockPos p : eaten) ParticleUtil.spawnParticles(level, CORRODE_DUST, p.getCenter(), 6, 0.4, 0);
+        level.playSound(null, entity.blockPosition(), SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 0.3f, 1.6f);
     }
-    /** Hard slowness (Sealing, Imprison, Spatial Cage) can't be applied to a corroder. */
+    // hard slowness cant effect thecorroder
     @SubscribeEvent
     public static void onEffectApplicable(MobEffectEvent.Applicable event) {
         if (!active.contains(event.getEntity().getUUID())) return;
@@ -124,4 +121,5 @@ public class TheCorroderAbility extends ToggleAbility {
         active.remove(event.getEntity().getUUID());
         barrierCooldown.remove(event.getEntity().getUUID());
     }
+
 }

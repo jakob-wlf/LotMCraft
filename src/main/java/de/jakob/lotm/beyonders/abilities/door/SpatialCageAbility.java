@@ -172,16 +172,21 @@ public class SpatialCageAbility extends SelectableAbility {
             activeCages.remove(playerUUID);
         }
     }
-    public static boolean corrodeCages(ServerLevel level, Vec3 center, double reach) {
+    public static List<BlockPos> corrodeCages(ServerLevel level, Vec3 center, double reach, int max) {
+        List<BlockPos> removed = new ArrayList<>();
         for (HashSet<SpatialCage> set : new ArrayList<>(activeCages.values())) {
             for (SpatialCage cage : new ArrayList<>(set)) {
+                if (removed.size() >= max) return removed;
                 if (cage.level() != level) continue;
-                if (cage.position().distanceTo(center) > cage.radius() + reach) continue;
-                cage.removeCage();
-                cage.barrierBlocks().clear(); // stops the update task from re-placing the blocks
-                return true;
+                int budget = max - removed.size();
+                List<BlockPos> candidates = cage.barrierBlocks().stream().filter(p -> level.getBlockState(p).is(Blocks.BARRIER) && p.getCenter().distanceTo(center) <= reach).sorted(Comparator.comparingDouble(p -> p.getCenter().distanceToSqr(center))).limit(budget).toList();
+                for (BlockPos p : candidates) {
+                    level.removeBlock(p, false);
+                    cage.barrierBlocks().remove(p);
+                    removed.add(p);
+                }
             }
         }
-        return false;
+        return removed;
     }
 }
