@@ -88,6 +88,7 @@ public class ImprisonAbility extends Ability {
         AbilityUtil.sendActionBar(caster, Component.literal("§6⚖ §e" + target.getType().getDescription().getString() + " §fimprisoned §6⚖"));
 
         UUID velTaskId = ServerScheduler.scheduleRepeating(0, 5, -1, () -> {
+            if (TheCorroderAbility.isCorroding(targetId)) { releaseTarget(targetId); return; }
             Entity e = serverLevel.getEntity(targetId);
             if (!(e instanceof LivingEntity t) || !t.isAlive()) return;
             t.setDeltaMovement(Vec3.ZERO);

@@ -111,7 +111,7 @@ public class LanguageOfFoulnessAbility extends SelectableAbility {
         ServerScheduler.scheduleForDuration(0, 1, duration, () -> {
             target.setDeltaMovement(0, 0, 0);
             target.hurtMarked = true;
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 20, false, false, false));
+            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 10, false, false, false));
         }, null, serverLevel, () -> AbilityUtil.getTimeInArea(entity, new Location(entity.position(), serverLevel)));
     }
 }

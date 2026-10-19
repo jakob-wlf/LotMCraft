@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.door;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.TheCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
@@ -74,6 +75,7 @@ public class SpatialCageAbility extends SelectableAbility {
         activeCages.computeIfAbsent(entity.getUUID(), k -> new HashSet<>()).add(cage);
 
         ServerScheduler.scheduleForDuration(0, 1,  openFront ? 20 * 20 : 20 * 10, () -> {
+            TheCorroderAbility.corrodeBlocks(cage.level(), cage.barrierBlocks());
             cage.updateCage();
             cage.addParticles();
             cage.addSlownessToEntities();
@@ -171,22 +173,5 @@ public class SpatialCageAbility extends SelectableAbility {
             }
             activeCages.remove(playerUUID);
         }
-    }
-    public static List<BlockPos> corrodeCages(ServerLevel level, Vec3 center, double reach, int max) {
-        List<BlockPos> removed = new ArrayList<>();
-        for (HashSet<SpatialCage> set : new ArrayList<>(activeCages.values())) {
-            for (SpatialCage cage : new ArrayList<>(set)) {
-                if (removed.size() >= max) return removed;
-                if (cage.level() != level) continue;
-                int budget = max - removed.size();
-                List<BlockPos> candidates = cage.barrierBlocks().stream().filter(p -> level.getBlockState(p).is(Blocks.BARRIER) && p.getCenter().distanceTo(center) <= reach).sorted(Comparator.comparingDouble(p -> p.getCenter().distanceToSqr(center))).limit(budget).toList();
-                for (BlockPos p : candidates) {
-                    level.removeBlock(p, false);
-                    cage.barrierBlocks().remove(p);
-                    removed.add(p);
-                }
-            }
-        }
-        return removed;
     }
 }

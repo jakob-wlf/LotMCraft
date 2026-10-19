@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.justiciar;
 
 import de.jakob.lotm.LOTMCraft;
+import de.jakob.lotm.beyonders.abilities.abyss.TheCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.util.data.Location;
@@ -21,6 +22,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.joml.Vector3f;
 
 import java.util.*;
@@ -160,7 +162,7 @@ public class ConfinementAbility extends Ability {
         }
     }
 
-    public static void removeZone(ConfinementZone zone, ServerLevel level) {
+    private static void removeZone(ConfinementZone zone, ServerLevel level) {
         for (BlockPos pos : zone.barriers) {
             if (level.getBlockState(pos).is(Blocks.BARRIER)) {
                 level.removeBlock(pos, false);
@@ -210,22 +212,14 @@ public class ConfinementAbility extends Ability {
                 .findFirst()
                 .ifPresent(z -> removeZone(z, serverLevel));
     }
-    public static List<BlockPos> corrodeBarriers(ServerLevel level, Vec3 center, double reach, int max) {
-        List<BlockPos> removed = new ArrayList<>();
+    @SubscribeEvent
+    public static void onServerTick(ServerTickEvent.Post event) {
         for (ConfinementZone zone : ACTIVE_ZONES) {
-            if (removed.size() >= max) break;
-            if (!zone.level.equals(level) || !zone.isActive()) continue;
-            int budget = max - removed.size();
-            List<BlockPos> candidates = zone.barriers.stream().filter(p -> p.getCenter().distanceTo(center) <= reach).sorted(Comparator.comparingDouble(p -> p.getCenter().distanceToSqr(center))).limit(budget).toList();
-            for (BlockPos p : candidates) {
-                if (level.getBlockState(p).is(Blocks.BARRIER)) level.removeBlock(p, false);
-                zone.barriers.remove(p);
-                removed.add(p);
-            }
-            // Once nothing is left the zone is dead, so its teleport block lifts too
-            if (zone.barriers.isEmpty()) removeZone(zone, level);
+            if (!zone.isActive() || zone.barriers.isEmpty()) continue;
+            TheCorroderAbility.corrodeBlocks(zone.level, zone.barriers);
+            // Once the wall is fully eaten the zone ends and its teleport block lifts
+            if (zone.barriers.isEmpty()) removeZone(zone, zone.level);
         }
-        return removed;
     }
 
     public static class ConfinementZone {

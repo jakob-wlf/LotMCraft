@@ -41,6 +41,7 @@ public class DomainOfBodyAbility extends PassiveAbility {
     public void tick(Level level, LivingEntity entity) {
         if (level.isClientSide()) return;
         if (entity.tickCount % 20 != 0) return;
+        if (!entity.isAlive() || entity.isDeadOrDying() || entity.getHealth() <= 0) return;
 
         // Purification damage cancels the regen
         Long blockedUntil = regenBlockedUntil.get(entity.getUUID());
