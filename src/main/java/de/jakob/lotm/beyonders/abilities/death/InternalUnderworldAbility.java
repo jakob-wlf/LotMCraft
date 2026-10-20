@@ -2,6 +2,7 @@ package de.jakob.lotm.beyonders.abilities.death;
 
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.death.handlers.SpiritHandler;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.BeyonderData;
@@ -23,6 +24,7 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.monster.hoglin.Hoglin;
 import net.minecraft.world.entity.player.Player;
@@ -49,29 +51,6 @@ public class InternalUnderworldAbility extends SelectableAbility {
 
     private record ActiveSoul(LivingEntity entity, CompoundTag soulData) {}
     private static final Map<UUID, List<ActiveSoul>> activeSouls = new ConcurrentHashMap<>();
-
-    private static boolean isCapturableEntity(LivingEntity entity) {
-        if (    entity instanceof Zombie
-                || entity instanceof ZombieVillager
-                || entity instanceof Husk
-                || entity instanceof Drowned
-                || entity instanceof ZombifiedPiglin
-                || entity instanceof Skeleton
-                || entity instanceof WitherSkeleton
-                || entity instanceof Stray
-                || entity instanceof Phantom
-                || entity instanceof Vex
-                || entity instanceof Hoglin
-                || entity instanceof SpiritDervishEntity
-                || entity instanceof SpiritBlueWizardEntity
-                || entity instanceof SpiritMalmouthEntity
-                || entity instanceof SpiritTranslucentWizardEntity
-                || entity instanceof SpiritGhostEntity
-        ) {
-            return true;
-        }
-        return false;
-    }
 
     private static int getMaxSouls(int sequence) {
         return switch (sequence) {
@@ -140,7 +119,7 @@ public class InternalUnderworldAbility extends SelectableAbility {
         event.setCanceled(true);
         clearCaptureMode(player);
 
-        if (!isCapturableEntity(target)) {
+        if (!SpiritHandler.isCapturableSpirit(target)) {
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.not_capturable")
                     .withStyle(ChatFormatting.RED));
             return;
@@ -159,8 +138,14 @@ public class InternalUnderworldAbility extends SelectableAbility {
         spawnCaptureAttemptParticles(serverLevel, target);
 
         float captureChance = 0.55f + (playerSeq * 0.05f);
+        int spiritSequence = SpiritHandler.getSequenceOfSpirit(target);
+        if(spiritSequence >= 9) captureChance = 1;
+        else if(spiritSequence < playerSeq) captureChance = 0;
+        else if(spiritSequence == playerSeq) captureChance = 0.35f;
+
         if (player.getRandom().nextFloat() >= captureChance) {
             spawnFailureParticles(serverLevel, target);
+            if(target instanceof Mob mob) mob.setTarget(player);
             serverLevel.playSound(null, target.blockPosition(), SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.8f, 1.8f);
             player.sendSystemMessage(Component.translatable("ability.lotmcraft.internal_underworld.escaped")
                     .withStyle(ChatFormatting.GRAY));

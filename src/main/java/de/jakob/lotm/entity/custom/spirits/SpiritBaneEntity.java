@@ -49,7 +49,6 @@ public class SpiritBaneEntity extends Animal {
     private static final DustParticleOptions BANE_DUST = new DustParticleOptions(new Vector3f(0.6f, 0.0f, 0.0f), 2.0f);
     private static final DustParticleOptions BANE_DUST_DARK = new DustParticleOptions(new Vector3f(0.3f, 0.0f, 0.1f), 1.5f);
 
-    // Sequence 4 threshold: lower number = stronger, so seq <= 4 means seq 0,1,2,3,4
     private static final int LIFT_SLAM_MAX_SEQUENCE = 4;
     private static final float LIFT_SLAM_DAMAGE_MULTIPLIER = 2.5f;
     private static final double LIFT_HEIGHT = 8.0;
@@ -231,13 +230,11 @@ public class SpiritBaneEntity extends Animal {
             --attackCooldown;
             double distanceSq = bane.distanceToSqr(target);
 
-            // Move towards target
             if (distanceSq > 15 * 15) {
                 bane.getNavigation().moveTo(target.getX(), target.getEyeY(), target.getZ(), 1.5);
             }
 
             if (attackCooldown <= 0) {
-                // Try lift-slam on targets with sequence 4 or below
                 if (canLiftTarget(target) && distanceSq < 20 * 20) {
                     performLiftSlam(target);
                 } else {
@@ -254,7 +251,6 @@ public class SpiritBaneEntity extends Animal {
 
             if (!(bane.level() instanceof ServerLevel serverLevel)) return;
 
-            // Initial particle burst around the target
             ParticleUtil.spawnSphereParticles(serverLevel, BANE_DUST, target.position().add(0, 1, 0), 2.0, 30);
         }
 
@@ -276,13 +272,11 @@ public class SpiritBaneEntity extends Animal {
         }
 
         private void tickLifting(ServerLevel serverLevel) {
-            // Lift the target upward over 20 ticks
             liftSlamTarget.setDeltaMovement(0, 0.7, 0);
             liftSlamTarget.hurtMarked = true;
             liftSlamTarget.hasImpulse = true;
             liftSlamTarget.fallDistance = 0;
 
-            // Rising particles around target
             ParticleUtil.spawnParticles(serverLevel, BANE_DUST_DARK, liftSlamTarget.position(), 3, 0.3);
             ParticleUtil.spawnParticles(serverLevel, ParticleTypes.SMOKE, liftSlamTarget.position(), 2, 0.5);
 
@@ -293,13 +287,11 @@ public class SpiritBaneEntity extends Animal {
         }
 
         private void tickHolding(ServerLevel serverLevel) {
-            // Hold target in the air for 15 ticks
             liftSlamTarget.setDeltaMovement(0, 0.05, 0); // slight upward to counter gravity
             liftSlamTarget.hurtMarked = true;
             liftSlamTarget.hasImpulse = true;
             liftSlamTarget.fallDistance = 0;
 
-            // Swirling particles while held
             ParticleUtil.spawnSphereParticles(serverLevel, BANE_DUST, liftSlamTarget.position().add(0, 1, 0), 1.5, 10);
 
             if (liftSlamTimer >= 15) {
@@ -309,32 +301,25 @@ public class SpiritBaneEntity extends Animal {
         }
 
         private void tickSlamming(ServerLevel serverLevel) {
-            // Apply massive downward velocity
             liftSlamTarget.setDeltaMovement(0, -5.0, 0);
             liftSlamTarget.hurtMarked = true;
             liftSlamTarget.hasImpulse = true;
 
-            // Trailing particles
             ParticleUtil.spawnParticles(serverLevel, BANE_DUST, liftSlamTarget.position(), 5, 0.3);
 
-            // Check if target has landed or timer expired
             if (liftSlamTarget.onGround() || liftSlamTimer > 30) {
-                // Impact!
                 float damage = (float) bane.getAttributeValue(Attributes.ATTACK_DAMAGE) * LIFT_SLAM_DAMAGE_MULTIPLIER;
                 Vec3 impactPos = liftSlamTarget.position();
 
-                // Big impact particle burst
                 ParticleUtil.spawnSphereParticles(serverLevel, BANE_DUST, impactPos, 4.0, 60);
                 ParticleUtil.spawnSphereParticles(serverLevel, BANE_DUST_DARK, impactPos, 3.0, 40);
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.EXPLOSION, impactPos, 8, 2.0);
                 ParticleUtil.spawnParticles(serverLevel, ParticleTypes.CAMPFIRE_COSY_SMOKE, impactPos, 10, 1.0);
 
-                // Deal damage
-                DamageSource damageSource = ModDamageTypes.source(bane.level(), ModDamageTypes.BEYONDER_GENERIC, bane);
-                liftSlamTarget.hurt(damageSource, damage);
+                DamageSource source = ModDamageTypes.source(bane.level(), ModDamageTypes.IMPACT, bane);
+                liftSlamTarget.hurt(source, damage);
                 liftSlamTarget.invulnerableTime = 0;
 
-                // Also damage nearby entities at impact
                 AbilityUtil.damageNearbyEntities(serverLevel, bane, 5.0, damage * 0.3f, impactPos, true, true);
 
                 performingLiftSlam = false;
@@ -350,20 +335,16 @@ public class SpiritBaneEntity extends Animal {
             float damage = (float) bane.getAttributeValue(Attributes.ATTACK_DAMAGE) * 0.4f; // per block
             Vec3 banePos = bane.position().add(0, 2, 0);
 
-            // Spawn particles around the bane to show it's gathering blocks
             ParticleUtil.spawnSphereParticles(serverLevel, BANE_DUST, banePos, 3.0, 30);
 
             for (int i = 0; i < BLOCK_HURL_COUNT; i++) {
-                // Select a random block state from nearby blocks
                 BlockState blockState = localBlocks.get(bane.getRandom().nextInt(localBlocks.size()));
 
-                // Spawn position: spread around the bane
                 double offsetX = (bane.getRandom().nextDouble() - 0.5) * 4.0;
                 double offsetY = bane.getRandom().nextDouble() * 3.0 + 1.0;
                 double offsetZ = (bane.getRandom().nextDouble() - 0.5) * 4.0;
                 Vec3 spawnPos = banePos.add(offsetX, offsetY, offsetZ);
 
-                // Direction towards target with some spread
                 Vec3 toTarget = target.getEyePosition().subtract(spawnPos).normalize();
                 double spread = 0.15;
                 Vec3 velocity = toTarget.add(
@@ -372,7 +353,6 @@ public class SpiritBaneEntity extends Animal {
                         (bane.getRandom().nextDouble() - 0.5) * spread
                 ).scale(1.5);
 
-                // Stagger the launches
                 final Vec3 finalSpawnPos = spawnPos;
                 final Vec3 finalVelocity = velocity;
                 ServerScheduler.scheduleDelayed(i * 3, () -> {
@@ -381,7 +361,6 @@ public class SpiritBaneEntity extends Animal {
                     );
                     bane.level().addFreshEntity(blockProjectile);
 
-                    // Spawn particles at block launch point
                     ParticleUtil.spawnParticles(serverLevel, BANE_DUST_DARK, finalSpawnPos, 3, 0.3);
                 }, serverLevel);
             }
