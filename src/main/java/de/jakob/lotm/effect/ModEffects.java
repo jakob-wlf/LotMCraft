@@ -15,6 +15,9 @@ public class ModEffects {
 
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, LOTMCraft.MOD_ID);
 
+    public static final Holder<MobEffect> REVERSED_CONTROLS =
+            MOB_EFFECTS.register("reversed_controls", ReversedControlsEffect::new);
+
     public static final Holder<MobEffect> ASLEEP = MOB_EFFECTS.register("asleep",
             () -> new AsleepEffect(MobEffectCategory.HARMFUL, 0x2E2E5C)
                     .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(LOTMCraft.MOD_ID, "asleep"), -10f, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)); // Dark blue color

@@ -2,6 +2,7 @@ package de.jakob.lotm.events;
 
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.beyonders.abilities.darkness.NightmareAbility;
+import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.util.data.ClientCorrosionFovCache;
 import de.jakob.lotm.beyonders.artifacts.SealedArtifactData;
 import de.jakob.lotm.data.ModDataComponents;
@@ -13,26 +14,19 @@ import de.jakob.lotm.util.data.PathwayInfos;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.Input;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
-import net.minecraft.client.particle.ParticleEngine;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.HitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import de.jakob.lotm.rendering.MiniatureCreatureRenderer;
-import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.lwjgl.glfw.GLFW;
@@ -169,6 +163,16 @@ public class ClientEvents {
             event.setGreen(g);
             event.setBlue(b);
         }
+    }
+    @SubscribeEvent
+    public static void onMovementInput(MovementInputUpdateEvent event) {
+        Player player = event.getEntity();
+        if (!player.hasEffect(ModEffects.REVERSED_CONTROLS)) return;
+
+        Input input = event.getInput();
+        input.forwardImpulse = -input.forwardImpulse;
+        input.leftImpulse    = -input.leftImpulse;
+
     }
 
     @SubscribeEvent
