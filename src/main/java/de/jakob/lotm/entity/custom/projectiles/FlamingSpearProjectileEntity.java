@@ -110,6 +110,7 @@ public class FlamingSpearProjectileEntity extends AbstractArrow {
         this.damage = damage;
         this.griefing = griefing;
         this.setRide(ride);
+        this.setOwner(owner);
         this.setSize(size);
         this.setBoundingBox(this.getBoundingBox().inflate(size));
         init();

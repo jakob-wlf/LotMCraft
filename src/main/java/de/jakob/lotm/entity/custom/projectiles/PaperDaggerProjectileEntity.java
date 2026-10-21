@@ -36,6 +36,7 @@ public class PaperDaggerProjectileEntity extends AbstractArrow {
         this.level = level;
         this.owner = owner;
         this.damage = damage;
+        this.setOwner(owner);
         init();
     }
 

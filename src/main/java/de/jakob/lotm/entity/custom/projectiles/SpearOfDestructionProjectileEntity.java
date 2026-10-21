@@ -47,6 +47,7 @@ public class SpearOfDestructionProjectileEntity extends AbstractArrow {
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.setOwner(owner);
         init();
     }
 

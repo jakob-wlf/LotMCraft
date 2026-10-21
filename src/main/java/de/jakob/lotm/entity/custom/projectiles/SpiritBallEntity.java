@@ -42,6 +42,7 @@ public class SpiritBallEntity extends AbstractHurtingProjectile {
     public SpiritBallEntity(Level level, LivingEntity owner, float damage, Vec3 direction, float speed) {
         super(ModEntities.SPIRIT_BALL.get(), owner, direction.normalize().scale(speed), level);
         this.damage = damage;
+        this.setOwner(owner);
         this.setNoGravity(true);
     }
 

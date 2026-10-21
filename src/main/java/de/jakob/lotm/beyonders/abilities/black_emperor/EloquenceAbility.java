@@ -229,6 +229,7 @@ public class EloquenceAbility extends ToggleAbility {
         } else {
             tierMultiplier = 1.0 + Math.min(0.5, -diff * 0.15); // Bonus effect
         }
+        if(targetSeq == 0 && casterSeq != 0) tierMultiplier = 0.0;
         return tierMultiplier;
     }
 }

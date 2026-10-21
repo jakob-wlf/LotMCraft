@@ -44,6 +44,11 @@ public class BribeAbility extends SelectableAbility {
     private static final HashSet<UUID> onCharmedCooldown = new HashSet<>();
     private static final Map<UUID, UUID> ARROGANCE = new HashMap<>();
 
+    protected static final String WEAKEN_TAG = "BRIBE_WEAKEN";
+    protected static final String CHARM_TAG = "BRIBE_CHARM";
+    protected static final String ARROGANCE_TAG = "BRIBE_ARROGANCE";
+    protected static final String CONNECTION_TAG = "BRIBE_CONNECTION";
+
 
     public BribeAbility(String id) {
         super(id, 5);
@@ -94,7 +99,7 @@ public class BribeAbility extends SelectableAbility {
         ItemStack offhand = entity.getOffhandItem();
         if (offhand.isEmpty()) {
             entity.sendSystemMessage(Component.literal("You must be holding an item in your off-hand").withStyle(ChatFormatting.RED));
-            AbilityUtil.refund((Player) entity, this);
+            if(entity instanceof Player player) AbilityUtil.refund(player, this);
             return;
         }
 
@@ -148,6 +153,7 @@ public class BribeAbility extends SelectableAbility {
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS,      duration, 1));
         target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, duration, 1));
         target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 1));
+        applyTagFor(player, target, WEAKEN_TAG, duration);
     }
 
     private static void applyArrogance(LivingEntity player, LivingEntity target, ServerLevel level) {
@@ -155,6 +161,7 @@ public class BribeAbility extends SelectableAbility {
         target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, duration, 0));
         if(!(level instanceof ServerLevel serverLevel)) return;
         ARROGANCE.put(target.getUUID(), player.getUUID());
+        applyTagFor(player, target, ARROGANCE_TAG, duration*20);
         ServerScheduler.scheduleForDuration(
                 0,
                 20 * 5,
@@ -202,6 +209,7 @@ public class BribeAbility extends SelectableAbility {
         onCharmedCooldown.add(target.getUUID());
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 200, 0));
         target.addEffect(new MobEffectInstance(MobEffects.GLOWING,  200, 0));
+        applyTagFor(player, target, CHARM_TAG, 200);
         ServerScheduler.scheduleDelayed(20 * 10, () -> {
             onCharmedCooldown.remove(target.getUUID());
             charmed.remove(target.getUUID());
@@ -237,6 +245,16 @@ public class BribeAbility extends SelectableAbility {
         int duration = 600; // 30s
         BribeConnectionRegistry.link(player, target, duration);
         player.sendSystemMessage(Component.literal("You established a connection with " + target.getDisplayName().getString()).withStyle(ChatFormatting.DARK_GRAY));
+        applyTagFor(player, target, CONNECTION_TAG, duration);
     }
 
+
+    private static void applyTagFor(LivingEntity player, LivingEntity target, String tag, int delay) {
+        target.getPersistentData().putBoolean(tag, true);
+        target.getPersistentData().putUUID(tag+"_TO", player.getUUID());
+        ServerScheduler.scheduleDelayed(delay, () -> {
+            target.getPersistentData().putBoolean(tag, false);
+            target.getPersistentData().remove(tag+"_FROM");
+        });
+    }
 }

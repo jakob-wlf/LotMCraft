@@ -96,11 +96,12 @@ public class FireArmorAbility extends ToggleAbility {
                     firePlateEntity.setVariant(PriestFlameVariants.byId(BeyonderData.getSequence(entity)));
                     plates.add(firePlateEntity);
                 }
-                ServerScheduler.scheduleRepeating(0, INTERVAL, MAX, () -> {
-                    FirePlateEntity firePlateEntity = plates.get(j.get());
-                    level.addFreshEntity(firePlateEntity);
-                    j.getAndIncrement();
-                });
+                for(FirePlateEntity plate : plates) {
+                    ServerScheduler.scheduleDelayed(INTERVAL, () ->{
+                        level.addFreshEntity(plate);
+                    });
+                }
+
                 entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                         SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0F, 0.7F);
                 FLAME_CLOAK_ACTIVE.add(entity.getUUID());

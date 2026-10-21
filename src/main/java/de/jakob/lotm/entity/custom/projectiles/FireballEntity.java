@@ -71,6 +71,7 @@ public class FireballEntity extends AbstractArrow {
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.setOwner(owner);
         this.setSize(1.0f);
         init();
     }
@@ -81,6 +82,7 @@ public class FireballEntity extends AbstractArrow {
         this.owner = owner;
         this.damage = damage;
         this.griefing = griefing;
+        this.setOwner(owner);
         this.setSize(size);
         this.setBoundingBox(this.getBoundingBox().inflate(size));
         init();

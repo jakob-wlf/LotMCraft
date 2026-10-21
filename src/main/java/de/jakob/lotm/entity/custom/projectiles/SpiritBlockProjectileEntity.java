@@ -57,6 +57,7 @@ public class SpiritBlockProjectileEntity extends Entity {
         this.damage = damage;
         this.ownerUUID = owner.getUUID();
         this.cachedOwner = owner;
+
         this.noPhysics = false;
 
         this.setPos(position);

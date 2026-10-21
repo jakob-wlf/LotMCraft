@@ -69,6 +69,7 @@ public class WaterBoltEntity extends AbstractArrow {
         this.level = level;
         this.owner = owner;
         this.damage = damage;
+        this.setOwner(owner);
         this.griefing = griefing;
         this.setSize(1.0f);
         init();

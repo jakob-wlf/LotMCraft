@@ -32,6 +32,7 @@ public class BribeProjectile extends ThrowableItemProjectile {
     public BribeProjectile(Level level, LivingEntity shooter, ItemStack item, BribeTypes bribeTypes) {
         super(ModEntities.BRIBE_PROJECTILE.get(), shooter, level);
         this.setItem(item.copy());
+        this.setOwner(shooter);
         this.entityData.set(DATA_BRIBE_TYPE, bribeTypes.ordinal());
     }
 
