@@ -82,13 +82,13 @@ public class TrapAbility extends Ability {
         BlockPos blockPos = BlockPos.containing(pos);
 
         double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5);
+        double offsetY = -.55;
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
 
         PacketHandler.sendToNearbyPlayers(
                 new PlayCancellablePhotonBlockEffectPacket(
-                        "trap", blockPos, offsetX, offsetY, offsetZ, 2.5, null, -1, true, true, null, effectUUID
+                        "trap", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, true, true, null, effectUUID
                 ),
                 (ServerLevel) level, pos, 128
         );
