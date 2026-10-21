@@ -8,6 +8,7 @@ import de.jakob.lotm.beyonders.abilities.core.AbilityHandler;
 import de.jakob.lotm.beyonders.abilities.twilight_giant.handlers.KnowledgeRecipe;
 import de.jakob.lotm.beyonders.acting.ActingTaskRegistry;
 import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.beyonders.boss.BossRegistry;
 import de.jakob.lotm.beyonders.potions.PotionRecipes;
 import de.jakob.lotm.block.ModBlockEntities;
 import de.jakob.lotm.block.ModBlocks;
@@ -362,6 +363,7 @@ public class LOTMCraft
             EntityRenderers.register(ModEntities.CHAOS_VORTEX.get(), ChaosVortextRenderer::new);
             EntityRenderers.register(ModEntities.CONTROL_BODY_DOUBLE.get(), ControlBodyDoubleRenderer::new);
             EntityRenderers.register(ModEntities.RABBIT_OF_KNOWLEDGE.get(), RabbitOfKnowledgeRenderer::new);
+            EntityRenderers.register(ModEntities.FORS_WALL.get(), BeyonderNPCRenderer::new);
 
             // Spirits
             EntityRenderers.register(ModEntities.SPIRIT_DERVISH_ENTITY.get(), SpiritDervishRenderer::new);
@@ -392,6 +394,8 @@ public class LOTMCraft
                                 (controller, state, animSetter) -> PlayState.STOP
                         )
                 );
+
+                BossRegistry.registerBosses();
             });
         }
 

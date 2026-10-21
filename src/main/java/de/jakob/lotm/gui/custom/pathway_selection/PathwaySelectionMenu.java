@@ -1,6 +1,8 @@
 package de.jakob.lotm.gui.custom.pathway_selection;
 
 import com.mojang.logging.LogUtils;
+import de.jakob.lotm.attachments.ModAttachments;
+import de.jakob.lotm.attachments.NewPlayerComponent;
 import de.jakob.lotm.beyonders.potions.BeyonderCharacteristicItemHandler;
 import de.jakob.lotm.beyonders.potions.PotionRecipeItemHandler;
 import de.jakob.lotm.gui.ModMenuTypes;
@@ -107,9 +109,12 @@ public class PathwaySelectionMenu extends AbstractContainerMenu {
         Item characteristic = BeyonderCharacteristicItemHandler.selectCharacteristicOfPathwayAndSequence(pathwayId, 9);
         Item recipe = PotionRecipeItemHandler.selectRecipeOfPathwayAndSequence(pathwayId, 9);
 
+        NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
         if(characteristic != null && recipe != null) {
             player.addItem(new ItemStack(characteristic));
             player.addItem(new ItemStack(recipe));
+
+            component.setHasReceivedNewPlayerPerks(true);
         }
 
     }

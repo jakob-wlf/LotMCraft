@@ -59,6 +59,7 @@ import de.jakob.lotm.entity.custom.*;
 import de.jakob.lotm.entity.custom.ability_entities.ControlBodyDouble;
 import de.jakob.lotm.entity.custom.ability_entities.twilight_giant.SilverRapierEntity;
 import de.jakob.lotm.entity.custom.ability_entities.door_pathway.BlinkAfterimageEntity;
+import de.jakob.lotm.entity.custom.npc.ForsWallEntity;
 import de.jakob.lotm.entity.custom.spirits.*;
 import de.jakob.lotm.network.PacketHandler;
 import de.jakob.lotm.network.packets.toClient.SyncSharedAbilitiesDataPacket;
@@ -190,6 +191,7 @@ public class ModEvents {
         event.put(ModEntities.FIRE_RAVEN.get(), FireRavenEntity.createAttributes().build());
         event.put(ModEntities.SILVER_RAPIER.get(), SilverRapierEntity.createAttributes().build());
         event.put(ModEntities.BEYONDER_NPC.get(), BeyonderNPCEntity.createAttributes().build());
+        event.put(ModEntities.FORS_WALL.get(), ForsWallEntity.createAttributes().build());
         event.put(ModEntities.AVATAR.get(), AvatarEntity.createAttributes().build());
         event.put(ModEntities.BLINK_AFTERIMAGE.get(), BlinkAfterimageEntity.createAttributes().build());
         event.put(ModEntities.DAMAGE_TRACKER.get(), DamageTrackerEntity.createAttributes().build());
@@ -358,6 +360,7 @@ public class ModEvents {
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
+        OpenPathwaySelectionCommand.register(event.getDispatcher());
         CopiedAbilitiesCommand.register(event.getDispatcher());
         ProxyAbility.registerCommands(event.getDispatcher());
         ServantsAbility.registerCommands(event.getDispatcher());

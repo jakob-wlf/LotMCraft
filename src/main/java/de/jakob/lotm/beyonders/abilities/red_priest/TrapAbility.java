@@ -82,13 +82,13 @@ public class TrapAbility extends Ability {
         BlockPos blockPos = BlockPos.containing(pos);
 
         double offsetX = pos.x - (blockPos.getX() + 0.5);
-        double offsetY = pos.y - (blockPos.getY() + 0.5);
+        double offsetY = -.55;
         double offsetZ = pos.z - (blockPos.getZ() + 0.5);
 
 
         PacketHandler.sendToNearbyPlayers(
                 new PlayCancellablePhotonBlockEffectPacket(
-                        "trap", blockPos, offsetX, offsetY, offsetZ, 2.5, null, -1, true, true, null, effectUUID
+                        "trap", blockPos, offsetX, offsetY, offsetZ, 2, null, -1, true, true, null, effectUUID
                 ),
                 (ServerLevel) level, pos, 128
         );
@@ -136,7 +136,10 @@ public class TrapAbility extends Ability {
                     obj.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 3));
                 }
             }
-        }, () -> amount.put(entity.getUUID(), amount.get(entity.getUUID()) - 1), (ServerLevel) level);
+        }, () -> {
+            if(amount.containsKey(entity.getUUID()) && amount.get(entity.getUUID()) > 0)
+                amount.put(entity.getUUID(), amount.get(entity.getUUID()) - 1);
+        }, (ServerLevel) level);
     }
 
     private static int getMaxAmount(int seq){
