@@ -136,7 +136,10 @@ public class TrapAbility extends Ability {
                     obj.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20 * 5, 3));
                 }
             }
-        }, () -> amount.put(entity.getUUID(), amount.get(entity.getUUID()) - 1), (ServerLevel) level);
+        }, () -> {
+            if(amount.containsKey(entity.getUUID()) && amount.get(entity.getUUID()) > 0)
+                amount.put(entity.getUUID(), amount.get(entity.getUUID()) - 1);
+        }, (ServerLevel) level);
     }
 
     private static int getMaxAmount(int seq){

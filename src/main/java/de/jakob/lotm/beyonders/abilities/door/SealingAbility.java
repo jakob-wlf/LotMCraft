@@ -116,7 +116,7 @@ public class SealingAbility extends Ability {
         UUID effectUUID = UUID.randomUUID();
 
         PacketHandler.sendToNearbyPlayers(
-                new PlayCancellablePhotonBlockEffectPacket("sealing_effect", blockPos, offsetX, offsetY, offsetZ, 1, null, -1, false, true, null, effectUUID),
+                new PlayCancellablePhotonBlockEffectPacket("sealing_effect", blockPos, offsetX, offsetY, offsetZ, 2.25, null, -1, false, true, null, effectUUID),
                 (ServerLevel) level, targetLoc, 128
         );
 

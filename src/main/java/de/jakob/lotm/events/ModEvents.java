@@ -346,6 +346,7 @@ public class ModEvents {
         SefirotCommand.register(event.getDispatcher());
         ResetCapCommand.register(event.getDispatcher());
         AllyCommand.register(event.getDispatcher());
+        OpenPathwaySelectionCommand.register(event.getDispatcher());
         CopiedAbilitiesCommand.register(event.getDispatcher());
         ResetPlayerShapeCommand.register(event.getDispatcher());
         event.getDispatcher().register(
