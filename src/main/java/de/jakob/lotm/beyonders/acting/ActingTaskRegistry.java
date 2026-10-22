@@ -911,6 +911,69 @@ public class ActingTaskRegistry {
         register("death", 1, new EventActingTask("kill_boss", 0.2f, 20 * 60));
         register("death", 1, new EventActingTask("kill_undead", 0.1f, 20 * 5));
         register("death", 1, new EventActingTask("place_mob_head", 0.08f, 20 * 10));
+
+        register("twilight_giant", 9, new EventActingTask("kill_strong_mobs", 0.15f, 20 * 10));
+        register("twilight_giant", 9, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 9, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 9, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 9, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 9, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 8, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 8, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 8, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 8, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 8, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 8, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 7, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 7, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 7, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 7, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 7, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 7, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 6, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 6, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 6, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 6, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 6, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 6, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 5, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 5, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 5, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 5, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 5, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 5, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 4, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 4, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 4, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 4, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 4, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 4, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 3, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 3, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 3, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 3, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 3, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 3, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 2, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 2, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 2, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 2, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 2, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 2, new EventActingTask("kill_undead", 0.06f, 20 * 5));
+
+        register("twilight_giant", 1, new EventActingTask("kill_in_darkness", 0.15f, 20 * 10));
+        register("twilight_giant", 1, new EventActingTask("mine_ore", 0.05f, 20 * 10));
+        register("twilight_giant", 1, new EventActingTask("open_chest", 0.2f, 20 * 15));
+        register("twilight_giant", 1, new EventActingTask("pickup_bone", 0.1f, 20 * 5));
+        register("twilight_giant", 1, new EventActingTask("pickup_rotten_flesh", 0.08f, 20 * 5));
+        register("twilight_giant", 1, new EventActingTask("kill_undead", 0.06f, 20 * 5));
     }
 
     record PathwaySequenceKey(String pathway, int sequence) {
