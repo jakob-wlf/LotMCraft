@@ -32,6 +32,14 @@ public class PacketHandler {
     }
 
     private static void registerClientPackets(PayloadRegistrar registrar) {
+
+        registrar.playToClient(
+                SyncSealPayload.TYPE,
+                SyncSealPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    de.jakob.lotm.network.packets.handlers.ClientHandler.handleSealSync(payload);
+                })
+        );
         registrar.playToClient(
                 SyncBeyonderDataPacket.TYPE,
                 SyncBeyonderDataPacket.STREAM_CODEC,

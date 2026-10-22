@@ -37,6 +37,7 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -50,12 +51,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.joml.Random;
 
@@ -807,4 +810,26 @@ public class ClientHandler {
         player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setControlledEntitySequence(packet.controlledEntitySequence());
         player.getData(ModAttachments.ENTITY_CONTROLLING_COMPONENT).setCanUseOwnAbilities(packet.canUseOwnAbilities());
     }
+
+    private static AABB clientSealBounds = null;
+
+    public static void handleSealSync(SyncSealPayload payload) {
+        clientSealBounds = payload.sealed()
+                ? new AABB(payload.minX(), payload.minY(), payload.minZ(),
+                payload.maxX(), payload.maxY(), payload.maxZ())
+                : null;
+    }
+
+    @SubscribeEvent
+    public static void onPlaySound(PlaySoundEvent event) {
+        if (clientSealBounds == null) return;
+        SoundInstance sound = event.getSound();
+        if (sound == null) return;
+
+        if (!clientSealBounds.contains(sound.getX(), sound.getY(), sound.getZ())) {
+            event.setSound(null);
+        }
+    }
+
+    public static void onLogout() { clientSealBounds = null; }
 }

@@ -34,7 +34,7 @@ public class DistortionAbility extends ToggleAbility {
         hasDynamicCooldown = true;
 
         dynamicCooldown = new LinkedList<>(List.of(7, 7, 7, 7, 7, 6, 6));
-        dynamicSpirituality = new LinkedList<>(List.of(1000f, 700f, 600f, 400f, 300f, 100f, 80f));
+        dynamicSpirituality = new LinkedList<>(List.of(800f, 500f, 300f, 200f, 90f, 40f, 20f));
     }
 
     private final int[] duration = new int[] {6, 5, 5, 4, 4, 3, 3};

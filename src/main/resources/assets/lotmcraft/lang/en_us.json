@@ -1434,8 +1434,11 @@
   "lotmcraft.corrosion_ability": "Corrosion",
   "lotmcraft.weakness_detection_ability.description" : "Violators are punished.",
   "lotmcraft.weakness_detection_ability": "Weakness Detection",
-  "lotmcraft.distortion_ability.description" : "Actions may have different results.",
+  "lotmcraft.distortion_ability.description" : "Distort incoming attacks to change their trajectory away from you, or make your enemies choose another targets \n Distort enemy player's movements.",
   "lotmcraft.distortion_ability": "Distortion",
+
+  "lotmcraft.seal_ability.description" : "Declare an enclosed area (3x3 up to 16x16) as your own sealed place,\n Attacks from outside cant reach you while you also cant attack out side.",
+  "lotmcraft.seal_ability": "Seal",
 
   "lotmcraft.eloquence_ability.description" : "Your words weaken others.",
   "lotmcraft.eloquence_ability": "Eloquence",
