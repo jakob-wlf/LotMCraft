@@ -12,6 +12,7 @@ import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.BloomingAreaE
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.CoffinEntity;
 import de.jakob.lotm.entity.custom.ability_entities.mother_pathway.DesolateAreaEntity;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.FirePlateEntity;
+import de.jakob.lotm.entity.custom.npc.ForsWallEntity;
 import de.jakob.lotm.entity.custom.projectiles.*;
 import de.jakob.lotm.entity.custom.ability_entities.red_priest_pathway.WarBannerEntity;
 import de.jakob.lotm.entity.custom.ability_entities.justiciar_pathway.AncientCourtEntity;
@@ -144,6 +145,7 @@ public class ModEntities {
 
     public static final Supplier<EntityType<ApprenticeBookEntity>> APPRENTICE_BOOK =
             ENTITY_TYPES.register("apprentice_book", () -> EntityType.Builder.<ApprenticeBookEntity>of(ApprenticeBookEntity::new, MobCategory.MISC)
+                    .noSave()
                     .sized(.8f, .2f).build("apprentice_book"));
 
     // Ability Entities - Sun Pathway
@@ -443,6 +445,13 @@ public class ModEntities {
                     .clientTrackingRange(32)
                     .updateInterval(2)
                     .build("beyonder_npc"));
+
+    public static final DeferredHolder<EntityType<?>, EntityType<ForsWallEntity>> FORS_WALL =
+            ENTITY_TYPES.register("fors_wall", () -> EntityType.Builder.<ForsWallEntity>of(ForsWallEntity::new, MobCategory.MONSTER)
+                    .sized(0.6f, 1.95f)
+                    .clientTrackingRange(32)
+                    .updateInterval(2)
+                    .build("fors_wall"));
 
     public static final DeferredHolder<EntityType<?>, EntityType<AvatarEntity>> AVATAR =
             ENTITY_TYPES.register("avatar", () -> EntityType.Builder.<AvatarEntity>of(AvatarEntity::new, MobCategory.MONSTER)

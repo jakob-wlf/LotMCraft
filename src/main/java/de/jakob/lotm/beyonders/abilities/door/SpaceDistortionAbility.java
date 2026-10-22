@@ -3,11 +3,14 @@ package de.jakob.lotm.beyonders.abilities.door;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.rendering.effectRendering.EffectIds;
 import de.jakob.lotm.rendering.effectRendering.EffectManager;
+import de.jakob.lotm.rendering.effectRendering.EffectParams;
+import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
@@ -45,11 +48,13 @@ public class SpaceDistortionAbility extends Ability {
         }
 
         int duration = 20 * 10;
+        int sequence = BeyonderData.getSequence(entity);
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 2);
 
-        EffectManager.playEffect(EffectIds.SPACE_DISTORTION, targetLoc.x(), targetLoc.y(), targetLoc.z(), serverLevel);
+        EffectManager.playEffect(EffectIds.SPACE_DISTORTION, targetLoc.x(), targetLoc.y(), targetLoc.z(), serverLevel, EffectParams.ofDuration(duration));
 
         ServerScheduler.scheduleForDuration(0, 2, duration, () -> AbilityUtil.getAllNearbyEntities(entity, serverLevel, targetLoc, 60).forEach(e -> {
+            if(e instanceof LivingEntity livingEntity && BeyonderData.getSequence(livingEntity) <= sequence) return;
             e.setDeltaMovement(targetLoc.subtract(e.position()).scale(.04));
             BlockPos nextPos = BlockPos.containing(e.position().add(targetLoc.subtract(e.position()).scale(.4)));
 
@@ -58,5 +63,22 @@ public class SpaceDistortionAbility extends Ability {
             }
             e.hurtMarked = true;
         }));
+    }
+
+    @Override
+    public boolean shouldUseAbility(LivingEntity entity) {
+        if(!(entity instanceof Mob mob) || mob.getTarget() == null) {
+            return false;
+        }
+
+        LivingEntity target = mob.getTarget();
+        int targetSequence = BeyonderData.getSequence(target);
+        int entitySequence = BeyonderData.getSequence(entity);
+
+        if(targetSequence <= entitySequence) {
+            return false;
+        }
+
+        return super.shouldUseAbility(entity);
     }
 }

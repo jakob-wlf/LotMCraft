@@ -60,16 +60,7 @@ public class PureWhiteLightAbility extends Ability {
         }
 
         Vec3 targetLoc = AbilityUtil.getTargetLocation(entity, baseDistance, 4);
-        for(int i = 0; i < 50; i++) {
-            BlockPos pos = BlockPos.containing(targetLoc);
-            BlockState blockState = serverLevel.getBlockState(pos);
-            if(blockState.getCollisionShape(serverLevel, pos).isEmpty()) {
-                targetLoc = targetLoc.subtract(0, 24, 0);
-            } else {
-                targetLoc = targetLoc.add(0, 24, 0);
-                break;
-            }
-        }
+
         level.playSound(null, targetLoc.x, targetLoc.y, targetLoc.z, SoundEvents.BEACON_ACTIVATE, entity.getSoundSource(), 10.0f, 1.0f);
 
         EffectManager.playEffect(EffectIds.PURE_WHITE_LIGHT, targetLoc.x, targetLoc.y, targetLoc.z, serverLevel, entity);
