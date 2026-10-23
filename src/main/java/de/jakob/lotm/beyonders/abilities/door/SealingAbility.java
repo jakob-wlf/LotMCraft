@@ -6,12 +6,17 @@ import de.jakob.lotm.beyonders.abilities.abyss.TheCorroderAbility;
 import de.jakob.lotm.beyonders.abilities.core.Ability;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.network.PacketHandler;
+import de.jakob.lotm.network.packets.toClient.CancelPhotonBlockEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayCancellablePhotonBlockEffectPacket;
+import de.jakob.lotm.network.packets.toClient.PlayPhotonBlockEffectPacket;
 import de.jakob.lotm.particle.ModParticles;
 import de.jakob.lotm.util.BeyonderData;
 import de.jakob.lotm.util.data.Location;
 import de.jakob.lotm.util.helper.AbilityUtil;
 import de.jakob.lotm.util.helper.ParticleUtil;
 import de.jakob.lotm.util.scheduling.ServerScheduler;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -103,12 +108,31 @@ public class SealingAbility extends Ability {
         AtomicInteger totalDuration = new AtomicInteger(0);
         final UUID[] taskIdHolder = new UUID[1];
 
+
+        BlockPos blockPos = BlockPos.containing(targetLoc);
+
+        double offsetX = targetLoc.x - (blockPos.getX() + 0.5);
+        double offsetY = targetLoc.y - (blockPos.getY() + 0.5) + .1;
+        double offsetZ = targetLoc.z - (blockPos.getZ() + 0.5);
+
+        UUID effectUUID = UUID.randomUUID();
+
+        PacketHandler.sendToNearbyPlayers(
+                new PlayCancellablePhotonBlockEffectPacket("sealing_effect", blockPos, offsetX, offsetY, offsetZ, 2.25, null, -1, false, true, null, effectUUID),
+                (ServerLevel) level, targetLoc, 128
+        );
+
         taskIdHolder[0] = ServerScheduler.scheduleForDuration(0, 4, 20 * 10, () -> {
             Location sealLoc = new Location(targetLoc, level);
 
             if (InteractionHandler.isInteractionPossible(sealLoc, "explosion", entitySeq) || InteractionHandler.isInteractionPossible(sealLoc, "sealing_malfunction", entitySeq)) {
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, 200, 2, .2);
                 ParticleUtil.spawnParticles((ServerLevel) level, ParticleTypes.PORTAL, targetLoc, 200, 2, .2);
+
+                PacketHandler.sendToNearbyPlayers(
+                        new CancelPhotonBlockEffectPacket(effectUUID),
+                        (ServerLevel) level, targetLoc, 128
+                );
 
                 sealedEntities.forEach(e -> {
                     e.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
@@ -123,10 +147,6 @@ public class SealingAbility extends Ability {
                 if (taskIdHolder[0] != null) ServerScheduler.cancel(taskIdHolder[0]);
                 return;
             }
-
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, ParticleTypes.END_ROD, targetLoc, radius, 80);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions, targetLoc, radius, 60);
-            ParticleUtil.spawnSphereParticles((ServerLevel) level, dustOptions2, targetLoc, radius, 40);
 
             sealedEntities.forEach(e -> {
                 if (TheCorroderAbility.isCorroding(e.getUUID())) return;

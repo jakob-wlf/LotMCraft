@@ -27,7 +27,7 @@ public abstract class PassiveAbility {
     protected final Random random = new Random();
     private final String id;
 
-    private static final Map<Player, Integer> cooldowns = new HashMap<>();
+    private HashMap<UUID, Boolean> cached = new HashMap<>();
 
     public PassiveAbility(String id) {
         this.id = id;
@@ -39,6 +39,9 @@ public abstract class PassiveAbility {
 
     public boolean shouldApplyTo(LivingEntity entity) {
         if (!meetsBloodlineRequirement(entity)) return false;
+        if(entity.tickCount % 20 != 0 && cached.containsKey(entity.getUUID())) {
+            return cached.get(entity.getUUID());
+        }
         if(
                 entity instanceof Player player &&
                 ControllingUtils.isControlling(player)
@@ -49,20 +52,31 @@ public abstract class PassiveAbility {
             if(pathway != null) {
                 if(getRequirements().containsKey(pathway)) {
                     Integer minSeq = getRequirements().get(pathway);
-                    if (minSeq != null && sequence <= minSeq) return true;
+                    if (minSeq != null && sequence <= minSeq) {
+                        cached.put(entity.getUUID(), true);
+                        return true;
+                    }
                 }
             }
-            if(!ControllingUtils.canUseOwnAbilitiesWhileControlling(player)) return false;
-            if(this instanceof PhysicalEnhancementsAbility) return false;
+            if(!ControllingUtils.canUseOwnAbilitiesWhileControlling(player)) {
+                cached.put(entity.getUUID(), false);
+                return false;
+            }
+            if(this instanceof PhysicalEnhancementsAbility) {
+                cached.put(entity.getUUID(), false);
+                return false;
+            }
         }
-
 
         String pathway = BeyonderData.getPathway(entity);
         int sequence = BeyonderData.getSequence(entity);
 
         if(getRequirements().containsKey(pathway)) {
             Integer minSeq = getRequirements().get(pathway);
-            if (minSeq != null && sequence <= minSeq) return true;
+            if (minSeq != null && sequence <= minSeq) {
+                cached.put(entity.getUUID(), true);
+                return true;
+            }
         }
 
         if (!(this instanceof PhysicalEnhancementsAbility)) {
@@ -71,10 +85,14 @@ public abstract class PassiveAbility {
                 String histPathway = history[i];
                 if (histPathway == null || histPathway.isEmpty()) continue;
                 Integer minSeq = getRequirements().get(histPathway);
-                if (minSeq != null && i <= minSeq) return true;
+                if (minSeq != null && i <= minSeq) {
+                    cached.put(entity.getUUID(), true);
+                    return true;
+                }
             }
         }
 
+        cached.put(entity.getUUID(), false);
         return false;
     }
 

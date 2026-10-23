@@ -30,7 +30,7 @@ public class UnderworldEntityEffects {
 
     @SubscribeEvent
     public static void onLivingUpdate(EntityTickEvent.Pre event) {
-        if(!(event.getEntity() instanceof LivingEntity entity)) {
+        if(!(event.getEntity() instanceof ServerPlayer entity)) {
             return;
         }
 
@@ -40,7 +40,7 @@ public class UnderworldEntityEffects {
 
         if(entity.level().getBlockState(entity.blockPosition()).is(Blocks.WATER)) {
             if(entity.level().random.nextInt(80) == 0) {
-                travelThroughGate((ServerLevel) entity.level(), (ServerPlayer) entity);
+                travelThroughGate((ServerLevel) entity.level(), entity);
             } else {
                 entity.addEffect(new MobEffectInstance(MobEffects.WITHER, 40, 3, false, false));
             }

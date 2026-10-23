@@ -123,7 +123,8 @@ public class PlayerEvents {
             NewPlayerComponent component = player.getData(ModAttachments.BOOK_COMPONENT);
             if(!component.isHasReceivedNewPlayerPerks() && player.serverLevel().getGameRules().getBoolean(ModGameRules.SPAWN_WITH_STARTING_CHARACTERISTIC)) {
                 PathwaySelectionMenu.openWithAllPathways(player);
-
+            }
+            else {
                 component.setHasReceivedNewPlayerPerks(true);
             }
         }

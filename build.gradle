@@ -160,12 +160,7 @@ dependencies {
 
     implementation "curse.maven:terrablender-neoforge-940057:6054947"
 
-    jarJar("curse.maven:terrablender-neoforge-940057") {
-        version {
-            strictly "[6054947,)"
-            prefer "6054947"
-        }
-    }
+    jarJar("curse.maven:terrablender-neoforge-940057:6054947")
 
     compileOnly "mezz.jei:jei-1.21.1-neoforge-api:19.27.0.340"
 

@@ -43,6 +43,8 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(ModItems.PAPER_PICKAXE.get());
         handheldItem(ModItems.PAPER_AXE.get());
         handheldItem(ModItems.PAPER_SHOVEL.get());
+        handheldItem(ModItems.CONJURED_SWORD.get());
+        handheldItem(ModItems.CONJURED_WHIP.get());
 
         tintableItem(ModItems.SEALED_ARTIFACT.get());
         tintableItem(ModItems.SEALED_ARTIFACT_BELL.get());
