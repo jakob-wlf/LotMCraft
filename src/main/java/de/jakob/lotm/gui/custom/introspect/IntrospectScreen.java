@@ -135,7 +135,9 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     private static final int DIV3_Y = 161;
     private static final int PASSIVE_LABEL_Y = 167;
     private static final int PASSIVE_SLOT_Y = 178;
-    private static final int BOTTOM_Y = 200;
+    private static final int PASSIVE_COLS = 9;
+    private static final int PASSIVE_ROWS = 2;
+    private static final int BOTTOM_Y = 218;
 
     private static final int TUBE_W = 128;
     private static final int TUBE_H = 16;
@@ -368,7 +370,7 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
     public IntrospectScreen(IntrospectMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.playerInventory = playerInventory;
-        this.imageHeight = 231;
+        this.imageHeight = 249;
         this.imageWidth = 192;
     }
 
@@ -1104,27 +1106,31 @@ public class IntrospectScreen extends AbstractContainerScreen<IntrospectMenu> {
 
         heading(g, Component.translatable("lotm.passive_abilities"), x + 16, y + PASSIVE_LABEL_Y);
 
-        int slotsY = y + PASSIVE_SLOT_Y;
         int slotsX = x + PAD_X;
         int accent = accentRgb();
 
-        for (int i = 0; i < 9; i++) {
-            int sx = slotsX + i * 18;
-            boolean filled = i < passiveAbilities.size();
-            boolean hovered = filled && mouseX >= sx && mouseX < sx + 18 && mouseY >= slotsY && mouseY < slotsY + 18;
+        for (int row = 0; row < PASSIVE_ROWS; row++) {
+            int slotsY = y + PASSIVE_SLOT_Y + row * 18;
 
-            RenderSystem.enableBlend();
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-            g.blitSprite(!filled ? SPR_SLOT_EMPTY : (hovered ? SPR_SLOT_HOVER : SPR_SLOT_IDLE), sx, slotsY, 18, 18);
+            for (int col = 0; col < PASSIVE_COLS; col++) {
+                int i = row * PASSIVE_COLS + col;
+                int sx = slotsX + col * 18;
+                boolean filled = i < passiveAbilities.size();
+                boolean hovered = filled && mouseX >= sx && mouseX < sx + 18 && mouseY >= slotsY && mouseY < slotsY + 18;
 
-            if (filled) {
-                PassiveAbility passive = passiveAbilities.get(i);
-                renderPassiveAbilityIcon(g, passive, sx + 1, slotsY + 1);
-                if (hovered) {
-                    setTint(accent, 0.9f);
-                    g.blitSprite(SPR_SLOT_RING, sx, slotsY, 18, 18);
-                    RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-                    hoveredPassive = passive;
+                RenderSystem.enableBlend();
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+                g.blitSprite(!filled ? SPR_SLOT_EMPTY : (hovered ? SPR_SLOT_HOVER : SPR_SLOT_IDLE), sx, slotsY, 18, 18);
+
+                if (filled) {
+                    PassiveAbility passive = passiveAbilities.get(i);
+                    renderPassiveAbilityIcon(g, passive, sx + 1, slotsY + 1);
+                    if (hovered) {
+                        setTint(accent, 0.9f);
+                        g.blitSprite(SPR_SLOT_RING, sx, slotsY, 18, 18);
+                        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+                        hoveredPassive = passive;
+                    }
                 }
             }
         }
