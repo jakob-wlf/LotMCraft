@@ -4,10 +4,10 @@ import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.DisabledAbilitiesComponent;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.common.SpiritVisionAbility;
-import de.jakob.lotm.beyonders.abilities.death.EyeOfDeathAbility;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
+import de.jakob.lotm.beyonders.abilities.death.handlers.SpiritHandler;
 import de.jakob.lotm.effect.ModEffects;
 import de.jakob.lotm.sound.ModSounds;
 import de.jakob.lotm.util.BeyonderData;
@@ -226,7 +226,7 @@ public class RequiemAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         int duration = 20 * 90;
         List<LivingEntity> targets = AbilityUtil.getNearbyEntities(entity, serverLevel, entity.position(), 16).stream()
-                .filter(target -> EyeOfDeathAbility.isSpiritEntity(target) || AbilityUtil.isUndead(target))
+                .filter(target -> SpiritHandler.isCapturableSpirit(target) || AbilityUtil.isUndead(target))
                 .toList();
         if (targets.isEmpty()) {
             refund(entity);
@@ -237,7 +237,7 @@ public class RequiemAbility extends SelectableAbility {
             if (target instanceof Mob mob) mob.setNoAi(true);
             target.addEffect(new MobEffectInstance(ModEffects.ASLEEP, duration, 4, false, false, true));
             target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 6, false, false, false));
-            if (EyeOfDeathAbility.isSpiritEntity(target)) {
+            if (SpiritHandler.isCapturableSpirit(target)) {
                 target.getPersistentData().putBoolean("lotm_soothed_souls", true);
                 target.getPersistentData().putLong("lotm_soothed_souls_until", until);
             }
