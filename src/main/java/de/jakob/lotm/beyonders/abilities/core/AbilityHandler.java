@@ -350,6 +350,7 @@ public class AbilityHandler {
         abilities.add(new BribeAbility("briber_ability"));
         abilities.add(new DistortionAbility("distortion_ability"));
         abilities.add(new SealAbility("seal_ability"));
+        abilities.add(new CorrosionAbility("corrosion_ability"));
 
 
         //abilities.add(new DivineKingdomAbility("divine_kingdom_ability"));

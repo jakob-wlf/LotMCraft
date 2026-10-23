@@ -1430,7 +1430,7 @@
   "lotmcraft.magnify_ability": "Magnify",
   "lotmcraft.disorder_ability.description" : "Reality is changed for your benefit.",
   "lotmcraft.disorder_ability": "Disorder",
-  "lotmcraft.corrosion_ability.description" : "Negative thoughts are enhanced.",
+  "lotmcraft.corrosion_ability.description" : "Corrode all nearby entities within 10 blocks radius and make them irrational choices.",
   "lotmcraft.corrosion_ability": "Corrosion",
   "lotmcraft.weakness_detection_ability.description" : "Violators are punished.",
   "lotmcraft.weakness_detection_ability": "Weakness Detection",
