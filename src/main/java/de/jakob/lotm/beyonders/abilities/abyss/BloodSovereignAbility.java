@@ -181,7 +181,7 @@ public class BloodSovereignAbility extends SelectableAbility {
         if (target == null) {
             AbilityUtil.sendActionBar(entity,
                     Component.translatable("ability.lotmcraft.blood_sovereign.no_target")
-                            .withColor(0x8B0000));
+                            .withColor(0xFFa3070c));
             return;
         }
         if (corrodedEntities.contains(target.getUUID())) return;

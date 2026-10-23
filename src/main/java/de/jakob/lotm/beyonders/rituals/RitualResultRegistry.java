@@ -15,7 +15,6 @@ public final class RitualResultRegistry {
         register("area_effect", new RitualMagicAreaEffect());
         register("summon_entity", new RitualMagicSummonEntity());
         register("open_portal", new RitualMagicOpenPortal());
-        register("devil_worship", new RitualMagicDevilWorship());
     }
 
     private RitualResultRegistry() {}

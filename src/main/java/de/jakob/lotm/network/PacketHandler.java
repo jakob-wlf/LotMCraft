@@ -1,7 +1,8 @@
 package de.jakob.lotm.network;
 
 import de.jakob.lotm.LOTMCraft;
-import de.jakob.lotm.beyonders.abilities.abyss.contract.builder.ContractBuilderScreen;
+import de.jakob.lotm.beyonders.abilities.abyss.DevilWorship.DevilWorshipNetwork;
+import de.jakob.lotm.beyonders.abilities.abyss.passives.BloodSovereignClient;
 import de.jakob.lotm.network.packets.toClient.*;
 import de.jakob.lotm.network.packets.toServer.*;
 import de.jakob.lotm.util.BeyonderData;
@@ -613,6 +614,16 @@ public class PacketHandler {
                 SyncMaliceSeedsToClient.STREAM_CODEC,
                 SyncMaliceSeedsToClient::handle
         );
+        registrar.playToClient(
+                DevilWorshipNetwork.OpenSummonScreen.TYPE,
+                DevilWorshipNetwork.OpenSummonScreen.STREAM_CODEC,
+                DevilWorshipNetwork.OpenSummonScreen::handle
+        );
+        registrar.playToClient(
+                BloodSovereignClient.SyncBlood.TYPE,
+                BloodSovereignClient.SyncBlood.STREAM_CODEC,
+                BloodSovereignClient.SyncBlood::handle
+        );
     }
 
     private static void registerServerPackets(PayloadRegistrar registrar) {
@@ -1023,6 +1034,10 @@ public class PacketHandler {
                 SubmitContractBuilderPacket.STREAM_CODEC,
                 SubmitContractBuilderPacket::handle
         );
+        registrar.playToServer(
+                DevilWorshipNetwork.ChooseMission.TYPE,
+                DevilWorshipNetwork.ChooseMission.STREAM_CODEC,
+                DevilWorshipNetwork.ChooseMission::handle);
 
     }
 

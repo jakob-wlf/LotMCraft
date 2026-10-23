@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.abyss.passives;
 
 import de.jakob.lotm.beyonders.abilities.core.PassiveAbility;
+import de.jakob.lotm.beyonders.abilities.core.PassiveAbilityHandler;
 import de.jakob.lotm.beyonders.abilities.core.PhysicalEnhancementsAbility;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -16,6 +17,8 @@ public class DemonOfTheBodyAbility extends PassiveAbility {
 
     @Override
     public void tick(Level level, LivingEntity entity) {
+        PassiveAbility ability = PassiveAbilityHandler.getById("demon_of_body_ability");
+        if (ability == null || !ability.shouldApplyTo(entity)) return;
         if (level.isClientSide)
             return;
         PhysicalEnhancementsAbility.addEnhancementBoost(entity, PhysicalEnhancementsAbility.EnhancementType.RESISTANCE, "demon_of_the_body", 4);

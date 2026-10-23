@@ -3,9 +3,6 @@ package de.jakob.lotm.beyonders.abilities.abyss;
 import de.jakob.lotm.LOTMCraft;
 import de.jakob.lotm.attachments.ModAttachments;
 import de.jakob.lotm.beyonders.abilities.core.ToggleAbility;
-import de.jakob.lotm.beyonders.abilities.door.SpatialCageAbility;
-import de.jakob.lotm.beyonders.abilities.justiciar.ConfinementAbility;
-import de.jakob.lotm.beyonders.abilities.justiciar.ImprisonAbility;
 import de.jakob.lotm.damage.ModDamageTypes;
 import de.jakob.lotm.effect.CorrodedEffect;
 import de.jakob.lotm.effect.ModEffects;
@@ -37,18 +34,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class TheCorroderAbility extends ToggleAbility {
 
     private static final int BARRIER_RADIUS = 16;
-    private static final int SCAN_INTERVAL_TICKS = 20;
     private static final int BLOCKS_PER_PULSE = 2;      // blocks eaten per corroder per pulse
-    private static final int PULSE_INTERVAL_TICKS = 4;  // a pulse every 4 ticks = 10 blocks per second
+    private static final int PULSE_INTERVAL_TICKS = 4;  // a pulse every 4 ticks = 8 blocks per second
     private static final int SOUND_COOLDOWN_TICKS = 12; // at most one sound per corroder per 0.6s
     private static final Map<UUID, Long> lastSound = new ConcurrentHashMap<>();
     private static final DustParticleOptions CORRODE_DUST = new DustParticleOptions(new Vector3f(0.15f, 0.45f, 0.1f), 1.2f);
     private static final int CORRODED_TICKS = 20 * 10;
-    private static final int HIT_GEAR_DAMAGE = 3;
+    private static final int HIT_GEAR_DAMAGE = 30;
     private static final int HARD_SLOW_AMPLIFIER = 11; // slowness at or above this is treated as a seal/cage and refused
 
     private static final Set<UUID> active = ConcurrentHashMap.newKeySet();
-    private static final Map<UUID, Long> barrierCooldown = new ConcurrentHashMap<>();
 
     public TheCorroderAbility(String id) {
         super(id);
@@ -72,7 +67,6 @@ public class TheCorroderAbility extends ToggleAbility {
     public void stop(Level level, LivingEntity entity) {
         if (level.isClientSide) return;
         active.remove(entity.getUUID());
-        barrierCooldown.remove(entity.getUUID());
         lastSound.remove(entity.getUUID());
     }
     @Override
@@ -84,7 +78,7 @@ public class TheCorroderAbility extends ToggleAbility {
 
     // Seals, imprisonment and cages
     private static void breakFree(LivingEntity entity) {
-        if (BeyonderData.isBeyonder(entity)) entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAbilityUsage("sealed");
+        if (BeyonderData.isBeyonder(entity) && BeyonderData.getSequence(entity) == 0) entity.getData(ModAttachments.DISABLED_ABILITIES_COMPONENT).enableAbilityUsage("sealed");
         BeyonderData.removeModifier(entity, "sealed");
         MobEffectInstance slow = entity.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
         if (slow != null && slow.getAmplifier() >= HARD_SLOW_AMPLIFIER) entity.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
@@ -139,7 +133,6 @@ public class TheCorroderAbility extends ToggleAbility {
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         active.remove(event.getEntity().getUUID());
-        barrierCooldown.remove(event.getEntity().getUUID());
         lastSound.remove(event.getEntity().getUUID());
     }
 

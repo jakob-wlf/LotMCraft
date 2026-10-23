@@ -1,6 +1,7 @@
 package de.jakob.lotm.beyonders.abilities.core;
 
 import de.jakob.lotm.beyonders.abilities.abyss.*;
+import de.jakob.lotm.beyonders.abilities.abyss.DevilWorship.DevilWorshipAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.MaliceSeed.MaliceSeedAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.contract.ContractAbility;
 import de.jakob.lotm.beyonders.abilities.abyss.passives.DevilBloodlines.DevilBloodlineAbilites.Corroder.BloodlineCorroderAbility;

@@ -1,5 +1,6 @@
 package de.jakob.lotm.beyonders.abilities.abyss;
 
+import de.jakob.lotm.beyonders.abilities.abyss.DevilWorship.DevilWorshipAbility;
 import de.jakob.lotm.beyonders.abilities.core.AbilityUsedEvent;
 import de.jakob.lotm.beyonders.abilities.core.SelectableAbility;
 import de.jakob.lotm.beyonders.abilities.core.interaction.InteractionHandler;
@@ -19,6 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -59,7 +61,8 @@ public class DemonicSpellsAbility extends SelectableAbility {
         return new String[]{
                 "ability.lotmcraft.demonic_spells.acid_swamp",
                 "ability.lotmcraft.demonic_spells.filthy_illusion",
-                "ability.lotmcraft.demonic_spells.hellfire_wall"
+                "ability.lotmcraft.demonic_spells.hellfire_wall",
+                "ability.lotmcraft.demonic_spells.projection"
         };
     }
 
@@ -73,6 +76,7 @@ public class DemonicSpellsAbility extends SelectableAbility {
             case 0 -> castAcidSwamp(serverLevel, entity);
             case 1 -> castFilthyIllusion(serverLevel, entity);
             case 2 -> castHellfireWall(serverLevel, entity);
+            case 3 -> castProjection(entity);
         }
     }
 
@@ -213,5 +217,8 @@ public class DemonicSpellsAbility extends SelectableAbility {
                 }
             }
         }, level);
+    }
+    private void castProjection(LivingEntity entity) {
+        if (entity instanceof ServerPlayer player) {DevilWorshipAbility.castProjection(player);}
     }
 }

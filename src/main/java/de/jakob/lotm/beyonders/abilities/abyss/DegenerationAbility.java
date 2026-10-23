@@ -114,11 +114,11 @@ public class DegenerationAbility extends SelectableAbility {
     private void degeneratePerson(ServerLevel level, LivingEntity caster) {
         LivingEntity target = AbilityUtil.getTargetEntity(caster, 25, 2.5f);
         if (target == null || target == caster || isClone(target)) {
-            AbilityUtil.sendActionBar(caster, Component.literal("No target.").withColor(0xFFff124d));
+            AbilityUtil.sendActionBar(caster, Component.literal("No target.").withColor(0xFFa3070c));
             return;
         }
         if (resistsDegeneration(target)) {
-            AbilityUtil.sendActionBar(caster, Component.literal("The target resists degeneration.").withColor(0xFFff124d));
+            AbilityUtil.sendActionBar(caster, Component.literal("The target resists degeneration.").withColor(0xFFa3070c));
             return;
         }
         MinecraftServer server = level.getServer();

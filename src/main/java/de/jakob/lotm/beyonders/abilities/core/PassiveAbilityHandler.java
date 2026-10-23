@@ -96,6 +96,7 @@ public class PassiveAbilityHandler {
         passiveAbilities.add(new DemonOfTheBodyAbility("demon_of_the_body_ability"));
         passiveAbilities.add(new WordImmunityAbility("word_immunity_abyss_ability"));
         passiveAbilities.add(new DomainOfBodyAbility("domain_of_body_ability"));
+        passiveAbilities.add(new BloodSovereignAbility("blood_sovereign_ability"));
         passiveAbilities.add(new MaliceAuthorityAbility("malice_authority_ability"));
         passiveAbilities.add(new SinLordAbility("sin_lord_ability"));
 

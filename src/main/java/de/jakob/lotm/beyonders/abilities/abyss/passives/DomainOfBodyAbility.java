@@ -42,20 +42,17 @@ public class DomainOfBodyAbility extends PassiveAbility {
         if (level.isClientSide()) return;
         if (entity.tickCount % 20 != 0) return;
         if (!entity.isAlive() || entity.isDeadOrDying() || entity.getHealth() <= 0) return;
-
         // Purification damage cancels the regen
         Long blockedUntil = regenBlockedUntil.get(entity.getUUID());
         if (blockedUntil != null) {
             if (level.getGameTime() < blockedUntil) return;
             regenBlockedUntil.remove(entity.getUUID());
         }
-
         if (entity.getHealth() < entity.getMaxHealth()) {
             int seq = BeyonderData.getSequence(entity);
             entity.setHealth(Math.min(entity.getMaxHealth(), entity.getHealth() + (BASE_REGEN_AMOUNT*(3-seq))));
         }
     }
-
     @SubscribeEvent
     public static void onPurificationDamage(LivingDamageEvent.Post event) {
         LivingEntity entity = event.getEntity();
@@ -94,7 +91,7 @@ public class DomainOfBodyAbility extends PassiveAbility {
         try {
             int entitySeq = BeyonderData.getSequence(entity);
             for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(CORROSION_RADIUS), t -> t != entity && t.isAlive())) {
-                target.hurt(level.damageSources().generic(), CORROSION_DAMAGE);
+                target.hurt(ModDamageTypes.source(target.level(), ModDamageTypes.CORROSION, entity), CORROSION_DAMAGE);
                 SanityComponent sanity = target.getData(ModAttachments.SANITY_COMPONENT);
                 float before = sanity.getSanity();
                 sanity.decreaseSanityWithSequenceDifference(SANITY_DAMAGE, target, entitySeq, BeyonderData.getSequence(target));

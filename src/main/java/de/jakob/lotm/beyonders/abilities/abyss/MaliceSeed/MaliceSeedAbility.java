@@ -102,11 +102,11 @@ public class MaliceSeedAbility extends SelectableAbility {
         if (!(level instanceof ServerLevel serverLevel)) return;
         LivingEntity target = AbilityUtil.getTargetEntity(entity, 25, 2.5f);
         if (target == null || target == entity || getSeeds(target).contains(entity.getUUID().toString())) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.malice_seed.no_target").withColor(0xFFff124d));
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.malice_seed.no_target").withColor(0xFFa3070c));
             return;
         }
         if (BeyonderData.isBeyonder(target) && "sun".equals(BeyonderData.getPathway(target)) && BeyonderData.getSequence(target) <= 4) {
-            AbilityUtil.sendActionBar(entity, Component.literal("ability.lotmcraft.malice_seed.sun").withColor(0xFFFF124D));
+            AbilityUtil.sendActionBar(entity, Component.literal("ability.lotmcraft.malice_seed.sun").withColor(0xFFa3070c));
             return;
         }
         if (AbilityUtil.isTargetSignificantlyStronger(entity, target)) {
@@ -116,14 +116,14 @@ public class MaliceSeedAbility extends SelectableAbility {
         }
         int casterSeq = AbilityUtil.getSeqWithArt(entity, this);
         int targetSeq = BeyonderData.isBeyonder(target) ? BeyonderData.getSequence(target) : 10;
-        if (random.nextFloat() >= getInfectionChance(casterSeq, targetSeq, target)) {AbilityUtil.sendActionBar(entity, Component.literal("The seed found no purchase.").withColor(0xFFff124d));return;}
+        if (random.nextFloat() >= getInfectionChance(casterSeq, targetSeq, target)) {AbilityUtil.sendActionBar(entity, Component.literal("The seed found no purchase.").withColor(0xFFa3070c));return;}
         UUID identity = getMaliceIdentity(target);
         MinecraftServer server = serverLevel.getServer();
         CompoundTag seeds = findSeedsForIdentity(server, identity);
         String casterKey = entity.getUUID().toString();
         // One seed per caster per target identity.
         if (seeds.contains(casterKey)) {
-            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.malice_seed.no_target").withColor(0xFFff124d));
+            AbilityUtil.sendActionBar(entity, Component.translatable("ability.lotmcraft.malice_seed.no_target").withColor(0xFFa3070c));
             return;
         }
         CompoundTag seed = new CompoundTag();
@@ -225,7 +225,7 @@ public class MaliceSeedAbility extends SelectableAbility {
         }
     }
     //Resurrection
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onCasterDeath(LivingDeathEvent event) {
         LivingEntity caster = event.getEntity();
         // Purification damage permanently bypasses Malice Seed resurrection.
@@ -324,7 +324,7 @@ public class MaliceSeedAbility extends SelectableAbility {
         boolean wasWhispering = whisperTarget.containsKey(casterUUID);
         whisperTarget.remove(casterUUID);
         speakAsTarget.remove(casterUUID);
-        if (wasWhispering && mode != 1) AbilityUtil.sendActionBar(caster, Component.literal("Whispering: OFF").withColor(0x9932cc));
+        if (wasWhispering && mode != 1) AbilityUtil.sendActionBar(caster, Component.literal("Whispering: OFF").withColor(0xFFa3070c));
         boolean switchingHost = mode == 2 && wasSpeakingAs && !hostUUID.equals(previousSpeakAsHost);
         if (mode == 0) return;
         LivingEntity host = findHostEntity(caster, hostUUID);
@@ -336,10 +336,10 @@ public class MaliceSeedAbility extends SelectableAbility {
         if (mode == 1) {
             if (whisperTarget.containsKey(casterUUID)) {
                 whisperTarget.put(casterUUID, hostUUID);
-                AbilityUtil.sendActionBar(caster, Component.literal("Whispering: OFF").withColor(0x9932cc));}
+                AbilityUtil.sendActionBar(caster, Component.literal("Whispering: OFF").withColor(0xFFa3070c));}
             else {
                 whisperTarget.put(casterUUID, hostUUID);
-                AbilityUtil.sendActionBar(caster, Component.literal("Whispering: ON").withColor(0x9932cc));
+                AbilityUtil.sendActionBar(caster, Component.literal("Whispering: ON").withColor(0xFFa3070c));
             }
         } else if (mode == 2) {
             if (!wasSpeakingAs || switchingHost) {
